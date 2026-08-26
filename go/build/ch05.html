@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第5章 内存管理</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO GO · PRODUCTION READY</div>
+<h1 class="chapter-title">第5章 内存管理</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>回顾栈/堆/静态区模型,对照 C 的 malloc/free 的痛点(泄漏、悬垂、重复释放)理解 GC 的意义</li>
+<li>理解 Go GC 的三色标记并发回收原理:何时发生、停顿多短、怎么调 GOGC</li>
+<li>掌握逃逸分析:变量<b>可能被编译器放到堆上</b>,用 <code>go build -gcflags=-m</code> 观察分配位置</li>
+<li>掌握 defer 释放资源的惯用法与 sync.Pool 对象池的正确姿势</li>
+<li>理解 GC 语言中内存泄漏的真实形态:<b>goroutine 泄漏</b>、全局容器、闭包误捕获</li>
+<li>会用 pprof 采集与阅读内存画像,定位泄漏与高频分配</li>
+<li>掌握分配性能实践:预分配容量、strings.Builder、避免热路径装箱</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Go:本章主题如何迁移</div>
+<p>C 的内存管理是"全手动":<code>malloc</code>/<code>free</code> 成对出现,漏 free 是泄漏,free 两次是崩溃,free 后用是悬垂指针。每一个 C 老兵都经历过 valgrind 与 ASan 的深夜陪伴。Go 选择了另一条路:<b>垃圾回收(GC)</b>——程序员只管分配,回收交给运行时。</p>
+<p>这不是偷懒,而是工程权衡:GC 换来的是<b>确定性</b>——不存在悬垂指针、use-after-free、重复释放;任何时刻访问任何 Go 指针都是安全的。代价是:回收不是即时的,内存峰值可能更高,且 GC 停顿(Stop The World)需要被控制在毫秒级。Go 用<b>三色标记 + 并发回收</b>把停顿压到亚毫秒,代价是 GC 期间 CPU 有额外开销。</p>
+<p>于是 Go 程序员的"内存意识"从"什么时候 free"变成了三个新问题:<b>变量分配在栈还是堆?</b>(逃逸分析决定,与 C 的"局部变量必然在栈"不同);<b>谁还引用着这块内存?</b>(GC 语言的内存泄漏不是"忘记释放",而是"忘记解除引用"——goroutine 泄漏是头号形态);<b>分配频繁吗?</b>(GC 语言里,每秒百万次小分配会拖垮吞吐,对象池与预分配成为性能武器)。</p>
+<p>一句话主线:<span class="hl">C 手动管理内存,错误是"内存错误";Go 自动管理内存,错误是"引用错误"</span>——两者排查工具也因此不同:前者 valgrind,后者 pprof。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的 malloc/calloc/realloc/free,以及泄漏、悬垂指针、double free 三种经典错误</li>
+<li>栈(函数调用帧)与堆(动态分配)的基本模型</li>
+<li>指针与数组的关系;函数返回局部变量地址的危险</li>
+<li>第 4 章的 defer 与闭包捕获语义(本章直接使用)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段:</b>§5.1–§5.2,建立 GC 心智模型:为什么 Go 敢说"没有内存错误"</li>
+<li><b>第二阶段:</b>§5.3–§5.5,动手跑逃逸分析命令,复现 goroutine 泄漏并修复——这是本章最重要的实操</li>
+<li><b>第三阶段(实验):</b>§5.6–§5.7 与章末实验:内存泄漏复现与 pprof 定位修复</li>
+<li><b>验收标准:</b>能说出 GC 语言内存泄漏的四种形态,能跑出 <code>-gcflags=-m</code> 的 "moved to heap" 输出</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§5.1 从 malloc/free 到 GC:三种内存错误的消失</li>
+<li>§5.2 GC 原理:三色标记、并发回收、STW 与 GOGC</li>
+<li>§5.3 逃逸分析:变量在哪分配?<code>-gcflags=-m</code> 观察</li>
+<li>§5.4 defer 资源释放与 sync.Pool 对象池</li>
+<li>§5.5 内存泄漏的 Go 形态:goroutine 泄漏、全局容器、闭包</li>
+<li>§5.6 pprof 内存画像:采集与阅读</li>
+<li>§5.7 分配性能:预分配、strings.Builder、热路径</li>
+</ul></div>
+
+<h2>§5.1 从 malloc/free 到 GC:三种内存错误的消失</h2>
+
+<p>C 的内存错误谱系:泄漏(忘记 free,内存持续增长)、悬垂指针(free 后仍访问,行为未定义)、重复释放(double free,堆损坏)。Go 用 GC 一揽子消灭:</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>Go 的写法</th></tr>
+<tr><td class="ctr"><code>int* p = malloc(n); ...; free(p);</code></td><td class="ctr"><code>p := make([]int, n)</code>,不需要释放</td></tr>
+<tr><td class="ctr">忘记 free → 泄漏;多次 free → 崩溃</td><td class="ctr">不可达对象自动回收;不存在"错误释放"</td></tr>
+<tr><td class="ctr">free 后访问 → UB</td><td class="ctr">只要还被引用就仍有效;引用消失才被回收</td></tr>
+<tr><td class="ctr">valgrind / ASan 检测内存错误</td><td class="ctr">无需此类工具;转而用 pprof 查"谁还引用着"</td></tr>
+</table>
+
+<p>代价清单也要说清楚:GC 不是免费的。①<b>内存峰值</b>:对象不会立刻被回收,堆用量可能高于"精确释放"方案;②<b>CPU 开销</b>:标记与清扫本身消耗计算资源;③<b>停顿</b>:虽然并发,仍有极短的全局停顿。因此 Go 程序不是"随便造对象都行"——<b>分配量仍然是最重要的性能指标之一</b>。</p>
+
+<h2>§5.2 GC 原理:三色标记、并发回收、GOGC</h2>
+
+<p>Go 的 GC 是<b>并发三色标记-清除</b>(CMS 思路)。三个概念:</p>
+<ul>
+<li><span class="term">三色标记</span>:对象分白(未被访问)、灰(已访问,其引用未处理)、黑(已处理)。从根集合(全局变量、栈)出发,灰→黑推进,引用的白→灰;结束时仍为白的对象即垃圾,被清除</li>
+<li><span class="term">并发回收</span>:标记过程与用户代码并发执行(写屏障保证正确性),只有极短的 STW 窗口;从 Go 1.5 的"毫秒级停顿"到近几代版本的"亚毫秒级"</li>
+<li><span class="term">GOGC</span>:触发阈值,默认 100——堆增长 100% 时触发 GC。调大(如 <code>GOGC=400</code>)减少 GC 频率、抬高内存峰值;调小(<code>GOGC=20</code>)降低峰值、增加 CPU 开销。压测时用 <code>GODEBUG=gctrace=1</code> 观察每次 GC 的耗时与堆大小</li>
+</ul>
+
+<div class="box box-keypoint"><div class="box-title">重点:GC 调参三句话</div>
+<p>①默认 <code>GOGC=100</code> 在绝大多数场景已经最优,先别动;②内存吃紧(容器限制)时调小,追求吞吐时调大;③Go 1.19+ 的 <code>debug.SetMemoryLimit</code> 可以给堆设硬上限,比反复调 GOGC 更直观:<code>debug.SetMemoryLimit(512 &lt;&lt; 20)</code>。生产上建议结合压测数据决定,不要拍脑袋。</p>
+</div>
+
+<h2>§5.3 逃逸分析:变量分配在哪?</h2>
+
+<p>C 的规则简单:局部变量在栈,<code>malloc</code> 的在堆,函数返回局部变量地址是危险行为。Go 没有这么直白——<b>编译器自动决定</b>变量放哪,依据是"变量是否会逃逸出当前函数"。</p>
+
+<div class="code-title">示例 5-1 逃逸分析:小对象也可能在堆上</div>
+<pre class="code">package main
+
+import "fmt"
+
+// makeCounter 返回闭包:捕获的 n 逃逸到堆上
+// 用 go build -gcflags=-m 观察输出 "moved to heap: n"
+func makeCounter() func() int {
+    n := 0
+    return func() int {
+        n++
+        return n
+    }
+}
+
+// add 内联 + 栈分配:参数与结果都不逃逸
+func add(a, b int) int {
+    return a + b
+}
+
+func main() {
+    c := makeCounter()
+    fmt.Println(c(), c(), c())
+    fmt.Println(add(1, 2))
+}</pre>
+
+<div class="box box-example"><div class="box-title">示例 5-2 观察逃逸:go build -gcflags=-m</div>
+<p>在命令行执行:</p>
+<pre class="code">go build -gcflags=-m main.go
+# 关键输出(节选):
+# ./main.go:12:6: moved to heap: n        ← 闭包捕获的 n 分配在堆上
+# ./main.go:18:6: can inline add          ← add 被内联,无分配</pre>
+<p><b>解读:</b>"moved to heap" 不是坏事,是编译器在保证安全:闭包返回后 <code>n</code> 必须存活,放堆是唯一正确选择(这正是 C 里"返回局部变量地址"的 UB 场景!)。你不需要手动干预,但要知道<b>哪些写法会产生堆分配</b>:闭包捕获、接口装箱、指针逃逸、大结构体。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">易错点 5-1:以为"局部变量一定在栈上"</div>
+<p>Go 没有 <code>malloc</code>/<code>free</code> 语法,初学者以为"没写分配就是栈"。实际:闭包捕获的变量、被取地址并返回的变量、存进接口的变量,都可能被移到堆。判断工具:<code>go build -gcflags=-m</code> 与 pprof 的 alloc_objects 视图。这条知识是"为什么闭包能安全返回"的底层答案。</p>
+</div>
+
+<h2>§5.4 defer 资源释放与 sync.Pool</h2>
+
+<p>GC 管理内存,但<b>不管理所有资源</b>:文件句柄、网络连接、锁、数据库事务都需要显式释放。Go 的惯用法是第 4 章的 <code>defer</code>——保证函数退出时一定释放,无论中间是否出错。</p>
+
+<div class="code-title">示例 5-3 defer 保证文件释放</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func writeLog(path, msg string) error {
+    f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+        return err
+    }
+    defer f.Close() // 无论 writeString 成败,句柄必定释放
+
+    _, err = f.WriteString(msg + "\n")
+    return err
+}
+
+func main() {
+    if err := writeLog("app.log", "服务启动"); err != nil {
+        fmt.Println("写日志失败:", err)
+    }
+}</pre>
+
+<p><span class="term">sync.Pool</span> 是"对象池":存放临时对象,Get 时若无则用 New 创建,Put 归还。它适合<b>高频创建、可复用、无状态残留</b>的对象(如缓冲区)。注意两个陷阱:池可能随时被 GC 清空(它是缓存不是长期存储);取出后必须重置状态。</p>
+
+<div class="code-title">示例 5-4 sync.Pool 复用缓冲区</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "sync"
+)
+
+var bufPool = sync.Pool{
+    New: func() any {
+        return make([]byte, 0, 4096) // 默认容量 4KB
+    },
+}
+
+// render 从池中取缓冲区,用后归还
+func render(n int) string {
+    buf := bufPool.Get().([]byte)
+    defer func() {
+        buf = buf[:0] // 重置长度,防止数据残留
+        bufPool.Put(buf)
+    }()
+    for i := 0; i &lt; n; i++ {
+        buf = append(buf, 'x')
+    }
+    return string(buf) // string 会拷贝,返回后缓冲区可安全复用
+}
+
+func main() {
+    for i := 0; i &lt; 5; i++ {
+        fmt.Println(len(render(100)))
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 5-2:sync.Pool 不是缓存!别指望它"长期复用"</div>
+<p>Pool 中的对象在每次 GC 时可能被整体丢弃(这是设计:GC 语言里对象池的职责是<b>降低同一时间窗口的分配峰值</b>,不是跨窗口保存)。因此:①不要用 Pool 存有状态的重要对象;②Get 后的对象可能是新创建的,必须初始化;③放回前重置长度/清空内容,否则下一个使用者读到残留数据。</p>
+</div>
+
+<h2>§5.5 内存泄漏的 Go 形态:goroutine 泄漏是头号</h2>
+
+<p>GC 语言的内存泄漏不是"忘了释放",而是<b>对象被持续引用,永远可达</b>。Go 生产环境的四大形态:</p>
+
+<table>
+<tr><th style="width:24%">形态</th><th>成因</th><th>典型场景</th></tr>
+<tr><td class="ctr">goroutine 泄漏(头号)</td><td class="ctr">goroutine 阻塞在 channel 上,无人关闭/无人接收,永不退出</td><td class="ctr">任务队列无消费者、超时未设置</td></tr>
+<tr><td class="ctr">全局容器只增不减</td><td class="ctr">map/切片存入全局缓存,从不淘汰</td><td class="ctr">用户会话缓存、去重集合</td></tr>
+<tr><td class="ctr">闭包误捕获</td><td class="ctr">长生命周期对象持有短生命周期对象的引用</td><td class="ctr">回调注册后不注销;事件订阅</td></tr>
+<tr><td class="ctr">定时器未停止</td><td class="ctr">time.After/time.NewTicker 未释放,关联对象被钉住</td><td class="ctr">循环里 time.After、长期 ticker</td></tr>
+</table>
+
+<div class="code-title">示例 5-5 goroutine 泄漏:复现与修复</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "time"
+)
+
+// 泄漏版:worker 阻塞在接收上,永远不退出
+func leakyWorker(jobs &lt;-chan int) {
+    for j := range jobs {
+        fmt.Println("处理", j)
+    }
+    // 缺陷:jobs 永远不关闭,此 goroutine 永久挂起
+}
+
+// 修复版:加超时退出(或由调用方显式关闭)
+func safeWorker(jobs &lt;-chan int, quit &lt;-chan struct{}) {
+    for {
+        select {
+        case j, ok := &lt;-jobs:
+            if !ok {
+                return // 通道关闭,正常退出
+            }
+            fmt.Println("处理", j)
+        case &lt;-quit:
+            return // 收到退出信号
+        case &lt;-time.After(3 * time.Second):
+            fmt.Println("3 秒无任务,自动退出")
+            return
+        }
+    }
+}
+
+func main() {
+    jobs := make(chan int)
+    quit := make(chan struct{})
+    go safeWorker(jobs, quit)
+
+    jobs &lt;- 1
+    jobs &lt;- 2
+    time.Sleep(4 * time.Second) // 超时后 worker 自动退出
+    fmt.Println("main 结束,无泄漏 goroutine")
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:goroutine 泄漏为什么可怕</div>
+<p>每个挂起的 goroutine 至少占 2KB 栈,还会钉住其闭包捕获的所有对象——一次"任务队列没有消费者"的事故,一天可以泄漏几百 MB。修复原则:<b>每个 goroutine 都要有退出路径</b>:要么通道被关闭,要么有超时/取消(第 9 章 context 是标准答案)。压测时用 <code>runtime.NumGoroutine()</code> 监控 goroutine 数是否随时间增长。</p>
+</div>
+
+<h2>§5.6 pprof 内存画像:采集与阅读</h2>
+
+<p>Go 的官方性能剖析工具是 <code>net/http/pprof</code>(Web 服务)与 <code>runtime/pprof</code>(CLI 程序)。内存分析两个视图:<code>inuse_space</code>(当前占用)与 <code>alloc_objects</code>(累计分配次数)——<b>找泄漏看 inuse,找分配热点看 alloc</b>。</p>
+
+<div class="code-title">示例 5-6 引入 pprof 采集端点</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "net/http"
+    _ "net/http/pprof" // 空白导入:注册 /debug/pprof/ 路由
+)
+
+func main() {
+    fmt.Println("pprof 已启动: http://localhost:6060/debug/pprof/")
+    // 业务服务挂在同一 mux 上即可;下面是演示用监听
+    _ = http.ListenAndServe("localhost:6060", nil)
+}</pre>
+
+<div class="box box-example"><div class="box-title">示例 5-7 pprof 命令行三板斧</div>
+<pre class="code"># 1. 实时内存占用 top(单位换算成 MB)
+go tool pprof -top -unit=MB http://localhost:6060/debug/pprof/heap
+
+# 2. 定位"谁分配了最多对象"(分配热点)
+go tool pprof -top -sample_index=alloc_objects http://localhost:6060/debug/pprof/heap
+
+# 3. 交互式浏览分配调用链(web 输出火焰图)
+go tool pprof http://localhost:6060/debug/pprof/heap
+# 交互界面输入:top / list 函数名 / web</pre>
+<p><b>解读输出:</b>每个条目显示函数、当前 inuse 内存、占比。若某个函数的 inuse 持续增长且调用链无法回退,基本就是泄漏点;alloc_objects 高但 inuse 低,说明是高频短命分配,优化方向是复用(预分配、对象池)。</p>
+</div>
+
+<h2>§5.7 分配性能:预分配与 strings.Builder</h2>
+
+<p>GC 语言里"分配"本身有成本(分配器 + 后续回收)。三件小事能省下一大截:</p>
+
+<div class="code-title">示例 5-8 字符串拼接:+= 与 strings.Builder</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+// 慢:每次 += 都创建新字符串,旧字符串留给 GC
+func slowJoin(n int) string {
+    s := ""
+    for i := 0; i &lt; n; i++ {
+        s += "x"
+    }
+    return s
+}
+
+// 快:可变缓冲区 + 预分配容量
+func fastJoin(n int) string {
+    var b strings.Builder
+    b.Grow(n) // 预分配,避免反复扩容
+    for i := 0; i &lt; n; i++ {
+        b.WriteByte('x')
+    }
+    return b.String()
+}
+
+func main() {
+    fmt.Println(len(slowJoin(10000)), len(fastJoin(10000)))
+}</pre>
+
+<div class="code-title">示例 5-9 切片预分配容量</div>
+<pre class="code">package main
+
+import "fmt"
+
+// 不预分配:append 反复扩容+拷贝
+func collectNoCap(n int) []int {
+    var out []int
+    for i := 0; i &lt; n; i++ {
+        out = append(out, i)
+    }
+    return out
+}
+
+// 预分配:一次分配到位
+func collectCap(n int) []int {
+    out := make([]int, 0, n) // 容量一步到位
+    for i := 0; i &lt; n; i++ {
+        out = append(out, i)
+    }
+    return out
+}
+
+func main() {
+    fmt.Println(len(collectNoCap(1000)), len(collectCap(1000)))
+}</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:热路径的分配纪律</div>
+<p>①能预分配就预分配(make 带容量、Grow);②字符串拼接一律 strings.Builder,别用 <code>+=</code>;③接口装箱(<code>interface{}</code>)与 <code>fmt.Sprintf</code> 会分配,循环里改用 strconv;④用 <code>go test -bench=. -benchmem</code> 量化每次改动,<code>alloc/op</code> 是最诚实的指标;⑤先用 pprof 定位再优化——盲目优化分配次数是浪费生命。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table>
+<tr><th style="width:26%">主题</th><th>要点</th></tr>
+<tr><td class="ctr">内存模型</td><td class="ctr">栈(函数帧)/堆(动态)/静态区(全局);GC 只管理堆</td></tr>
+<tr><td class="ctr">GC 原理</td><td class="ctr">并发三色标记-清除;白/灰/黑三态;写屏障;极短 STW</td></tr>
+<tr><td class="ctr">GOGC</td><td class="ctr">默认 100(堆翻倍触发);调小省内存、调大省 CPU;1.19+ 用 SetMemoryLimit</td></tr>
+<tr><td class="ctr">逃逸分析</td><td class="ctr">编译器决定栈/堆;观察命令 <code>go build -gcflags=-m</code></td></tr>
+<tr><td class="ctr">必然堆分配</td><td class="ctr">闭包捕获、返回指针、接口装箱、大对象</td></tr>
+<tr><td class="ctr">资源释放</td><td class="ctr">defer Close()/Unlock();GC 不管句柄/连接/锁</td></tr>
+<tr><td class="ctr">sync.Pool</td><td class="ctr">临时对象池;Get 后要初始化,Put 前要重置;GC 会清空</td></tr>
+<tr><td class="ctr">泄漏形态</td><td class="ctr">goroutine 挂起、全局容器、闭包引用、定时器未停</td></tr>
+<tr><td class="ctr">goroutine 泄漏</td><td class="ctr">每个 goroutine 必须有退出路径:关闭/超时/取消</td></tr>
+<tr><td class="ctr">pprof</td><td class="ctr">net/http/pprof 采集;inuse_space 找泄漏,alloc_objects 找热点</td></tr>
+<tr><td class="ctr">字符串拼接</td><td class="ctr">strings.Builder + Grow;循环内禁用 <code>+=</code></td></tr>
+<tr><td class="ctr">预分配</td><td class="ctr">make([]T, 0, n);map 预分配容量;append 扩容有拷贝</td></tr>
+<tr><td class="ctr">基准测试</td><td class="ctr"><code>go test -bench=. -benchmem</code> 看 alloc/op</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能说出 Go 消灭了 C 的哪三类内存错误,以及 GC 的三种代价</li>
+<li>能讲出三色标记的基本流程与"白=垃圾"的判断</li>
+<li>能说出 GOGC 的含义,以及调大/调小各自代价</li>
+<li>能跑出 <code>go build -gcflags=-m</code> 并解释 "moved to heap"</li>
+<li>能写出"defer 关闭文件/解锁"与"sync.Pool 取出重置、归还清零"的完整代码</li>
+<li>能说出 GC 语言内存泄漏的四种形态,并解释 goroutine 泄漏的机制</li>
+<li>能写出带超时/退出信号的 worker 循环(select 三路)</li>
+<li>能说出 pprof 两个采样视图分别用于什么场景</li>
+</ul>
+
+<h2>自测题</h2>
+
+<div class="q">1. 下面的函数返回后,<code>n</code> 在哪里?为什么?<code>func f() func() int { n := 0; return func() int { n++; return n } }</code></div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>在堆上。闭包在函数返回后仍需要访问 <code>n</code>,编译器通过逃逸分析把它 "moved to heap"。这等价于 C 中"返回局部变量地址"的 UB 场景,但 Go 用堆分配把它变成安全行为。</p>
+</div>
+
+<div class="q">2. 判断正误:(a) Go 有 GC,所以不会内存泄漏;(b) 有 GC 就不需要手动释放文件句柄;(c) GOGC 越大,内存峰值越高;(d) sync.Pool 可以当长期缓存用。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>(a) 错,GC 语言一样泄漏(goroutine 泄漏、全局容器);(b) 错,GC 只管理内存,文件/连接/锁要 defer 释放;(c) 对,GOGC 大 = 更久才触发 GC = 堆更大;(d) 错,Pool 会被 GC 清空,只适合短期复用。</p>
+</div>
+
+<div class="q">3. 一段代码每秒处理 10 万条消息,每条都要拼接字符串。写出最优拼接方案,并解释为什么。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>用 <code>strings.Builder</code> 并 <code>Grow</code> 预分配(每条消息的缓冲区可以来自 sync.Pool)。理由:<code>+=</code> 每次创建新字符串,O(n²) 分配;<code>strings.Join</code> 也 O(n),但 Builder 可以复用缓冲区并把分配次数降到常数。</p>
+</div>
+
+<div class="q">4. 生产服务内存持续增长但 pprof inuse_space 没有明显热点函数,下一步怎么查?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>①先确认是堆增长还是系统内存:看 <code>runtime.MemStats</code> 的 HeapInuse 与 Sys;②查 goroutine 数(<code>/debug/pprof/goroutine</code>),增长则定位 goroutine 泄漏;③查全局容器/缓存的容量与淘汰策略;④查定时器与 ticker 是否未 Stop;⑤对比两次 heap dump 的差异。</p>
+</div>
+
+<div class="q">5. GOGC=100 时,某时刻堆使用 100MB,下一次 GC 大约什么时候触发?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>堆增长到约 200MB 时触发(翻倍)。此后以"上次 GC 后的存活量为基准"继续:GC 结束后存活 120MB,则下次在约 240MB 触发。想限制峰值可用 <code>debug.SetMemoryLimit</code>。</p>
+</div>
+
+<div class="q">6. 为什么说"goroutine 泄漏是 Go 的头号内存泄漏"?修复的核心原则是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>因为它是"代码写得完全合法"却仍泄漏:goroutine 阻塞在 channel 上,没有语法错误,只有运行时无限挂起,且每个挂起 goroutine 钉住其栈与闭包捕获的对象。核心原则:每个 goroutine 必须有退出路径——通道关闭、超时、context 取消(第 9 章)。</p>
+</div>
+
+<h2>章末实验题:内存泄漏复现与修复</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 5:内存泄漏复现、定位与修复</div>
+<p><b>实验目标:</b>构造一个"每个请求启动一个永不退出的 goroutine + 全局缓存只增不减"的泄漏程序,用 pprof 定位,再修复,并用运行时指标验证。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:复现泄漏:无缓冲 channel + 永不关闭,worker goroutine 挂起(覆盖:§5.5 goroutine 泄漏)</li>
+<li>任务 2:用 <code>runtime.NumGoroutine()</code> 打印 goroutine 数,确认随请求数线性增长(覆盖:§5.5 监控手段)</li>
+<li>任务 3:用 <code>runtime.ReadMemStats</code> 观察 HeapObjects/HeapAlloc 增长(覆盖:§5.5 内存指标)</li>
+<li>任务 4:修复方案一:有缓冲 channel + 显式 close(覆盖:§5.5 退出路径)</li>
+<li>任务 5:修复方案二:select + 超时/退出信号(覆盖:§5.4、§5.5)</li>
+<li>任务 6:修复全局缓存:LoadOrStore 去重或限制键数量(覆盖:§5.5 全局容器)</li>
+<li>任务 7:运行 <code>go run -race main.go</code> 与基准前后对比,并用 pprof 观察修复前后 inuse(覆盖:§5.6)</li>
+</ul>
+<p><b>实验环境:</b>Go 1.21+;命令:<code>go run main.go</code>、<code>go vet</code>、<code>go tool pprof</code>。</p>
+</div>
+
+<ol class="steps">
+<li>先写"错误实现":<code>jobs := make(chan int)</code> 无缓冲,<code>go worker(jobs)</code> 后只发任务不关闭;调用 1000 次观察 goroutine 数</li>
+<li>写 <code>memStats()</code> 辅助函数,打印 goroutine 数与堆对象数</li>
+<li>再写"修复实现":缓冲 1 + 发送后 close + 等待 done;或 select 三路(任务/退出/超时)</li>
+<li>全局缓存改用 <code>sync.Map</code> + 键数量上限,超限先删除最旧的(简版淘汰)</li>
+<li>压测对比:<code>go test -bench=BenchmarkHandler -benchmem</code>(把 handler 抽成可测函数)</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">// 内存泄漏复现与修复实验
+package main
+
+import (
+    "fmt"
+    "runtime"
+    "sync"
+    "time"
+)
+
+// 全局缓存:泄漏点 1(只增不减)
+var cache = sync.Map{}
+
+// 错误实现:worker 挂在无缓冲 channel 上,永不退出(泄漏点 2)
+func wrongHandler() {
+    jobs := make(chan int)
+    go func() {
+        for j := range jobs {
+            fmt.Println("job", j)
+        }
+    }()
+    jobs &lt;- 42 // 发送成功,但 jobs 永远不关闭
+}
+
+// 修复 1:缓冲 channel + 发送后关闭 + 等待退出
+func fixedHandler() {
+    jobs := make(chan int, 1) // 缓冲 1:发送永不阻塞
+    done := make(chan struct{})
+    go func() {
+        defer close(done)
+        for j := range jobs {
+            fmt.Println("job", j)
+        }
+    }()
+    jobs &lt;- 42
+    close(jobs) // 发送完立即关闭,worker 处理完就退出
+    &lt;-done      // 等 worker 真正退出
+}
+
+// 修复 2:select 三路,超时兜底(适合"无法确定何时关闭"的场景)
+func timeoutHandler() {
+    jobs := make(chan int, 1)
+    go func() {
+        for {
+            select {
+            case j, ok := &lt;-jobs:
+                if !ok {
+                    return
+                }
+                fmt.Println("job", j)
+            case &lt;-time.After(2 * time.Second): // 空闲超时退出
+                fmt.Println("空闲超时,退出")
+                return
+            }
+        }
+    }()
+    jobs &lt;- 42
+    time.Sleep(3 * time.Second) // 触发超时退出
+}
+
+// 修复 3:全局缓存限制键数量(简单淘汰)
+func cachePut(key string, val any) {
+    if _, loaded := cache.LoadOrStore(key, val); !loaded {
+        fmt.Println("缓存新增:", key)
+    }
+    // 生产应接入 LRU 等淘汰策略;此处仅演示"键数量受控"
+    count := 0
+    cache.Range(func(k, v any) bool {
+        count++
+        if count &gt; 100 {
+            cache.Delete(k) // 超过 100 个键就删(演示用简化策略)
+        }
+        return true
+    })
+}
+
+// memStats 打印运行时内存与 goroutine 指标
+func memStats(tag string) {
+    var m runtime.MemStats
+    runtime.ReadMemStats(&amp;m)
+    fmt.Printf("[%s] goroutine=%d 堆对象=%d 堆内存=%.1fMB\n",
+        tag, runtime.NumGoroutine(), m.HeapObjects,
+        float64(m.HeapAlloc)/1024/1024)
+}
+
+// runLeaky 泄漏版入口(实验对比用)
+func runLeaky(n int) {
+    for i := 0; i &lt; n; i++ {
+        wrongHandler() // 每个请求泄漏一个 goroutine
+    }
+    memStats("泄漏版")
+}
+
+// runFixed 修复版入口
+func runFixed(n int) {
+    for i := 0; i &lt; n; i++ {
+        fixedHandler()
+    }
+    memStats("修复版")
+}
+
+func main() {
+    // 先运行泄漏版,观察 goroutine 数暴涨
+    go runLeaky(50)
+    time.Sleep(200 * time.Millisecond)
+    memStats("泄漏版结束后") // goroutine 数不减!
+
+    // 再运行修复版,观察 goroutine 数回归
+    go runFixed(50)
+    time.Sleep(200 * time.Millisecond)
+    memStats("修复版结束后") // goroutine 数恢复基线
+
+    // 缓存修复演示
+    for i := 0; i &lt; 1000; i++ {
+        cachePut(fmt.Sprintf("key%d", i%100), i) // 实际只有 100 个键
+    }
+    memStats("缓存受控后")
+
+    // 现场演示超时退出
+    timeoutHandler()
+    memStats("超时退出后")
+}</pre>
+<p><b>设计说明:</b>实验代码把四种知识点织成可对比的形态:泄漏版与修复版并列,<code>memStats</code> 在关键节点采样,用 goroutine 数与堆对象数两个指标量化差异。验证流程:先跑 <code>go run main.go</code> 看两种版本输出差异;再在 <code>runLeaky</code> 循环中加入 <code>time.Sleep</code> 制造并发,用 <code>go run -race main.go</code> 观察竞态;最后把 handler 循环提升为 <code>go test -bench=. -benchmem</code>,对比 alloc/op。扩展:为 <code>wrongHandler</code> 写单元测试并用 <code>goleak</code> 库自动检测泄漏 goroutine(生产团队的标准做法)。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第6章 面向对象。内存搞定了,下一章看"组织代码的方式":Go 没有类!struct + 方法、嵌入(组合优于继承)、隐式接口实现——用 C 的 struct + 函数指针做多态的笨拙,对比 Go 的自然表达。</p>
+
+</body>
+</html>

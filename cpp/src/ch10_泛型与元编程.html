@@ -1,0 +1,438 @@
+<title>第10章 泛型与元编程</title>
+<!-- no-katex -->
+<div class="box box-goal"><div class="box-title">本章目标</div>
+<p>把模板理解成代码生成器:函数模板与类模板如何实例化,特化与偏特化如何定制行为,可变参数与折叠表达式如何展开;掌握 SFINAE、enable_if 与 C++20 概念(concepts);用 constexpr 在编译期完成计算。理解模板与 C 宏、Java 泛型的本质区别。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识</div>
+<p>熟练使用 std::vector、std::string 等模板容器(第1章起一直在用);了解函数重载(第4章)。本章代码基于 C++17,concepts 部分按 C++20 语法展示。模板错误信息长是常态,先看第一个错误行。</p>
+</div>
+
+<div class="toc-map">
+<table class="tight">
+<tr><td>§10.1 模板是代码生成器</td><td>§10.2 函数模板与推导</td><td>§10.3 类模板与特化</td></tr>
+<tr><td>§10.4 可变参数模板</td><td>§10.5 SFINAE 与 concepts</td><td>§10.6 constexpr 元编程</td></tr>
+</table>
+</div>
+
+<h2>§10.1 模板是代码生成器</h2>
+
+<p>C 的泛型工具只有宏与 void*:宏是纯文本替换,没有类型检查,还有双重求值这类暗坑;void* 丢掉类型信息,一切类型错误推迟到运行时。C++ 的模板走完全不同的路线:模板是代码生成器——写一份 template,编译器为每个用到的类型生成一份独立代码。std::vector&lt;int&gt; 和 std::vector&lt;double&gt; 是两份不同的类,各自的成员函数都是独立的机器码,类型检查在生成时完成,运行期零抽象开销。</p>
+
+<p>理解"生成"二字,模板的许多现象就都说得通了:为什么模板通常要整体放在头文件里——因为每个编译单元都需要看到模板定义才能生成代码,这与普通函数"声明放头文件、定义放源文件"的纪律不同;为什么模板实例化越多编译越慢——生成代码也是要花时间的,工程上要节制模板的使用面。与之对照,Java 的泛型是擦除的:编译后只有一份代码,类型参数被替换成 Object,运行期靠强制转换与检查,基本类型还得装箱;C++ 是"每个类型生成一份代码,类型信息保留到运行期之前",因此 std::vector&lt;int&gt; 与原生数组一样快,这是模板在 C++ 里全面取代宏与 void* 的根本原因。</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th><th>说明</th></tr>
+<tr><td>#define MAX(a,b) ((a)&gt;(b)?(a):(b))</td><td>template&lt;typename T&gt; T maxOf(T a, T b)</td><td>宏是文本替换,C++ 类型安全</td></tr>
+<tr><td>宏双重求值:MAX(i++, j++)</td><td>模板参数求值一次</td><td>宏的经典暗坑,模板没有</td></tr>
+<tr><td>void* 传数据,丢失类型</td><td>每种类型生成独立代码</td><td>错误留在编译期,运行期零开销</td></tr>
+</table>
+
+<div class="code-title">清单 10-1 函数模板:第一个模板</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 模板:一份定义,为每个 T 生成一份代码
+template &lt;typename T&gt;
+T maxOf(T a, T b) {
+    return a &gt; b ? a : b;
+}
+
+int main() {
+    int m1 = maxOf(3, 7);                 // 推导 T = int
+    double m2 = maxOf(2.5, 1.5);          // 推导 T = double
+    std::string m3 = maxOf(std::string("甲"), std::string("乙"));
+    std::cout &lt;&lt; m1 &lt;&lt; " " &lt;&lt; m2 &lt;&lt; " " &lt;&lt; m3 &lt;&lt; "\n";
+    // 上面三行,编译器实际生成了三个不同版本的 maxOf
+    return 0;
+}</pre>
+
+<h2>§10.2 模板参数与推导</h2>
+
+<p>模板参数不只是类型:它可以是类型(typename T)、非类型值(int N)与模板模板参数。非类型参数让模板拥有"编译期常量"能力:std::array&lt;int, 5&gt; 的 5 就是非类型参数,数组长度在编译期就固定并写进类型,越界检查不再需要运行时开销。调用时,函数模板从实参自动推导类型参数;推导不出(比如两个参数类型不同)就显式指定:maxOf&lt;double&gt;(3, 2)。推导遵循一套精确规则,最常见的原则是:按值传参时数组与函数会退化成指针,引用传参时保留完整类型——std::forward 的完美转发正是靠这条规则实现的。</p>
+
+<p>推导失败或显式指定错误都会在实例化时报错,错误信息长而费解,这是模板的学费。工程应对:先从第一个错误行开始读(往往是"找不到匹配的调用"或"模板实参不匹配"),再看它引用的模板定义;复杂模板库(如标准库算法)的错误,先怀疑自己的类型不满足该算法要求的操作——vector 传给了需要排序的接口,通常就是缺少某个运算符。C++20 的 concepts(§10.5)用约束把这类错误提前到函数签名处,信息质量大幅改善。</p>
+
+<div class="code-title">清单 10-2 非类型参数与显式指定</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;array&gt;
+
+// 非类型参数:N 是编译期常量
+template &lt;typename T, int N&gt;
+T sumOf(const std::array&lt;T, N&gt;&amp; a) {
+    T s{};
+    for (int i = 0; i &lt; N; ++i) s += a[i];
+    return s;
+}
+
+int main() {
+    std::array&lt;int, 3&gt; x{1, 2, 3};       // N = 3 写进类型
+    std::array&lt;double, 2&gt; y{1.5, 2.5};
+    std::cout &lt;&lt; sumOf(x) &lt;&lt; " " &lt;&lt; sumOf(y) &lt;&lt; "\n";   // 6 4
+    std::cout &lt;&lt; sumOf&lt;int, 3&gt;(x) &lt;&lt; "\n";   // 显式指定参数
+    return 0;
+}</pre>
+
+<h2>§10.3 类模板、特化与偏特化</h2>
+
+<p>类模板与函数模板同理:template&lt;typename T&gt; class Box { ... },成员函数在使用到的方法内按需实例化。写一个最简单的 Box 立刻就能体会:数据成员 T value,get 与 set 的类型随 T 变化,而成员函数只有被调用时才生成代码——没调用 set 的 Box 不会生成 set 的机器码。这让模板成为"按需定制"的机制,而不是一揽子复制。</p>
+
+<p>特化是模板家族最强大的定制工具,也是 Java 泛型完全没有的能力:全特化 template&lt;&gt; class Box&lt;bool&gt; 为特定类型提供专属实现;偏特化 template&lt;typename T&gt; class Box&lt;T*&gt; 为一族类型(所有指针)提供实现。标准库大量使用特化:std::vector&lt;bool&gt; 用位压缩存储、std::hash 为每个类型定制哈希——编译器选择"最匹配"的特化版本,这和重载决议是同一思想,只是发生在类型层面。写特化时注意:特化不能出现在首次使用之后(一般紧跟主模板声明),这是 C++ 对"代码生成顺序"的硬性要求。</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th><th>说明</th></tr>
+<tr><td>为每种类型复制粘贴一份结构体</td><td>一份类模板 + 特化</td><td>特化按需定制,不复制整体</td></tr>
+<tr><td>无对应能力</td><td>template&lt;&gt; class Box&lt;bool&gt;</td><td>全特化:单一类型专属实现</td></tr>
+<tr><td>无对应能力</td><td>template&lt;typename T&gt; class Box&lt;T*&gt;</td><td>偏特化:一族类型的专属实现</td></tr>
+</table>
+
+<div class="code-title">清单 10-3 类模板与特化</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+template &lt;typename T&gt;
+class Box {
+public:
+    explicit Box(T v) : value(v) {}
+    T get() const { return value; }
+    void set(T v) { value = v; }
+    std::string describe() const { return "普通盒"; }
+private:
+    T value;
+};
+
+// 全特化:bool 版用 1 字节,输出专属描述
+template &lt;&gt;
+class Box&lt;bool&gt; {
+public:
+    explicit Box(bool v) : value(v) {}
+    bool get() const { return value; }
+    void set(bool v) { value = v; }
+    std::string describe() const { return value ? "真" : "假"; }
+private:
+    bool value;
+};
+
+// 偏特化:指针版,get 返回解引用后的值
+template &lt;typename T&gt;
+class Box&lt;T*&gt; {
+public:
+    explicit Box(T* p) : ptr(p) {}
+    T get() const { return *ptr; }
+    void set(T v) { *ptr = v; }
+    std::string describe() const { return "指针盒"; }
+private:
+    T* ptr;
+};
+
+int main() {
+    Box&lt;int&gt; a(42);
+    Box&lt;bool&gt; b(true);          // 命中全特化
+    int raw = 7;
+    Box&lt;int*&gt; c(&amp;raw);          // 命中偏特化
+    std::cout &lt;&lt; a.describe() &lt;&lt; " " &lt;&lt; b.describe() &lt;&lt; " "
+              &lt;&lt; c.describe() &lt;&lt; "\n";
+    return 0;
+}</pre>
+
+<h2>§10.4 可变参数模板与折叠表达式</h2>
+
+<p>可变参数模板让函数接受任意数量的任意类型参数:template&lt;typename... Args&gt;,参数包 Args... 在展开点逐个展开。打印任意多个值是经典入门:递归展开(取第一个参数,剩余继续递归)是 C++11 的写法;C++17 的折叠表达式把常见模式压缩成一行:(args + ...) 求全部参数的和,折叠运算符可以是任何二元运算符。printf 式的格式化与 std::tuple、std::variant 的底层都是参数包。</p>
+
+<p>折叠表达式有三种形态需要分清:一元右折叠 (args + ...) 等价 a + (b + c);一元左折叠 (... + args) 等价 (a + b) + c——加法无所谓,减法等非结合运算结果不同;二元折叠 (0 + ... + args) 提供初始值。参数包还可以与 sizeof... 配合查询个数,与转发引用配合实现完美转发。学会把"任意多参数"的接口交给参数包,你的函数签名就从固定参数表解放出来。</p>
+
+<div class="code-title">清单 10-4 参数包与折叠表达式</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 递归展开:每次取第一个参数,剩余继续
+template &lt;typename T&gt;
+void printAll(const T&amp; v) {               // 递归终点:只剩一个
+    std::cout &lt;&lt; v &lt;&lt; "\n";
+}
+
+template &lt;typename T, typename... Rest&gt;
+void printAll(const T&amp; v, const Rest&amp;... rest) {
+    std::cout &lt;&lt; v &lt;&lt; " ";
+    printAll(rest...);                    // 展开剩余参数
+}
+
+// C++17 折叠表达式:一行求所有参数之和
+template &lt;typename... Args&gt;
+auto sumAll(const Args&amp;... args) {
+    return (args + ...);                  // 一元右折叠
+}
+
+int main() {
+    printAll(1, 2.5, "三", std::string("四"));
+    std::cout &lt;&lt; "个数:" &lt;&lt; sizeof...(int) &lt;&lt; "\n";   // 语法演示
+    std::cout &lt;&lt; sumAll(1, 2, 3, 4) &lt;&lt; " " &lt;&lt; sumAll(1.5, 2.5) &lt;&lt; "\n";
+    return 0;
+}</pre>
+
+<h2>§10.5 SFINAE、enable_if 与 concepts</h2>
+
+<p>SFINAE(Substitution Failure Is Not An Error,替换失败不是错误)是模板世界的"条件编译":实例化时,某个模板替换出的声明不合法(如类型没有某种运算符),编译器不把它当错误,而是把这个候选从重载集合中移除,继续找别的匹配。基于它,C++11 的 std::enable_if 实现"条件启用":模板参数满足条件才存在,不满足就像没声明过一样。经典用法是给"只接受数值类型"的函数加约束:std::enable_if&lt;std::is_arithmetic_v&lt;T&gt;&gt;::type 作为返回类型或默认模板参数。</p>
+
+<p>C++20 的 concepts 把 SFINAE 的繁琐压缩成自然语言:概念(concept)是一组约束的命名,如 std::integral、std::floating_point、std::ranges::range;requires 子句或 requires 表达式声明约束:template&lt;typename T&gt; requires std::integral&lt;T&gt; void f(T);。概念约束错误发生在函数签名处,报错信息直接说"不满足 integral",而不是一屏模板展开。工程建议:新代码优先 concepts,老代码维持 enable_if;两者背后是同一套替换机制。</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th><th>说明</th></tr>
+<tr><td>宏 #ifdef 条件编译</td><td>enable_if / concepts 约束</td><td>宏是文本级条件,C++ 是类型级约束</td></tr>
+<tr><td>传错类型编译不过但报错玄妙</td><td>requires std::integral&lt;T&gt; 直说</td><td>concepts 让错误信息可读</td></tr>
+<tr><td>无对应能力</td><td>if constexpr 编译期分支</td><td>按类型特性裁剪代码路径</td></tr>
+</table>
+
+<div class="code-title">清单 10-5 enable_if 与 concepts</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;type_traits&gt;
+#include &lt;string&gt;
+#include &lt;concepts&gt;      // C++20
+
+// enable_if 写法(C++11):只接受算术类型
+template &lt;typename T&gt;
+typename std::enable_if&lt;std::is_arithmetic_v&lt;T&gt;, T&gt;::type
+twice(T v) {
+    return v * 2;
+}
+
+// concepts 写法(C++20):约束写进签名
+template &lt;std::integral T&gt;           // 只接受整型
+T triple(T v) {
+    return v * 3;
+}
+
+template &lt;typename T&gt;
+requires std::is_arithmetic_v&lt;T&gt;     // requires 子句
+T plusOne(T v) {
+    return v + 1;
+}
+
+int main() {
+    std::cout &lt;&lt; twice(21) &lt;&lt; " " &lt;&lt; twice(2.5) &lt;&lt; "\n";   // 42 5
+    std::cout &lt;&lt; triple(14) &lt;&lt; "\n";                       // 42
+    std::cout &lt;&lt; plusOne(41) &lt;&lt; "\n";                      // 42
+    // std::cout &lt;&lt; twice(std::string("x"));   // 错误:不满足约束
+    return 0;
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 1:模板定义必须在使用前可见</div>
+<p>模板的"代码生成"性质决定了它不能像普通函数那样声明与定义分离:定义在 .cpp 里的函数模板,另一个 .cpp 里调用会直接链接失败(找不到实例)。规则:函数模板与类模板的完整定义放头文件;确要隐藏实现,用显式实例化声明,但只对预定的类型生效。</p>
+</div>
+
+<h2>§10.6 constexpr 与编译期计算</h2>
+
+<p>constexpr 函数承诺"能编译期求值就在编译期求值":只要参数是编译期常量,调用结果就成为常量;参数不是,它就退化为普通函数。constexpr 变量的值在编译期就确定,可以用于模板非类型参数、数组大小等场景。C++14 放宽了 constexpr 函数的限制(允许循环与局部变量),C++17 的 if constexpr 更进一步:按编译期条件裁剪代码分支,不满足的分支根本不会被实例化——这是写"同构算法适配多种类型"的主力工具。</p>
+
+<p>与 C 的宏元编程对比,constexpr 的优势是显而易见的:C 用宏做编译期计算,先有 #if 预处理,后有 sizeof 技巧,但宏没有类型、没有作用域、不参与重载决议;constexpr 函数是真正的函数,有类型检查、有调试信息、能被测试。现代 C++ 的编译期计算栈是 constexpr 函数 + if constexpr + 模板,替代了 C 时代的大部分宏魔术,可读性与可维护性都不可同日而语。</p>
+
+<div class="code-title">清单 10-6 constexpr 函数与 if constexpr</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;type_traits&gt;
+
+// constexpr:参数是编译期常量时,结果也是常量
+constexpr long long factorial(int n) {
+    long long r = 1;
+    for (int i = 2; i &lt;= n; ++i) r *= i;   // C++14 起允许循环
+    return r;
+}
+
+// if constexpr:按类型裁剪分支,不满足的分支不实例化
+template &lt;typename T&gt;
+auto describe(T v) {
+    if constexpr (std::is_integral_v&lt;T&gt;) {
+        return std::string("整数 ") + std::to_string(v);
+    } else if constexpr (std::is_floating_point_v&lt;T&gt;) {
+        return std::string("浮点 ") + std::to_string(v);
+    } else {
+        return std::string("其他 ") + std::string(v);
+    }
+}
+
+int main() {
+    constexpr long long f = factorial(10);   // 编译期算好
+    std::cout &lt;&lt; f &lt;&lt; "\n";                   // 3628800
+    static_assert(f == 3628800, "编译期断言");   // 编译期验证
+    std::cout &lt;&lt; describe(42) &lt;&lt; "\n";
+    std::cout &lt;&lt; describe(3.14) &lt;&lt; "\n";
+    std::cout &lt;&lt; describe(std::string("文本")) &lt;&lt; "\n";
+    return 0;
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2:constexpr 不是免费的</div>
+<p>constexpr 在编译期递归或循环很深的计算(如 factorial(100000))会让编译器卡死;constexpr 函数体里不能做 I/O、动态内存分配等运行期操作。原则:编译期计算用于小规模常量推导(表、偏移、尺寸),重计算留在运行期。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">易错点 3:vector&lt;bool&gt; 是特化的陷阱</div>
+<p>std::vector&lt;bool&gt; 为节省内存按位存储,元素是代理对象而非真正的 bool 引用:auto b = v[0] 得到代理,改 b 改不到原数组,&amp;v[0] 也取不到 bool 地址。需要真正的布尔数组用 std::vector&lt;char&gt; 或 std::bitset;这个例子提醒我们:特化可以改变语义,读标准库文档比猜行为可靠。</p>
+</div>
+
+<h2>泛型与元编程速查表</h2>
+<table class="tight">
+<tr><th>概念</th><th>语法示例</th><th>要点</th></tr>
+<tr><td>函数模板</td><td>template&lt;typename T&gt; T f(T v)</td><td>按实参推导,一份定义多份代码</td></tr>
+<tr><td>类模板</td><td>template&lt;typename T&gt; class Box</td><td>成员函数按需实例化</td></tr>
+<tr><td>非类型参数</td><td>template&lt;typename T, int N&gt;</td><td>编译期常量,如 array 长度</td></tr>
+<tr><td>全特化</td><td>template&lt;&gt; class Box&lt;bool&gt;</td><td>单一类型专属实现</td></tr>
+<tr><td>偏特化</td><td>template&lt;typename T&gt; class Box&lt;T*&gt;</td><td>一族类型的专属实现</td></tr>
+<tr><td>参数包</td><td>template&lt;typename... Args&gt;</td><td>任意数量任意类型参数</td></tr>
+<tr><td>折叠表达式</td><td>(args + ...)</td><td>参数包整体运算,注意结合方向</td></tr>
+<tr><td>SFINAE</td><td>替换失败不是错误</td><td>约束候选集,启用条件模板</td></tr>
+<tr><td>enable_if</td><td>std::enable_if&lt;cond, T&gt;::type</td><td>条件启用,老式约束</td></tr>
+<tr><td>concepts</td><td>template&lt;std::integral T&gt;</td><td>C++20,约束进签名,报错清晰</td></tr>
+<tr><td>constexpr 函数</td><td>constexpr int f(int)</td><td>编译期可求值,运行期也可用</td></tr>
+<tr><td>if constexpr</td><td>if constexpr (cond)</td><td>编译期分支,不满足的不实例化</td></tr>
+<tr><td>static_assert</td><td>static_assert(expr, "msg")</td><td>编译期断言,失败即编译错误</td></tr>
+<tr><td>decltype</td><td>decltype(expr)</td><td>取表达式类型,配合 auto 使用</td></tr>
+</table>
+
+<h2>自测题</h2>
+<p class="q">1. 模板与 C 宏、Java 泛型在实现上的本质区别是什么?</p>
+<p class="q">2. 为什么函数模板的定义通常要放在头文件里?</p>
+<p class="q">3. 全特化与偏特化有何区别?各自举一个标准库中的例子。</p>
+<p class="q">4. 折叠表达式 (args - ...) 与 (... - args) 的结果一样吗?为什么?</p>
+<p class="q">5. SFINAE 与 concepts 解决什么问题?concepts 的优势是什么?</p>
+
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>1. C 宏是纯文本替换,无类型检查,有双重求值问题;Java 泛型编译后擦除为一份代码,类型信息丢失,基本类型要装箱;C++ 模板为每个类型实例化生成独立代码,类型检查在编译期,运行期零抽象开销。</p>
+<p>2. 模板实例化发生在编译期,每个编译单元都需要看到完整定义才能生成代码;声明与定义分离后,其他编译单元看不到定义,链接时找不到实例。要隐藏实现只能用显式实例化,但只对预定类型生效。</p>
+<p>3. 全特化针对单一类型(template&lt;&gt; class Box&lt;bool&gt;),如 std::vector&lt;bool&gt; 的位压缩;偏特化针对一族类型(template&lt;typename T&gt; class Box&lt;T*&gt;),如 std::hash&lt;T*&gt; 指针哈希。编译器选择最匹配的特化。</p>
+<p>4. 不一样。(args - ...) 是右折叠,等价 a - (b - c);(... - args) 是左折叠,等价 (a - b) - c。减法不满足结合律,结果不同;加法、乘法等结合运算则相同。</p>
+<p>5. 它们解决"约束模板能接受什么类型":不满足条件的候选从重载集合中移除或直接报错。concepts 把约束写进函数签名(requires 子句),报错信息直接指出违反的概念,而 enable_if 的报错是长串模板展开,concepts 可读性完胜。</p>
+</div>
+
+<h2>实验:通用统计工具集</h2>
+
+<p>本实验用一个小型统计库串联本章全部知识点:函数模板做均值与极值,类模板做固定容量缓冲区,偏特化给指针版缓冲区,enable_if 与 concepts 约束数值类型,参数包与折叠表达式求总和,constexpr 提供编译期常量。代码分三部分,覆盖点已在注释中标明。</p>
+
+<div class="code-title">实验 10·第一部分:函数模板与数值约束(覆盖:函数模板、enable_if、concepts、折叠表达式)</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;type_traits&gt;
+#include &lt;concepts&gt;      // C++20 概念
+#include &lt;vector&gt;
+
+// 覆盖:函数模板 + enable_if——只接受算术类型
+template &lt;typename T&gt;
+typename std::enable_if&lt;std::is_arithmetic_v&lt;T&gt;, T&gt;::type
+mean(const std::vector&lt;T&gt;&amp; v) {
+    T s{};
+    for (const T&amp; x : v) s += x;
+    return v.empty() ? T{} : s / (T)v.size();
+}
+
+// 覆盖:concepts 约束 + 参数包 + 折叠表达式
+template &lt;std::integral... Ts&gt;             // 全部参数都必须是整型
+auto sumAll(const Ts&amp;... args) {
+    return (args + ...);                   // 覆盖:一元右折叠
+}
+
+// 覆盖:约束的模板——泛型极值,要求 T 可比较
+template &lt;typename T&gt;
+requires std::is_arithmetic_v&lt;T&gt;
+T maxOf(const std::vector&lt;T&gt;&amp; v) {
+    T m = v.front();
+    for (const T&amp; x : v) if (x &gt; m) m = x;
+    return m;
+}</pre>
+
+<div class="code-title">实验 10·第二部分:类模板与特化(覆盖:类模板、全特化、偏特化)</div>
+<pre class="code">// 覆盖:类模板——固定容量缓冲区
+template &lt;typename T, int N&gt;
+class Buffer {
+public:
+    void push(T v) {
+        if (count &lt; N) data[count++] = v;   // 满则丢弃
+    }
+    T at(int i) const { return data[i]; }
+    int size() const { return count; }
+    std::string describe() const { return "普通缓冲"; }
+private:
+    T data[N] = {};
+    int count = 0;
+};
+
+// 覆盖:全特化——bool 缓冲,用字节记录
+template &lt;int N&gt;
+class Buffer&lt;bool, N&gt; {
+public:
+    void push(bool v) {
+        if (count &lt; N) bits[count++] = v;
+    }
+    bool at(int i) const { return bits[i]; }
+    int size() const { return count; }
+    std::string describe() const { return "位缓冲"; }
+private:
+    bool bits[N] = {};
+    int count = 0;
+};
+
+// 覆盖:偏特化——指针缓冲,打印地址信息
+template &lt;typename T, int N&gt;
+class Buffer&lt;T*, N&gt; {
+public:
+    void push(T* v) {
+        if (count &lt; N) data[count++] = v;
+    }
+    T at(int i) const { return *data[i]; }
+    int size() const { return count; }
+    std::string describe() const { return "指针缓冲"; }
+private:
+    T* data[N] = {};
+    int count = 0;
+};</pre>
+
+<div class="code-title">实验 10·第三部分:constexpr 与 main(覆盖:constexpr、if constexpr、static_assert)</div>
+<pre class="code">// 覆盖:constexpr 编译期函数
+constexpr int fib(int n) {
+    return n &lt;= 1 ? n : fib(n - 1) + fib(n - 2);
+}
+
+template &lt;typename T&gt;
+std::string kind(const T&amp; v) {
+    // 覆盖:if constexpr 编译期分支
+    if constexpr (std::is_integral_v&lt;T&gt;) {
+        return "整型 " + std::to_string(v);
+    } else {
+        return "其他 " + std::to_string((double)v);
+    }
+}
+
+int main() {
+    // 覆盖:编译期常量与编译期断言
+    constexpr int F10 = fib(10);
+    static_assert(F10 == 55, "fib(10) 必须是 55");
+
+    Buffer&lt;int, 4&gt; ib;                    // 类模板
+    ib.push(1); ib.push(2); ib.push(3); ib.push(4); ib.push(5);
+    std::cout &lt;&lt; ib.describe() &lt;&lt; ",大小 " &lt;&lt; ib.size() &lt;&lt; "\n";
+
+    Buffer&lt;bool, 8&gt; bb;                   // 全特化
+    bb.push(true); bb.push(false);
+    std::cout &lt;&lt; bb.describe() &lt;&lt; " " &lt;&lt; bb.at(1) &lt;&lt; "\n";
+
+    int raw = 9;
+    Buffer&lt;int*, 2&gt; pb;                   // 偏特化
+    pb.push(&amp;raw);
+    std::cout &lt;&lt; pb.describe() &lt;&lt; " " &lt;&lt; pb.at(0) &lt;&lt; "\n";
+
+    std::vector&lt;double&gt; v{1.5, 2.5, 3.5};
+    std::cout &lt;&lt; "均值 " &lt;&lt; mean(v) &lt;&lt; ",最大 " &lt;&lt; maxOf(v) &lt;&lt; "\n";
+    std::cout &lt;&lt; "总和 " &lt;&lt; sumAll(1, 2, 3, 4) &lt;&lt; "\n";
+    std::cout &lt;&lt; kind(42) &lt;&lt; ", " &lt;&lt; kind(3.14) &lt;&lt; "\n";
+    return 0;
+}</pre>
+
+<p>实验覆盖点核对:函数模板(mean/maxOf)、enable_if(mean 的算术约束)、concepts(sumAll 的 integral 约束)、参数包与折叠表达式(sumAll)、类模板(Buffer)、非类型参数(N)、全特化(Buffer&lt;bool&gt;)、偏特化(Buffer&lt;T*&gt;)、constexpr(fib)与 static_assert、if constexpr(kind)。扩展练习:给 Buffer 增加全特化 Buffer&lt;char&gt; 记录字符串;或给 mean 增加 concept 版本,对比两种约束写法的报错信息。</p>
+
+<div class="box box-tip"><div class="box-title">工程建议 1:接口用约束,实现用 if constexpr</div>
+<p>对外模板接口用 concepts 或 enable_if 声明"接受什么",内部用 if constexpr 按类型裁剪行为。约束在外,分支在内,调用者看到的签名可读,维护者看到的分支清晰,这是模板工程的黄金分工。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">工程建议 2:控制模板规模,警惕编译膨胀</div>
+<p>模板是代码生成器,实例化一多编译时间与二进制体积都会膨胀。几十个实例是常态,成千上万个实例就要反思:是否该用虚函数(第6章)把运行时变化隔离,或用类型擦除(如 std::function)收敛模板面。能用值语义与虚函数解决的问题,不必全部模板化。</p>
+</div>
+
+<div class="box box-summary"><div class="box-title">本章小结</div>
+<p>模板是类型安全的代码生成器,与 C 宏和 Java 泛型有本质区别;特化与偏特化在类型层面定制行为,参数包与折叠表达式处理任意参数;SFINAE、enable_if 与 concepts 让约束成为签名的一部分;constexpr 把计算搬到编译期。下一章讲"没有反射的 C++":RTTI 与动态特性。</p>
+</div>

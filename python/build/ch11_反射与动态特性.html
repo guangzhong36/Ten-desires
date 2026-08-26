@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第11章 反射与动态特性</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · PRODUCTION READY</div>
+
+<div class="chapter-title">第11章 反射与动态特性</div>
+<div class="chapter-meta">内省 · 属性拦截 · 动态造类 · 猴子补丁</div>
+
+<div class="box-goal">
+<p><b>本章目标:</b>讲透 Python 的反射能力:dir/type/inspect 程序自省、__getattr__/__setattr__ 属性拦截、type 动态造类、importlib 动态加载,以及猴子补丁的双刃剑。学完你能写出调试器、序列化器、插件加载器这类"元工具",并清楚反射的边界与风险。</p>
+</div>
+
+<div class="box-intuition">
+<p><b>直觉起点:</b>C 程序在编译后只是一堆指令与符号表,程序无法问自己"我有哪些函数";Python 的对象带着完整元信息运行,任何对象都能被追问"你是什么、你有什么、你能做什么"。反射就是这种自我审视的能力——它在 C 里几乎不存在,是 Python 动态性的核心。</p>
+</div>
+
+<div class="box-prereq">
+<p><b>前置要求:</b>第6章面向对象(属性与类)、第10章类型与元编程(类创建机制)。</p>
+</div>
+
+<div class="box-route">
+<p><b>本章路线:</b>第一阶段(1 小时)读 §11.1–§11.2,掌握内省工具;第二阶段(2 小时)读 §11.3–§11.5,理解属性拦截与动态构造;第三阶段(2 小时)读 §11.6–§11.8,认识猴子补丁并完成章末实验。</p>
+</div>
+
+<div class="toc-map">
+<pre>
+本章知识导图
+├─ 11.1 内省工具 —— dir / type / vars / getattr
+├─ 11.2 inspect —— 签名、源码、类层次
+├─ 11.3 属性拦截 —— __getattr__ / __setattr__
+├─ 11.4 动态造类 —— type() 与运行时方法
+├─ 11.5 动态导入 —— importlib 与插件加载
+├─ 11.6 猴子补丁 —— 威力与代价
+├─ 11.7 反射序列化 —— 通用对象转字典
+└─ 11.8 生产实践 —— 反射的边界
+</pre>
+</div>
+
+<h2>§11.1 内省工具:dir / type / vars / getattr</h2>
+
+<p>内省四件套覆盖"看有什么、是什么、取什么"的全部需求:<code>dir(obj)</code> 列出所有属性名;<code>type(obj)</code> 得类型;<code>vars(obj)</code> 得实例的 __dict__;动态取属性用 <code>getattr(obj, name)</code>,动态设属性用 <code>setattr(obj, name, value)</code>:</p>
+
+<pre class="code">class Config:
+    def __init__(self) -&gt; None:
+        self.env = "prod"
+        self.debug = False
+
+    def reload(self) -&gt; None:
+        print("重新加载配置")
+
+
+cfg = Config()
+print(dir(cfg))                      # ['__class__', ..., 'debug', 'env', 'reload']
+print(vars(cfg))                     # {'env': 'prod', 'debug': False}
+
+# 按字符串动态取属性:配置驱动
+key = "debug"
+print(getattr(cfg, key))             # False
+setattr(cfg, key, True)              # 等价于 cfg.debug = True
+print(cfg.debug)                     # True
+
+# 不存在时给默认值,避免 AttributeError
+print(getattr(cfg, "missing", "无此属性"))   # 无此属性
+</pre>
+
+<table class="cmp">
+<tr><th>C(静态内省)</th><th>Python(运行期内省)</th></tr>
+<tr><td>sizeof/offsetof 只给内存布局</td><td>dir/vars 给出完整成员清单与当前值</td></tr>
+<tr><td>符号表只在调试器里可见</td><td>程序自己就能枚举方法并调用</td></tr>
+<tr><td>类型信息编译期固定</td><td>type() 运行期可得,且能判断 isinstance</td></tr>
+<tr><td>字段增减要改结构体并重编译</td><td>setattr 随时加属性,无需重编译</td></tr>
+</table>
+
+<p>getattr 的第三个参数是反射的标配动作——"可能不存在"的访问永远带默认值或 try/except,这是反射代码的第一纪律。dir 的输出注意区分:实例属性、类属性、双下划线魔法属性混在一起,过滤 <code>startswith("__")</code> 是常规操作。</p>
+
+<p>内省的第一步永远是"看",第二步才是"取":先 dir 确认存在,再 getattr 读取——但生产上不要先查再取(两步之间有竞态),直接用带默认值的 getattr 一步到位。遍历对象的通用工具(调试器、序列化器)要把"实例属性、类属性、继承属性"三层分开处理,vars 只看实例层,dir 看全部。</p>
+
+<h2>§11.2 inspect:签名、源码与类层次</h2>
+
+<p><span class="term">inspect</span> 是标准库的深度内省模块:拿函数签名、看实现源码、遍历类层次,还能判断"这个对象是不是类/方法/协程"。调试器、文档生成器、测试框架都建立在它之上:</p>
+
+<pre class="code">import inspect
+
+
+def connect(host: str, port: int = 8080, *, timeout: float = 5) -&gt; None:
+    """建立连接"""
+    ...
+
+
+sig = inspect.signature(connect)
+print(sig)                           # (host: 'str', port: 'int' = 8080, *, timeout: 'float' = 5)
+for name, param in sig.parameters.items():
+    print(name, param.kind, param.default)
+# host POSITIONAL_OR_KEYWORD <class 'inspect._empty'>
+# port POSITIONAL_OR_KEYWORD 8080
+
+print(inspect.getsource(connect))    # 打印函数源码
+print(inspect.isclass(Config), inspect.isfunction(connect))
+</pre>
+
+<p>生产中最常用的三个能力:signature 做参数校验与自动文档;getsource 排查"这个函数到底是谁的"(尤其装饰器包裹后);ismethod/isfunction 区分绑定方法、静态方法与普通函数——框架层统一处理"可调用对象"时必须用它们兜底。</p>
+
+<p>inspect 还有一个高频用途:协程与生成器的判断(iscoroutine/isgenerator)。异步框架调度任务前必须分清"普通函数、生成器、协程",传错类型会在 await 处爆出难解的报错;用 inspect 预检,错误提前到调度点,信息也清晰得多。</p>
+
+<h2>§11.3 属性拦截:__getattr__ 与 __setattr__</h2>
+
+<p>Python 允许类拦截属性访问:<code>__getattr__</code> 只在"正常查找失败"时调用(懒加载的天然实现);<code>__setattr__</code> 在每次属性赋值时调用(校验与只读的强制实现);<code>__getattribute__</code> 拦截一切读取(危险,慎用):</p>
+
+<pre class="code">class LazyConfig:
+    """懒加载配置:首次访问才真正读取文件"""
+
+    def __init__(self, path: str) -&gt; None:
+        self._path = path
+        self._loaded = False
+        self._data = {}
+
+    def __getattr__(self, name: str):
+        """只在正常查找失败时触发:惰性加载"""
+        if name == "data" and not self._loaded:
+            self._data = {"env": "prod", "workers": 4}  # 模拟读文件
+            self._loaded = True
+        return self._data[name]      # 返回配置值
+
+
+c = LazyConfig("config.json")
+print(c.workers)                     # 4 —— 首次访问触发加载
+print(c.env)                         # prod
+print(c.workers)                     # 4 —— 已缓存,不再加载
+</pre>
+
+<div class="box-pitfall">
+<p><b>误区:__setattr__ 里写 self.x = value 无限递归。</b>__setattr__ 拦截一切赋值,在它内部再给 self.x 赋值会再次进入 __setattr__……直到 RecursionError。正确姿势:用 <code>object.__setattr__(self, name, value)</code> 或操作 <code>self.__dict__</code>(与第10章描述符的存储模式同源)。同理,__getattr__ 里访问 self.xxx 也可能绕回自身,先检查 __dict__ 或使用前缀保护。</p>
+</div>
+
+<pre class="code">class Immutable:
+    """__setattr__ 强制只读:赋值一律拒绝"""
+
+    def __init__(self, value: int) -&gt; None:
+        object.__setattr__(self, "value", value)
+
+    def __setattr__(self, name: str, value) -&gt; None:
+        raise AttributeError(f"{name} 是只读属性")
+
+
+obj = Immutable(42)
+print(obj.value)                     # 42
+obj.value = 1                        # AttributeError: value 是只读属性
+</pre>
+
+<p>三种拦截的选型:只做"缺属性时的兜底"用 __getattr__(幂等、安全);要强制校验或只读用 __setattr__;__getattribute__ 拦截所有读取,性能与复杂度代价都高,99% 的场景不需要它。代理对象、mock、ORM 懒加载字段是这三个钩子的经典生产场景。</p>
+
+<p>属性拦截的调试技巧:在 __getattr__/__setattr__ 里加一行 print(name, value) 或日志,立刻看到"谁在读写什么"——排查魔法属性意外触发、框架注入字段这类玄学问题时,这个手段比断点还快。生产上把日志级别设为 debug,平时零成本,出问题有抓手。</p>
+
+<h2>§11.4 动态造类:type() 与运行时方法</h2>
+
+<p>class 语句在运行期等价于 <code>type(name, bases, namespace)</code> 调用(第10章元类已见);反过来,我们可以在运行期凭空构造一个类,再给实例动态绑定方法:</p>
+
+<pre class="code"># 方式一:type 三参数动态造类
+Point = type("Point", (object,), {
+    "__init__": lambda self, x, y: (setattr(self, "x", x),
+                                    setattr(self, "y", y)),
+    "norm": lambda self: (self.x ** 2 + self.y ** 2) ** 0.5,
+})
+p = Point(3, 4)
+print(p.norm())                      # 5.0
+
+# 方式二:给实例动态绑方法(需要 MethodType 绑定 self)
+import types
+
+
+class Calc:
+    pass
+
+
+def square(self, n: int) -&gt; int:
+    return n * n
+
+c = Calc()
+c.square = types.MethodType(square, c)   # 绑定后 self 自动传入
+print(c.square(6))                   # 36
+</pre>
+
+<p>动态造类的生产场景:数据驱动生成 DTO、按配置文件构造策略对象、测试里快速造替身。注意纪律:动态生成的类没有静态检查护航,mypy 对它们基本失明;能写静态类就写静态类,动态造类只用于"数量不可预知"的场景。</p>
+
+<p>动态造类与静态类的关系,类似 C 里宏与函数的关系:宏(动态)灵活但不可调试,函数(静态)可读可查。一个实用的中间态是工厂函数:逻辑写在静态类里,工厂按配置选择并实例化——既有静态类的可读性,又有动态分发的灵活性,多数"动态需求"用工厂就够。</p>
+
+<h2>§11.5 动态导入:importlib 与插件加载</h2>
+
+<p>插件系统的另一条腿是"按名字加载模块"。importlib.import_module 把字符串变成可用的模块对象,配合 getattr 取其中的类——第10章的注册表与这里连成完整闭环:</p>
+
+<pre class="code">import importlib
+from pathlib import Path
+
+
+def load_plugin(module_name: str, class_name: str):
+    """从模块路径动态加载插件类"""
+    module = importlib.import_module(module_name)
+    cls = getattr(module, class_name)
+    return cls()
+
+
+def load_all_from(dir_path: Path) -&gt; list:
+    """扫描目录下所有 check_*.py,加载其中 main()"""
+    plugins = []
+    for f in dir_path.glob("check_*.py"):
+        mod = importlib.import_module(f"plugins.{f.stem}")
+        plugins.append(mod.main)
+    return plugins
+</pre>
+
+<div class="box-pitfall">
+<p><b>误区:动态加载失控。</b>import_module 的字符串来自配置文件或用户输入时,等于给了任意代码执行入口——恶意插件路径能加载任意模块。生产纪律:① 插件目录固定且受控,白名单校验模块名(正则 <code>^[a-z_]+$</code>);② 加载失败(ImportError/AttributeError)要捕获并给出"哪个插件、缺什么"的清晰报错;③ 反射加载的代码视同第三方代码,一样要过评审与测试。</p>
+
+<p>动态导入的另一面是"导入期副作用":模块顶层代码(注册、连库、打印)在 import 时就执行。插件系统要约定"插件模块只定义,不执行",main/run 由框架显式调用——把"加载"与"执行"分离,是插件架构的稳定性基石。</p>
+</div>
+
+<h2>§11.6 猴子补丁:威力与代价</h2>
+
+<p><span class="term">猴子补丁</span>是运行期替换对象的属性/方法——给第三方库打补丁、测试替身、A/B 灰度都靠它。经典用例:修复第三方库 bug、给库方法加缓存、测试中替换网络层:</p>
+
+<pre class="code">import time
+import requests
+
+
+# 场景:给 requests.get 统一加日志与超时兜底
+_original_get = requests.get          # 先存原函数!
+
+
+def patched_get(url, **kwargs):
+    kwargs.setdefault("timeout", 10)  # 没传超时的请求统一兜底
+    print(f"[patched] GET {url}")
+    return _original_get(url, **kwargs)
+
+
+requests.get = patched_get            # 打补丁:全局生效
+
+resp = requests.get("https://example.com")
+</pre>
+
+<table class="cmp">
+<tr><th>C(函数覆盖)</th><th>Python(猴子补丁)</th></tr>
+<tr><td>弱符号覆盖在链接期,静态、全局</td><td>运行期任意对象任意属性,可恢复可撤销</td></tr>
+<tr><td>dlsym 拿符号表地址,晦涩</td><td>直接赋值 <code>mod.func = new</code>,一行完成</td></tr>
+<tr><td>覆盖后原函数丢了(需手动保存地址)</td><td>先存原引用即可随时还原(如上面的 _original_get)</td></tr>
+<tr><td>生效范围:整个进程</td><td>生效范围:整个进程——同样全局,且难以追溯</td></tr>
+</table>
+
+<div class="box-pitfall">
+<p><b>误区:猴子补丁当常规手段。</b>它全局生效、隐式修改、难以调试——被补丁的模块在别处可能依赖原行为,测试间的补丁还会互相污染。纪律:① 只补第三方库,不补自己的代码(自己的代码直接改);② 补丁代码集中在一个模块,写明"补什么、为什么";③ 测试替身优先用 unittest.mock.patch(自动还原),不用手写赋值;④ 生产补丁必须有日志与监控,升级库后第一时间复查补丁是否还必要。</p>
+
+<p>补丁的"保质期"问题常被忽略:库升级后补丁可能已被官方修复,旧补丁反而引入双重重试、日志噪音等新 bug。生产规范:每个补丁文件头写明"创建日期、上游 issue 链接、移除条件",升级依赖时把补丁清单过一遍,该删就删。</p>
+</div>
+
+<h2>§11.7 反射序列化:通用对象转字典</h2>
+
+<p>把任意对象转成 dict/JSON(序列化器、日志、调试工具的核心)是反射最实用的场景之一:遍历实例的 __dict__,递归转换基本类型,处理循环引用:</p>
+
+<pre class="code">def to_dict(obj, seen: set | None = None) -&gt; object:
+    """把任意对象递归转成可 JSON 序列化的结构"""
+    if seen is None:
+        seen = set()
+    if isinstance(obj, (str, int, float, bool)) or obj is None:
+        return obj
+    if isinstance(obj, (list, tuple, set)):
+        return [to_dict(x, seen) for x in obj]
+    if isinstance(obj, dict):
+        return {str(k): to_dict(v, seen) for k, v in obj.items()}
+    if id(obj) in seen:              # 循环引用兜底:返回引用标记
+        return {"__ref__": id(obj)}
+    seen.add(id(obj))
+    result = {}
+    for key, value in vars(obj).items():   # 反射:取所有实例字段
+        result[key] = to_dict(value, seen)
+    return result
+
+
+class User:
+    def __init__(self, name: str, tags: list) -&gt; None:
+        self.name = name
+        self.tags = tags
+        self.friend = None
+
+
+u = User("李雷", ["vip", "cn"])
+u.friend = User("韩梅梅", ["vip"])
+import json
+print(json.dumps(to_dict(u), ensure_ascii=False, indent=1))
+</pre>
+
+<p>这段代码一次覆盖了本章多数主题:isinstance 分派、vars 内省、seen 集合防循环引用。生产级序列化器(jsonable 库、pydantic)在其上增加了类型白名单与 __reduce__ 协议,但骨架就是反射——理解它,你就理解了 ORM 与 RPC 框架的一半。</p>
+
+<h2>§11.8 生产实践:反射的边界</h2>
+
+<p>反射是"元工具"的燃料,但有三条不可逾越的边界:<b>① 可读性边界</b>——反射代码无法静态搜索"谁调用了我",IDE 跳转失效,项目里反射使用率超过 5% 就要警惕;<b>② 性能边界</b>——getattr 动态查找比直接属性访问慢一个量级,热路径禁止反射;<b>③ 安全边界</b>——字符串驱动的反射(getattr(obj, user_input))与 eval/exec 一样是注入面,永远白名单。</p>
+
+<div class="box-tip">
+<p><b>工程建议 1:</b>反射的调试神器是 __repr__ 与 inspect:给所有业务类写 __repr__,排查"这个对象到底是什么"时一个 print 全清楚;怀疑方法来源时 inspect.getsource 直接看源码,比猜快得多。</p>
+</div>
+
+<div class="box-tip">
+<p><b>工程建议 2:</b>优先用"标准库提供的反射"而不是自己写:dataclasses.fields、inspect.signature、typing.get_type_hints 都是官方打磨过的实现;自己遍历 __dict__ 做参数匹配,边界情况(继承、描述符、插槽类)会让你踩不完。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>场景</th><th>写法</th></tr>
+<tr><td>列出成员</td><td><code>dir(obj)</code>,过滤 <code>startswith("__")</code></td></tr>
+<tr><td>取实例字段</td><td><code>vars(obj)</code> / <code>obj.__dict__</code></td></tr>
+<tr><td>动态取属性</td><td><code>getattr(obj, name, default)</code></td></tr>
+<tr><td>动态设属性</td><td><code>setattr(obj, name, value)</code></td></tr>
+<tr><td>函数签名</td><td><code>inspect.signature(func)</code></td></tr>
+<tr><td>函数源码</td><td><code>inspect.getsource(func)</code></td></tr>
+<tr><td>缺属性兜底</td><td><code>def __getattr__(self, name):</code></td></tr>
+<tr><td>赋值拦截</td><td><code>def __setattr__(self, name, value):</code>,内部用 object.__setattr__</td></tr>
+<tr><td>动态造类</td><td><code>type(name, bases, namespace)</code></td></tr>
+<tr><td>实例绑方法</td><td><code>types.MethodType(func, instance)</code></td></tr>
+<tr><td>按名加载模块</td><td><code>importlib.import_module("pkg.mod")</code></td></tr>
+<tr><td>打补丁</td><td>先存原引用,再 <code>mod.func = new</code>,用后还原</td></tr>
+<tr><td>测试替身</td><td><code>unittest.mock.patch("pkg.mod.func")</code>,自动还原</td></tr>
+<tr><td>防循环引用</td><td>seen 集合记录 id,命中返回标记</td></tr>
+<tr><td>反射纪律</td><td>热路径禁用;字符串驱动必须白名单</td></tr>
+<tr><td>优先现成</td><td>dataclasses.fields / typing.get_type_hints 优先于手写</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ol>
+<li>能用 dir/vars/getattr/setattr 完成"配置驱动"的动态属性读写</li>
+<li>能用 inspect 拿到函数签名与源码,并判断对象的类别</li>
+<li>能写出不递归的 __getattr__(懒加载)与 __setattr__(只读/校验)</li>
+<li>能用 type() 动态造类、MethodType 给实例绑方法,并说出适用边界</li>
+<li>能用 importlib 实现插件加载,并说出两个安全纪律</li>
+<li>能解释猴子补丁的原理、典型场景与三条使用纪律</li>
+</ol>
+
+<h2>自测题</h2>
+
+<div class="q">
+<p><b>Q1.</b> getattr(obj, "x") 与 obj.x 有什么区别?什么场景必须用 getattr?</p>
+<div class="box-answer"><p><b>答案:</b>功能相同,区别在属性名是否已知:obj.x 的属性名写死在代码里,getattr 接受字符串变量。必须用 getattr 的场景:属性名来自配置/数据(反射)、需要默认值(getattr(obj, "x", 0))、遍历未知结构。已知属性名直接用点号——更可读、更快、可被静态检查。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q2.</b> __getattr__ 与 __getattribute__ 的区别?为什么说后者危险?</p>
+<div class="box-answer"><p><b>答案:</b>__getattr__ 只在正常查找失败后调用(兜底、幂等);__getattribute__ 对每次属性读取无条件调用,包括类属性、方法、魔法属性——内部任何 self.xxx 访问都再次触发它,极易无限递归,且性能开销大。生产 99% 场景用 __getattr__,只有实现代理、安全拦截等少数场景才碰 __getattribute__。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q3.</b> __setattr__ 里 self.name = value 为什么 RecursionError?怎么写才对?</p>
+<div class="box-answer"><p><b>答案:</b>__setattr__ 拦截一切赋值,self.name = value 又一次触发自身,无限递归。正确写法:object.__setattr__(self, name, value) 绕过拦截直接设置,或写 self.__dict__[name] = value。__init__ 里的首次赋值同样要走这两条路,否则初始化即爆栈。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q4.</b> 猴子补丁的典型场景有哪些?为什么"先保存原函数引用"是好习惯?</p>
+<div class="box-answer"><p><b>答案:</b>典型场景:给第三方库打 bug 修复、统一包装(加超时/日志/缓存)、测试替身。保存原引用可随时还原补丁(尤其测试结束)、可在包装函数里调用原实现(装饰器模式)、可对比新旧行为。不保存则补丁不可逆,排障时无法对照,是生产事故隐患。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q5.</b> 为什么说"字符串驱动的反射"是安全风险?如何防护?</p>
+<div class="box-answer"><p><b>答案:</b>getattr(obj, user_input) 或 import_module(user_input) 把用户输入变成代码路径/模块加载——恶意输入可访问任意属性、加载任意模块,等价于代码注入。防护:① 输入白名单校验(正则/集合匹配);② 用映射表翻译"允许的键"而非直接透传字符串;③ 反射加载失败时只暴露受控的错误信息,不泄露内部路径。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q6.</b> 写通用序列化器时,为什么需要 seen 集合?不加会怎样?</p>
+<div class="box-answer"><p><b>答案:</b>对象图可能有环(双向引用、自引用):A.friend = B 且 B.friend = A,递归遍历将无限循环直到 RecursionError。seen 集合记录已访问对象的 id,再次遇到时返回引用标记(如 {"__ref__": id})或直接跳过,把环变成有限结构。真实序列化器(JSON 默认)遇到环会抛错,定制时也要显式决定环的表示。</p></div>
+</div>
+
+<h2>章末实验题:通用遍历器与反射序列化</h2>
+
+<div class="box-lab">
+<p><b>实验 11·1 对象遍历打印器与反射序列化(覆盖:§11.1–§11.7)</b></p>
+<p><b>需求:</b>① 写一个 dump(obj, indent=0) 函数:递归遍历任意对象的属性,以缩进树状打印"属性名:值",基本类型直接打印,容器逐元素,自定义对象进一层缩进;② 处理循环引用(seen 集合,打印 [循环引用] 标记);③ 只打印公开成员(跳过 __ 开头,跳过方法/类);④ 写一个 to_jsonable(obj):把任意对象转成可 JSON 序列化的结构(复用 §11.7 思路,支持 list/dict/自定义类/基本类型);⑤ 用 User/Order 两层对象验证输出,并对比 json.dumps 结果;⑥ 用 __repr__ 配合 inspect 输出对象摘要。</p>
+<p><b>覆盖知识点:</b>内省工具 vars/dir/getattr(§11.1)/inspect(§11.2)/属性拦截(§11.3)/反射序列化(§11.7)。</p>
+<p><b>实验环境:</b>Python 3.10+,单文件 <code>objtool.py</code>。</p>
+</div>
+
+<pre class="code"># objtool.py —— 对象遍历打印器与反射序列化(覆盖第11章全部知识点)
+import inspect
+import json
+
+
+def _is_public_member(value) -&gt; bool:
+    """跳过方法、魔法属性与私有成员"""
+    if inspect.ismethod(value) or inspect.isfunction(value):
+        return False
+    return True
+
+
+def dump(obj, indent: int = 0) -&gt; None:
+    """树状打印对象结构:属性名: 值"""
+    prefix = "  " * indent
+    if isinstance(obj, (str, int, float, bool)) or obj is None:
+        print(f"{prefix}{obj!r}")
+        return
+    if isinstance(obj, (list, tuple)):
+        print(f"{prefix}[{type(obj).__name__}]")
+        for item in obj:
+            dump(item, indent + 1)
+        return
+    if isinstance(obj, dict):
+        print(f"{prefix}{{dict}}")
+        for k, v in obj.items():
+            print(f"{prefix}  {k}: ", end="")
+            dump(v, indent + 2)
+        return
+    print(f"{prefix}&lt;{type(obj).__name__}&gt;")
+    for name, value in vars(obj).items():
+        if name.startswith("__"):
+            continue
+        print(f"{prefix}  {name}: ", end="")
+        dump(value, indent + 2)
+
+
+def to_jsonable(obj, seen: set | None = None) -&gt; object:
+    """任意对象转可 JSON 序列化结构,循环引用安全"""
+    if seen is None:
+        seen = set()
+    if isinstance(obj, (str, int, float, bool)) or obj is None:
+        return obj
+    if isinstance(obj, (list, tuple)):
+        return [to_jsonable(x, seen) for x in obj]
+    if isinstance(obj, dict):
+        return {str(k): to_jsonable(v, seen) for k, v in obj.items()}
+    if id(obj) in seen:
+        return {"__ref__": id(obj)}
+    seen.add(id(obj))
+    result = {}
+    for name, value in vars(obj).items():
+        if name.startswith("__"):
+            continue
+        result[name] = to_jsonable(value, seen)
+    return result
+</pre>
+
+<pre class="code">class User:
+    def __init__(self, name: str, age: int) -&gt; None:
+        self.name = name
+        self.age = age
+        self.orders = []
+
+    def __repr__(self) -&gt; str:
+        return f"User({self.name}, {self.age})"
+
+
+class Order:
+    def __init__(self, oid: str, amount: float) -&gt; None:
+        self.oid = oid
+        self.amount = amount
+
+
+def main() -&gt; None:
+    alice = User("alice", 30)
+    alice.orders = [Order("A001", 199.0), Order("A002", 58.5)]
+    alice.friend = alice              # 自引用:验证循环引用处理
+
+    print("== dump 输出 ==")
+    dump(alice)
+
+    print("== to_jsonable 输出 ==")
+    print(json.dumps(to_jsonable(alice),
+                     ensure_ascii=False, indent=1))
+
+    print("== inspect 摘要 ==")
+    print(f"alice 类型: {type(alice).__name__}")
+    print(f"User 方法: {[m for m in dir(User) if not m.startswith('_')]}")
+
+
+if __name__ == "__main__":
+    main()
+</pre>
+
+<p><b>设计说明:</b>① dump 与 to_jsonable 共用"vars + 过滤魔法成员"的遍历骨架,一个面向人读、一个面向机器读,体现反射工具的分工;② 循环引用统一用 seen 集合拦截,打印与序列化都给出可见标记;③ 过滤规则用 inspect 判断可调用对象,避免把方法当字段打印;④ 自引用示例(alice.friend = alice)直接验证防环逻辑;⑤ 输出均可通过测试断言校验(如 to_jsonable 结果包含 friend 的 __ref__ 标记)。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第12章 装饰器与函数式编程——装饰器本质、functools.wraps、带参数与类装饰器、contextmanager 与 lru_cache、自写计时/重试/缓存。让横切逻辑从代码里蒸发。</p>
+
+</body>
+</html>

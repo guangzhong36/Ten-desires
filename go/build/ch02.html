@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第2章 运算符与表达式</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO GO · PRODUCTION READY</div>
+<h1 class="chapter-title">第2章 运算符与表达式</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握 Go 算术运算的确定性:有符号溢出是定义良好的回绕,除零是 panic(与 C 的 UB/崩溃对照)</li>
+<li>理解 <code>++</code>/<code>--</code> 在 Go 中是<b>语句</b>而非表达式,<code>arr[i++]</code> 是编译错误</li>
+<li>掌握全部位运算符,特别是 C 没有的 <code>&amp;^</code>(位清除)与 <code>&lt;&lt;</code>/<code>&gt;&gt;</code> 对无符号/有符号的不同语义</li>
+<li>理解短路求值与"条件必须是布尔值"的强制约束</li>
+<li>掌握 <code>==</code> 的比较规则:哪些类型可比较、<code>NaN</code> 的坑、结构体整体比较</li>
+<li>掌握多重赋值、<code>:=</code> 作用域规则,以及<b>没有三目运算符</b>时如何用 if-else 表达</li>
+<li>熟记运算符优先级表,理解 Go 规定"求值顺序从左到右"的确定性</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Go:本章主题如何迁移</div>
+<p>C 的运算符体系庞大而危险:有符号溢出是未定义行为、<code>i++</code> 混在表达式里造成求值顺序 UB、隐式整型提升让类型悄悄变化、三目运算符 <code>?:</code> 嵌套难读。Go 对这套体系做了三件事:<b>删减、规范化、增加确定性</b>。</p>
+<p>删减:没有三目运算符(官方立场:它常被滥用,<code>if-else</code> 更清晰);<code>++</code>/<code>--</code> 只保留后缀形式且只能是独立语句;没有 <code>~</code> 一元取反(用 <code>^x</code> 表示)、没有 <code>!</code> 之外的隐式真值转换(<code>if (x)</code> 在 C 里是"x 非零",在 Go 里必须 <code>if x != 0</code>,而 <code>x</code> 必须是布尔)。</p>
+<p>规范化:负数取模与 C 一致(截断向零,<code>-5 % 3 == -2</code>);有符号整数溢出不再是 UB,而是按补码确定性地回绕;整数除零在运行时 panic(可以 recover,第 9 章)。</p>
+<p>增加确定性:表达式求值顺序严格从左到右(不用再背 C 的"序列点"规则);优先级表更小更直观;比较运算有类型系统的强约束,<code>slice == slice</code> 直接编译失败。</p>
+<p>一句话主线:<span class="hl">C 的运算符是"强大的瑞士军刀",Go 的运算符是"上锁的扳手"——能干所有正经活,但每个动作都在规则之内</span>。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的算术、位、逻辑、比较、赋值运算符全集及优先级</li>
+<li>整数除法与取模、有符号溢出的 UB 概念、整型提升规则</li>
+<li>短路求值:<code>&amp;&amp;</code> 与 <code>||</code> 的行为;位运算在标志位管理中的应用</li>
+<li>三目运算符 <code>?:</code> 的使用习惯;复合赋值 <code>+=</code> 等</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段:</b>§2.1–§2.3,把算术与位运算的"确定性规则"记牢,亲手运行溢出与取模示例</li>
+<li><b>第二阶段:</b>§2.4–§2.6,重点理解"语句 vs 表达式"的边界与无三目的替代写法</li>
+<li><b>第三阶段(实验):</b>§2.7–§2.8 与章末实验:表达式求值计算器,把整章运算符织进一个递归下降解析器</li>
+<li><b>验收标准:</b>能说出 5 处"Go 运算符与 C 的差异",能默写优先级表的低到高顺序</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§2.1 算术运算:溢出回绕、除零 panic、负数取模</li>
+<li>§2.2 自增自减:语句而非表达式</li>
+<li>§2.3 位运算:&amp; | ^ &amp;^ &lt;&lt; &gt;&gt; 与标志位管理</li>
+<li>§2.4 逻辑运算与短路:条件必须是布尔</li>
+<li>§2.5 比较运算:可比较类型、NaN、结构体比较</li>
+<li>§2.6 赋值与多重赋值:没有三目运算符</li>
+<li>§2.7 优先级与求值顺序</li>
+<li>§2.8 特色运算符:&lt;-、... 与通道方向</li>
+</ul></div>
+
+<h2>§2.1 算术运算:溢出回绕与除零 panic</h2>
+
+<p>C 中 <code>INT_MAX + 1</code> 是有符号溢出,属于 UB,编译器可能回绕、可能优化出你意想不到的行为。Go 的规定完全不同:</p>
+<ul>
+<li><b>有符号与无符号溢出都是定义良好的</b>:按补码回绕。例如 <code>int8(127) + 1 == -128</code>。</li>
+<li><b>整数除零在运行时 panic</b>;浮点除零不 panic,得 <code>+Inf</code>/<code>-Inf</code>/<code>NaN</code>(与 C 的浮点行为一致)。</li>
+<li><b>负数取模与 C 相同</b>(截断向零):<code>-5 % 3 == -2</code>;注意这与 Python 的 <code>1</code> 不同。</li>
+<li>整数除法结果仍是整数:<code>7 / 2 == 3</code>,小数部分直接丢弃(与 C 相同)。</li>
+</ul>
+
+<div class="code-title">示例 2-1 溢出的确定性行为</div>
+<pre class="code">package main
+
+import "fmt"
+
+func main() {
+    var a int8 = 127
+    fmt.Println(a + 1) // -128:回绕,定义良好
+
+    var u uint8 = 255
+    fmt.Println(u + 1) // 0:无符号回绕
+
+    fmt.Println(7 / 2)   // 3:整数除法
+    fmt.Println(-5 % 3)  // -2:截断向零(与 C 一致)
+    fmt.Println(7.0 / 2) // 3.5:浮点除法
+
+    // 整数除零:运行时 panic
+    // fmt.Println(1 / 0)
+
+    // 浮点除零:得到 Inf,不 panic
+    fmt.Println(1.0 / 0.0) // +Inf
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2-1:整数除零不是编译错误,而是运行时 panic</div>
+<p>常量表达式 <code>1/0</code> 编译期就报错,但 <code>x := 0; 1/x</code> 能通过编译,运行时才 panic。生产上除法的分母若来自外部输入,必须显式判断为零;依赖 panic 再 recover 是反模式。</p>
+</div>
+
+<div class="box box-keypoint"><div class="box-title">重点:溢出是回绕,不是错误</div>
+<p>与 C 的 UB 相比,Go 的溢出"至少不会出现编译器魔法"。但回绕仍然是 bug:<code>time.Second * 30</code> 若换算成纳秒会溢出 32 位。生产规则:<b>金额、时间、ID 一律用 64 位并做边界检查</b>;计数器溢出问题用 <code>math.MaxInt64</code> 前检查或改用 <code>uint64</code>。</p>
+</div>
+
+<h2>§2.2 自增自减:语句而非表达式</h2>
+
+<p>C 里 <code>i++</code> 是表达式,能出现在任何表达式位置:<code>arr[i++] = x</code>、<code>printf("%d", i++)</code>。Go 把 <code>++</code>/<code>--</code> 降级为<b>语句</b>:</p>
+<ul>
+<li>只有后缀形式:<code>i++</code>、<code>i--</code>;<code>++i</code> 是语法错误</li>
+<li>不能用在表达式里:<code>arr[i++]</code>、<code>f(i++)</code>、<code>a = i++</code> 全是编译错误</li>
+<li>返回值没有意义,它只是"i = i + 1"的简写</li>
+</ul>
+
+<div class="code-title">示例 2-2 自增自减的正确与错误用法</div>
+<pre class="code">package main
+
+import "fmt"
+
+func main() {
+    i := 0
+    i++
+    i++          // 语句形式,合法
+    fmt.Println(i) // 2
+
+    // 以下全部编译失败
+    // a := i++       // 不能赋值
+    // arr := []int{}
+    // fmt.Println(arr[i++]) // 不能嵌入表达式
+    // ++i            // 没有前置形式
+}</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:循环里用 i++ 语句,别怀念 C 的写法</div>
+<p>一开始会不习惯 <code>for i := 0; i &lt; n; i++ {}</code> 里的 <code>i++</code> 无法嵌入别的表达式。这是刻意的:它消灭了"后置副作用"这一整类求值顺序 bug。需要自增后取值的场景,拆成两行即可,可读性反而更好。</p>
+</div>
+
+<h2>§2.3 位运算:&amp; | ^ &amp;^ &lt;&lt; &gt;&gt;</h2>
+
+<p>Go 的位运算符与 C 大体相同,但有三个差异值得注意:</p>
+<ul>
+<li><code>^</code> 一元是<b>按位取反</b>(相当于 C 的 <code>~</code>),二元是<b>异或</b>(与 C 相同);Go 没有 <code>~</code> 运算符</li>
+<li><span class="term"><code>&amp;^</code></span>(AND NOT)是 Go 独有:把左操作数中与右操作数都为 1 的位清零,等价于 <code>a &amp; ^b</code></li>
+<li><code>&gt;&gt;</code> 右移:<b>无符号数逻辑右移,有符号数算术右移</b>(补符号位),与 C 中"有符号右移实现定义"相比更确定</li>
+</ul>
+
+<div class="code-title">示例 2-3 位运算全集</div>
+<pre class="code">package main
+
+import "fmt"
+
+func main() {
+    a := 0b1100 // 12
+    b := 0b1010 // 10
+
+    fmt.Printf("%04b &amp;  %04b = %04b\n", a, b, a&amp;b)   // 1000
+    fmt.Printf("%04b |  %04b = %04b\n", a, b, a|b)   // 1110
+    fmt.Printf("%04b ^  %04b = %04b\n", a, b, a^b)   // 0110
+    fmt.Printf("^%04b(按位取反,注意符号位) = %b\n", a, ^a)
+    fmt.Printf("%04b &amp;^ %04b = %04b\n", a, b, a&amp;^b) // 0100:清除与 b 重合的位
+
+    var x int8 = -8 // 二进制 11111000
+    fmt.Println(x &gt;&gt; 1) // -4:算术右移,补符号位
+    var y uint8 = 0b11111000
+    fmt.Println(y &gt;&gt; 1) // 124:逻辑右移,补零
+}</pre>
+
+<h3>2.3.1 位运算生产场景:标志位管理</h3>
+<div class="code-title">示例 2-4 用位掩码管理权限</div>
+<pre class="code">package main
+
+import "fmt"
+
+// 权限位
+const (
+    Read  = 1 &lt;&lt; iota // 1
+    Write             // 2
+    Exec              // 4
+)
+
+func has(p, flag int) bool { return p&amp;flag != 0 }
+
+func main() {
+    perm := Read | Write // 授予读与写
+    fmt.Println("可读?", has(perm, Read))
+    fmt.Println("可写?", has(perm, Write))
+    fmt.Println("可执行?", has(perm, Exec))
+
+    perm = perm &amp;^ Write // 撤销写权限(&amp;^ 一键清除)
+    fmt.Println("撤销后可写?", has(perm, Write))
+    fmt.Println("权限值:", perm)
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2-2:用有符号数做位掩码,右移行为与直觉相反</div>
+<p>标志位应使用无符号类型:<code>uint32</code>/<code>uint64</code>。若用 <code>int</code> 且最高位被置位,<code>&gt;&gt;</code> 是算术右移,会不断补 1,标志判断可能永远为真。<code>&amp;^</code> 清除标志时同样要保证类型一致。</p>
+</div>
+
+<h2>§2.4 逻辑运算与短路:条件必须是布尔</h2>
+
+<p><code>&amp;&amp;</code>、<code>||</code>、<code>!</code> 与 C 的短路语义完全一致:左侧能确定结果就不再求值右侧。但 Go 强制<b>操作数必须是布尔类型</b>——C 里 <code>if (p)</code>、<code>if (!buf)</code>、<code>while (n)</code> 的"隐式真值"在 Go 中一律编译错误,必须写 <code>if p != nil</code>、<code>if n != 0</code>。</p>
+
+<div class="code-title">示例 2-5 短路求值与显式布尔条件</div>
+<pre class="code">package main
+
+import "fmt"
+
+func check(x int) bool {
+    fmt.Println("check 被调用,参数:", x)
+    return x &gt; 0
+}
+
+func main() {
+    a, b := 1, -1
+
+    // 短路:左侧 false,右侧不执行
+    if a &gt; 10 &amp;&amp; check(b) {
+        fmt.Println("不会走到这里")
+    }
+
+    // 短路:左侧 true,右侧不执行
+    if a &gt; 0 || check(b) {
+        fmt.Println("check 没被调用")
+    }
+
+    // 常见的非空判断链:利用短路保护
+    var s []int
+    if len(s) &gt; 0 &amp;&amp; s[0] == 42 {
+        fmt.Println("首元素是 42")
+    }
+
+    // C 风格"非零即真"在 Go 中是编译错误
+    // if a { ... }          // 错误:a 不是布尔
+    // if s { ... }          // 错误:s 不是布尔
+    _ = a
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2-3:忘记 Go 没有隐式真值转换</div>
+<p>从 C 迁移时最频繁的编译错误:<code>if (p)</code> 请写 <code>if p != nil</code>;<code>if (n)</code> 请写 <code>if n != 0</code>。这不是麻烦,而是把"条件到底是什么"写进了代码,配合 <code>go vet</code> 可以提前抓住"函数返回了 int 却当布尔用"的 API 误用。</p>
+</div>
+
+<h2>§2.5 比较运算:谁可以 ==</h2>
+
+<p>Go 把"可比较性"写进了类型系统。能用 <code>==</code>/<code>!=</code> 比较的:数值、字符串(按字节比较,与 C 的 <code>strcmp</code> 对应但更直接)、布尔、指针、channel、数组与结构体(要求其元素/字段都可比较)。<b>切片、map、函数不可比较</b>(只能与 <code>nil</code> 比),这是编译期错误。关系运算 <code>&lt;</code> <code>&gt;</code> 只对数值、字符串、有序数组/结构体有效。</p>
+
+<div class="code-title">示例 2-6 比较运算规则</div>
+<pre class="code">package main
+
+import "fmt"
+
+func main() {
+    // 字符串按字节序比较(字典序)
+    fmt.Println("apple" &lt; "banana") // true
+
+    // 结构体整体比较:所有字段可比较即可
+    type point struct{ x, y int }
+    p1 := point{1, 2}
+    p2 := point{1, 2}
+    fmt.Println(p1 == p2) // true
+
+    // 数组整体比较
+    fmt.Println([2]int{1, 2} == [2]int{1, 2}) // true
+
+    // 以下全部编译失败
+    // a := []int{1}
+    // fmt.Println(a == a)          // 切片不可比较
+    // fmt.Println(map[string]int{} == nil) // map 只能与 nil 比?
+    // fmt.Println(map[string]int(nil) == nil) // 这行是合法的,但与 map 值无关
+
+    // NaN 的坑:NaN 不等于任何值,包括它自己
+    nan := 0.0 / 0.0
+    fmt.Println(nan == nan)  // false
+    fmt.Println(nan &lt; 1.0)   // false!任何比较都是 false
+
+    // 判断 NaN 的正确姿势
+    if nan != nan {
+        fmt.Println("检测到 NaN")
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2-4:NaN 的"任何比较都是 false"</div>
+<p><code>nan == nan</code> 为 false,<code>nan &lt; 1</code> 也为 false。若拿 <code>v &lt; min</code> 判断最小值,遇到 NaN 会漏掉。判断 NaN 用 <code>v != v</code> 或 <code>math.IsNaN(v)</code>;排序、求极值时先过滤 NaN。这与 C 的浮点行为一致,但 Go 程序员更容易踩中,因为 Go 鼓励直接比较浮点结果。</p>
+</div>
+
+<h2>§2.6 赋值与多重赋值:没有三目运算符</h2>
+
+<p>Go 没有 <code>?:</code>。C 里 <code>max = a &gt; b ? a : b</code>,Go 里要写完整 if-else。这不是遗漏,而是官方刻意决定:三目运算符经常被嵌套滥用,而 <code>if-else</code> 每行只表达一件事。生产中的替代:</p>
+
+<div class="code-title">示例 2-7 没有三目:用 if-else 表达</div>
+<pre class="code">package main
+
+import "fmt"
+
+func max(a, b int) int {
+    if a &gt; b {
+        return a
+    }
+    return b
+}
+
+func main() {
+    // 三目运算符的经典场景:条件赋值
+    score := 85
+    var level string
+    if score &gt;= 60 {
+        level = "及格"
+    } else {
+        level = "不及格"
+    }
+    fmt.Println(level)
+
+    // 多重赋值:函数多返回值(第 4 章),天然替代"返回值 + 输出参数"
+    q, r := 17/5, 17%5
+    fmt.Println("商:", q, "余:", r)
+
+    // 声明与赋值分离的场景
+    var msg string
+    if score &gt;= 90 {
+        msg = "优秀"
+    } else {
+        msg = "加油"
+    }
+    fmt.Println(msg)
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:Go 刻意没有三目运算符</div>
+<p>遇到"一行搞定"的冲动时,写三行 if-else。Go 团队在 FAQ 中的原话大意是:三目运算符经常被用来写难读的嵌套,<code>if-else</code> 更直白。习惯了会发现条件赋值反而更清晰——而且可以插入日志、断言,不必改写结构。</p>
+</div>
+
+<h2>§2.7 优先级与求值顺序</h2>
+
+<p>Go 的优先级层级比 C 少。从高到低(同层从左到右结合):</p>
+
+<table>
+<tr><th>优先级</th><th>运算符</th><th>与 C 的差异</th></tr>
+<tr><td class="ctr">5(最高)</td><td class="ctr"><code>*</code> <code>/</code> <code>%</code> <code>&lt;&lt;</code> <code>&gt;&gt;</code> <code>&amp;</code> <code>&amp;^</code></td><td class="ctr">移位与位与同级(低于乘除,高于加减)</td></tr>
+<tr><td class="ctr">4</td><td class="ctr"><code>+</code> <code>-</code> <code>|</code> <code>^</code></td><td class="ctr">加减与位或、异或同级</td></tr>
+<tr><td class="ctr">3</td><td class="ctr"><code>==</code> <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code></td><td class="ctr">与 C 相同</td></tr>
+<tr><td class="ctr">2</td><td class="ctr"><code>&amp;&amp;</code></td><td class="ctr">与 C 相同</td></tr>
+<tr><td class="ctr">1(最低)</td><td class="ctr"><code>||</code></td><td class="ctr">与 C 相同</td></tr>
+</table>
+
+<p>最大的坑在顶层:<b>在 Go 中,移位和按位与的优先级高于加减、与比较同级</b>(C 里 <code>&amp;</code> 低于 <code>==</code>)。所以 <code>x &amp; 0xFF == 0</code> 在 C 里是 <code>x &amp; (0xFF == 0)</code>——在 Go 里是 <code>(x &amp; 0xFF) == 0</code>!两种语言同一行代码,两种含义。生产铁律:<b>涉及位运算的复合条件一律加括号</b>。</p>
+
+<p><b>求值顺序:</b>C 的 <code>f() + g()</code> 中 <code>f</code> 与 <code>g</code> 谁先调用是未定义的;Go 明确规定:<span class="hl">同一表达式内从左到右求值</span>。副作用(如调用带打印的函数)顺序可预测。</p>
+
+<div class="code-title">示例 2-8 优先级陷阱与左到右求值</div>
+<pre class="code">package main
+
+import "fmt"
+
+func f() int { fmt.Println("f"); return 1 }
+func g() int { fmt.Println("g"); return 2 }
+
+func main() {
+    x := 0xFF
+    // Go 中 &amp; 高于 == :等价于 (x &amp; 0xFF) == 0
+    fmt.Println(x&amp;0xFF == 0) // false
+
+    // 与 C 的语义(若按 C 优先级)不同,务必加括号
+    fmt.Println((x &amp; 0xFF) == 0) // false,含义明确
+
+    // 求值顺序:从左到右,先打印 f 再打印 g
+    v := f() + g()
+    fmt.Println("结果:", v)
+}</pre>
+
+<h2>§2.8 特色运算符:&lt;-、... 与类型断言</h2>
+
+<ul>
+<li><span class="term"><code>&lt;-</code></span>:channel 的收发运算符,<code>ch &lt;- v</code> 发送、<code>v := &lt;-ch</code> 接收。它是 Go 语法中最独特的一元/二元双形态运算符,第 9 章详解。</li>
+<li><span class="term"><code>...</code></span>:切片展开,<code>f(s...)</code> 把切片展开为可变参数的多个实参;数组字面量 <code>[...]int{1,2,3}</code> 让编译器数长度。</li>
+<li><span class="term"><code>.</code> 与 <code>[]</code></span>:字段/下标访问,与 C 相同;但对空指针、越界下标,Go 会 panic 而非 UB。</li>
+<li><span class="term">类型断言 <code>v.(T)</code></span>:第 6 章详述,是接口动态类型的"向下转型"运算符。</li>
+</ul>
+
+<div class="code-title">示例 2-9 展开运算符与 ... 数组</div>
+<pre class="code">package main
+
+import "fmt"
+
+func sum(nums ...int) int {
+    total := 0
+    for _, n := range nums {
+        total += n
+    }
+    return total
+}
+
+func main() {
+    // ... 展开:把切片铺开成多个实参
+    data := []int{1, 2, 3, 4}
+    fmt.Println(sum(data...)) // 10
+
+    // 编译器数长度的数组字面量
+    arr := [...]int{5, 6, 7}
+    fmt.Println(len(arr)) // 3
+}</pre>
+
+<h2>本章速查表</h2>
+<table>
+<tr><th style="width:24%">主题</th><th>要点</th></tr>
+<tr><td class="ctr">整数除法</td><td class="ctr"><code>7/2 == 3</code>;取模 <code>-5%3 == -2</code>(截断向零,与 C 一致)</td></tr>
+<tr><td class="ctr">溢出</td><td class="ctr">定义良好的回绕(补码),不是 UB;生产上仍要防回绕 bug</td></tr>
+<tr><td class="ctr">除零</td><td class="ctr">整数除零运行期 panic;浮点除零得 Inf/NaN,不 panic</td></tr>
+<tr><td class="ctr">自增自减</td><td class="ctr">只有 <code>i++</code>/<code>i--</code> 语句;不能作表达式;<code>++i</code> 不存在</td></tr>
+<tr><td class="ctr">位运算</td><td class="ctr"><code>&amp;</code> <code>|</code> <code>^</code>(取反/异或) <code>&amp;^</code>(位清除) <code>&lt;&lt;</code> <code>&gt;&gt;</code></td></tr>
+<tr><td class="ctr">右移语义</td><td class="ctr">无符号逻辑右移;有符号算术右移(补符号位)</td></tr>
+<tr><td class="ctr">逻辑运算</td><td class="ctr"><code>&amp;&amp;</code>/<code>||</code> 短路;操作数必须是 bool,无隐式真值</td></tr>
+<tr><td class="ctr">比较</td><td class="ctr">数值/字符串/指针/数组/结构体可比较;slice、map、函数不可比较</td></tr>
+<tr><td class="ctr">NaN</td><td class="ctr"><code>nan != nan</code>;任何比较都 false;用 <code>math.IsNaN</code> 判断</td></tr>
+<tr><td class="ctr">赋值</td><td class="ctr"><code>a, b = b, a</code> 多重赋值;<code>:=</code> 短声明(至少一个新变量)</td></tr>
+<tr><td class="ctr">三目</td><td class="ctr">不存在!用 if-else;不要怀念 <code>?:</code></td></tr>
+<tr><td class="ctr">优先级</td><td class="ctr">乘除移位位与 &gt; 加减位或位异或 &gt; 比较 &gt; &amp;&amp; &gt; ||</td></tr>
+<tr><td class="ctr">求值顺序</td><td class="ctr">同一表达式从左到右,确定无 UB</td></tr>
+<tr><td class="ctr">特色运算符</td><td class="ctr"><code>&lt;-</code> 通道;<code>...</code> 展开;<code>v.(T)</code> 类型断言;<code>[...]</code> 数组</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能解释"Go 的整数溢出不是 UB"与"整数除零 panic"两条规则</li>
+<li>能说出 <code>-5%3</code>、<code>7/2</code>、<code>1.0/0.0</code> 的结果</li>
+<li>能解释 <code>i++</code> 为什么不能出现在表达式中</li>
+<li>能写出 <code>&amp;^</code> 清除标志位、<code>^</code> 取反、有符号右移的示例</li>
+<li>能解释 <code>if x</code> 为什么在 Go 中是编译错误</li>
+<li>能说出哪四种类型不可用 <code>==</code> 比较</li>
+<li>能写出无三目运算符时的条件赋值写法</li>
+<li>能默写 Go 运算符优先级表,并解释 <code>x&amp;0xFF == 0</code> 在 Go 中的含义</li>
+</ul>
+
+<h2>自测题</h2>
+
+<div class="q">1. 计算下列表达式的值:(a) <code>9/2</code>;(b) <code>-9%4</code>;(c) <code>9%(-4)</code>;(d) <code>0.9/0.3</code></div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>(a) 4(整数除法截断);(b) -1(截断向零:−9 = −2×4 − 1);(c) 1(9 = −2×(−4) + 1,余数符号取被除数);(d) 约 2.9999999999999996——浮点误差,永远不要用 <code>==</code> 比较浮点运算结果,应比较差值绝对值 <code>math.Abs(a-b) &lt; 1e-9</code>。</p>
+</div>
+
+<div class="q">2. 下面哪几行能编译?<code>x := 5; x++</code>、<code>y := 5; y++ + 1</code>、<code>z := 5; ++z</code>、<code>w := 5; w = w + 1</code></div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>第 1 行与第 4 行能编译。<code>y++ + 1</code> 与 <code>++z</code> 都是语法错误——自增只能是独立语句,且只有后缀形式。</p>
+</div>
+
+<div class="q">3. 权限掩码 <code>perm := 0b110</code>,用 <code>&amp;^</code> 清除读权限(位 0)后,<code>perm</code> 的值是多少?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>0b110 &amp;^ 0b001 = 0b110</code>——位 0 本来就是 0,没变化。<code>&amp;^</code> 只把"左操作数为 1 且右操作数为 1"的位清零,其余位保留。若清除写权限(位 1):<code>0b110 &amp;^ 0b010 = 0b100</code>。</p>
+</div>
+
+<div class="q">4. 判断对错:(a) 切片可以用 <code>==</code> 与另一个切片比较;(b) 两个字段都相等的结构体可以用 <code>==</code> 比较;(c) <code>map</code> 可以与 <code>nil</code> 比较;(d) 函数可以赋给变量。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>(a) 错,切片不可比较(编译错误),只能与 nil 比较;(b) 对,若所有字段可比较;(c) 对,<code>m == nil</code> 合法;(d) 对,函数是一等公民(第 4 章),但函数值之间不能比较。</p>
+</div>
+
+<div class="q">5. 写出在 Go 中"max = a &gt; b ? a : b"的等价写法,并说明 Go 为什么没有三目运算符。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>if a &gt; b { max = a } else { max = b }</code>。Go 官方认为三目运算符易被嵌套滥用,<code>if-else</code> 每行只表达一件事,可读性更好。这也让条件分支可以自然插入日志与断言。</p>
+</div>
+
+<div class="q">6. 表达式 <code>x &amp; 0xFF == 0</code> 在 C 和 Go 中分别怎么解析?结果有何不同?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>C 中 <code>==</code> 优先级高于 <code>&amp;</code>:解析为 <code>x &amp; (0xFF == 0)</code>,即 <code>x &amp; 0</code>,恒为 0。Go 中 <code>&amp;</code> 优先级高于 <code>==</code>:解析为 <code>(x &amp; 0xFF) == 0</code>,判断低 8 位是否全零。同一行代码两种含义——跨语言维护时务必加括号。</p>
+</div>
+
+<h2>章末实验题:表达式求值计算器</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 2:表达式求值计算器</div>
+<p><b>实验目标:</b>实现一个命令行表达式计算器,支持加减乘除、取模、括号、位运算(与/或/异或/移位)与一元负号,正确处理优先级。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:用递归下降法实现优先级分层:加减 &lt; 乘除取模 &lt; 一元负号 &lt; 括号(覆盖:§2.7 优先级)</li>
+<li>任务 2:支持 <code>&amp;</code> <code>|</code> <code>^</code> <code>&lt;&lt;</code> <code>&gt;&gt;</code> 位运算,并让位运算优先级低于加减、高于比较(覆盖:§2.3 位运算、优先级)</li>
+<li>任务 3:解析表达式时验证 <code>-5%3</code> 的截断语义(覆盖:§2.1 取模)</li>
+<li>任务 4:处理除零:用 panic/recover 捕获并给出友好错误(覆盖:§2.1 除零 panic)</li>
+<li>任务 5:支持十六进制/二进制字面量 <code>0xFF</code>、<code>0b1010</code>(覆盖:§2.3 字面量位运算)</li>
+<li>任务 6:程序主体用多重赋值与短声明,不用任何 <code>++</code> 表达式(覆盖:§2.2、§2.6)</li>
+</ul>
+<p><b>实验环境:</b>Go 1.21+,<code>go run main.go</code>,输入 <code>go vet main.go</code> 确认无警告。</p>
+</div>
+
+<ol class="steps">
+<li>先把表达式切分成记号(token):用 <code>strings.Replacer</code> 给每个运算符加空格,再 <code>strings.Fields</code> 切分;注意 <code>1 &lt;&lt; 2</code> 要切出 <code>1</code>、<code>&lt;&lt;</code>、<code>2</code></li>
+<li>实现解析器结构体:<code>toks []string</code> 与 <code>pos int</code>,提供 <code>peek()</code>/<code>next()</code> 两个方法</li>
+<li>从最低优先级开始写 <code>parseOr</code>,层层向下调用,每层只处理自己的运算符并循环</li>
+<li>一元负号用"遇到 <code>-</code> 就递归调用 <code>parseUnary</code> 并取反";括号直接递归到最高层</li>
+<li>用 <code>strconv.ParseInt(t, 0, 64)</code> 解析数字,自动支持 <code>0x</code>、<code>0b</code> 前缀</li>
+<li>在 <code>eval</code> 里 <code>defer</code> + <code>recover</code> 捕获除零 panic,返回错误消息(第 9 章会系统讲 panic/recover)</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">// 表达式求值计算器:递归下降 + 优先级分层
+package main
+
+import (
+    "fmt"
+    "strconv"
+    "strings"
+)
+
+type parser struct {
+    toks []string
+    pos  int
+}
+
+func (p *parser) next() string {
+    if p.pos &lt; len(p.toks) {
+        t := p.toks[p.pos]
+        p.pos++
+        return t
+    }
+    return ""
+}
+
+func (p *parser) peek() string {
+    if p.pos &lt; len(p.toks) {
+        return p.toks[p.pos]
+    }
+    return ""
+}
+
+// 最低优先级:按位或
+func (p *parser) parseOr() int {
+    v := p.parseXor()
+    for p.peek() == "|" {
+        p.next()
+        v = v | p.parseXor()
+    }
+    return v
+}
+
+// 异或
+func (p *parser) parseXor() int {
+    v := p.parseAnd()
+    for p.peek() == "^" {
+        p.next()
+        v = v ^ p.parseAnd()
+    }
+    return v
+}
+
+// 按位与
+func (p *parser) parseAnd() int {
+    v := p.parseShift()
+    for p.peek() == "&amp;" {
+        p.next()
+        v = v &amp; p.parseShift()
+    }
+    return v
+}
+
+// 移位
+func (p *parser) parseShift() int {
+    v := p.parseAdd()
+    for {
+        op := p.peek()
+        if op == "&lt;&lt;" || op == "&gt;&gt;" {
+            p.next()
+            r := p.parseAdd()
+            if op == "&lt;&lt;" {
+                v = v &lt;&lt; r
+            } else {
+                v = v &gt;&gt; r
+            }
+            continue
+        }
+        break
+    }
+    return v
+}
+
+// 加减
+func (p *parser) parseAdd() int {
+    v := p.parseMul()
+    for {
+        op := p.peek()
+        if op == "+" || op == "-" {
+            p.next()
+            r := p.parseMul()
+            if op == "+" {
+                v += r
+            } else {
+                v -= r
+            }
+            continue
+        }
+        break
+    }
+    return v
+}
+
+// 乘除取模
+func (p *parser) parseMul() int {
+    v := p.parseUnary()
+    for {
+        op := p.peek()
+        if op == "*" || op == "/" || op == "%" {
+            p.next()
+            r := p.parseUnary()
+            switch op {
+            case "*":
+                v *= r
+            case "/":
+                v /= r // 除零 panic,由 eval 的 recover 捕获
+            case "%":
+                v %= r // 截断语义:-5 % 3 == -2
+            }
+            continue
+        }
+        break
+    }
+    return v
+}
+
+// 一元负号与括号
+func (p *parser) parseUnary() int {
+    if p.peek() == "-" {
+        p.next()
+        return -p.parseUnary()
+    }
+    if p.peek() == "(" {
+        p.next()
+        v := p.parseOr()
+        p.next() // 吃掉右括号
+        return v
+    }
+    t := p.next()
+    n, err := strconv.ParseInt(t, 0, 64) // 基数 0:自动识别 0x/0b/0o
+    if err != nil {
+        panic("无法解析:" + t)
+    }
+    return int(n)
+}
+
+// eval 计算表达式;错误以 panic 形式抛出,在此恢复
+func eval(expr string) (result int, errMsg string) {
+    defer func() {
+        if r := recover(); r != nil {
+            errMsg = fmt.Sprint(r)
+        }
+    }()
+    rep := strings.NewReplacer("(", " ( ", ")", " ) ", "*", " * ",
+        "/", " / ", "%", " % ", "+", " + ", "-", " - ",
+        "&amp;", " &amp; ", "|", " | ", "^", " ^ ", "&lt;&lt;", " &lt;&lt; ", "&gt;&gt;", " &gt;&gt; ")
+    p := &amp;parser{toks: strings.Fields(rep.Replace(expr))}
+    result = p.parseOr()
+    return
+}
+
+func main() {
+    exprs := []string{
+        "1 + 2 * 3",
+        "(1 + 2) * 3",
+        "10 / 3",
+        "7 % 3",
+        "-5 % 3",
+        "1 &lt;&lt; 4",
+        "0xF &amp; 0b1010",
+        "1 + 2 &lt;&lt; 2",
+        "1 / 0",
+    }
+    for _, e := range exprs {
+        v, err := eval(e)
+        if err != "" {
+            fmt.Printf("%-14s =&gt; 错误: %s\n", e, err)
+        } else {
+            fmt.Printf("%-14s =&gt; %d\n", e, v)
+        }
+    }
+}</pre>
+<p><b>设计说明:</b>每个优先级一个函数,函数之间只通过"循环 + 调用下一层"连接,结构即文法,天然支持任意嵌套括号;位运算层插在加减与比较之间,复现 Go 的优先级规则;<code>eval</code> 用命名返回值 + defer/recover 把 panic 转成错误字符串,演示了"Go 没有异常但异常性错误可控"的理念(第 9 章展开)。实验时请先实现到加减乘除,再逐层加入位运算,每加一层都用速查表的优先级验证一遍。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第3章 流程控制。表达式的规矩学完了,下一章看流程:switch 没有 fallthrough、for 是唯一的循环、range 的遍历语义、带标签的 break/continue 与 goto 的合法用法——每一条都会颠覆 C 程序员的手感。</p>
+
+</body>
+</html>

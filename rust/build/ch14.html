@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第14章 类型系统进阶</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<style>.box-answer { break-inside: auto; page-break-inside: auto; } .box-answer pre.code { break-inside: auto; page-break-inside: auto; } .box-answer .box-title { break-after: avoid; page-break-after: avoid; }</style>
+<div class="kicker">FROM C TO RUST · PRODUCTION READY</div>
+<h1 class="chapter-title">第14章 类型系统进阶</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–6 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已完成前13章;熟悉 C 的类型、NULL、typedef、union 与 enum</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握类型推导的边界:什么时候编译器能猜、什么时候必须显式标注</li>
+<li>掌握 Option 的完整用法,理解<span class="hl">空安全:可选性进入类型系统,消灭 NULL 事故</span></li>
+<li>掌握 enum 和类型:用类型表达"选项集合",与 C 的 enum+union+tag 对照</li>
+<li>掌握 newtype 模式:用类型包装消灭单位混淆与"类型即文档"</li>
+<li>深化值语义 vs 引用语义:Copy/Clone/借用三态在生产代码里的完整图景</li>
+<li>理解类型系统与 trait 的交汇:impl Trait 返回、?Sized、类型别名</li>
+<li>用领域建模案例(订单系统)把全书知识串成完整闭环</li>
+<li>获得"进入生产后不再有语法困惑"的最后一块拼图</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Rust:本章主题如何迁移</div>
+<p>全书最后一章,回答一个总问题:C 程序员的类型直觉,在 Rust 里哪里需要升级?答案是三处:<b>第一,可选性</b>——C 的 NULL 是"值层面的哨兵",谁都能传、传了才知道错;Rust 的 Option&lt;T&gt; 是"类型层面的事实",函数签名直接声明"这里可能没有值",编译器强迫你处理。<b>第二,区分度</b>——C 的 typedef 只是别名,int 换了个名字还是 int,米和秒照样能相加;Rust 的 newtype 让"米"和"秒"成为两个互不相通的类型,单位错误在编译期暴露。<b>第三,值 vs 引用</b>——C 只有"值/指针"两态,指针传参的意图(只读/修改/转移)全靠注释;Rust 的值/借用/移动三态(第4章)是类型系统的一部分,函数签名即意图。</p>
+<p>这三处升级的共同本质:<span class="hl">把"约定"变成"类型"</span>。C 靠注释和纪律维持的约定,在 Rust 里由编译器强制执行。本章前三节讲 Option 与 enum(建模可选与选项),§14.4 讲 newtype(建模区分),§14.5 讲值/引用语义(建模所有权),§14.6 讲与 trait 的交汇,最后 §14.7 用订单领域模型把全书 14 章串成一张生产地图。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的 NULL、typedef、union、enum、指针传参的三种意图(只读/修改/转移)</li>
+<li>第1章的 let 与类型标注、第2章的运算符、第3章的 match/if let</li>
+<li>第4章的参数传递三态、第5章的所有权/借用、第6章的 trait</li>
+<li>第9章的 Result 与 ?(本章 Option 与 Result 对照)</li>
+<li>第13章的模块与 crate(本章示例使用库结构)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(约1小时):</b>§14.1–§14.2,类型推导边界与 Option——把"可能没有"变成类型事实</li>
+<li><b>第二阶段(约1.5小时):</b>§14.3–§14.4,enum 建模与 newtype——领域建模的两大武器</li>
+<li><b>第三阶段(约1.5小时):</b>§14.5–§14.6,值/引用语义与 trait 交汇——类型系统的完整图景</li>
+<li><b>第四阶段(约1小时):</b>§14.7,订单领域模型实验与全书收官——把 14 章串成闭环</li>
+<li><b>验收标准:</b>给你一个业务需求,能用"enum 建模状态、newtype 建模单位、Option 建模可选、trait 建模行为"给出完整设计</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map">
+<ul>
+<li>§14.1 类型推导:边界与默认规则</li>
+<li>§14.2 Option:空安全 vs C 的 NULL</li>
+<li>§14.3 enum 和类型:状态与选项的建模</li>
+<li>§14.4 newtype 模式:类型即文档</li>
+<li>§14.5 值语义 vs 引用语义:深化</li>
+<li>§14.6 类型系统与 trait 的交汇</li>
+<li>§14.7 收官:订单领域模型与全书地图</li>
+<li>速查表 → 最小必会清单 → 自测题 → 章末实验</li>
+</ul>
+</div>
+
+<h2>§14.1 类型推导:边界与默认规则</h2>
+
+<h3>14.1.1 哪里能推导,哪里必须显式</h3>
+
+<pre class="code">fn main() {
+    // 能推导:let 绑定、函数调用结果
+    let x = 42;                  // i32(整数默认)
+    let y = 3.14;                // f64(浮点默认)
+    let s = String::from("hi");  // 构造器决定类型
+
+    // 必须显式:函数签名(类型是契约的一部分)
+    // fn f(x) { ... }            // ERROR: 必须写 fn f(x: i32)
+
+    // 必须显式:泛型函数的类型参数(编译器不知道你要哪个)
+    let n: u32 = "42".parse().expect("字面量必然可解析");   // 类型标注决定 parse 的目标
+    // "42".parse();             // ERROR: 无法推断
+
+    // 必须显式:集合元素的类型(空集合无法从内容推断)
+    let empty: Vec&lt;i32&gt; = Vec::new();
+    let m: std::collections::HashMap&lt;u32, String&gt; = Default::default();
+    println!("{n} {empty:?} {:?}", m.len());
+}</pre>
+
+<h3>14.1.2 推导的边界:不跨越函数与闭包体</h3>
+
+<pre class="code">// 推导是"局部"的:一个函数内的类型问题,编译器不会到另一个函数里找答案
+fn identity&lt;T&gt;(x: T) -&gt; T { x }
+
+fn main() {
+    // 泛型调用需要"推断点":赋值目标或参数类型
+    let a: u64 = identity(5);          // T = u64
+    let b = identity(5u8);             // 字面量后缀给出 T
+    println!("{a} {b}");
+
+    // 闭包参数:能推导时省略标注;需要时显式
+    let double = |x| x * 2;            // 从使用处推导
+    // let trouble = |x| { 复杂到推断不出 };  // 罕见;显式标注参数即可
+    let f = |x: f64| x * 2.0;          // 显式标注参数类型
+    println!("{} {}", double(21), f(1.5));
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 1:整数默认 i32,浮点默认 f64——循环与索引的坑</div>
+<p>let n = 0; 是 i32;数组长度是 usize。<span class="hl">索引/取长度相关的推导冲突(IndexError: expected usize)是 C 转 Rust 高频报错</span>——C 里 int 到处通用,Rust 里 usize 与 i32 不互转(第2章零隐式转换)。对策:循环计数与集合下标统一用 usize;需要数学运算时再显式转换 as i64 等。</p>
+</div>
+
+<h2>§14.2 Option:空安全 vs C 的 NULL</h2>
+
+<h3>14.2.1 NULL 的灾难与 Option 的答案</h3>
+
+<pre class="code">// C:NULL 是"值层面的哨兵",函数签名看不出会不会返回 NULL
+// const char *find_name(int id);     // 可能返回 NULL?看文档才知道
+// char *p = find_name(42);
+// strcpy(p, "x");                    // p 是 NULL?崩溃(或者更糟:静默)
+
+// Rust:可选性写在签名里,编译器强迫处理
+fn find_name(id: u32) -&gt; Option&lt;String&gt; {   // 明确:可能没有
+    if id == 42 {
+        Some(String::from("小明"))
+    } else {
+        None                            // 显式表示"没有"
+    }
+}
+
+fn main() {
+    let name = find_name(7);
+    // 三种处理方式:
+    // 1) match 穷尽(第3章)
+    match &amp;name {
+        Some(n) =&gt; println!("找到:{n}"),
+        None =&gt; println!("未找到"),
+    }
+    // 2) 链式处理:map 只对 Some 生效
+    let len = name.as_ref().map(|n| n.len()).unwrap_or(0);
+    println!("长度:{len}");
+    // 3) 不存在的值不可能"被当作存在"使用——类型检查兜底
+}</pre>
+
+<h3>14.2.2 Option 的常用组合拳</h3>
+
+<pre class="code">fn main() {
+    let a: Option&lt;i32&gt; = Some(10);
+    let b: Option&lt;i32&gt; = None;
+
+    // map:Some 则变换,None 保持 None
+    println!("{:?}", a.map(|x| x * 2));      // Some(20)
+    println!("{:?}", b.map(|x| x * 2));      // None
+
+    // and_then:变换结果也是 Option(展平),对照 C 的"返回值再判空"
+    println!("{:?}", a.and_then(|x| if x &gt; 5 { Some(x - 5) } else { None })); // Some(5)
+
+    // unwrap_or / unwrap_or_else:兜底值(延迟计算用闭包)
+    println!("{}", b.unwrap_or(0));          // 0
+    println!("{}", a.unwrap_or_else(|| 99)); // 10
+
+    // ? 运算符:Option 与 Result 可以互转(第9章 Result)
+    // fn f() -&gt; Option&lt;i32&gt; { let x = a?; Some(x + 1) }
+
+    // 判空/取引用
+    println!("is_some:{}, is_none:{}", a.is_some(), b.is_none());
+    println!("{:?}", a.as_ref());            // Some(&amp;10):借用不移动
+}</pre>
+
+<table class="cmp">
+<tr><th>C 的空值处理</th><th>Rust Option</th></tr>
+<tr><td>NULL 指针 / 哨兵值(-1、EOF)</td><td>Option&lt;T&gt;:Some(T) / None,类型级表达</td></tr>
+<tr><td>返回值是否可能为空:看文档/注释</td><td>签名自带:Option&lt;T&gt; 就是"可能没有"</td></tr>
+<tr><td>忘记判空:运行期崩溃或 UB</td><td>编译期强迫处理:None 无法当作 T 用</td></tr>
+<tr><td>判空后层层 if 缩进</td><td>map / and_then / ? 链式,无嵌套</td></tr>
+<tr><td>空串/0 作为"伪空"的妥协</td><td>None 是唯一空值,语义精确</td></tr>
+</table>
+
+<h2>§14.3 enum 和类型:状态与选项的建模</h2>
+
+<h3>14.3.1 用类型表达"选项集合"</h3>
+
+<pre class="code">// C 的 enum + union + tag 三件套 → Rust 一个 enum 搞定
+// C:
+//   enum OrderStatus { PENDING, PAID, SHIPPED, CANCELLED };
+//   // 状态值只是数字;switch 忘了处理新状态?编译器不检查
+
+// Rust:enum 是完整的类型,携带数据,穷尽检查
+enum OrderStatus {
+    Pending,                          // 无数据
+    Paid { amount: f64, time: String },   // 带数据的变体(对照 union)
+    Shipped(String),                  // 带单个数据:运单号
+    Cancelled(String),                // 原因
+}
+
+fn describe(status: &amp;OrderStatus) -&gt; String {
+    match status {
+        OrderStatus::Pending =&gt; "等待支付".to_string(),
+        OrderStatus::Paid { amount, .. } =&gt; format!("已支付 {amount} 元"),
+        OrderStatus::Shipped(no) =&gt; format!("已发货,运单 {no}"),
+        OrderStatus::Cancelled(reason) =&gt; format!("已取消:{reason}"),
+        // match 穷尽:以后新增变体,这里编译错误,逼你处理
+    }
+}
+
+fn main() {
+    let s = OrderStatus::Paid { amount: 99.0, time: "10:00".into() };
+    println!("{}", describe(&amp;s));
+}</pre>
+
+<h3>14.3.2 enum 作为"选项集"的实战形态</h3>
+
+<pre class="code">// 生产高频模式:enum 表示"几种可能的形态",数据随变体走
+enum Config {
+    Port(u16),                     // 单个值
+    Addr { host: String, port: u16 },  // 命名结构
+}
+
+impl Config {
+    fn display(&amp;self) -&gt; String {
+        match self {
+            Config::Port(p) =&gt; format!("只配端口:{p}"),
+            Config::Addr { host, port } =&gt; format!("{host}:{port}"),
+        }
+    }
+}
+
+fn main() {
+    let c1 = Config::Port(8080);
+    let c2 = Config::Addr { host: "0.0.0.0".into(), port: 9090 };
+    println!("{} / {}", c1.display(), c2.display());
+    // C 对照:union + kind 字段 + switch;Rust 把三样收进一个类型,
+    // 且"哪个变体有哪些字段"由编译器检查——取错字段直接编译错误
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2:enum 里塞"状态数据" vs 用字段表达</div>
+<p>状态机建模的常见分歧:状态相关的数据放 enum 变体里(如上例),与状态无关的数据放 struct 字段里。<span class="hl">判据:该数据是否只在某状态下存在?是→放变体;否→放结构体字段</span>。把"所有状态共用的数据"塞进变体,会让 match 每个分支重复处理,还容易漏。生产直觉:先画状态图,再定 enum,最后定 struct 字段。</p>
+</div>
+
+<h2>§14.4 newtype 模式:类型即文档</h2>
+
+<h3>14.4.1 typedef 的局限与 newtype 的升级</h3>
+
+<pre class="code">// C:typedef 只是别名,米和秒都是 double,照样能相加
+//   typedef double meters;
+//   typedef double seconds;
+//   meters m = 100.0; seconds s = 5.0;
+//   double v = m / s;   // 合法但…… m/s 是速度,单位混淆编译器不管
+
+// Rust:newtype——包一层,单位成为独立类型
+struct Meters(f64);
+struct Seconds(f64);
+
+impl Meters {
+    fn new(v: f64) -&gt; Meters { Meters(v) }
+    fn value(&amp;self) -&gt; f64 { self.0 }
+}
+
+fn speed(distance: Meters, time: Seconds) -&gt; f64 {
+    distance.value() / time.value()      // 取内部值需显式方法
+}
+
+fn main() {
+    let d = Meters::new(100.0);
+    let t = Seconds::new(5.0);
+    println!("速度:{}", speed(d, t));
+    // speed(t, d);        // ERROR:类型不匹配——单位错了,编译期报错!
+    // let wrong = d + t;  // ERROR:Meters 与 Seconds 不能相加(无 Add impl)
+}</pre>
+
+<h3>14.4.2 newtype 的三个生产用途</h3>
+
+<pre class="code">// 用途一:单位/概念区分(上例)
+// 用途二:为外部类型附加本 crate 的方法(孤儿规则限制的解药)
+use std::collections::HashMap;
+
+struct UserMap(HashMap&lt;u32, String&gt;);   // 包装外部类型
+
+impl UserMap {
+    fn new() -&gt; UserMap { UserMap(HashMap::new()) }
+    fn insert(&amp;mut self, id: u32, name: &amp;str) {
+        self.0.insert(id, name.to_string());
+    }
+    fn total(&amp;self) -&gt; usize { self.0.len() }
+}
+
+// 用途三:给"同一底层类型"的不同角色加保护
+struct RawText(String);      // 未净化的文本
+struct Sanitized(String);    // 已净化的文本
+// 只有 Sanitized 才能进渲染函数 → 数据流的安全阶段在类型里可见
+
+fn main() {
+    let mut users = UserMap::new();
+    users.insert(1, "张三");
+    println!("用户数:{}", users.total());
+
+    let raw = RawText("&lt;script&gt;alert(1)&lt;/script&gt;".to_string());
+    // render(&amp;raw);        // ERROR:RawText 不是 Sanitized——类型防线
+    let _safe = Sanitized(raw.0);       // 显式净化转换
+    println!("净化管线类型安全");
+}</pre>
+
+<table class="cmp">
+<tr><th>C</th><th>Rust</th></tr>
+<tr><td>typedef double meters;只是别名</td><td>struct Meters(f64);独立类型,互不兼容</td></tr>
+<tr><td>单位混淆:编译通过,运行期算错</td><td>单位混淆:编译错误</td></tr>
+<tr><td>int 的"多个角色"靠命名约定</td><td>newtype 让角色成为类型</td></tr>
+<tr><td>外部类型不能加方法</td><td>newtype 包装后可为包装类型实现 trait</td></tr>
+<tr><td>数据流安全靠纪律</td><td>RawText/Sanitized 式管道,编译器把关</td></tr>
+</table>
+
+<h2>§14.5 值语义 vs 引用语义:深化</h2>
+
+<h3>14.5.1 三条语义轴</h3>
+
+<pre class="code">// 轴一:复制(Copy)vs 移动(Move)
+//   数字/字符/小值:Copy,赋值即拷贝
+let a = 5i32;
+let b = a;                       // 拷贝:b 与 a 都是 5,独立
+//   大值/String/Vec:Move,赋值转移所有权
+let s = String::from("hi");
+let t = s;                       // 移动:s 失效
+// println!("{s}");              // ERROR: use of moved value
+
+// 轴二:共享借用(&amp;T,只读)vs 独占借用(&amp;mut T,可写)
+//   规则(第5章):不可变借用可无数;可变借用唯一
+//   对应 C:const T* 与 T*——但 Rust 的规则是编译器强制的
+
+// 轴三:所有权(拥有/释放)vs 借用(使用不拥有)
+//   Box/String/Vec:拥有; &amp;T:借用;生命周期由编译器管
+
+#[derive(Debug, Clone)]
+struct Big { data: Vec&lt;u32&gt; }    // 大类型:Move + 显式 clone
+
+fn main() {
+    let mut big = Big { data: vec![1, 2, 3] };
+    let copy_of_big = big.clone();          // 显式深拷贝(对照 memcpy)
+    let borrowed = &amp;big;                    // 共享借用:可同时多个
+    println!("{:?} {:?}", borrowed, copy_of_big);
+
+    let exclusive = &amp;mut big;               // 独占借用
+    exclusive.data.push(4);
+    println!("{:?}", big);                  // 借用结束,回到拥有者
+}</pre>
+
+<h3>14.5.2 从 C 的指针三意图到 Rust 的三态</h3>
+
+<table class="cmp">
+<tr><th>C 的传参意图</th><th>C 写法</th><th>Rust 三态</th></tr>
+<tr><td>只读查看</td><td>const T* p</td><td>&amp;T(共享借用)</td></tr>
+<tr><td>就地修改</td><td>T* p</td><td>&amp;mut T(独占借用)</td></tr>
+<tr><td>转移所有权</td><td>T* p + 约定"调用方负责 free"</td><td>T(按值传入,所有权转移)</td></tr>
+<tr><td>复制一份</td><td>memcpy / 手写</td><td>T: Clone 的 .clone() / T: Copy</td></tr>
+</table>
+
+<div class="box box-keypoint"><div class="box-title">重点:C 的意图靠注释,Rust 的意图是类型</div>
+<p>读 C 代码时,你要从 <code>void f(T* p, const T* q)</code> 里猜哪个是读、哪个是写、哪个是转移——猜错的代价是悬垂与泄漏。Rust 的函数签名直接回答这三个问题:<span class="hl">f(&amp;T) 不拥有、f(&amp;mut T) 独占改写、f(T) 拿走所有权</span>。这三态(第4章)与所有权(第5章)是全书的心跳;本章的深化在于:把三态放进"值语义 vs 引用语义"的完整坐标里——Copy 类型天然值语义,C 的"struct 按值传"在这里得到类型化;引用语义类型(字符串、容器、流)的共享与独占由借用规则管。</p>
+</div>
+
+<h2>§14.6 类型系统与 trait 的交汇</h2>
+
+<h3>14.6.1 impl Trait 返回:隐藏类型,保留契约</h3>
+
+<pre class="code">// 返回"实现了某 trait 的类型",但不暴露具体类型
+fn make_counter() -&gt; impl Iterator&lt;Item = u32&gt; {
+    (1..=5)                        // 具体类型是 RangeInclusive,调用方不需要知道
+}
+
+fn main() {
+    let total: u32 = make_counter().sum();
+    println!("和:{total}");
+
+    // 与泛型的对照:返回位置 impl Trait 是"匿名具体类型";
+    // 调用方只能按 trait 用,不能做 trait 之外的操作——契约即边界
+}</pre>
+
+<h3>14.6.2 Sized 与 ?Sized、类型别名</h3>
+
+<pre class="code">// 默认 T: Sized(大小编译期已知);dyn Trait 与 [T] 是不定大小
+fn takes_sized&lt;T&gt;(_x: T) {}                 // T 必须有确定大小(默认)
+
+// ?Sized:允许不定大小(如 &amp;dyn Trait 的借用)
+fn accepts_any&lt;T: ?Sized&gt;(_x: &amp;T) {}        // &amp;str / &amp;dyn Trait 都行
+
+// 类型别名:与 C typedef 相同(纯别名,不提供 newtype 的安全性)
+type Price = f64;                            // 别名:Price 就是 f64
+type Result2&lt;T&gt; = std::result::Result&lt;T, String&gt;;  // 简化签名
+
+fn main() {
+    let p: Price = 99.9;                     // 与 f64 完全互通
+    println!("{p}");
+    let r: Result2&lt;u32&gt; = Ok(1);
+    println!("{:?}", r);
+
+    // 别名的取舍:C 的 typedef 习惯在 Rust 里的正确位置:
+    // 需要"简洁"用 type;需要"区分与安全"用 newtype(§14.4)
+}</pre>
+
+<h3>14.6.3 类型系统全景:三股力量</h3>
+
+<table class="cmp">
+<tr><th>力量</th><th>工具</th><th>解决的问题</th></tr>
+<tr><td>可选性</td><td>Option / Result</td><td>"可能没有"与"可能失败"进入类型</td></tr>
+<tr><td>区分度</td><td>newtype / enum / 类型参数</td><td>单位、角色、状态不再混淆</td></tr>
+<tr><td>行为契约</td><td>trait / trait bound / dyn</td><td>"能做什么"由类型声明</td></tr>
+</table>
+
+<h2>§14.7 收官:订单领域模型与全书地图</h2>
+
+<h3>14.7.1 全书 14 章的知识闭环</h3>
+<table class="cmp">
+<tr><th>章节</th><th>一句话贡献</th></tr>
+<tr><td>1 数据类型与变量</td><td>let 绑定、强类型、类型系统带着所有权</td></tr>
+<tr><td>2 运算符与表达式</td><td>无隐式转换、无 ++、表达式风格</td></tr>
+<tr><td>3 流程控制</td><td>match 穷尽、if let、loop 带值</td></tr>
+<tr><td>4 函数与方法</td><td>值/借用/移动三态、闭包三态</td></tr>
+<tr><td>5 内存管理</td><td>所有权三法则、生命周期、智能指针</td></tr>
+<tr><td>6 面向对象与 trait</td><td>行为契约、组合优于继承、两种分派</td></tr>
+<tr><td>7 文件与 IO</td><td>Result 世界、路径类型、serde</td></tr>
+<tr><td>8 网络通信</td><td>TCP/UDP、字节流定界、HTTP</td></tr>
+<tr><td>9 并发与异常</td><td>错误三件套、Send/Sync、通道、tokio</td></tr>
+<tr><td>10 泛型与元编程</td><td>单态化、trait bound、宏</td></tr>
+<tr><td>11 反射与动态特性</td><td>无反射;Any/宏的编译期替代</td></tr>
+<tr><td>12 注解与编译期配置</td><td>属性系统、#[cfg]、features</td></tr>
+<tr><td>13 模块与 Cargo 工程</td><td>模块树、Cargo 全流程、workspace</td></tr>
+<tr><td>14 类型系统进阶</td><td>Option、enum、newtype、语义三轴(本章)</td></tr>
+</table>
+
+<h3>14.7.2 进入生产后的三条心法</h3>
+<div class="box box-tip"><div class="box-title">心法一:类型先行</div>
+<p>写业务前先定义类型:状态用 enum、可选用 Option、单位用 newtype、行为用 trait——类型定义得越精确,后续 match/分支越少,编译器帮你查的错误越多。C 程序员最划算的习惯升级:写函数前先写签名,签名即文档,签名即测试。</p>
+</div>
+<div class="box box-tip"><div class="box-title">心法二:编译错误是老师的答案</div>
+<p>Rust 编译器报错时,报错信息通常指向"缺哪个 trait、哪个生命周期、哪个所有权转移"。生产里 90% 的修复路径:读错误 → 补约束/换借用 → 过。不要与编译器搏斗,顺着它的引导走。</p>
+</div>
+<div class="box box-tip"><div class="box-title">心法三:unsafe 是边界,不是习惯</div>
+<p>FFI、裸指针、极致性能才碰 unsafe,并用 unsafe 块包裹、注释说明不变量(第5章)。Rust 的安全保证是生产级代码的护城河——护城河外的操作,要像 C 一样小心,但范围要缩到最小。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table>
+<tr><th>主题</th><th>结论 / 写法</th></tr>
+<tr><td>类型推导</td><td>let 绑定/调用结果可推导;函数签名、泛型参数、空集合必须显式</td></tr>
+<tr><td>整数/浮点默认</td><td>i32 / f64;索引与长度用 usize(与 i32 不隐式互转)</td></tr>
+<tr><td>Option 形态</td><td>Some(T) / None;签名自带"可能没有"</td></tr>
+<tr><td>Option 处理</td><td>match / if let / map / and_then / unwrap_or / ?</td></tr>
+<tr><td>enum 建模</td><td>变体可带数据:enum S { A, B {x: f64}, C(String) }</td></tr>
+<tr><td>穷尽检查</td><td>match 必须覆盖全部变体;新增变体编译报错逼你处理</td></tr>
+<tr><td>newtype</td><td>struct Meters(f64);互不兼容的类型;单位/角色/外部类型包装</td></tr>
+<tr><td>type 别名</td><td>type Price = f64;纯别名,无安全性(与 typedef 相同)</td></tr>
+<tr><td>语义三轴</td><td>Copy/Move;共享借用 &amp;T;独占借用 &amp;mut T;所有权/借用</td></tr>
+<tr><td>impl Trait 返回</td><td>fn f() -&gt; impl Iterator&lt;Item = u32&gt;;隐藏类型保留契约</td></tr>
+<tr><td>?Sized</td><td>&lt;T: ?Sized&gt; 允许不定大小(如 &amp;dyn Trait)</td></tr>
+<tr><td>类型系统三力</td><td>可选性(Option/Result)+ 区分度(newtype/enum)+ 契约(trait)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能说出类型推导的边界(签名/泛型/空集合必须显式)与默认类型规则</li>
+<li>能用 Option 建模"可能没有",并说出与 C NULL 的本质差别</li>
+<li>能写出带数据的 enum,并利用 match 穷尽检查获得编译期保障</li>
+<li>能用 newtype 建模单位/角色,说出与 typedef 的本质差别</li>
+<li>能说清 Copy/Clone/Move/借用之间的关系与各自场景</li>
+<li>能从函数签名读出"只读/改写/转移"三态(第4章能力的最终形态)</li>
+<li>会用 impl Trait 返回隐藏具体类型</li>
+<li>能区分 type 别名与 newtype 的适用场景</li>
+<li>能用"类型先行"的方法为业务建模(enum 状态 + newtype 单位 + Option 可选)</li>
+<li>能画出全书 14 章的知识地图,并说出每章在生产中的角色</li>
+</ul>
+
+<h2>自测题</h2>
+
+<div class="q">1. 为什么函数参数必须写类型,而 let 绑定可以不写?这对 C 程序员意味着什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>函数签名是跨调用方的契约:类型是接口的一部分,编译器要据此检查所有调用点;let 绑定是局部事实,可从初始化表达式推导。对 C 程序员:这比 C 更严格也更安全——C 的函数声明(头文件)里类型不齐是常态,靠调用方猜;Rust 的签名即全部契约,猜的部分由编译器完成。</p>
+</div>
+
+<div class="q">2. Option&lt;T&gt; 与 C 的"返回 NULL / 哨兵值"相比,消除了哪几类 bug?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>三类:① 忘记判空——None 无法被当作 T 使用,编译期强制处理;② 语义歧义——C 里 0/-1/空串都当过"空",Option 只有 None 一个空值;③ 误判生命周期——C 的返回指针可能是悬垂(指向已释放栈),Option 的值语义/借用规则在类型层排除。剩下的"选择",用 map/? 链式表达,不产生嵌套缩进。</p>
+</div>
+
+<div class="q">3. C 的 enum + union + tag 与 Rust 的 enum,编译期保障差在哪里?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>C:enum 是数字集合,switch 漏掉新分支不报错(或靠 -Wswitch 部分检查);union 字段与 tag 的对应靠程序员约定,取错字段是 UB。Rust:enum 是代数数据类型,变体与携带数据一一对应,取某变体的数据必须先匹配该变体(编译器检查);match 穷尽性保证新增变体时所有分支都被审计——"状态机漏分支"从运行期灾难变成编译期必报。</p>
+</div>
+
+<div class="q">4. typedef double meters 与 struct Meters(f64) 在生产上差出什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>typedef 的 meters 仍是 double:米与秒、价格与数量可以互相赋值、相加,单位错误全部留到运行期(数据算错,最危险的那种 bug)。newtype 的 Meters 是与 f64 互不兼容的独立类型:传错单位编译失败;需要取值必须显式 .0/方法——每个单位转换在代码里可见。生产收益:涉及物理量、货币、ID 的系统,newtype 把一整类事故消灭在编译期。</p>
+</div>
+
+<div class="q">5. 从函数签名 &amp;T / &amp;mut T / T 分别读出的契约是什么?C 里对应的注释长什么样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>&amp;T:只读共享,调用方保留所有权,可能同时被多处读;&amp;mut T:独占改写,调用期间别无借用;T:所有权转移,调用方不再拥有。C 的对应:const T* / T* / "T* 且约定调用方负责 free"。差别:前两者编译器强制(违反借用规则编译失败),转移在 C 里只是口头约定——所以 C 的悬垂与 double-free 频发,而 Rust 的签名即保证。</p>
+</div>
+
+<div class="q">6. 一个电商系统里,订单金额、商品 ID、用户 ID 都用 u64 表示,会出什么问题?如何修复?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>问题:三者的 u64 互相兼容,传参错位(把商品 ID 当金额、把用户 ID 当商品 ID)编译通过、运行期产生错误业务数据——这是"类型区分度"缺失。修复:newtype 建模:struct Money(u64); struct ProductId(u64); struct UserId(u64);各配实现。从此金额函数只收 Money,ID 函数只收对应 ID,错位在编译期报错。配套:enum 建模订单状态、Option 建模"优惠券可能没有",这就是"类型先行"的完整生产形态。</p>
+</div>
+
+<h2>章末实验题:订单领域模型</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 14:订单领域模型</div>
+<p><b>实验目标:</b>用本章全部武器建模一个订单系统:newtype 建模金额与 ID、enum 建模订单状态与支付方式、Option 建模可选信息、trait 建模行为;并写一个命令行演示全流程。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:newtype:Money、ProductId、UserId(各自实现 Display)(覆盖:newtype §14.4)</li>
+<li>任务 2:enum OrderStatus 与 PaymentMethod(带数据变体)(覆盖:enum §14.3)</li>
+<li>任务 3:struct Order:用户、商品列表、金额、状态、可选优惠券(覆盖:Option §14.2)</li>
+<li>任务 4:impl 方法:total(汇总金额)、apply_coupon(返回 Result 或 Option)(覆盖:impl 与错误 §9/§14.2)</li>
+<li>任务 5:trait Billable:Order 与 Invoice 都实现"应付款"行为(覆盖:trait §6)</li>
+<li>任务 6:main 演示:建订单 → 加优惠券 → 支付 → 状态流转,全程类型安全(覆盖:收官 §14.7)</li>
+<li>加分:尝试把 Order::total 的金额类型改成 u64 直接相加,观察编译错误(单位防线)</li>
+</ul>
+</div>
+
+<ol class="steps">
+<li><b>第一步:</b>cargo new order-demo;先写三个 newtype 与 Display</li>
+<li><b>第二步:</b>写两个 enum(状态与支付方式),为状态写描述方法</li>
+<li><b>第三步:</b>写 Order 结构与方法(字段含 Option&lt;Coupon&gt;)</li>
+<li><b>第四步:</b>写 Billable trait,Order 与 Invoice 各自实现</li>
+<li><b>第五步:</b>main 里完整走一遍流程,编译通过后做加分项(去掉 Money 看编译错)</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">// ===== 实验 14:订单领域模型 =====
+// 覆盖知识点:newtype 建模(§14.4)、enum 状态建模(§14.3)、
+//            Option 可选性(§14.2)、trait 行为契约(§6)、
+//            impl 方法与错误处理(§9)、收官串联(§14.7)
+
+use std::fmt;
+
+// ---- 任务 1:newtype 三件套:单位与角色独立 ----
+struct Money(u64);                       // 金额:分
+struct ProductId(u64);
+struct UserId(u64);
+
+impl fmt::Display for Money {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        write!(f, "{:.2} 元", self.0 as f64 / 100.0)
+    }
+}
+
+impl fmt::Display for ProductId {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        write!(f, "商品#{}", self.0)
+    }
+}
+
+impl fmt::Display for UserId {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        write!(f, "用户#{}", self.0)
+    }
+}
+
+impl Money {
+    fn add(&amp;self, other: &amp;Money) -&gt; Money { Money(self.0 + other.0) }
+    fn is_zero(&amp;self) -&gt; bool { self.0 == 0 }
+}
+
+// ---- 任务 2:enum 状态与支付方式 ----
+enum OrderStatus {
+    Pending,                                  // 待支付
+    Paid { method: PaymentMethod, at: String },   // 已支付(带数据)
+    Shipped(String),                          // 已发货(运单号)
+    Cancelled(String),                        // 已取消(原因)
+}
+
+enum PaymentMethod {
+    WechatPay,
+    Alipay,
+    BankCard(String),                         // 尾号
+}
+
+impl OrderStatus {
+    fn describe(&amp;self) -&gt; String {
+        match self {
+            OrderStatus::Pending =&gt; "待支付".to_string(),
+            OrderStatus::Paid { method, .. } =&gt; {
+                format!("已支付({})", match method {
+                    PaymentMethod::WechatPay =&gt; "微信支付",
+                    PaymentMethod::Alipay =&gt; "支付宝",
+                    PaymentMethod::BankCard(last4) =&gt; {
+                        return format!("已支付(银行卡尾号 {last4})");
+                    }
+                })
+            }
+            OrderStatus::Shipped(no) =&gt; format!("已发货(运单 {no})"),
+            OrderStatus::Cancelled(reason) =&gt; format!("已取消:{reason}"),
+        }
+    }
+}
+
+// ---- 任务 2 补充:优惠券(可选信息) ----
+struct Coupon {
+    code: String,
+    discount: Money,                          // 减免金额
+}
+
+// ---- 任务 3:Order 结构 ----
+struct Order {
+    id: u32,
+    user: UserId,
+    products: Vec&lt;(ProductId, Money)&gt;,        // 商品与单价
+    status: OrderStatus,
+    coupon: Option&lt;Coupon&gt;,                  // 可能没有优惠券
+}
+
+// ---- 任务 4:订单方法 ----
+impl Order {
+    fn new(id: u32, user: UserId) -&gt; Order {
+        Order {
+            id,
+            user,
+            products: Vec::new(),
+            status: OrderStatus::Pending,
+            coupon: None,
+        }
+    }
+
+    fn add_product(&amp;mut self, pid: ProductId, price: Money) {
+        self.products.push((pid, price));
+    }
+
+    /// 汇总金额:商品总价减去优惠券减免(减不了就报错)
+    fn total(&amp;self) -&gt; Result&lt;Money, String&gt; {
+        let raw = self.products.iter()
+            .fold(Money(0), |acc, (_, p)| acc.add(p));
+        match &amp;self.coupon {
+            None =&gt; Ok(raw),
+            Some(c) if c.discount.0 &gt; raw.0 =&gt; {
+                Err(format!("优惠券 {} 减免超总价", c.code))
+            }
+            Some(c) =&gt; Ok(Money(raw.0 - c.discount.0)),
+        }
+    }
+
+    /// 支付:仅待支付状态可支付(状态机在类型层把关)
+    fn pay(&amp;mut self, method: PaymentMethod) -&gt; Result&lt;(), String&gt; {
+        match &amp;self.status {
+            OrderStatus::Pending =&gt; {
+                self.status = OrderStatus::Paid {
+                    method,
+                    at: "2026-08-26 12:00".to_string(),
+                };
+                Ok(())
+            }
+            _ =&gt; Err(format!("订单 {} 当前状态不可支付", self.id)),
+        }
+    }
+}
+
+// ---- 任务 5:trait 行为契约:可开票对象 ----
+trait Billable {
+    fn amount(&amp;self) -&gt; Result&lt;Money, String&gt;;
+    fn describe(&amp;self) -&gt; String;
+}
+
+impl Billable for Order {
+    fn amount(&amp;self) -&gt; Result&lt;Money, String&gt; { self.total() }
+    fn describe(&amp;self) -&gt; String {
+        format!("订单#{} {} {}", self.id, self.user, self.status.describe())
+    }
+}
+
+struct Invoice { no: String, items: Vec&lt;Money&gt; }
+
+impl Billable for Invoice {
+    fn amount(&amp;self) -&gt; Result&lt;Money, String&gt; {
+        Ok(self.items.iter().fold(Money(0), |a, i| a.add(i)))
+    }
+    fn describe(&amp;self) -&gt; String {
+        format!("发票#{} 共 {} 项", self.no, self.items.len())
+    }
+}
+
+fn print_bill(b: &amp;impl Billable) {
+    match b.amount() {
+        Ok(m) =&gt; println!("{} → 应付 {m}", b.describe()),
+        Err(e) =&gt; eprintln!("{} → 错误:{e}", b.describe()),
+    }
+}
+
+// ---- 任务 6:main 全流程演示 ----
+fn main() {
+    let mut order = Order::new(1, UserId(42));
+    order.add_product(ProductId(1001), Money(1999));  // 19.99 元
+    order.add_product(ProductId(1002), Money(3000));  // 30 元
+    order.coupon = Some(Coupon {
+        code: "SAVE5".into(),
+        discount: Money(500),                         // 减 5 元
+    });
+
+    print_bill(&amp;order);                        // 应付 44.99 元
+    let _ = order.pay(PaymentMethod::WechatPay);
+    print_bill(&amp;order);                        // 已支付(微信支付)
+
+    // 错误路径:重复支付被拒(状态机)
+    match order.pay(PaymentMethod::Alipay) {
+        Ok(_) =&gt; println!("不该成功"),
+        Err(e) =&gt; println!("预期错误:{e}"),
+    }
+
+    // 发票同样可开票(多态:同一契约,不同实现)
+    let invoice = Invoice {
+        no: "INV-001".into(),
+        items: vec![Money(1999), Money(500)],
+    };
+    print_bill(&amp;invoice);
+
+    // 加分演示:直接 u64 相加会被类型拒绝——
+    // let bad: u64 = order.total().unwrap().0 + 100; // 需显式 .0,看得见单位
+    println!("领域模型演示完毕");
+}</pre>
+<p>设计说明:全章的武器在一百行内协同——newtype 保证金额与 ID 不会互换,enum 让订单状态机在类型里显形(match 穷尽保证每个状态都被处理),Option 让"优惠券可能没有"成为签名事实,trait 让订单与发票共用一套"开票"逻辑(第6章组合思维),Result 让"优惠券超抵""状态不可支付"成为显式错误。这就是"类型先行"的完整示范。进阶挑战:给 Money 实现 PartialOrd 与 Add(第6章运算符重载),给 Order 加"只能从未发货状态取消"的状态机守卫——做完这两步,你的 Rust 生产级建模能力就毕业了。</p>
+</div>
+
+<hr class="thin">
+<p class="small">全书完。14 章,从 let 绑定到领域建模,从 malloc/free 到所有权,从 errno 到 Result——愿这本书成为你从 C 到 Rust 的桥,愿你进入生产后不再有语法困惑。</p>
+
+</body>
+</html>

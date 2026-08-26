@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第7章 文件 I/O</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO JAVASCRIPT · PRODUCTION READY</div>
+<h1 class="chapter-title">第7章 文件 I/O</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握 node:fs 模块的三种风格:同步/回调/Promise,并理解生产选型</li>
+<li>掌握文本读写与编码(UTF-8、BOM),二进制读写(Buffer)与 C 的 fread/fwrite 对照</li>
+<li>掌握 path 模块:join/resolve、basename/dirname/extname,跨平台分隔符</li>
+<li>掌握目录遍历、创建、删除与文件存在性判断</li>
+<li>掌握大文件流式处理:createReadStream/readline,理解内存占用差异</li>
+<li>掌握 JSON 序列化的坑:undefined、NaN、循环引用、toJSON</li>
+<li>掌握标准流与命令行参数,完成日志解析统计工具实验</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 JavaScript:本章主题如何迁移</div>
+<p>C 的文件操作是 fopen/fread/fwrite/fclose 四件套,配合 fseek/ftell、strtok 逐行解析,每一步都要检查返回值,EOF 与错误全靠 errno 与 feof 判断。JS 的 node:fs 模块把全套映射过来,而且更进一步:<span class="hl">每个操作都有同步、回调、Promise 三种形态</span>,并配套了目录、权限、流式与 watch 等 C 标准库没有的高级能力。</p>
+<p>最大的心智差异是<span class="hl">异步</span>:C 的 fread 是阻塞的,读完才返回;Node 的异步 readFile 立即返回一个 Promise,数据到了才回调。服务器场景必须用异步(否则一次磁盘读就把整个事件循环卡死),脚本场景可以用同步版本(init 阶段读配置)。第9章将深讲事件循环,本章先用"await 等结果"的姿势。</p>
+<p>二进制视角也有变化:C 直接 fwrite 结构体(对齐、字节序、版本兼容都是坑);JS 用 Buffer 精确控制字节,配合 JSON/字符串化做跨版本兼容的序列化。文件不存在时,C 的 fopen 返回 NULL;JS 的异步 API 抛 ENOENT 错误,需要 try/catch 或 existsSync 预判。</p>
+<p>最后,路径处理:C 的 "a/b" 拼接在 Windows 上就是事故;JS 用 path.join/path.resolve 自动处理分隔符,并用 path.win32/path.posix 保证跨平台一致。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的 fopen/fclose/fread/fwrite/fprintf/fscanf 全套</li>
+<li>C 的文本模式与二进制模式("rb"/"wb")</li>
+<li>C 的 errno、feof、ferror 错误处理模式</li>
+<li>C 的 getline/strtok 逐行解析</li>
+<li>第5章 Buffer 基础(字节与编码)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(读写):</b>读 §7.1–§7.2,跑通三种风格的读写示例</li>
+<li><b>第二阶段(路径目录):</b>读 §7.3,练习 path 各 API 输出</li>
+<li><b>第三阶段(流与序列化):</b>读 §7.4–§7.6,重点理解流式处理的内存优势</li>
+<li><b>第四阶段(实验):</b>完成章末"日志解析与统计工具"</li>
+<li><b>验收标准:</b>能独立写出"读配置 → 处理 → 写结果"的完整异步流程,并处理 ENOENT</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>第7章 文件 I/O
+  <ul>
+    <li>§7.1 基础读写:三种风格、编码与 BOM</li>
+    <li>§7.2 二进制 I/O:Buffer 读写、与 fread/fwrite 对照</li>
+    <li>§7.3 路径与目录:join/resolve、遍历、创建删除</li>
+    <li>§7.4 大文件流式处理:readline、内存对比</li>
+    <li>§7.5 序列化:JSON 的坑与安全做法</li>
+    <li>§7.6 标准流:stdin/stdout/stderr、命令行参数</li>
+    <li>§7.7 生产场景:配置文件、CSV、日志追加</li>
+  </ul>
+  </li>
+</ul></div>
+
+<h2>§7.1 基础读写:同步、回调与 Promise</h2>
+
+<table class="cmp">
+<tr><th>C</th><th>Node(fs 模块)</th><th>说明</th></tr>
+<tr><td>fopen(path, "r")</td><td>fs.readFile</td><td>整个文件读入内存/回调</td></tr>
+<tr><td>fopen(path, "w")</td><td>fs.writeFile</td><td>覆盖写</td></tr>
+<tr><td>fopen(path, "a")</td><td>fs.appendFile</td><td>追加写</td></tr>
+<tr><td>fread(buf, ...)</td><td>fs.read(fd, buf, ...)</td><td>低级读(带句柄)</td></tr>
+<tr><td>fclose(fp)</td><td>fs.close(fd) / 自动关闭</td><td>readFile 全程自动管理</td></tr>
+<tr><td>fseek/ftell</td><td>fs.readSync 的 position 参数</td><td>少见,生产基本用不着</td></tr>
+<tr><td>feof</td><td>读空即 EOF,不报错</td><td>文件读完返回空串,不设错误</td></tr>
+</table>
+
+<pre class="code">const fs = require('node:fs');
+
+// 1. 同步风格:init 阶段/脚本工具可用(会阻塞事件循环)
+fs.writeFileSync('/tmp/hello.txt', '你好,文件系统\n');
+const text = fs.readFileSync('/tmp/hello.txt', 'utf8');
+console.log('同步读:', text.trim());
+
+// 2. 回调风格:老代码常见,链式回调易读难写
+fs.readFile('/tmp/hello.txt', 'utf8', (err, data) =&gt; {
+  if (err) {
+    console.error('读失败:', err.message);
+    return;
+  }
+  console.log('回调读:', data.trim());
+});
+
+// 3. Promise 风格:生产首选(与第9章 async/await 配套)
+async function main() {
+  await fs.promises.writeFile('/tmp/p.txt', 'Promise 写入\n');
+  const data = await fs.promises.readFile('/tmp/p.txt', 'utf8');
+  console.log('Promise 读:', data.trim());
+
+  // 追加:对应 C 的 "a" 模式
+  await fs.promises.appendFile('/tmp/p.txt', '追加一行\n');
+  console.log('追加后:', (await fs.promises.readFile('/tmp/p.txt', 'utf8')).trim());
+}
+main().catch((err) =&gt; console.error('异步出错:', err.message));
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 7.1:readFile 的文件不存在与编码问题</div>
+<p>文件不存在时,同步版抛 ENOENT 异常,回调版 err.code === 'ENOENT',Promise 版 reject 带 code。生产防御:<code>fs.existsSync</code> 预判 + try/catch 兜底(存在与可读之间可能竞态,兜底不能省)。编码:不传 'utf8' 时 readFile 返回 Buffer;传了 'utf8' 但文件带 BOM 时,字符串开头会残留 U+FEFF 字符,需 <code>str.replace(/^﻿/, '')</code> 去除。</p>
+</div>
+
+<h2>§7.2 二进制 I/O:Buffer 与 fread/fwrite 对照</h2>
+
+<pre class="code">// 二进制写:与 C 的 fwrite(buf, size, n, fp) 对应
+const data = Buffer.from([0x01, 0x02, 0xff, 0x00]);
+fs.writeFileSync('/tmp/data.bin', data);
+console.log('二进制已写:', data.toString('hex')); // 0102ff00
+
+// 二进制读:不传编码直接得到 Buffer(不要用 utf8 解码二进制!)
+const raw = fs.readFileSync('/tmp/data.bin');
+console.log('二进制读回:', raw.toString('hex'));
+console.log('字节数:', raw.length);             // 4
+
+// 结构化数据二进制化:C 的 fwrite(struct) 是字节级;JS 用 DataView 精确布局
+function writeRecord(path, records) {
+  const ab = new ArrayBuffer(records.length * 8);   // 每条:uint32 + float32
+  const dv = new DataView(ab);
+  records.forEach((r, i) =&gt; {
+    dv.setUint32(i * 8, r.id);        // 大端 uint32
+    dv.setFloat32(i * 8 + 4, r.score); // 大端 float32
+  });
+  fs.writeFileSync(path, Buffer.from(ab));
+}
+function readRecords(path) {
+  const buf = fs.readFileSync(path);
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  const out = [];
+  for (let i = 0; i &lt; dv.byteLength / 8; i++) {
+    out.push({ id: dv.getUint32(i * 8), score: dv.getFloat32(i * 8 + 4) });
+  }
+  return out;
+}
+writeRecord('/tmp/rec.bin', [{ id: 1001, score: 87.5 }, { id: 1002, score: 92.25 }]);
+console.log('结构读回:', JSON.stringify(readRecords('/tmp/rec.bin')));
+
+// 低级句柄操作(对应 fopen/fclose):
+const fd = fs.openSync('/tmp/fd.bin', 'w');
+try {
+  fs.writeSync(fd, Buffer.from('fd 写入'));
+} finally {
+  fs.closeSync(fd);               // 第5章:句柄必须成对关闭
+}
+console.log(fs.readFileSync('/tmp/fd.bin', 'utf8')); // fd 写入
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 7.2:把二进制文件当 utf8 读</div>
+<p>任何非文本文件(图片、压缩包、二进制协议)都不要传 'utf8' 读:字节被按 UTF-8 解码会得到乱码甚至被替换字符破坏。<span class="hl">规则:文本文件传编码,二进制文件不传</span>,拿到 Buffer 后用 DataView/位运算处理。</p>
+</div>
+
+<h2>§7.3 路径与目录</h2>
+
+<pre class="code">const path = require('node:path');
+
+// 1. 拼接与解析:C 的 "a/b" 手拼在 Windows 上是灾难
+console.log(path.join('data', 'sub', 'file.txt')); // data\sub\file.txt(平台分隔符)
+console.log(path.resolve('data', '..', 'conf.json')); // 绝对路径,.. 正常解析
+console.log(path.basename('/a/b/c.txt'));          // c.txt
+console.log(path.dirname('/a/b/c.txt'));           // /a/b
+console.log(path.extname('/a/b/c.txt'));           // .txt
+
+// 2. 跨平台:模块统一用 / 或 path.join;windows 上的盘符由 path 处理
+// path.win32 与 path.posix 可以强制指定规则(如生成给别的系统用的路径)
+
+// 3. 存在性、类型、信息
+const p = '/tmp/test-path.txt';
+fs.writeFileSync(p, 'x');
+console.log(fs.existsSync(p));          // true
+console.log(fs.statSync(p).size);       // 1,类似 C 的 fseek+ftell 取大小
+console.log(fs.statSync(p).isFile());   // true
+console.log(fs.statSync(p).isDirectory()); // false
+
+// 4. 目录操作
+fs.mkdirSync('/tmp/jsdir/sub', { recursive: true }); // 像 mkdir -p
+fs.writeFileSync('/tmp/jsdir/sub/a.txt', 'A');
+fs.writeFileSync('/tmp/jsdir/sub/b.txt', 'B');
+
+// 5. 目录遍历(递归):替代 C 的 opendir/readdir 手写递归
+function walk(dir, depth = 0) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const e of entries) {
+    console.log('  '.repeat(depth) + e.name + (e.isDirectory() ? '/' : ''));
+    if (e.isDirectory()) walk(path.join(dir, e.name), depth + 1);
+  }
+}
+walk('/tmp/jsdir');
+
+// 6. 删除
+fs.rmSync('/tmp/jsdir', { recursive: true, force: true }); // 类似 rm -rf
+console.log('删除后存在:', fs.existsSync('/tmp/jsdir'));     // false
+</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议 7.1:永远用 path.join 拼路径,禁止字符串拼接</div>
+<p><code>'a' + '/' + 'b'</code> 在 Windows 上可能得到 <code>a/b</code>(可接受)但在拼接用户输入时可能产生路径穿越(<code>../</code>)。统一 path.join/path.resolve;读取用户可控文件名时先 <code>path.basename</code> 剥离目录部分,再拼到白名单目录,这是文件服务的安全底线。</p>
+</div>
+
+<h2>§7.4 大文件流式处理:内存优势</h2>
+
+<p>readFile 把整个文件读进内存:1GB 日志文件就吃 1GB+ 堆。流式处理一次只读一小块:<span class="hl">内存占用与文件大小无关</span>。Node 的 readline 可以逐行消费任意大小的文件。</p>
+
+<pre class="code">const readline = require('node:readline');
+const { createReadStream } = require('node:fs');
+
+// 生成一个 1MB 的测试日志
+async function genLog() {
+  let lines = [];
+  for (let i = 0; i &lt; 20000; i++) {
+    lines.push(`${Date.now() + i} [INFO] 请求 #${i} 完成 ${i % 7}ms`);
+    if (lines.length &gt; 5000) {
+      await fs.promises.appendFile('/tmp/big.log', lines.join('\n') + '\n');
+      lines = [];
+    }
+  }
+  await fs.promises.appendFile('/tmp/big.log', lines.join('\n') + '\n');
+}
+
+// 流式逐行统计:内存占用恒定
+async function analyze() {
+  const rl = readline.createInterface({
+    input: createReadStream('/tmp/big.log'),
+    crlfDelay: Infinity,        // 处理 \r\n
+  });
+  let count = 0;
+  let totalMs = 0;
+  for await (const line of rl) {      // 逐行异步迭代
+    const m = line.match(/完成 (\d+)ms/);
+    if (m) {
+      count++;
+      totalMs += Number(m[1]);
+    }
+  }
+  console.log(`总行数统计:${count} 条,平均耗时 ${(totalMs / count).toFixed(2)}ms`);
+}
+
+async function main() {
+  await genLog();
+  console.log('文件大小:', fs.statSync('/tmp/big.log').size, '字节');
+  await analyze();
+  console.log('内存占用:', Math.round(process.memoryUsage().heapUsed / 1024 / 1024), 'MB');
+}
+main().catch((e) =&gt; console.error(e));
+</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点结论:流式处理三件套</div>
+<p>① <span class="hl">createReadStream + readline</span>:逐行处理任意大文本(日志/CSV);② <span class="hl">createWriteStream</span>:分批写出,避免一次性拼大字符串;③ <span class="hl">管道 pipe</span>:流到流的搬运,如 <code>readStream.pipe(writeStream)</code> 做文件复制,自动背压(内存不暴涨)。生产上传下载、日志切割都是流的天下。</p>
+</div>
+
+<pre class="code">// 流式复制(背压自动处理)
+const src = createReadStream('/tmp/big.log');
+const dst = fs.createWriteStream('/tmp/big-copy.log');
+src.pipe(dst);
+dst.on('finish', () =&gt; {
+  console.log('复制完成,大小一致:', fs.statSync('/tmp/big-copy.log').size);
+});
+</pre>
+
+<h2>§7.5 序列化:JSON 与它的坑</h2>
+
+<p>C 的序列化靠 fwrite 结构体(脆弱:对齐、字节序、版本)或手写格式;JS 有原生 JSON。<span class="hl">JSON 是现代 JS 程序的事实序列化格式</span>:配置文件、HTTP 载荷、Redis 缓存全用它。但 JSON 有四个著名坑:</p>
+
+<pre class="code">// 坑 1:undefined / 函数 / Symbol 属性被丢弃
+const obj = { a: 1, b: undefined, c: () =&gt; {}, d: Symbol('s') };
+console.log(JSON.stringify(obj));      // {"a":1} ← 三个都丢了!
+// 数组里的 undefined 变成 null
+console.log(JSON.stringify([1, undefined, 3])); // [1,null,3]
+
+// 坑 2:NaN / Infinity 序列化成 null
+console.log(JSON.stringify({ x: NaN, y: Infinity })); // {"x":null,"y":null}
+
+// 坑 3:循环引用抛错
+const cycle = { name: '环' };
+cycle.self = cycle;
+// console.log(JSON.stringify(cycle)); // ❌ TypeError: Converting circular structure
+
+// 坑 4:BigInt 不支持
+// console.log(JSON.stringify(1n));     // ❌ TypeError
+
+// 坑 5:parse 的健壮性
+const bad = '{"a":1,}';
+try {
+  JSON.parse(bad);
+} catch (e) {
+  console.log('JSON.parse 抛错:', e.message);   // Unexpected token
+}
+
+// 生产方案:toJSON 钩子自定义序列化
+class Order {
+  constructor(id, total) {
+    this.id = id;
+    this.total = total;
+  }
+  toJSON() {                    // stringify 自动调用
+    return { id: this.id, total: this.total, currency: 'CNY' };
+  }
+}
+console.log(JSON.stringify(new Order(1001, 99.5)));
+// {"id":1001,"total":99.5,"currency":"CNY"}
+
+// BigInt 兜底:转字符串传输
+const big = { orderId: 9007199254740993n };
+console.log(JSON.stringify(big, (k, v) =&gt; (typeof v === 'bigint' ? v.toString() : v)));
+// {"orderId":"9007199254740993"}
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 7.3:JSON.parse 不校验直接当对象用</div>
+<p>JSON.parse 返回的可能是 null、数字、数组,不只是对象:<code>JSON.parse('null')</code> 得到 null。<span class="hl">解析后先验证形状再取字段</span>:<code>if (data &amp;&amp; typeof data === 'object' &amp;&amp; Array.isArray(data.list))</code>,否则 undefined 一路传播,报错在十行之外,难排查。生产推荐用 zod/joi 这类校验库做运行时 schema 校验。</p>
+</div>
+
+<h2>§7.6 标准流与命令行参数</h2>
+
+<pre class="code">// 标准流三件套:与 C 的 stdin/stdout/stderr 一一对应
+process.stdout.write('写到标准输出\n');     // 相当于 printf
+process.stderr.write('写到标准错误\n');     // 相当于 fprintf(stderr, ...)
+console.error('console.error 也是 stderr');
+
+// 读取 stdin 整行输入(脚本场景)
+const readline = require('node:readline/promises');
+async function ask() {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const name = await rl.question('你的名字:');
+  console.log('你好,', name);
+  rl.close();
+}
+
+// 命令行参数:C 的 argc/argv → process.argv
+// node tool.js a b c
+console.log('argv[0](node):', process.argv[0]);
+console.log('argv[1](脚本):', process.argv[1]);
+console.log('参数列表:', process.argv.slice(2));  // [ 'a', 'b', 'c' ]
+
+// 生产参数解析:手写或 minimist/commander
+function parseArgs(argv) {
+  const out = { help: false, port: 3000 };
+  for (let i = 0; i &lt; argv.length; i++) {
+    if (argv[i] === '--port') out.port = Number(argv[i + 1]);
+    if (argv[i] === '--help') out.help = true;
+  }
+  return out;
+}
+console.log(parseArgs(['--port', '8080']));  // { help: false, port: 8080 }
+
+// 退出码:C 的 return 0/非0 → process.exitCode
+process.exitCode = 0;      // 成功;非 0 表示失败(CI 据此判断)
+</pre>
+
+<h2>§7.7 生产场景:配置、CSV 与日志</h2>
+
+<pre class="code">// 1. 配置文件:JSON 配置读取 + 默认值合并
+async function loadConfig(path) {
+  let file = {};
+  if (fs.existsSync(path)) {
+    file = JSON.parse(await fs.promises.readFile(path, 'utf8'));
+  }
+  return {
+    host: file.host ?? '0.0.0.0',   // ?? 保留合法空值
+    port: file.port ?? 3000,
+    debug: file.debug ?? false,
+  };
+}
+
+// 2. CSV 简易处理:逗号分隔 + 引号剥离(生产用 csv-parse 库)
+function parseCsvLine(line) {
+  return line.split(',').map((f) =&gt; f.trim().replace(/^"|"$/g, ''));
+}
+
+// 3. 日志追加:appendFile 天然支持并发追加(C 的 "a" 模式)
+async function logLine(level, msg) {
+  const line = `[${new Date().toISOString()}] [${level}] ${msg}\n`;
+  await fs.promises.appendFile('/tmp/app.log', line, 'utf8');
+}
+
+// 4. 主流程:读配置 → 解析 CSV → 记录日志 → 输出统计
+async function main() {
+  const cfg = await loadConfig('/tmp/app-config.json');
+  console.log('配置:', JSON.stringify(cfg));
+
+  fs.writeFileSync('/tmp/students.csv', 'name,score\n"李雷",88\n"韩梅梅",95\n');
+  const rows = (await fs.promises.readFile('/tmp/students.csv', 'utf8'))
+    .trim().split('\n').map(parseCsvLine);
+  console.log('CSV 行数:', rows.length - 1);     // 去掉表头
+
+  await logLine('INFO', `配置加载完成,端口 ${cfg.port}`);
+  await logLine('INFO', `CSV 解析 ${rows.length - 1} 条记录`);
+  const log = await fs.promises.readFile('/tmp/app.log', 'utf8');
+  console.log('日志内容:\n' + log.trim());
+}
+
+main().catch((e) =&gt; console.error('主流程失败:', e));
+</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议 7.2:日志不是 console.log 就完事</div>
+<p>生产日志三要求:① 结构化(JSON 行,便于 ELK/Loki 检索);② 分级(debug/info/warn/error,环境变量控制级别);③ 轮转(按大小/日期切割,用 pino/winston 或系统 logrotate)。console.log 只适合开发期与演示代码,进生产前替换为日志库。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>主题</th><th>速查要点</th></tr>
+<tr><td>三种风格</td><td>Sync(脚本/init)、回调(老代码)、fs.promises(生产首选)</td></tr>
+<tr><td>写文件</td><td>writeFile 覆盖;appendFile 追加;都自动处理打开/关闭</td></tr>
+<tr><td>读文本</td><td>readFile(path, 'utf8');带 BOM 时去 ﻿</td></tr>
+<tr><td>读二进制</td><td>不传编码 → Buffer;禁止 utf8 解二进制</td></tr>
+<tr><td>句柄操作</td><td>openSync/readSync/writeSync/closeSync 成对,finally 关闭</td></tr>
+<tr><td>文件不存在</td><td>ENOENT;existsSync 预判 + try/catch 兜底</td></tr>
+<tr><td>路径</td><td>path.join 拼接;resolve 绝对化;basename/dirname/extname 拆分</td></tr>
+<tr><td>目录</td><td>mkdirSync recursive;readdirSync withFileTypes;rmSync recursive</td></tr>
+<tr><td>大文件</td><td>createReadStream + readline 逐行;pipe 复制;内存与文件大小无关</td></tr>
+<tr><td>JSON 序列化</td><td>undefined/函数/Symbol 丢弃;NaN→null;循环引用抛错;BigInt 不支持</td></tr>
+<tr><td>toJSON</td><td>自定义序列化钩子,stringify 自动调用</td></tr>
+<tr><td>JSON 解析</td><td>parse 前检查形状;非法 JSON 抛 SyntaxError</td></tr>
+<tr><td>标准流</td><td>stdout 输出 / stderr 错误 / stdin 输入;argv[0..1] 是 node 与脚本</td></tr>
+<tr><td>退出码</td><td>process.exitCode = 0/非0,CI 依据</td></tr>
+<tr><td>配置</td><td>JSON 配置 + ?? 默认值合并</td></tr>
+<tr><td>日志</td><td>结构化 JSON 行、分级、轮转;pino/winston</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能写出 fs.promises 的读/写/追加三连,并处理 ENOENT</li>
+<li>能说出三种风格(fs Sync/回调/Promise)的适用场景</li>
+<li>能写出"文本带编码读、二进制不带编码读"的规则</li>
+<li>能写出 path.join/resolve/basename/extname 的示例</li>
+<li>能递归遍历目录并统计文件数</li>
+<li>能用 createReadStream + readline 逐行统计 1GB 文件</li>
+<li>能说出 JSON 序列化的四个坑与 toJSON 的用途</li>
+<li>能写出 JSON.parse 前的形状校验</li>
+<li>能说出 process.argv 与 C 的 argc/argv 的对应</li>
+<li>能写出"读配置→处理→写结果→记日志"的完整异步流程</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. fs.readFileSync(path, 'utf8') 与不传 'utf8' 有什么区别?对二进制文件应怎么读?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>传 'utf8' 返回解码后的字符串;不传返回 Buffer。二进制文件不传编码,拿到 Buffer 后用 DataView/位运算处理。</p></div>
+<div class="q">2. JSON.stringify({a: undefined, b: NaN, c: () =&gt; {}}) 输出什么?循环引用呢?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>'{"b":null}'。undefined 与函数属性被丢弃,NaN 变 null;循环引用抛 TypeError。</p></div>
+<div class="q">3. 为什么大文件要用流式处理?readFile 读 1GB 文件会怎样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>readFile 把整个文件读进内存,1GB 文件占用 1GB+ 堆,可能 OOM;流式一次只读一小块,内存占用恒定,还能逐行处理。</p></div>
+<div class="q">4. path.join('/a', '../b') 与 path.resolve('/a', '../b') 分别得到什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>join 是纯拼接规范化:'/a/../b' → '/b';resolve 基于当前工作目录生成绝对路径。join 不保证绝对路径,resolve 保证。</p></div>
+<div class="q">5. 读一个 UTF-8 带 BOM 的文件,字符串开头会有什么?怎么处理?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>开头有 U+FEFF(BOM 字符)。用 <code>str.replace(/^﻿/, '')</code> 去除。</p></div>
+<div class="q">6. 写出 process.argv 在 node tool.js a b 时的内容,以及如何取到业务参数。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>['node的路径', 'tool.js的路径', 'a', 'b']。业务参数是 process.argv.slice(2),即 ['a', 'b']。</p></div>
+
+<h2>章末实验题:日志解析与统计工具</h2>
+<div class="box box-example lab"><div class="box-title">实验 7:日志解析与统计工具(logstats)</div>
+<p><b>实验目标:</b>实现命令行工具:解析访问日志(CSV 风格),统计每行各字段,输出汇总报告与 JSON 结果文件,覆盖全章知识点。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1(覆盖:读写、编码):读取日志文件(文本 + 二进制两种输入),支持 UTF-8 与 BOM 处理</li>
+<li>任务 2(覆盖:流式处理、readline):用 createReadStream + readline 逐行解析,支持任意大小文件</li>
+<li>任务 3(覆盖:路径与目录):输出目录用 path.join 拼接;--out-dir 参数控制;目录不存在时 mkdir recursive</li>
+<li>任务 4(覆盖:JSON 序列化与坑):统计结果序列化到 result.json(注意 undefined 字段丢弃问题,先清洗再序列化)</li>
+<li>任务 5(覆盖:标准流与参数):参数解析用 --level/--out-dir 风格;错误写 stderr;退出码非 0</li>
+<li>任务 6(覆盖:appendFile 日志):工具自身的运行日志追加到 logs/tool.log(INFO/ERROR 分级)</li>
+<li>任务 7(覆盖:存在性判断):文件不存在给出友好提示(ENOENT 处理)</li>
+</ul>
+<p><b>实验环境:</b>Node.js 20+,运行 <code>node logstats.js --file /tmp/access.log --level ERROR</code>。</p></div>
+<ol class="steps">
+<li><b>先写解析器:</b>每行格式 "时间戳,级别,消息,耗时ms",逗号分隔解析为对象</li>
+<li><b>再写统计器:</b>按级别计数、总耗时均值、最慢请求 TOP3</li>
+<li><b>最后写主流程:</b>参数解析 → 校验文件 → 流式统计 → 写 result.json + tool.log</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<p>核心:readline 逐行流式解析 + 统计聚合 + JSON 输出 + 参数/退出码规范。约 120 行。</p>
+<pre class="code">// logstats.js —— 运行:node logstats.js --file /tmp/access.log [--level INFO]
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const readline = require('node:readline');
+const { createReadStream } = require('node:fs');
+
+// 1. 参数解析(覆盖:process.argv、Number 转换)
+function parseArgs(argv) {
+  const out = { file: null, level: null, outDir: 'out' };
+  for (let i = 0; i &lt; argv.length; i++) {
+    if (argv[i] === '--file') out.file = argv[i + 1];
+    if (argv[i] === '--level') out.level = String(argv[i + 1]).toUpperCase();
+    if (argv[i] === '--out-dir') out.outDir = argv[i + 1];
+    if (argv[i] === '--help') out.help = true;
+  }
+  return out;
+}
+
+// 2. 单行解析:时间戳,级别,消息,耗时ms(覆盖:split、trim、Number)
+function parseLine(line) {
+  const parts = line.split(',');
+  if (parts.length &lt; 4) return null;
+  return {
+    ts: parts[0].trim(),
+    level: parts[1].trim(),
+    msg: parts[2].trim(),
+    cost: Number(parts[3].trim()),        // 可能 NaN,统计时过滤
+  };
+}
+
+// 3. 流式统计(覆盖:createReadStream、readline、for await)
+async function analyzeFile(filePath, levelFilter) {
+  const rl = readline.createInterface({
+    input: createReadStream(filePath),
+    crlfDelay: Infinity,
+  });
+  const byLevel = {};
+  const costs = [];
+  let total = 0;
+  for await (const line of rl) {
+    const rec = parseLine(line);
+    if (rec === null) continue;
+    total++;
+    byLevel[rec.level] = (byLevel[rec.level] ?? 0) + 1;
+    if (Number.isFinite(rec.cost)) {
+      costs.push({ cost: rec.cost, msg: rec.msg });
+    }
+  }
+  const sorted = costs.slice().sort((a, b) =&gt; b.cost - a.cost);
+  const filtered = levelFilter ? total : total;
+  const sum = costs.reduce((a, c) =&gt; a + c.cost, 0);
+  return {
+    totalLines: total,
+    matchedLines: filtered,
+    byLevel,
+    avgCostMs: costs.length &gt; 0 ? Math.round((sum / costs.length) * 100) / 100 : 0,
+    top3: sorted.slice(0, 3).map((c) =&gt; ({ cost: c.cost, msg: c.msg })),
+  };
+}
+
+// 4. 工具日志(覆盖:appendFile、分级、时间戳)
+async function toolLog(level, msg) {
+  const dir = path.join(process.cwd(), 'logs');
+  fs.mkdirSync(dir, { recursive: true });
+  const line = `[${new Date().toISOString()}] [${level}] ${msg}\n`;
+  await fs.promises.appendFile(path.join(dir, 'tool.log'), line, 'utf8');
+}
+
+// 5. 输出 JSON(覆盖:JSON 序列化、undefined 清洗)
+async function writeResult(stats, outDir) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const clean = {
+    totalLines: stats.totalLines,
+    byLevel: stats.byLevel,
+    avgCostMs: stats.avgCostMs,
+    top3: stats.top3,
+  };
+  await fs.promises.writeFile(
+    path.join(outDir, 'result.json'),
+    JSON.stringify(clean, null, 2),
+    'utf8'
+  );
+}
+
+// 6. 主流程(覆盖:存在性、ENOENT、stderr、退出码)
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  if (args.help || args.file === null) {
+    console.error('用法:node logstats.js --file &lt;日志文件&gt; [--level 级别] [--out-dir 目录]');
+    process.exitCode = 1;
+    return;
+  }
+  if (!fs.existsSync(args.file)) {
+    console.error(`错误:文件不存在:${args.file}`);   // 走 stderr
+    process.exitCode = 2;
+    await toolLog('ERROR', `文件不存在:${args.file}`);
+    return;
+  }
+
+  const stats = await analyzeFile(args.file, args.level);
+  await writeResult(stats, args.outDir);
+  await toolLog('INFO', `分析完成:${stats.totalLines} 行,输出到 ${args.outDir}/result.json`);
+
+  console.log('===== 统计报告 =====');
+  console.log('总行数:', stats.totalLines);
+  console.log('级别分布:', JSON.stringify(stats.byLevel));
+  console.log('平均耗时:', stats.avgCostMs, 'ms');
+  console.log('最慢请求 TOP3:');
+  for (const t of stats.top3) {
+    console.log(`  ${t.cost}ms ${t.msg}`);
+  }
+  console.log('结果文件:', path.join(args.outDir, 'result.json'));
+}
+
+main().catch((err) =&gt; {
+  console.error('程序异常:', err.message);
+  process.exitCode = 3;
+});
+</pre>
+<p><b>设计说明:</b>流式逐行解析保证大文件内存恒定;级别分布用对象计数(?? 初始化);耗时统计先过滤 Number.isFinite 排除 NaN 行;输出 JSON 前把可能 undefined 的字段清洗成确定结构;工具自身日志走 appendFile 分级落盘;错误统一走 stderr + 非零退出码,符合 CI 与脚本调用约定。可以先手写一个含 5 行的 access.log 测试,再生成 2 万行大文件验证内存表现。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第8章 网络通信 —— net 模块的 TCP/UDP、fetch 客户端、http.createServer 最小服务器,以及粘包/拆包与优雅关闭的生产坑。</p>
+
+</body>
+</html>

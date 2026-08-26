@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第8章 网络通信</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO JAVASCRIPT · PRODUCTION READY</div>
+<h1 class="chapter-title">第8章 网络通信</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–6 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>回顾 TCP/UDP、端口、字节序,理解 Node 如何封装 C 的 socket API</li>
+<li>掌握 net 模块:TCP 服务端与客户端完整示例</li>
+<li>掌握 dgram 模块:UDP 无连接通信</li>
+<li>掌握超时设置与"为什么必须设置超时"的生产教训</li>
+<li>掌握 fetch 发 HTTP 请求:GET/POST/JSON 完整示例</li>
+<li>掌握 http.createServer 最小 HTTP 服务端</li>
+<li>理解粘包/拆包问题与长度前缀协议设计,掌握优雅关闭</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 JavaScript:本章主题如何迁移</div>
+<p>C 的 socket 编程是"仪式感之王":socket()、bind()、listen()、accept()、connect()、send()、recv(),每个都返回错误码,还得用 htons/htonl 转换字节序,处理 EINTR 重试,管理 fd 生命周期。Node 把这些全部封装成简洁的对象:<span class="hl">net.Server/net.Socket/dgram.Socket</span>,事件驱动,数据到达即触发 'data' 事件,不需要手动 accept 循环——事件循环替你完成了 accept。</p>
+<p>最大的心智差异依然是<span class="hl">异步 + 事件</span>:C 的 recv 阻塞等数据;Node 的 socket.on('data') 注册回调,数据到了事件循环调你。读写都不阻塞,一个进程可以同时处理成千上万连接(第9章细讲)。</p>
+<p>字节序方面,Node 帮你藏掉了大部分:TCP 流无边界、无字节序问题(字节原样),Buffer 的 read/write 方法自带 BE/LE 参数;DNS 解析、地址转换都有现成 API。HTTP 更是内置:http 模块与 fetch 全球通行,一个 createServer 就是生产级服务端的最小雏形。</p>
+<p>必须保留的 C 式警觉是<span class="hl">协议设计</span>:TCP 是字节流,没有消息边界,"粘包/拆包"是永恒话题;C 里靠定长结构或长度前缀解决,Node 里做法完全一样——本章的协议实验会完整走一遍。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的 socket 编程:connect/bind/listen/accept/send/recv</li>
+<li>TCP 三次握手与"字节流无边界"的本质;UDP 数据报语义</li>
+<li>端口、IP 地址、htons/htonl 字节序</li>
+<li>第5章 Buffer 与第7章流的概念</li>
+<li>第9章的事件循环(本章先用事件回调,不必深究机制)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(概念与 TCP):</b>读 §8.1–§8.2,跑通回声服务器与客户端</li>
+<li><b>第二阶段(UDP 与超时):</b>读 §8.3–§8.4,理解无连接语义与超时必要性</li>
+<li><b>第三阶段(HTTP):</b>读 §8.5–§8.6,用 fetch 与 createServer 打通请求-响应闭环</li>
+<li><b>第四阶段(协议设计):</b>读 §8.7,完成章末"带长度前缀协议的文件传输"</li>
+<li><b>验收标准:</b>能独立写出回声服务器 + 客户端,并说明粘包为什么发生、长度前缀怎么解决</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>第8章 网络通信
+  <ul>
+    <li>§8.1 概念回顾:C 的 socket API → Node 对照表</li>
+    <li>§8.2 TCP:net 模块服务端与客户端</li>
+    <li>§8.3 UDP:dgram 无连接通信</li>
+    <li>§8.4 超时与非阻塞:必须设置超时</li>
+    <li>§8.5 HTTP 客户端:fetch 全家桶</li>
+    <li>§8.6 HTTP 服务端:createServer 最小服务器</li>
+    <li>§8.7 生产坑:粘包/拆包、优雅关闭、进程退出</li>
+  </ul>
+  </li>
+</ul></div>
+
+<h2>§8.1 概念回顾:从 C 的 socket 到 Node</h2>
+
+<table class="cmp">
+<tr><th>C 的 API</th><th>Node 对应</th><th>说明</th></tr>
+<tr><td>socket()</td><td>new net.Server() / new dgram.Socket()</td><td>创建即带类型,无需 AF_INET 参数</td></tr>
+<tr><td>bind()</td><td>server.listen(port, host)</td><td>监听即绑定</td></tr>
+<tr><td>listen()</td><td>server.listen(port, cb)</td><td>server.on('listening') 事件</td></tr>
+<tr><td>accept()</td><td>server.on('connection', socket)</td><td>事件循环自动 accept,每连接一个 socket</td></tr>
+<tr><td>connect()</td><td>net.connect(port, host)</td><td>客户端直连</td></tr>
+<tr><td>send()/recv()</td><td>socket.write(data) / socket.on('data', cb)</td><td>全异步,自动缓冲</td></tr>
+<tr><td>close()</td><td>socket.end() / socket.destroy()</td><td>end 优雅关闭(发完 FIN),destroy 立即断</td></tr>
+<tr><td>htons/htonl</td><td>Buffer.writeUInt16BE/readUInt16LE 等</td><td>BE/LE 显式参数,无字节序暗坑</td></tr>
+<tr><td>getaddrinfo</td><td>dns.promises.lookup()</td><td>域名解析(生产用系统缓存)</td></tr>
+</table>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:Node 的 socket 是"事件 + 流"</div>
+<p>net.Socket 既是<span class="hl">可读流又是可写流</span>:socket.write() 写出去,socket.on('data') 收进来。没有阻塞、没有返回码,错误走 'error' 事件,关闭走 'close'/'end' 事件。数据永远可能"半包到达"(流无边界),所以生产协议都要处理粘包——这是本章下半场的重点。</p>
+</div>
+
+<h2>§8.2 TCP 编程:net 模块</h2>
+
+<h3>8.2.1 回声服务器(对应 C 的 listen/accept 循环)</h3>
+<pre class="code">const net = require('node:net');
+
+// 服务端:监听 8000 端口,收到什么回什么(回声)
+const server = net.createServer((socket) =&gt; {
+  console.log('新连接:', socket.remoteAddress, socket.remotePort);
+
+  socket.on('data', (chunk) =&gt; {
+    console.log('收到:', chunk.toString().trim());
+    socket.write('echo: ' + chunk);      // 原样回写
+  });
+  socket.on('end', () =&gt; console.log('客户端断开(半关闭)'));
+  socket.on('error', (err) =&gt; console.error('socket 错误:', err.message));
+});
+
+server.listen(8000, '127.0.0.1', () =&gt; {
+  console.log('TCP 服务器监听 127.0.0.1:8000');
+});
+// 测试:node 另一个终端执行 node tcp_client.js,或 nc 127.0.0.1 8000
+</pre>
+
+<h3>8.2.2 客户端(对应 C 的 connect/send/recv)</h3>
+<pre class="code">const net = require('node:net');
+
+const client = net.connect(8000, '127.0.0.1', () =&gt; {
+  console.log('已连接服务器');
+  client.write('你好,服务器!');
+});
+
+client.on('data', (chunk) =&gt; {
+  console.log('服务器回复:', chunk.toString().trim());
+  client.end();                          // 优雅关闭(发送 FIN)
+});
+client.on('end', () =&gt; console.log('连接已关闭'));
+client.on('error', (err) =&gt; console.error('客户端错误:', err.message));
+
+// 发送多段数据:TCP 是流,不保证每次 write 对应一次 data(粘包伏笔)
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 8.1:以为一次 write 对应一次 data</div>
+<p>TCP 是字节流,没有消息边界:客户端连续 write 三次,服务端可能收到一次或多次 data,数据还会被拆半(一个 write 的 10 字节可能分两次 data 到达)。<span class="hl">千万不要按 data 次数解析协议</span>,必须用定长/分隔符/长度前缀。第 8.7 节给出完整方案。</p>
+</div>
+
+<h2>§8.3 UDP 编程:dgram 模块</h2>
+
+<p>UDP 是无连接数据报协议:不握手、不保证送达、不保证顺序,但有消息边界(一次 sendto 一个数据报)。适用场景:DNS 查询、音视频流、游戏状态、监控探针、广播发现。C 的 sendto/recvfrom 对应 dgram 的 send/message 事件。</p>
+
+<pre class="code">const dgram = require('node:dgram');
+
+// UDP 服务端
+const udpServer = dgram.createSocket('udp4');
+udpServer.on('message', (msg, rinfo) =&gt; {
+  console.log(`收到 ${rinfo.address}:${rinfo.port} 的 ${msg.length} 字节`);
+  const reply = Buffer.from('pong:' + msg.toString('utf8'));
+  udpServer.send(reply, rinfo.port, rinfo.address);  // 回给来源地址
+});
+udpServer.on('error', (err) =&gt; console.error('UDP 错误:', err.message));
+udpServer.bind(8001, '127.0.0.1', () =&gt; console.log('UDP 监听 8001'));
+
+// UDP 客户端:不需要连接,直接 send
+const udpClient = dgram.createSocket('udp4');
+const payload = Buffer.from('你好,UDP');
+udpClient.send(payload, 8001, '127.0.0.1', (err) =&gt; {
+  if (err) console.error('发送失败:', err.message);
+});
+udpClient.on('message', (msg) =&gt; {
+  console.log('UDP 回复:', msg.toString('utf8'));
+  udpClient.close();                 // 用完关闭
+});
+</pre>
+
+<h2>§8.4 超时与非阻塞:为什么必须设置超时</h2>
+
+<div class="box box-pitfall"><div class="box-title">生产事故:不设超时的连接永久挂起</div>
+<p>生产里最常见的网络事故之一:客户端连不上一台"黑洞"服务器(防火墙丢包、IP 不可达),connect 一直 pending,worker 线程被占满,最后整机雪崩。C 的 connect 有内核超时,Node 需要显式设置:<span class="hl">每个出站连接与每次读操作都要有超时</span>。</p>
+</div>
+
+<pre class="code">const net = require('node:net');
+
+// 客户端超时:connect 超时 + 空闲超时
+const client2 = net.connect({ port: 8002, host: '127.0.0.1', timeout: 2000 });
+client2.on('timeout', () =&gt; {
+  console.error('连接超时,销毁连接');
+  client2.destroy();                  // 超时必须主动销毁,否则挂着
+});
+client2.on('error', (err) =&gt; console.error(err.code === 'ETIMEDOUT' ? '超时失败' : err.message));
+
+// 服务端空闲超时:清理僵尸连接
+const server2 = net.createServer((socket) =&gt; {
+  socket.setTimeout(10000);           // 10 秒无数据
+  socket.on('timeout', () =&gt; {
+    console.log('空闲超时,断开:', socket.remoteAddress);
+    socket.destroy();
+  });
+  socket.on('data', () =&gt; socket.setTimeout(10000)); // 有数据重置计时
+});
+server2.listen(8002, '127.0.0.1');
+
+// HTTP 客户端超时:AbortSignal.timeout(现代 fetch)
+async function fetchWithTimeout(url, ms = 5000) {
+  const res = await fetch(url, { signal: AbortSignal.timeout(ms) });
+  return res;
+}
+// fetchWithTimeout('http://127.0.0.1:8002/', 1000).catch((e) =&gt; console.log('超时:', e.name));
+</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点结论:超时三原则</div>
+<p>① <span class="hl">出站必设超时</span>:connect timeout + idle timeout,超时即 destroy;② <span class="hl">入站必设空闲超时</span>:防止慢客户端占着连接不放(慢速 DoS 的基本形态);③ <span class="hl">超时后必须显式清理资源</span>,光报错不销毁等于没设。</p>
+</div>
+
+<h2>§8.5 HTTP 客户端:fetch(浏览器与 Node 通用)</h2>
+
+<p>C 没有标准 HTTP 库,生产用 libcurl;Node 20+ 内置<span class="hl">fetch</span>(与浏览器同一套标准 API),发 HTTP 请求不再需要第三方库。核心概念:Response 对象、await、状态码、响应体读取。</p>
+
+<pre class="code">// GET 请求
+async function getTodos() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();        // 解析 JSON
+  console.log('GET 结果:', data.title);
+}
+// getTodos().catch((e) =&gt; console.error(e));
+
+// POST + JSON
+async function createPost() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: '新文章', userId: 1 }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const created = await res.json();
+  console.log('创建成功,ID:', created.id);
+}
+
+// 读文本与读二进制
+async function readBoth() {
+  const textRes = await fetch('https://example.com/');
+  const text = await textRes.text();     // 文本响应
+  console.log('文本长度:', text.length);
+
+  const binRes = await fetch('https://example.com/');
+  const buf = Buffer.from(await binRes.arrayBuffer());  // 二进制响应
+  console.log('字节数:', buf.length);
+}
+
+// 统一超时 + 错误处理模板(生产必用)
+async function safeFetch(url, options = {}) {
+  const res = await fetch(url, {
+    ...options,
+    signal: options.signal ?? AbortSignal.timeout(10000),
+  });
+  if (!res.ok) {
+    throw new Error(`请求失败:${res.status} ${res.statusText}`);
+  }
+  return res;
+}
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 8.2:fetch 不抛错 = 成功?</div>
+<p>fetch 只在<span class="hl">网络层失败</span>(DNS、连接拒绝、超时)时 reject;HTTP 404/500 照常 resolve。<span class="hl">必须检查 res.ok 或 res.status</span>。另外响应体只能消费一次:读了 json() 就不能再读 text(),报错 "Body is unusable"。</p>
+</div>
+
+<h2>§8.6 HTTP 服务端:http.createServer</h2>
+
+<p>最小 HTTP 服务器(生产框架 Express/Fastify 的底层就是它):</p>
+
+<pre class="code">const http = require('node:http');
+
+const server = http.createServer((req, res) =&gt; {
+  // req:请求对象;res:响应对象
+  const url = new URL(req.url, `http://${req.headers.host}`);
+
+  if (req.method === 'GET' &amp;&amp; url.pathname === '/hello') {
+    res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('你好,世界');
+    return;
+  }
+
+  if (req.method === 'POST' &amp;&amp; url.pathname === '/api/echo') {
+    let body = '';
+    req.on('data', (chunk) =&gt; { body += chunk; });   // 异步收集请求体
+    req.on('end', () =&gt; {
+      try {
+        const parsed = JSON.parse(body || '{}');
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ received: parsed, at: Date.now() }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: '非法 JSON' }));
+      }
+    });
+    return;
+  }
+
+  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Not Found');
+});
+
+server.listen(3000, '127.0.0.1', () =&gt; {
+  console.log('HTTP 服务端:http://127.0.0.1:3000');
+});
+// 生产方向:Express(最流行)/Fastify(性能)/Koa(轻量) 都是它的封装
+</pre>
+
+<pre class="code">// 配合 fetch 测试上面服务器
+async function testServer() {
+  const r1 = await fetch('http://127.0.0.1:3000/hello');
+  console.log('GET /hello:', r1.status, await r1.text());
+
+  const r2 = await fetch('http://127.0.0.1:3000/api/echo', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: '测试' }),
+  });
+  console.log('POST /api/echo:', r2.status, await r2.text());
+}
+testServer().catch((e) =&gt; console.error('测试失败:', e.message));
+</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议 8.1:请求体大小限制与响应头规范</div>
+<p>生产服务端三件事:① 限制请求体大小(超限直接 413),防止恶意大包拖垮内存;② 统一 Content-Type 与 charset=utf-8,中文不乱码;③ 错误响应统一 JSON 结构(<code>{error, code}</code>),方便前端统一处理。这些在 Express 里是中间件,在裸 http 里要自己写——知道原理即可。</p>
+</div>
+
+<h2>§8.7 生产坑:粘包/拆包、优雅关闭</h2>
+
+<h3>8.7.1 粘包与拆包:为什么发生,怎么解决</h3>
+
+<p><span class="term">粘包</span>:客户端两次 write 的数据被内核合并成一次 data 到达(收端看到"黏在一起");<span class="term">拆包</span>:一次 write 的数据被拆成多次 data。根因:TCP 是字节流,收端只按"到达多少读多少"回调,不知道你的消息边界在哪。三种协议设计:</p>
+
+<table class="cmp">
+<tr><th>方案</th><th>原理</th><th>适用</th></tr>
+<tr><td>定长</td><td>每条消息固定 N 字节,收满 N 处理一条</td><td>固定结构记录</td></tr>
+<tr><td>分隔符</td><td>以 \n 或 \0 结尾,按分隔符切分</td><td>文本协议、HTTP 头部</td></tr>
+<tr><td>长度前缀</td><td>头 4 字节存 payload 长度,按长度取整条</td><td>二进制协议(生产主流)</td></tr>
+</table>
+
+<pre class="code">// 长度前缀协议:封装"编码"与"解码缓冲"
+const HEADER_SIZE = 4;
+
+// 编码:长度(4 字节 BE) + payload
+function encodeMessage(payload) {
+  const body = Buffer.from(payload, 'utf8');
+  const buf = Buffer.alloc(HEADER_SIZE + body.length);
+  buf.writeUInt32BE(body.length, 0);
+  body.copy(buf, HEADER_SIZE);
+  return buf;
+}
+
+// 解码:增量缓冲,从 data 流中切出完整消息(解决粘包/拆包)
+class FrameParser {
+  constructor() {
+    this.buf = Buffer.alloc(0);
+  }
+  push(chunk) {
+    this.buf = Buffer.concat([this.buf, chunk]);
+    const messages = [];
+    while (this.buf.length &gt;= HEADER_SIZE) {
+      const len = this.buf.readUInt32BE(0);
+      if (this.buf.length &lt; HEADER_SIZE + len) break;  // 半包,等下一块
+      const body = this.buf.subarray(HEADER_SIZE, HEADER_SIZE + len);
+      messages.push(body.toString('utf8'));
+      this.buf = this.buf.subarray(HEADER_SIZE + len); // 消费掉整条
+    }
+    return messages;
+  }
+}
+
+// 使用:
+const parser = new FrameParser();
+parser.push(Buffer.concat([encodeMessage('第一条'), encodeMessage('第二条')]));
+// ↑ 上面一次推入两条,模拟粘包
+console.log(parser.push(encodeMessage('第三条')));  // 第三条
+// 拆包模拟:分两次推
+const full = encodeMessage('大消息');
+parser.push(full.subarray(0, 5));        // 只推头部+1字节
+console.log('半包时输出:', parser.push(full.subarray(5)).length); // 仍是 0 条
+// 补齐剩余字节后:
+</pre>
+
+<h3>8.7.2 优雅关闭与进程退出</h3>
+<pre class="code">// 优雅停机:停止接新连接 → 处理完存量 → 退出
+function gracefulShutdown(server, signal) {
+  console.log(`收到 ${signal},开始优雅停机`);
+  server.close(() =&gt; {
+    console.log('所有连接已关闭,进程退出');
+    process.exit(0);
+  });
+  // 兜底:超时强制退出(防呆)
+  setTimeout(() =&gt; {
+    console.error('强制退出');
+    process.exit(1);
+  }, 10000).unref();                    // unref:不影响进程自然退出
+}
+
+// 挂到信号(生产容器/PM2 都会发 SIGTERM)
+process.on('SIGTERM', () =&gt; gracefulShutdown(server, 'SIGTERM'));
+process.on('SIGINT', () =&gt; gracefulShutdown(server, 'SIGINT'));
+
+// TIME_WAIT 说明:服务端 close 后端口进入 TIME_WAIT(与 C 相同);
+// 生产高并发重启时监听失败,常见对策:SO_REUSEADDR(内核默认)或等待,Node 一般无需处理
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 8.3:进程退出前不清理连接</div>
+<p>直接 process.exit() 会粗暴掐断所有连接,客户端收到 ECONNRESET 而不是正常 FIN,前端可能重试风暴。正确顺序:server.close() 拒绝新连接 → 等待存量请求完成 → 超时兜底强制退出。Docker/K8s 的 SIGTERM 就是触发这个流程的标准化信号。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>主题</th><th>速查要点</th></tr>
+<tr><td>TCP 服务端</td><td>net.createServer(cb) + listen(port);connection 事件给 socket</td></tr>
+<tr><td>TCP 客户端</td><td>net.connect(port, host);write 发送,data 接收</td></tr>
+<tr><td>socket 事件</td><td>data/end(半关闭)/close/error/timeout</td></tr>
+<tr><td>关闭语义</td><td>end() 优雅(FIN);destroy() 立即断(ECONNRESET)</td></tr>
+<tr><td>UDP</td><td>dgram.createSocket('udp4') + send/bind;无连接、有消息边界</td></tr>
+<tr><td>超时</td><td>connect timeout、socket.setTimeout、AbortSignal.timeout(ms)</td></tr>
+<tr><td>超时处理</td><td>超时后必须 destroy,否则连接永久挂着</td></tr>
+<tr><td>fetch GET</td><td>fetch(url) → res.ok 检查 → res.json()/text()/arrayBuffer()</td></tr>
+<tr><td>fetch POST</td><td>method/headers/body 选项;JSON 用 stringify</td></tr>
+<tr><td>fetch 的坑</td><td>HTTP 错误不 reject,必须查 res.ok;body 只能消费一次</td></tr>
+<tr><td>HTTP 服务端</td><td>http.createServer((req, res));res.writeHead + res.end</td></tr>
+<tr><td>请求体</td><td>req 是流:on('data') 收集 + on('end') 处理</td></tr>
+<tr><td>粘包/拆包</td><td>TCP 是字节流;定长/分隔符/长度前缀三种协议</td></tr>
+<tr><td>长度前缀</td><td>4 字节 BE 长度 + payload;增量缓冲切帧</td></tr>
+<tr><td>优雅停机</td><td>server.close() → 等存量完成 → 超时兜底;处理 SIGTERM/SIGINT</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能写出 TCP 回声服务器与客户端,并说出 5 个 socket 事件</li>
+<li>能说出 end() 与 destroy() 的区别(优雅 vs 立即)</li>
+<li>能写出 UDP 收发两端,并说出 UDP 与 TCP 的三个差异</li>
+<li>能写出"连接超时 + 空闲超时 + 销毁"三件套</li>
+<li>能用 fetch 完成 GET/POST/JSON,并检查 res.ok</li>
+<li>能用 createServer 写出路由分发(路径 + 方法)</li>
+<li>能解释粘包/拆包根因,并说出三种协议方案</li>
+<li>能写出 FrameParser 增量切帧(核心代码)</li>
+<li>能写出优雅停机流程与信号处理</li>
+<li>能说出 fetch 与 createServer 在生产框架中的位置(Express 等是封装)</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. TCP 客户端连续 socket.write('A'); socket.write('B'),服务端一定收到两次 data 吗?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>不一定。TCP 是字节流,可能合并成一次 'AB',也可能拆成多次。协议解析不能依赖 data 次数,要用定长/分隔符/长度前缀。</p></div>
+<div class="q">2. socket.end() 与 socket.destroy() 的区别是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>end() 发送 FIN 优雅关闭,缓冲数据写完再关,对端收到 'end' 事件;destroy() 立即销毁连接,对端收到 ECONNRESET。</p></div>
+<div class="q">3. fetch 请求一个返回 500 的接口,会抛异常吗?为什么?如何正确判断?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>不会。fetch 只在网络层失败时 reject,HTTP 状态码错误照常 resolve。用 res.ok(200-299)或 res.status 判断。</p></div>
+<div class="q">4. 为什么生产代码必须给每个出站连接设置超时?超时后该做什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>不设超时,连接可能永久 pending(黑洞 IP、防火墙丢包),耗尽连接池/线程导致雪崩。超时后必须 destroy/abort 清理资源,不能只报错。</p></div>
+<div class="q">5. 简述长度前缀协议的编码与解码两个环节,以及解码时的"半包"怎么处理。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>编码:4 字节 BE 长度 + payload。解码:维护增量缓冲,先读长度,缓冲不足就等下一块 data;足够就切出整条并消费,循环处理粘包的多条。</p></div>
+<div class="q">6. 服务端收到 SIGTERM 后应该按什么顺序做什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>server.close() 停止接受新连接 → 等待存量请求自然结束(close 回调)→ 设置超时兜底强制退出 → 退出进程。顺序不能反。</p></div>
+
+<h2>章末实验题:带协议的文件传输服务器</h2>
+<div class="box box-example lab"><div class="box-title">实验 8:带长度前缀协议的文件传输(ftrans)</div>
+<p><b>实验目标:</b>实现"请求-传输-确认"的 TCP 文件传输:客户端请求文件,服务端按长度前缀协议分块发送,客户端组装并校验,覆盖全章知识点。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1(覆盖:TCP 服务端/客户端):net 双端,服务端按文件名找文件,找不到回复错误帧</li>
+<li>任务 2(覆盖:长度前缀协议、粘包/拆包):消息帧 = 4 字节类型/长度 + payload;客户端用 FrameParser 增量切帧;故意把两次发送合并模拟粘包</li>
+<li>任务 3(覆盖:超时):客户端 connect 超时与空闲超时,超时销毁并报错;服务端空闲超时清理连接</li>
+<li>任务 4(覆盖:Buffer、二进制):文件内容用 Buffer 传输;分块(每块 64KB)避免大文件一次写爆内存;接收端按 Buffer.concat 组装</li>
+<li>任务 5(覆盖:HTTP/fetch 辅助):附赠一个 fetch 健康检查端点(服务端同时起 http 端口返回状态 JSON)</li>
+<li>任务 6(覆盖:优雅关闭):SIGINT/SIGTERM 优雅停机;server.close + 超时兜底</li>
+<li>任务 7(覆盖:错误处理):文件不存在(ENOENT)返回错误帧;客户端校验字节数并打印</li>
+</ul>
+<p><b>实验环境:</b>Node.js 20+,两个终端:<code>node ftrans.js server 8000 /tmp/share</code> 与 <code>node ftrans.js client 127.0.0.1 8000 hello.txt</code>。</p></div>
+<ol class="steps">
+<li><b>先定义协议:</b>帧 = type(1 字节:1=文件头,2=数据块,3=完成,4=错误)+ len(4 字节 BE)+ payload;头 5 字节</li>
+<li><b>再实现双端状态机:</b>服务端按文件流式发帧;客户端按 FrameParser 收帧组装</li>
+<li><b>最后加健壮性:</b>超时、优雅关闭、错误帧、字节数校验,打印传输统计</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<p>核心:5 字节帧头 + 增量切帧 + 流式分块传输 + 双端超时与优雅关闭。约 160 行,覆盖全章知识点。</p>
+<pre class="code">// ftrans.js —— 运行:node ftrans.js server 8000 /tmp/share | node ftrans.js client 127.0.0.1 8000 hello.txt
+'use strict';
+const net = require('node:net');
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const HEADER = 5;   // 1 字节 type + 4 字节 len
+const TYPE = { HEAD: 1, DATA: 2, DONE: 3, ERROR: 4 };
+const CHUNK = 64 * 1024;
+
+// 1. 编码帧(覆盖:Buffer 写入、字节序)
+function frame(type, payload) {
+  const body = payload ?? Buffer.alloc(0);
+  const buf = Buffer.alloc(HEADER + body.length);
+  buf.writeUInt8(type, 0);
+  buf.writeUInt32BE(body.length, 1);
+  body.copy(buf, HEADER);
+  return buf;
+}
+
+// 2. 增量切帧器(覆盖:长度前缀协议、粘包/拆包)
+class FrameParser {
+  constructor() { this.buf = Buffer.alloc(0); }
+  push(chunk) {
+    this.buf = Buffer.concat([this.buf, chunk]);
+    const frames = [];
+    while (this.buf.length &gt;= HEADER) {
+      const type = this.buf.readUInt8(0);
+      const len = this.buf.readUInt32BE(1);
+      if (this.buf.length &lt; HEADER + len) break;      // 半包等待
+      frames.push({ type, body: this.buf.subarray(HEADER, HEADER + len) });
+      this.buf = this.buf.subarray(HEADER + len);
+    }
+    return frames;
+  }
+}
+
+// 3. 服务端(覆盖:createServer、流式读文件、错误帧)
+function startServer(port, shareDir) {
+  const server = net.createServer((socket) =&gt; {
+    socket.setTimeout(30000);
+    socket.on('timeout', () =&gt; { console.log('服务端:空闲超时,断开'); socket.destroy(); });
+    const parser = new FrameParser();
+    socket.on('data', (chunk) =&gt; {
+      for (const f of parser.push(chunk)) {
+        if (f.type !== TYPE.HEAD) continue;
+        const name = f.body.toString('utf8');
+        const file = path.join(shareDir, path.basename(name));  // 防路径穿越
+        if (!fs.existsSync(file)) {
+          socket.write(frame(TYPE.ERROR, Buffer.from('文件不存在:' + name, 'utf8')));
+          continue;
+        }
+        const size = fs.statSync(file).size;
+        socket.write(frame(TYPE.HEAD, Buffer.from(JSON.stringify({ name, size }), 'utf8')));
+        const rs = fs.createReadStream(file, { highWaterMark: CHUNK });
+        rs.on('data', (chunkData) =&gt; socket.write(frame(TYPE.DATA, chunkData)));
+        rs.on('end', () =&gt; socket.write(frame(TYPE.DONE, Buffer.alloc(0))));
+        rs.on('error', (err) =&gt; socket.write(frame(TYPE.ERROR, Buffer.from(err.message, 'utf8'))));
+      }
+    });
+    socket.on('error', (e) =&gt; console.error('连接错误:', e.message));
+  });
+  server.listen(port, '127.0.0.1', () =&gt; console.log(`文件服务监听 ${port},目录 ${shareDir}`));
+
+  // 附赠 HTTP 健康检查(覆盖:createServer、JSON 响应)
+  http.createServer((req, res) =&gt; {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ ok: true, uptime: process.uptime() }));
+  }).listen(port + 1);
+
+  graceful(server, '文件服务');
+  return server;
+}
+
+// 4. 客户端(覆盖:connect、超时、组装、校验)
+function startClient(host, port, name, outPath) {
+  const socket = net.connect({ host, port, timeout: 3000 });
+  const parser = new FrameParser();
+  let meta = null;
+  const parts = [];
+
+  socket.on('connect', () =&gt; socket.write(frame(TYPE.HEAD, Buffer.from(name, 'utf8'))));
+
+  socket.on('data', (chunk) =&gt; {
+    for (const f of parser.push(chunk)) {
+      if (f.type === TYPE.ERROR) {
+        console.error('服务器错误:', f.body.toString('utf8'));
+        socket.destroy();
+        return;
+      }
+      if (f.type === TYPE.HEAD) {
+        meta = JSON.parse(f.body.toString('utf8'));
+        console.log(`开始接收 ${meta.name},大小 ${meta.size} 字节`);
+      } else if (f.type === TYPE.DATA) {
+        parts.push(Buffer.from(f.body));      // 组装(可优化为写入流)
+      } else if (f.type === TYPE.DONE) {
+        const out = Buffer.concat(parts);
+        fs.writeFileSync(outPath, out);
+        console.log(`接收完成:${out.length} 字节,校验${out.length === meta.size ? '通过' : '失败!'}`);
+        socket.end();
+      }
+    }
+  });
+  socket.on('timeout', () =&gt; { console.error('客户端:连接/空闲超时'); socket.destroy(); });
+  socket.on('error', (err) =&gt; console.error('客户端错误:', err.message));
+}
+
+// 5. 优雅关闭(覆盖:信号、close、超时兜底)
+function graceful(server, tag) {
+  function shutdown(sig) {
+    console.log(`${tag}收到 ${sig},优雅停机`);
+    server.close(() =&gt; {
+      console.log('连接已清空,退出');
+      process.exit(0);
+    });
+    setTimeout(() =&gt; { console.error('兜底强制退出'); process.exit(1); }, 5000).unref();
+  }
+  process.on('SIGTERM', () =&gt; shutdown('SIGTERM'));
+  process.on('SIGINT', () =&gt; shutdown('SIGINT'));
+}
+
+// 6. 入口(覆盖:参数解析、默认值)
+function main() {
+  const [mode, a, b, c] = process.argv.slice(2);
+  if (mode === 'server') {
+    const dir = c ?? b ?? '/tmp/share';
+    fs.mkdirSync(dir, { recursive: true });
+    startServer(Number(a ?? 8000), dir);
+  } else if (mode === 'client') {
+    const host = a ?? '127.0.0.1';
+    const port = Number(b ?? 8000);
+    const name = c ?? 'hello.txt';
+    startClient(host, port, name, '/tmp/download-' + name);
+  } else {
+    console.error('用法:node ftrans.js server &lt;端口&gt; &lt;目录&gt; | node ftrans.js client &lt;host&gt; &lt;端口&gt; &lt;文件名&gt;');
+    process.exitCode = 1;
+  }
+}
+main();
+</pre>
+<p><b>设计说明:</b>协议帧 type+len+payload 演示长度前缀方案的完整落地;FrameParser 同时处理粘包(服务端连续 write 的帧可能合并到达)与半包(大文件分块后单块被 TCP 拆散);服务端用 createReadStream 按 64KB 分块,内存占用与文件大小无关;客户端 Buffer.concat 组装后按 meta.size 校验;双端超时与优雅关闭按生产标准实现。测试建议:先写一个 2MB 测试文件,再用 <code>node ftrans.js client 127.0.0.1 8000 测试文件.bin</code> 传输,对比字节数与文件大小。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第9章 并发与异常 —— 事件循环的宏任务/微任务、Promise/async/await 全解、setTimeout 顺序题,以及 throw 与 Promise 错误传播——JS 最核心的一章。</p>
+
+</body>
+</html>

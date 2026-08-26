@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第8章 网络通信</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<style>body{font-size:9.5pt;line-height:1.65}h2{font-size:13pt}h3{font-size:11pt}.code{font-size:7.8pt;line-height:1.4}.box{padding:5px 10px 6px;margin:7px 0}.box-answer{break-inside:auto}</style>
+<div class="kicker">FROM C TO JAVA · PRODUCTION READY</div>
+<h1 class="chapter-title">第8章 网络通信</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–6 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握 Java 的 TCP 编程:ServerSocket 与 Socket,与 C 的 socket 系列函数对照</li>
+<li>掌握多客户端处理模型:每连接一线程的经典架构</li>
+<li>掌握 UDP 编程:DatagramSocket 的发送与接收</li>
+<li>掌握 HttpClient:GET/POST、超时、错误处理(JDK11+)</li>
+<li>理解网络编程的坑:阻塞、半关闭、超时、粘包与拆包</li>
+<li>树立网络安全红线:不信任远端输入、防注入</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Java:网络编程的手工活变少了</div>
+<p>C 的网络编程是"仪式感"的代名词:socket() → bind() → listen() → accept(),每步都要检查返回值、处理 errno,再手写 read/write 循环。Java 把这套流程压缩成两个类:<span class="hl">服务端 ServerSocket(accept 即完成 listen+accept),客户端 Socket(connect 完成握手)</span>。连接的读写直接就是第7章的 InputStream/OutputStream——网络流和文件流是同一套 API,这是 Java 的设计哲学:一切都是流。</p>
+<p><b>最大的思维差异是阻塞。</b>C 的 recv 阻塞,Java 的 in.read 同样阻塞——没有数据就一直挂着。C 程序员用 select/poll/epoll 解决多连接;Java 经典方案是<span class="hl">"每连接一个线程"</span>:accept 到连接就 new 一个线程去读,主循环继续 accept。这背后是第9章要展开的线程模型。现代高并发(Netty、虚拟线程)是另一套,但"一连接一线程"依然是理解一切的起点。</p>
+<p><b>HTTP 是 C 程序员的"手工活重灾区"</b>:手写请求行、解析响应头、处理 chunked——Java 的 <code>java.net.http.HttpClient</code>(JDK11+)把 GET/POST、超时、重定向、异步全部内置,十几行完成 C 里上百行的活。生产调第三方 REST API,这是标准姿势。</p>
+<p><b>安全是网络章节的必修课</b>:C 时代的心智是"自己的程序互相通信";今天的网络程序面对的是不可信输入——JSON 注入、路径穿越、无认证端口裸奔。本章每个示例都带安全注记,红线在第8.7节。</p>
+<p>学习顺序:TCP 先建立连接模型(§8.2-8.3),UDP 快速对照(§8.4),然后 HTTP(§8.5),最后是坑与安全(§8.6-8.7)。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 网络基础:socket/bind/listen/accept/connect、recv/send、TCP 三次握手概念</li>
+<li>第7章:流式读写与 try-with-resources(网络读写复用同一套)</li>
+<li>第4章:方法;基本的多线程直觉(第9章将完整展开)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(约 1.5 小时):</b>§8.2-8.3 跑通"回显服务器 + 客户端",用两个终端观察收发</li>
+<li><b>第二阶段(约 1 小时):</b>§8.4 UDP 对照;§8.5 HttpClient 请求真实接口</li>
+<li><b>第三阶段(约 1.5 小时):</b>§8.6-8.7 坑与安全,完成章末实验</li>
+<li><b>验收标准:</b>能写出 TCP 回显服务器;能用 HttpClient 带超时地 GET 并解析响应;能说出三条安全红线</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§8.1 网络编程总览:与 C socket 家族对照</li>
+<li>§8.2 TCP 编程:ServerSocket / Socket</li>
+<li>§8.3 多客户端:每连接一线程</li>
+<li>§8.4 UDP 编程:DatagramSocket</li>
+<li>§8.5 HttpClient:GET / POST / 超时</li>
+<li>§8.6 网络编程的坑:阻塞 / 半关闭 / 粘包</li>
+<li>§8.7 安全红线:不可信输入</li>
+</ul></div>
+
+<h2>§8.1 网络编程总览</h2>
+
+<h3>8.1.1 与 C 的 socket 家族对照</h3>
+<table class="cmp">
+<tr><th>C 函数</th><th>Java 对应</th><th>说明</th></tr>
+<tr><td class="ctr">socket(AF_INET, SOCK_STREAM, 0)</td><td class="ctr">new ServerSocket(port) / new Socket(host, port)</td><td class="ctr">构造即创建;类型由类决定</td></tr>
+<tr><td class="ctr">bind + listen</td><td class="ctr">ServerSocket 构造器内部完成</td><td class="ctr">一次搞定</td></tr>
+<tr><td class="ctr">accept</td><td class="ctr">server.accept() → Socket</td><td class="ctr">阻塞等待连接</td></tr>
+<tr><td class="ctr">connect</td><td class="ctr">new Socket(host, port)</td><td class="ctr">构造即连接(可带超时)</td></tr>
+<tr><td class="ctr">recv / send</td><td class="ctr">socket.getInputStream() / getOutputStream()</td><td class="ctr">就是第7章的流!</td></tr>
+<tr><td class="ctr">close</td><td class="ctr">socket.close()</td><td class="ctr">关闭连接</td></tr>
+<tr><td class="ctr">errno</td><td class="ctr">IOException(异常体系)</td><td class="ctr">异常替代错误码</td></tr>
+</table>
+
+<div class="box box-keypoint"><div class="box-title">重点:网络连接 = 两端各有一对流</div>
+<p>TCP 连接建立后,两端各拿到"对方的输入流/输出流":<span class="hl">你写出去的数据出现在对端的读流里,对端写的数据从你的读流进来</span>。所以网络编程 = 第7章的流编程 + 连接的建立与关闭管理。别被"网络"两个字吓住,它只是流的另一种数据源。</p>
+</div>
+
+<h2>§8.2 TCP 编程:回显服务器</h2>
+
+<div class="code-title">示例 8-1 TCP 回显服务器(单连接版)</div>
+<pre class="code">import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
+public class EchoServer {
+    public static void main(String[] args) throws IOException {
+        int port = 9000;
+        // 构造即 bind + listen;C 的三步压缩成一步
+        try (ServerSocket server = new ServerSocket(port)) {
+            System.out.println("监听端口 " + port + " ...");
+
+            // accept 阻塞:等一个客户端连上来
+            try (Socket client = server.accept()) {
+                System.out.println("客户端接入: " + client.getRemoteSocketAddress());
+
+                // 网络流:显式 UTF-8,与文件读写同一套姿势
+                var in = new BufferedReader(new InputStreamReader(
+                        client.getInputStream(), StandardCharsets.UTF_8));
+                var out = new BufferedWriter(new OutputStreamWriter(
+                        client.getOutputStream(), StandardCharsets.UTF_8));
+
+                String line;
+                while ((line = in.readLine()) != null) {
+                    System.out.println("收到: " + line);
+                    out.write("回显: " + line + "\n");   // 原样弹回
+                    out.flush();                          // 缓冲流必须刷
+                }
+                System.out.println("客户端断开");
+            }
+        }
+    }
+}</pre>
+
+<div class="code-title">示例 8-2 TCP 客户端</div>
+<pre class="code">import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
+public class EchoClient {
+    public static void main(String[] args) throws IOException {
+        // 构造即 connect;SocketTimeoutException 表示连不上
+        try (Socket sock = new Socket("127.0.0.1", 9000)) {
+            var in = new BufferedReader(new InputStreamReader(
+                    sock.getInputStream(), StandardCharsets.UTF_8));
+            var out = new BufferedWriter(new OutputStreamWriter(
+                    sock.getOutputStream(), StandardCharsets.UTF_8));
+
+            out.write("你好,服务器\n");
+            out.flush();
+            System.out.println("服务器回应: " + in.readLine());   // 阻塞等回应
+        }
+    }
+}
+// 运行顺序:先启动 EchoServer,再启动 EchoClient</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 1:阻塞与超时</div>
+<p>readLine 没有数据时<span class="hl">永远阻塞</span>——它不会超时。生产代码必须设置超时:<code>sock.setSoTimeout(3000)</code>,超时后抛 SocketTimeoutException(IOException 子类),循环里 catch 后决定重试或断开。另一个隐蔽点:客户端不主动 close,服务器端 readLine 就一直等,看不到"客户端断开"——用 finally 或 try-with-resources 保证 close。</p>
+</div>
+
+<h2>§8.3 多客户端:每连接一线程</h2>
+
+<h3>8.3.1 架构:accept 循环 + 工作线程</h3>
+<p>单连接版只能服务一个客户端。经典多客户端模型:<span class="hl">主循环只做 accept;每接一个连接,交给一个新线程处理,主循环立刻回去等下一个</span>。这正是 C 里 pthread 版服务器的 Java 对应,线程创建用 Executors(第9章详解,这里先用最简单的)。</p>
+
+<div class="code-title">示例 8-3 多客户端聊天服务器(核心结构)</div>
+<pre class="code">import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class ChatServer {
+    // 线程池:固定 10 个工作线程,避免无限制创建线程(第9章详解)
+    private static final ExecutorService pool = Executors.newFixedThreadPool(10);
+
+    public static void main(String[] args) throws IOException {
+        try (ServerSocket server = new ServerSocket(9100)) {
+            System.out.println("聊天服务器启动,端口 9100");
+            while (true) {
+                // 主循环只做一件事:等连接
+                Socket client = server.accept();
+                // 把连接交给工作线程,立刻回去 accept 下一个
+                pool.submit(() -&gt; handle(client));
+            }
+        }
+    }
+
+    private static void handle(Socket client) {
+        // 每个客户端一个线程:阻塞读自己的流,互不干扰
+        try (client;                                 // try-with-resources 关连接
+             var in = new BufferedReader(new InputStreamReader(
+                     client.getInputStream(), StandardCharsets.UTF_8))) {
+            System.out.println("[" + Thread.currentThread().getName()
+                    + "] 新用户: " + client.getRemoteSocketAddress());
+            String line;
+            while ((line = in.readLine()) != null) {
+                System.out.println("[" + Thread.currentThread().getName()
+                        + "] 广播: " + line);
+                // 完整版:把消息转发给所有在线的客户端(需要维护连接列表)
+            }
+            System.out.println("用户离开: " + client.getRemoteSocketAddress());
+        } catch (IOException e) {
+            System.out.println("连接异常: " + e.getMessage());
+        }
+    }
+}</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:线程模型的演进路线</div>
+<p><span class="hl">"一连接一线程"的正确打开方式是线程池,不是裸 new Thread</span>:裸创建在高并发下会把内存与 CPU 打爆。演进路线:一连接一线程(好理解)→ 线程池(控制资源)→ NIO 事件驱动(Netty,大量连接少量活跃)→ 虚拟线程(JDK21+,极轻量线程,回到"一连接一线程"的写法但无成本)。理解第一代,是理解后面的前提。</p>
+</div>
+
+<h2>§8.4 UDP 编程</h2>
+
+<h3>8.4.1 无连接的数据报</h3>
+<p>UDP 不需要 accept/connect 握手:<span class="hl">DatagramPacket 装着"数据 + 目标地址",DatagramSocket 负责发送与接收</span>。数据报有大小上限(约 64KB)、可能丢失或乱序。适合:DNS、音视频、游戏位置同步、心跳探测。</p>
+
+<div class="code-title">示例 8-4 UDP 收发</div>
+<pre class="code">import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+
+public class UdpDemo {
+    public static void main(String[] args) throws Exception {
+        // 发送端:一次发一包
+        try (DatagramSocket sender = new DatagramSocket()) {
+            byte[] data = "ping".getBytes(StandardCharsets.UTF_8);
+            DatagramPacket pkt = new DatagramPacket(data, data.length,
+                    InetAddress.getByName("127.0.0.1"), 9200);
+            sender.send(pkt);
+            System.out.println("已发送 UDP 包");
+        }
+
+        // 接收端:绑定端口,等待数据报(先启动接收端)
+        try (DatagramSocket receiver = new DatagramSocket(9200)) {
+            byte[] buf = new byte[1024];
+            DatagramPacket pkt = new DatagramPacket(buf, buf.length);
+            receiver.receive(pkt);                    // 阻塞等包
+            String msg = new String(pkt.getData(), 0, pkt.getLength(),
+                    StandardCharsets.UTF_8);
+            System.out.println("收到: " + msg + " 来自 "
+                    + pkt.getAddress() + ":" + pkt.getPort());
+        }
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2:UDP 的四个"不保证"</div>
+<p><span class="hl">UDP 不保证:送达、顺序、不重复、不丢包</span>。业务需要可靠性就必须在应用层补(序号、重传、确认),或者干脆用 TCP。经典错误:把 UDP 当 TCP 用,丢包后一脸茫然。选型判断:丢一包无所谓的(心跳)→ UDP;一字节都不能丢的(转账)→ TCP。另外 UDP 包默认有大小上限,应用层要控制单包数据量。</p>
+</div>
+
+<h2>§8.5 HttpClient:现代 HTTP 客户端</h2>
+
+<h3>8.5.1 GET 与 POST</h3>
+<p><code>java.net.http.HttpClient</code>(JDK11+)是内置的 HTTP 客户端:<span class="hl">HttpRequest 描述请求,HttpClient 发送,HttpResponse 承载响应</span>。GET 简单、POST 带 body;超时与重定向策略在客户端构建时配置。C 里手写 HTTP 的苦活在这里是标准库能力。</p>
+
+<div class="code-title">示例 8-5 HttpClient 实战</div>
+<pre class="code">import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
+public class HttpDemo {
+    public static void main(String[] args) throws Exception {
+        // 客户端:全局一个,配置超时与跟随重定向
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))   // 连接超时
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
+
+        // ---- GET ----
+        HttpRequest getReq = HttpRequest.newBuilder()
+                .uri(URI.create("https://httpbin.org/get"))
+                .timeout(Duration.ofSeconds(10))         // 请求超时
+                .GET()
+                .build();
+        HttpResponse&lt;String&gt; resp =
+                client.send(getReq, HttpResponse.BodyHandlers.ofString());
+        System.out.println("GET 状态码: " + resp.statusCode());   // 200
+        System.out.println("GET 响应体前 120 字符: "
+                + resp.body().substring(0, 120));
+
+        // ---- POST(JSON body)----
+        String json = "{\"name\":\"张三\",\"score\":88}";
+        HttpRequest postReq = HttpRequest.newBuilder()
+                .uri(URI.create("https://httpbin.org/post"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+        HttpResponse&lt;String&gt; postResp =
+                client.send(postReq, HttpResponse.BodyHandlers.ofString());
+        System.out.println("POST 状态码: " + postResp.statusCode());
+        System.out.println("POST 响应体前 120 字符: "
+                + postResp.body().substring(0, 120));
+    }
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:状态码与错误处理</div>
+<p><span class="hl">send 只在"网络层失败"(连不上、超时)抛 IOException;业务失败(404、500)是正常的 HTTP 响应</span>。必须检查 statusCode():2xx 成功、3xx 重定向(可自动跟随)、4xx 客户端错、5xx 服务端错。生产姿势:封装"响应校验 + 重试策略 + 熔断",但初学先记住:不检查状态码 = 把错误当成功。</p>
+</div>
+
+<h2>§8.6 网络编程的坑</h2>
+
+<table class="cmp">
+<tr><th>坑</th><th>现象</th><th>对策</th></tr>
+<tr><td class="ctr">阻塞</td><td class="ctr">read 永远等不到数据,程序挂死</td><td class="ctr">setSoTimeout 超时 + catch SocketTimeoutException</td></tr>
+<tr><td class="ctr">半关闭</td><td class="ctr">一端不再写,另一端 readLine 返回 null 才知道;close 直接断双方</td><td class="ctr">用 shutdownOutput() 只关写方向;约定报文结束标记</td></tr>
+<tr><td class="ctr">粘包/拆包</td><td class="ctr">一次 read 读到多条消息(粘包)或一条被拆成多次(拆包)</td><td class="ctr">应用层协议必须定边界:按行(文本)/ 长度前缀 / JSON 对象</td></tr>
+<tr><td class="ctr">半包写</td><td class="ctr">write 一次没写完,对方 read 到半截数据</td><td class="ctr">write 的返回值检查;BufferedWriter 全行写 + flush</td></tr>
+<tr><td class="ctr">端口占用</td><td class="ctr">BindException: Address already in use</td><td class="ctr">换端口;服务端优雅关闭(ServerSocket.close 释放)</td></tr>
+</table>
+
+<div class="code-title">示例 8-6 粘包演示与按行协议修复</div>
+<pre class="code">import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
+public class StickyDemo {
+    // 场景:客户端一口气 write 三条消息,服务端一次 read 可能全读到
+    // 修复:应用层约定"一行一条消息",用 readLine 按行切分
+    public static void main(String[] args) throws IOException {
+        // 假设已拿到连接 socket
+        Socket sock = new Socket("127.0.0.1", 9100);
+        sock.setSoTimeout(3000);                    // 3 秒没数据就超时
+        try (var in = new BufferedReader(new InputStreamReader(
+                sock.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = in.readLine()) != null) {
+                System.out.println("一条消息: " + line);
+            }
+        } catch (java.net.SocketTimeoutException e) {
+            System.out.println("读超时:本次无更多数据(约定:超时即结束)");
+        }
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 3:协议设计是网络程序的第一设计决策</div>
+<p>TCP 是字节流,没有"消息"概念——<span class="hl">消息边界必须由应用层协议定义</span>。三条主路:① 文本行协议(每行一条,readLine);② 长度前缀(4 字节长度 + payload);③ 自描述格式(JSON/Protobuf,生产首选)。C 程序员常用"固定结构体 + sizeof"——Java 里同样可行(长度前缀),但二进制协议的字节序要显式处理(DataOutputStream 的 writeInt 是网络序,别手搓)。</p>
+</div>
+
+<h2>§8.7 安全红线</h2>
+
+<div class="box box-pitfall"><div class="box-title">易错点 4:网络安全的四条红线</div>
+<ol>
+<li><span class="hl">不信任任何远端输入</span>:长度检查、类型检查、白名单校验;网络数据当"可能被攻击者精心构造"对待</li>
+<li><span class="hl">防止注入</span>:把网络数据拼进 SQL/命令/路径前必须转义或参数化;路径穿越(../)用 normalize 后检查前缀</li>
+<li><span class="hl">认证与授权</span>:暴露端口的服务必须有认证(令牌/API Key),别裸奔;生产环境监听 0.0.0.0 前想清楚</li>
+<li><span class="hl">加密传输</span>:涉及敏感数据的传输用 HTTPS/TLS(Java 的 HttpsURLConnection/HttpClient 原生支持),不要自己实现加密</li>
+</ol>
+</div>
+
+<div class="code-title">示例 8-7 红线落地:输入校验模板</div>
+<pre class="code">import java.util.regex.Pattern;
+
+public class SanitizeDemo {
+    // 学号白名单:只允许 7 位数字;其余一律拒绝
+    private static final Pattern STUDENT_ID = Pattern.compile("\d{7}");
+
+    // 校验模板:长度 + 内容双重把关,失败抛异常而不是返回"猜的值"
+    static String sanitizeNick(String raw) {
+        if (raw == null || raw.length() &gt; 20 || raw.length() &lt; 1) {
+            throw new IllegalArgumentException("昵称长度必须在 1-20");
+        }
+        String trimmed = raw.trim();
+        if (trimmed.contains("
+") || trimmed.contains("")) {
+            throw new IllegalArgumentException("昵称不能包含换行");   // 防协议注入
+        }
+        return trimmed;
+    }
+
+    static boolean isStudentId(String s) {
+        return s != null &amp;&amp; STUDENT_ID.matcher(s).matches();
+    }
+}</pre>
+
+<h2>本章速查表</h2>
+<table class="tight">
+<tr><th>主题</th><th>要点</th></tr>
+<tr><td class="ctr">TCP 服务端</td><td class="ctr">new ServerSocket(port) → accept() → 读写流 → close;三步合一</td></tr>
+<tr><td class="ctr">TCP 客户端</td><td class="ctr">new Socket(host, port) 即连接;getInputStream/getOutputStream 就是流</td></tr>
+<tr><td class="ctr">阻塞</td><td class="ctr">read 无数据永远等;setSoTimeout(ms) + catch SocketTimeoutException</td></tr>
+<tr><td class="ctr">多客户端</td><td class="ctr">accept 循环 + 线程池提交连接处理;别裸 new Thread</td></tr>
+<tr><td class="ctr">UDP</td><td class="ctr">DatagramPacket(数据+地址)+ DatagramSocket;无连接;不保证送达/顺序/不丢</td></tr>
+<tr><td class="ctr">UDP 选型</td><td class="ctr">心跳/音视频/丢包无所谓 → UDP;一字节不能丢 → TCP</td></tr>
+<tr><td class="ctr">HttpClient</td><td class="ctr">HttpRequest + HttpClient.send + HttpResponse;body 用 BodyHandlers.ofString()</td></tr>
+<tr><td class="ctr">状态码</td><td class="ctr">404/500 是正常响应不是异常;必须检查 statusCode;超时才抛 IOException</td></tr>
+<tr><td class="ctr">粘包/拆包</td><td class="ctr">TCP 无消息边界;协议三选一:行协议 / 长度前缀 / JSON</td></tr>
+<tr><td class="ctr">半关闭</td><td class="ctr">close 断双向;只停写用 shutdownOutput;对方 EOF = readLine null</td></tr>
+<tr><td class="ctr">超时配置</td><td class="ctr">HttpClient: connectTimeout + 请求 timeout 都要设</td></tr>
+<tr><td class="ctr">安全红线</td><td class="ctr">不信任输入 / 防注入 / 要认证 / 加密传输(HTTPS)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能默写 TCP 回显服务器骨架(ServerSocket/accept/流/关闭)</li>
+<li>能写出带超时的客户端读取循环</li>
+<li>能说出"每连接一线程 + 线程池"架构并画出主循环流程</li>
+<li>能说出 UDP 与 TCP 的选型判断</li>
+<li>能用 HttpClient 完成带超时的 GET 并检查状态码</li>
+<li>能解释粘包成因并给出三种协议对策</li>
+<li>能说出四条网络安全红线</li>
+</ul>
+
+<h2>自测题</h2>
+
+<p class="q">1. 服务器 accept 到一个连接后,客户端发来 100 字节,服务端一次 read(buf) 可能读到多少?为什么?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>可能是 1~100 之间的任意值(还可能拆成多次读):TCP 是字节流,数据到达的时间与分割不受发送方 write 次数约束。所以必须循环 read 直到读够协议要求的量(长度前缀协议)或读到行结束符(行协议),不能假设一次 read 就是一条消息。</p>
+</div>
+
+<p class="q">2. 客户端突然断电,服务端的 readLine 会怎样?怎么及时发现?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>断电时 TCP 无正常 FIN,服务端 readLine 一直阻塞,可能永远等不到。对策:setSoTimeout 让读超时;应用层心跳(定期发 ping,超过 N 次没回应判死)。OS 层面 TCP keepalive 是另一个兜底,但间隔太长,生产一般靠应用层心跳。</p>
+</div>
+
+<p class="q">3. HttpClient.send 抛异常与状态码 500 有什么区别?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>send 抛 IOException:网络层失败(连不上、DNS 解析失败、超时)——程序不知道服务器是否处理了请求。状态码 500:请求到达服务器,服务器内部出错——服务器知道、也返回了明确答复。处理策略不同:前者可重试(幂等请求),后者看业务(500 往往重试也无用)。</p>
+</div>
+
+<p class="q">4. 服务器需要同时服务 5000 个在线连接,但多数连接长期空闲。为什么"裸线程每连接"不合适?现代解法?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>每线程约 1MB 栈(第5章),5000 线程占几 GB 虚拟内存,且线程切换开销大。传统解法:Netty 的 NIO 事件驱动(一个线程管大量连接);JDK21+ 虚拟线程:轻量到百万级,恢复"一连接一线程"的简单写法。生产判断:连接量级千级以下 → 线程池够用;万级以上 → Netty 或虚拟线程。</p>
+</div>
+
+<p class="q">5. 客户端发来字符串,服务器要把它拼进 SQL 查询。有什么风险?怎么办?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>SQL 注入:字符串里带 <code>' OR 1=1 --</code> 之类的内容会改写查询语义。对策:使用参数化查询(PreparedStatement 的 ? 占位),绝不字符串拼接 SQL;同时做输入白名单校验(如学号必须是数字)。这是第8.7节红线的具体落地。</p>
+</div>
+
+<p class="q">6. UDP 协议为什么不适合传输"订单支付确认"?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>UDP 不保证送达与顺序:支付确认丢了,用户以为没支付成功,业务就错了。UDP 适合"丢失可容忍、实时性优先"的场景(游戏位置、语音、心跳)。业务关键数据用 TCP(或基于 UDP 的应用层可靠性协议 QUIC,但那仍是"可靠传输"的语义)。</p>
+</div>
+
+<h2>章末实验题:命令聊天室 + 天气查询</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 8:命令聊天室与 HTTP 查询</div>
+<p><b>实验目标:</b>编写两部分程序:① 多客户端命令行聊天室(服务端 + 客户端);② 用 HttpClient 查询公共 API 并解析结果。综合运用本章全部知识点。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:服务端维护在线客户端集合,收到消息后广播给所有在线者(覆盖 §8.2-8.3 TCP 与多线程)</li>
+<li>任务 2:每连接一线程用线程池;客户端断开时从集合移除(覆盖 §8.3)</li>
+<li>任务 3:客户端提供昵称,发送格式 "昵称: 消息",服务端广播时带发送者(覆盖 §8.2 客户端)</li>
+<li>任务 4:客户端设置 5 秒读超时,超时后提示并继续(覆盖 §8.6 超时处理)</li>
+<li>任务 5:服务端与客户端之间采用"一行一条消息"的行协议(覆盖 §8.6 粘包对策)</li>
+<li>任务 6:用 HttpClient GET 查询 <code>https://httpbin.org/ip</code>,解析出 origin 字段打印(覆盖 §8.5 HTTP)</li>
+<li>任务 7:POST 一条 JSON 到 <code>https://httpbin.org/post</code>,打印回显的 json 字段(覆盖 §8.5 POST)</li>
+<li>任务 8:所有网络数据按"不可信输入"处理:行长度限制、异常捕获、优雅关闭(覆盖 §8.7 安全)</li>
+</ul>
+<p><b>实验环境:</b>JDK 17+;需要联网(任务 6-7);两个终端分别启动服务端与客户端。</p></div>
+
+<ol class="steps">
+<li>先跑通单客户端回显(示例 8-1/8-2),再加在线集合与广播</li>
+<li>广播时对"发送者"本人要不要回显,自己决定并在注释里说明理由</li>
+<li>任务 6-7 先 curl 试通接口,再写 Java 代码对照</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/** 命令聊天室 + HTTP 查询 —— 第8章综合实验参考答案
+ *  覆盖:TCP 多客户端、线程池、广播、超时、行协议、HttpClient、安全红线
+ */
+public class ChatRoom {
+
+    // 在线集合:并发安全;value 是写给该客户端的流
+    private static final Map&lt;String, BufferedWriter&gt; clients =
+            new ConcurrentHashMap&lt;&gt;();
+    private static final ExecutorService pool = Executors.newFixedThreadPool(10);
+
+    public static void main(String[] args) throws Exception {
+        if (args.length &gt; 0 &amp;&amp; args[0].equals("server")) {
+            startServer(9200);
+        } else if (args.length &gt; 0 &amp;&amp; args[0].equals("client")) {
+            startClient("127.0.0.1", 9200, "游客" + (int) (Math.random() * 1000));
+        } else if (args.length &gt; 0 &amp;&amp; args[0].equals("http")) {
+            httpTasks();
+        } else {
+            System.out.println("用法: java ChatRoom server | client | http");
+        }
+    }
+
+    // ---- 服务端 ----
+    private static void startServer(int port) throws IOException {
+        try (ServerSocket server = new ServerSocket(port)) {
+            System.out.println("聊天室监听 " + port);
+            while (true) {
+                Socket client = server.accept();     // 主循环只 accept
+                pool.submit(() -&gt; handleClient(client));
+            }
+        }
+    }
+
+    private static void handleClient(Socket client) {
+        String nick = null;
+        try (client;
+             var in = new BufferedReader(new InputStreamReader(
+                     client.getInputStream(), StandardCharsets.UTF_8));
+             var out = new BufferedWriter(new OutputStreamWriter(
+                     client.getOutputStream(), StandardCharsets.UTF_8))) {
+            // 第一行是昵称(行协议:一条消息 = 一行)
+            nick = in.readLine();
+            if (nick == null || nick.length() &gt; 20) {
+                return;                              // 红线:限制输入长度
+            }
+            clients.put(nick, out);
+            broadcast("系统", nick + " 加入聊天室");
+            String line;
+            while ((line = in.readLine()) != null) {
+                if (line.length() &gt; 200) {
+                    line = line.substring(0, 200);   // 红线:消息长度上限
+                }
+                broadcast(nick, line);
+            }
+        } catch (IOException e) {
+            System.out.println("连接异常: " + e.getMessage());
+        } finally {
+            if (nick != null) {
+                clients.remove(nick);
+                broadcast("系统", nick + " 离开");
+            }
+        }
+    }
+
+    // 广播:遍历在线集合,逐个写(写失败就移除该用户)
+    private static void broadcast(String from, String msg) {
+        String packet = from + ": " + msg + "\n";    // 行协议
+        for (var entry : clients.entrySet()) {
+            try {
+                entry.getValue().write(packet);
+                entry.getValue().flush();
+            } catch (IOException e) {
+                clients.remove(entry.getKey());      // 写不动的用户踢出
+            }
+        }
+    }
+
+    // ---- 客户端 ----
+    private static void startClient(String host, int port, String nick)
+            throws IOException {
+        try (Socket sock = new Socket(host, port)) {
+            sock.setSoTimeout(5000);                 // 读超时 5 秒
+            var in = new BufferedReader(new InputStreamReader(
+                    sock.getInputStream(), StandardCharsets.UTF_8));
+            var out = new BufferedWriter(new OutputStreamWriter(
+                    sock.getOutputStream(), StandardCharsets.UTF_8));
+            out.write(nick + "\n");                  // 先报到昵称
+            out.flush();
+
+            // 读线程:收广播(超时只是提示,不断线)
+            Thread reader = new Thread(() -&gt; {
+                try {
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                } catch (java.net.SocketTimeoutException e) {
+                    System.out.println("(5 秒无消息,继续等待)");
+                } catch (IOException e) {
+                    System.out.println("连接已断开");
+                }
+            });
+            reader.setDaemon(true);
+            reader.start();
+
+            // 主线程:读键盘发送
+            try (var kb = new BufferedReader(
+                    new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = kb.readLine()) != null) {
+                    out.write(line + "\n");
+                    out.flush();
+                }
+            }
+        }
+    }
+
+    // ---- HTTP 任务 ----
+    private static void httpTasks() throws Exception {
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))
+                .build();
+
+        // 任务 6:GET 拿本机出口 IP
+        HttpResponse&lt;String&gt; ipResp = client.send(
+                HttpRequest.newBuilder()
+                        .uri(URI.create("https://httpbin.org/ip"))
+                        .timeout(Duration.ofSeconds(10))
+                        .GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+        System.out.println("GET /ip 状态: " + ipResp.statusCode());
+        // 简单解析:{"origin": "x.x.x.x"} 取冒号后到引号前的部分
+        String body = ipResp.body();
+        String origin = body.substring(body.indexOf("origin") + 10,
+                body.lastIndexOf('"'));
+        System.out.println("本机出口 IP: " + origin);
+
+        // 任务 7:POST JSON
+        HttpResponse&lt;String&gt; postResp = client.send(
+                HttpRequest.newBuilder()
+                        .uri(URI.create("https://httpbin.org/post"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(
+                                "{\"chat\":\"你好\"}"))
+                        .build(),
+                HttpResponse.BodyHandlers.ofString());
+        System.out.println("POST 状态: " + postResp.statusCode());
+        System.out.println("POST 回显: " + postResp.body()
+                .substring(0, Math.min(200, postResp.body().length())));
+    }
+}</pre>
+<p><b>设计说明:</b>在线集合用 ConcurrentHashMap(第9章的并发容器)——多个线程同时读写在线列表,普通 HashMap 会崩;广播对"写失败"的连接做移除,避免僵尸用户阻塞线程池;客户端读线程用 daemon 线程,主线程退出时不阻塞。任务 6 的 JSON 解析是"手搓"的(用 indexOf),生产必须用 Jackson 等库(第13章),这里故意演示"能读但别写"。扩展方向:私聊指令、历史消息、心跳保活、HTTPS + 令牌认证。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第9章 并发与异常。线程的生命周期、同步与锁、异常体系与最佳实践——网络程序的并发问题,和 Java 的异常世界观,都在这一章。</p>
+
+</body>
+</html>

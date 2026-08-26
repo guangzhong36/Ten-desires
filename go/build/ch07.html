@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第7章 文件I/O</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO GO · PRODUCTION READY</div>
+<h1 class="chapter-title">第7章 文件I/O</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>建立 C 的 stdio 到 Go os/bufio 包的 API 对照表,不再为"哪个函数对应哪个"发愁</li>
+<li>掌握文本读写:ReadFile/WriteFile/OpenFile、追加模式、错误处理(含 os.IsNotExist)</li>
+<li>掌握大文件按行流式读取(bufio.Scanner),理解内存占用对比</li>
+<li>掌握二进制读写与 encoding/binary,理解"C 直接 fwrite 结构体的危险"</li>
+<li>掌握路径与目录:filepath.Join、os.ReadDir、MkdirAll、跨平台分隔符</li>
+<li>掌握 JSON 序列化:Marshal/Unmarshal/MarshalIndent、结构体标签、流式 Decoder</li>
+<li>掌握标准流与命令行参数:os.Stdin/Stdout/Stderr、os.Args、flag 包</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Go:本章主题如何迁移</div>
+<p>C 的文件 API 是 stdio:<code>fopen</code>(模式字符串 <code>"r"/"w"/"a"</code>)、<code>fread/fwrite</code>(每次指定元素大小与个数)、<code>fgets</code>(行读取)、<code>fclose</code>。它有两个痛点:①模式字符串是约定,拼错只是行为怪异;②<code>fread</code> 返回"读了多少元素",你必须自行处理"部分读"与错误区分;③文件不存在时 <code>fopen</code> 返回 NULL,错误原因存在 <code>errno</code> 里,查起来费劲。</p>
+<p>Go 的 os 包:打开文件返回 <code>(*os.File, error)</code>——错误直接是返回值,<code>os.IsNotExist(err)</code> 精准判断"文件不存在";读文件 <code>Read</code> 返回 <code>(n, err)</code>,读到末尾返回 <code>io.EOF</code>,约定清晰;更常用的是一行搞定的小函数:<code>os.ReadFile</code> 整个读入、<code>os.WriteFile</code> 整个写出——C 里"读整个文件"要自己量长度、分配、循环读,Go 一个函数。</p>
+<p>三条主线对照:C 的 <code>fopen/fread/fwrite/fclose</code> → Go 的 <code>os.Open/Read/Write/Close</code>(配合 <code>defer</code>);C 的 <code>fgets</code> → Go 的 <code>bufio.Scanner</code>;C 的 <code>fwrite(&amp;struct)</code> → Go 的 <code>encoding/binary</code> + 显式字段编码(C 直接写结构体是 UB 级危险:对齐、字节序、字段布局全凭平台)。序列化方面,C 没有标准 JSON,要么手写解析器要么引第三方;Go 标准库 <code>encoding/json</code> 直接可用。</p>
+<p>一句话主线:<span class="hl">C 的 I/O 是"函数 + 模式约定 + errno",Go 的 I/O 是"函数 + 类型 + error 返回值"</span>——同样的能力,错误从"查全局"变成"返回值里带着"。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的 fopen/fread/fwrite/fgets/fprintf/fclose 与文件模式</li>
+<li>errno、perror 的错误处理方式;EOF 的判定</li>
+<li>结构体对齐、字节序(endian)的基本概念</li>
+<li>第 4 章的 defer(文件关闭的标准姿势)、第 5 章的 buffer 概念</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段:</b>§7.1–§7.3,掌握文本读写三件套:ReadFile、Scanner 流式读、OpenFile 追加</li>
+<li><b>第二阶段:</b>§7.4–§7.6,二进制、目录、JSON 三个独立主题,各跑一个示例</li>
+<li><b>第三阶段(实验):</b>§7.7–§7.8 与章末实验:日志解析统计工具,把整章 API 织进一个真实工具</li>
+<li><b>验收标准:</b>能不看资料写出"读一个配置文件并容错解析"的完整代码</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§7.1 API 对照表:C 的 stdio → Go 的 os/bufio</li>
+<li>§7.2 文本读写:ReadFile/WriteFile/OpenFile/追加</li>
+<li>§7.3 大文件流式读取:bufio.Scanner 与内存对比</li>
+<li>§7.4 二进制 I/O:encoding/binary 与"C 直接 fwrite 结构体"的危险</li>
+<li>§7.5 路径与目录:filepath、os.ReadDir、MkdirAll</li>
+<li>§7.6 JSON 序列化:Marshal/Unmarshal/标签/流式 Decoder</li>
+<li>§7.7 标准流与命令行参数:os.Args 与 flag 包</li>
+<li>§7.8 CSV 与日志:生产场景实战</li>
+</ul></div>
+
+<h2>§7.1 API 对照表:从 stdio 到 os 包</h2>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>Go 的写法</th></tr>
+<tr><td class="ctr"><code>FILE* f = fopen(path, "r")</code>;NULL 表示失败</td><td class="ctr"><code>f, err := os.Open(path)</code>;<code>err != nil</code> 表示失败</td></tr>
+<tr><td class="ctr"><code>fopen(path, "w")</code> / <code>"a"</code></td><td class="ctr"><code>os.Create(path)</code> / <code>os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0644)</code></td></tr>
+<tr><td class="ctr"><code>fread(buf, size, n, f)</code>,返回值是"读到的个数"</td><td class="ctr"><code>n, err := f.Read(buf)</code>;读到末尾 <code>err == io.EOF</code></td></tr>
+<tr><td class="ctr"><code>fgets(line, n, f)</code></td><td class="ctr"><code>scanner := bufio.NewScanner(f); scanner.Scan()</code></td></tr>
+<tr><td class="ctr"><code>fprintf(f, fmt, ...)</code></td><td class="ctr"><code>fmt.Fprintf(f, fmt, ...)</code>(第一个参数换成 io.Writer)</td></tr>
+<tr><td class="ctr"><code>fclose(f)</code> 每处手动</td><td class="ctr"><code>defer f.Close()</code> 一行保证</td></tr>
+<tr><td class="ctr">errno + perror()</td><td class="ctr">err 返回值 + <code>os.IsNotExist(err)</code> 等分类函数</td></tr>
+<tr><td class="ctr"><code>fwrite(&amp;s, sizeof(s), 1, f)</code> 直接写结构体</td><td class="ctr"><code>encoding/binary</code> 显式编码每个字段(对齐/字节序受控)</td></tr>
+</table>
+
+<div class="box box-keypoint"><div class="box-title">重点:读文件的三个层次</div>
+<p>①小文件:<code>os.ReadFile</code> 一次读入(内部帮你打开+读完+关闭);②大文件/流式:<code>os.Open</code> + <code>bufio.Scanner</code> 按行处理;③需要精细控制:<code>os.OpenFile</code> + <code>Read</code>/<code>Write</code> 循环 + 显式 Close。生产上 90% 场景落在前两层,别一上来就写 C 式手循环。</p>
+</div>
+
+<h2>§7.2 文本读写:三件套</h2>
+
+<div class="code-title">示例 7-1 读写文本文件</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    // 写文件:整个写出(不存在则创建,存在则截断)
+    err := os.WriteFile("hello.txt", []byte("你好,Go 文件!\n"), 0644)
+    if err != nil {
+        fmt.Println("写入失败:", err)
+        return
+    }
+
+    // 读文件:整个读入
+    data, err := os.ReadFile("hello.txt")
+    if err != nil {
+        fmt.Println("读取失败:", err)
+        return
+    }
+    fmt.Print(string(data))
+
+    // 追加模式:OpenFile 显式指定标志
+    f, err := os.OpenFile("hello.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+        fmt.Println("打开失败:", err)
+        return
+    }
+    defer f.Close() // 无论后续如何,句柄必释放
+    if _, err := f.WriteString("追加一行\n"); err != nil {
+        fmt.Println("追加失败:", err)
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 7-1:错误判断用 os.IsNotExist,不要比字符串</div>
+<p>不要写 <code>err.Error() == "file does not exist"</code>——错误消息随平台与 Go 版本变化。正确姿势:<code>os.IsNotExist(err)</code>(以及 <code>os.IsPermission</code>、<code>os.IsTimeout</code>)。Go 1.13+ 推荐用 <code>errors.Is(err, os.ErrNotExist)</code>,兼容包装错误(第 9 章)。</p>
+</div>
+
+<h2>§7.3 大文件流式读取:bufio.Scanner</h2>
+
+<p>C 处理大文件要么 <code>fgets</code> 逐行,要么手写缓冲循环。Go 的 <code>bufio.Scanner</code> 是标准答案:内部有缓冲区,一次一行,内存占用与文件大小无关。对照:<code>os.ReadFile</code> 读 10GB 日志直接内存爆炸;Scanner 读 10GB 日志内存恒定。</p>
+
+<div class="code-title">示例 7-2 按行流式读取(内存恒定)</div>
+<pre class="code">package main
+
+import (
+    "bufio"
+    "fmt"
+    "os"
+)
+
+func main() {
+    f, err := os.Open("access.log")
+    if err != nil {
+        fmt.Println("打开失败:", err)
+        return
+    }
+    defer f.Close()
+
+    scanner := bufio.NewScanner(f)
+    lineNum := 0
+    for scanner.Scan() { // 每行一次迭代,内存只占一行
+        line := scanner.Text()
+        lineNum++
+        if lineNum &lt;= 3 {
+            fmt.Printf("第 %d 行: %s\n", lineNum, line)
+        }
+    }
+    // 循环结束要检查扫描器错误(可能因 IO 故障提前终止)
+    if err := scanner.Err(); err != nil {
+        fmt.Println("读取中断:", err)
+        return
+    }
+    fmt.Println("总行数:", lineNum)
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 7-2:Scanner 默认单行上限 64KB</div>
+<p>默认 <code>bufio.Scanner</code> 每行最长 64KB,超长行会报 <code>ErrTooLong</code> 并停止。处理超长行(如 JSON 日志、大字段)要显式加大:<code>scanner.Buffer(make([]byte, 1024*1024), 1024*1024)</code>(初始缓冲 + 最大上限)。生产日志解析器都会设置这个,别等线上爆了才想起。</p>
+</div>
+
+<h2>§7.4 二进制 I/O:encoding/binary</h2>
+
+<p>C 直接 <code>fwrite(&amp;struct)</code> 的危险:结构体对齐、字节序、<code>int</code> 宽度都依赖平台,写出来的文件换台机器就废;还会把填充字节写进去。Go 的做法:字段<b>逐项显式编码</b>,指定字节序(大端 <code>binary.BigEndian</code> 或小端 <code>binary.LittleEndian</code>)。</p>
+
+<div class="code-title">示例 7-3 二进制读写:固定字节序</div>
+<pre class="code">package main
+
+import (
+    "bytes"
+    "encoding/binary"
+    "fmt"
+)
+
+func main() {
+    // 写:构造字节流(协议头部 + 数据)
+    var buf bytes.Buffer
+    ver := uint16(1)
+    length := uint32(7)
+    _ = binary.Write(&amp;buf, binary.LittleEndian, ver)
+    _ = binary.Write(&amp;buf, binary.LittleEndian, length)
+    payload := []byte("abcdef")
+    _ = binary.Write(&amp;buf, binary.LittleEndian, payload)
+
+    fmt.Printf("编码结果 %d 字节:%x\n", buf.Len(), buf.Bytes())
+
+    // 读:按相同字节序还原
+    var v2 uint16
+    var l2 uint32
+    _ = binary.Read(bytes.NewReader(buf.Bytes()), binary.LittleEndian, &amp;v2)
+    _ = binary.Read(bytes.NewReader(buf.Bytes()[2:]), binary.LittleEndian, &amp;l2)
+    fmt.Println("还原:", v2, l2)
+
+    // 更精细的写法:手动 Put/Get(性能更好)
+    b := make([]byte, 6)
+    binary.LittleEndian.PutUint16(b[0:2], 12345)
+    binary.LittleEndian.PutUint32(b[2:6], 67890123)
+    fmt.Println(binary.LittleEndian.Uint16(b[0:2]), binary.LittleEndian.Uint32(b[2:6]))
+}</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:二进制协议的三条纪律</div>
+<p>①长度字段永远固定宽度(<code>uint16</code>/<code>uint32</code>),别用 <code>int</code>;②字节序全局统一,推荐网络序(大端)或与对端约定一致;③每个字段长度与范围要有校验——反序列化是恶意输入的第一道防线,越界长度先拒掉再分配(与第 8 章粘包协议呼应)。</p>
+</div>
+
+<h2>§7.5 路径与目录:filepath 与 os.ReadDir</h2>
+
+<p>C 的路径处理是"字符串拼接 + 平台宏":<code>PATH_SEPARATOR</code>、<code>strcat</code>,跨平台要自己折腾。Go 的 <code>path/filepath</code> 一包搞定:拼接、拆分、扩展、清理,自动适配平台分隔符。</p>
+
+<div class="code-title">示例 7-4 路径与目录操作</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "os"
+    "path/filepath"
+)
+
+func main() {
+    // 拼接:自动处理分隔符(Windows \ 与 Unix / 都正确)
+    p := filepath.Join("logs", "2026", "app.log")
+    fmt.Println(p)
+
+    // 拆解
+    fmt.Println("目录:", filepath.Dir(p))
+    fmt.Println("文件名:", filepath.Base(p))
+    fmt.Println("扩展名:", filepath.Ext(p))
+
+    // 创建多级目录(已存在也不报错)
+    _ = os.MkdirAll(filepath.Join("out", "nested"), 0755)
+
+    // 遍历目录:只读一层
+    entries, err := os.ReadDir(".")
+    if err != nil {
+        fmt.Println("读取目录失败:", err)
+        return
+    }
+    for _, e := range entries {
+        kind := "文件"
+        if e.IsDir() {
+            kind = "目录"
+        }
+        fmt.Printf("%s(%s)\n", e.Name(), kind)
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 7-3:用字符串 "+" 拼路径</div>
+<p><code>dir + "/" + name</code> 在 Unix 正常,在 Windows 上 <code>/</code> 通常也能用,但遇到尾斜杠、重复分隔符、<code>..</code> 就出幺蛾子。<code>filepath.Join</code> 会清理这些;生产代码一律用 Join。注意 <code>filepath.Clean</code> 还能把 <code>a/../b</code> 规范化。</p>
+</div>
+
+<h2>§7.6 JSON 序列化:encoding/json</h2>
+
+<p>C 的标准库没有 JSON;Go 的 <code>encoding/json</code> 是官方标准实现,配合第 1 章的 struct 与第 12 章的 struct tag 使用。三个核心 API:<code>Marshal</code>(结构体→字节)、<code>Unmarshal</code>(字节→结构体)、<code>MarshalIndent</code>(格式化输出);流式用 <code>Encoder</code>/<code>Decoder</code>(第 8 章 HTTP 里会反复出现)。</p>
+
+<div class="code-title">示例 7-5 JSON 序列化与反序列化</div>
+<pre class="code">package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+// 字段名由 tag 控制;未导出字段不参与序列化
+type User struct {
+    Name  string   `json:"name"`
+    Age   int      `json:"age"`
+    Tags  []string `json:"tags,omitempty"` // 空值省略
+    Score float64  `json:"score"`
+}
+
+func main() {
+    u := User{Name: "张三", Age: 28, Score: 92.5}
+
+    // 序列化:紧凑输出
+    data, err := json.Marshal(u)
+    if err != nil {
+        fmt.Println("序列化失败:", err)
+        return
+    }
+    fmt.Println(string(data)) // {"name":"张三","age":28,"score":92.5}(tags 省略)
+
+    // 格式化输出(配置/日志友好)
+    pretty, _ := json.MarshalIndent(u, "", "  ")
+    fmt.Println(string(pretty))
+
+    // 反序列化
+    raw := []byte(`{"name":"李四","age":30,"score":88.0,"extra":"忽略我"}`)
+    var v User
+    if err := json.Unmarshal(raw, &amp;v); err != nil {
+        fmt.Println("反序列化失败:", err)
+        return
+    }
+    fmt.Printf("还原: %+v\n", v) // extra 字段被忽略
+
+    // 任意结构:map 与接口
+    var m map[string]any
+    _ = json.Unmarshal(raw, &amp;m)
+    fmt.Println(m["name"], m["age"])
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 7-4:反序列化忽略未知字段与类型不匹配</div>
+<p><code>Unmarshal</code> 默认<b>忽略</b> JSON 中的未知字段,字段类型不匹配(如字符串给了数字)会返回错误。生产上:①需要严格校验时用 <code>Decoder.DisallowUnknownFields()</code>;②数字一律用 <code>float64</code> 接收再转换(JSON 没有整数概念,<code>json.Number</code> 可保精度);③日期不是内建类型,用 string + 自定义 UnmarshalJSON(第 12 章展开)。</p>
+</div>
+
+<h2>§7.7 标准流与命令行参数</h2>
+
+<p>对照 C:<code>stdin/stdout/stderr</code> → Go 的 <code>os.Stdin</code>/<code>os.Stdout</code>/<code>os.Stderr</code>(类型 <code>*os.File</code>,也是 <code>io.Reader</code>/<code>io.Writer</code>);<code>argc/argv</code> → <code>os.Args</code>(切片,第 0 项是程序名);手写 getopt → <code>flag</code> 标准包。</p>
+
+<div class="code-title">示例 7-6 os.Args 与 flag 包</div>
+<pre class="code">package main
+
+import (
+    "flag"
+    "fmt"
+    "os"
+)
+
+func main() {
+    // os.Args:全部参数(第 0 项是程序名)
+    fmt.Println("程序名:", os.Args[0])
+    fmt.Println("参数个数:", len(os.Args)-1)
+
+    // flag 包:命名参数解析
+    name := flag.String("name", "匿名", "用户名")
+    verbose := flag.Bool("v", false, "详细输出")
+    port := flag.Int("port", 8080, "端口")
+    flag.Parse() // 必须调用,才会解析
+
+    fmt.Printf("name=%s verbose=%v port=%d\n", *name, *verbose, *port)
+
+    // 位置参数:flag.Args() 返回剩余参数
+    rest := flag.Args()
+    fmt.Println("剩余位置参数:", rest)
+}</pre>
+
+<div class="code-title">示例 7-7 标准流:行过滤工具(类似 grep 的骨架)</div>
+<pre class="code">package main
+
+import (
+    "bufio"
+    "fmt"
+    "os"
+    "strings"
+)
+
+func main() {
+    // 从 stdin 逐行读,过滤含关键字(第 0 个参数)的行,写回 stdout
+    keyword := "ERROR"
+    if len(os.Args) &gt; 1 {
+        keyword = os.Args[1]
+    }
+
+    scanner := bufio.NewScanner(os.Stdin)
+    for scanner.Scan() {
+        line := scanner.Text()
+        if strings.Contains(line, keyword) {
+            fmt.Println(line) // 输出到 stdout
+        }
+    }
+    if err := scanner.Err(); err != nil {
+        fmt.Fprintln(os.Stderr, "读取 stdin 失败:", err) // 错误走 stderr
+        os.Exit(1)
+    }
+}</pre>
+
+<h2>§7.8 CSV 与日志:生产场景</h2>
+
+<p>CSV 别手写 split:<code>encoding/csv</code> 处理引号、逗号内换行等边界。日志文件用追加模式 + 可选轮转(生产上交给 lumberjack 等库,原理见 §7.2 的 OpenFile 追加)。</p>
+
+<div class="code-title">示例 7-8 CSV 读写</div>
+<pre class="code">package main
+
+import (
+    "encoding/csv"
+    "fmt"
+    "os"
+    "strconv"
+)
+
+func main() {
+    // 写 CSV
+    f, err := os.Create("scores.csv")
+    if err != nil {
+        fmt.Println("创建失败:", err)
+        return
+    }
+    defer f.Close()
+    w := csv.NewWriter(f)
+    _ = w.Write([]string{"姓名", "分数"})
+    _ = w.Write([]string{"张三", "92"})
+    _ = w.Write([]string{"李四", "88"})
+    w.Flush()
+    if err := w.Error(); err != nil {
+        fmt.Println("写 CSV 失败:", err)
+    }
+
+    // 读 CSV 并求和
+    rf, err := os.Open("scores.csv")
+    if err != nil {
+        fmt.Println("打开失败:", err)
+        return
+    }
+    defer rf.Close()
+    r := csv.NewReader(rf)
+    records, _ := r.ReadAll()
+    total := 0
+    for _, rec := range records[1:] { // 跳过表头
+        n, _ := strconv.Atoi(rec[1])
+        total += n
+    }
+    fmt.Println("总分:", total)
+}</pre>
+
+<h2>本章速查表</h2>
+<table>
+<tr><th style="width:26%">主题</th><th>要点</th></tr>
+<tr><td class="ctr">读小文件</td><td class="ctr"><code>os.ReadFile(path)</code> → <code>([]byte, error)</code>;自动打开+关闭</td></tr>
+<tr><td class="ctr">写小文件</td><td class="ctr"><code>os.WriteFile(path, data, 0644)</code>;覆盖写,不存在则创建</td></tr>
+<tr><td class="ctr">追加</td><td class="ctr"><code>os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)</code></td></tr>
+<tr><td class="ctr">流式读行</td><td class="ctr"><code>bufio.Scanner</code>;记得 <code>scanner.Err()</code>;超长行调 Buffer</td></tr>
+<tr><td class="ctr">底层读写</td><td class="ctr"><code>f.Read(buf)</code> → (n, err);EOF 是 <code>io.EOF</code>;要循环读满</td></tr>
+<tr><td class="ctr">关闭</td><td class="ctr">打开后立刻 <code>defer f.Close()</code></td></tr>
+<tr><td class="ctr">错误分类</td><td class="ctr"><code>errors.Is(err, os.ErrNotExist)</code>;勿比对错误字符串</td></tr>
+<tr><td class="ctr">二进制</td><td class="ctr"><code>encoding/binary</code>:LittleEndian/BigEndian;显式逐字段编码</td></tr>
+<tr><td class="ctr">路径</td><td class="ctr"><code>filepath.Join/Dir/Base/Ext/Clean</code>;跨平台分隔符</td></tr>
+<tr><td class="ctr">目录</td><td class="ctr"><code>os.ReadDir(dir)</code> → 条目列表;<code>os.MkdirAll</code> 多级创建</td></tr>
+<tr><td class="ctr">JSON</td><td class="ctr"><code>json.Marshal/Unmarshal/MarshalIndent</code>;tag 控字段名;Decoder 流式</td></tr>
+<tr><td class="ctr">标准流</td><td class="ctr"><code>os.Stdin/Stdout/Stderr</code>;错误写 stderr 并 os.Exit(1)</td></tr>
+<tr><td class="ctr">命令行</td><td class="ctr"><code>os.Args</code> 全参数;<code>flag</code> 包解析命名参数</td></tr>
+<tr><td class="ctr">CSV</td><td class="ctr"><code>encoding/csv</code> 读写;别手写 split 处理引号</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能写出"读文件 + 判错 + 打印"的三行式,以及"写文件"的三行式</li>
+<li>能解释 Scanner 流式读大文件为什么内存恒定,以及 64KB 限制与调大方法</li>
+<li>能写出追加模式 OpenFile 的参数组合,并用 defer 关闭</li>
+<li>能解释"为什么不能 fwrite 结构体",写出 binary 编码/解码</li>
+<li>能写出 filepath.Join 与 os.ReadDir 的完整目录遍历</li>
+<li>能写出带 tag 的结构体与 Marshal/Unmarshal 往返</li>
+<li>能说出 flag 包的三步用法(定义/Parse/取值)</li>
+<li>能写出"stdin 过滤 → stdout 输出、错误走 stderr"的小工具骨架</li>
+</ul>
+
+<h2>自测题</h2>
+
+<div class="q">1. 读一个 100MB 的文本文件,要求内存占用与文件大小无关,写出代码骨架(打开、扫描、关闭、错误检查)。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>f, err := os.Open(fn); if err != nil { ... }; defer f.Close(); scanner := bufio.NewScanner(f); for scanner.Scan() { 处理 scanner.Text() }; if err := scanner.Err(); err != nil { ... }</code>。Scanner 内部固定缓冲,逐行处理,内存与文件大小无关。</p>
+</div>
+
+<div class="q">2. <code>os.WriteFile("a.txt", data, 0644)</code> 与 <code>os.OpenFile("a.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)</code> 的行为区别是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>前者是"不存在创建、存在截断"(等价 O_TRUNC);后者是追加写(O_APPEND),不截断,保留原内容。追加日志用后者,覆盖配置文件用前者。</p>
+</div>
+
+<div class="q">3. JSON 反序列化时,输入 <code>{"name":"张三","age":"28"}</code> 到 <code>struct{ Age int }</code> 会怎样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>返回错误:字符串不能反序列化为 int 字段(<code>json: cannot unmarshal string into Go struct field ... of type int</code>),且 <code>v</code> 保持调用前的值(Unmarshal 失败不清空)。生产上要注意"解析失败时的部分赋值"——先解码到新变量,成功后再使用。</p>
+</div>
+
+<div class="q">4. 为什么 C 的 <code>fwrite(&amp;struct)</code> 有跨平台问题,Go 的 binary 为什么没有?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>C 直接写结构体把"内存布局"写进文件:结构体对齐规则、字段顺序、int 宽度、字节序全由平台决定,换编译器/换 CPU 就废;还可能把填充字节写进去。Go 的 encoding/binary 逐字段、显式指定宽度与字节序,文件格式由代码决定而非平台决定。</p>
+</div>
+
+<div class="q">5. 写出 flag 包解析 <code>-name 张三 -v</code> 的完整流程,并说明 flag.Args() 的用途。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>name := flag.String("name", "匿名", "说明"); verbose := flag.Bool("v", false, "详细"); flag.Parse()</code>,取值用 <code>*name</code>、<code>*verbose</code>。<code>flag.Args()</code> 返回 Parse 后剩余的位置参数(非 <code>-</code> 开头的参数),如文件名列表。</p>
+</div>
+
+<div class="q">6. Scanner 遇到超长行会怎样?如何解决?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>默认每行上限 64KB,超长触发 ErrTooLong,Scan 返回 false 停止。解决:<code>scanner.Buffer(make([]byte, 1&lt;&lt;20), 1&lt;&lt;20)</code> 调大(首参初始缓冲,次参上限)。另外,<code>ScanLines</code> 只认 <code>\n</code>;处理 <code>\r\n</code> 时 Scanner 已自动去 <code>\r</code>。</p>
+</div>
+
+<h2>章末实验题:日志解析与统计工具</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 7:日志解析统计工具</div>
+<p><b>实验目标:</b>实现一个日志分析工具:读取"时间|路径|状态码|耗时ms"格式的访问日志,统计总量、平均耗时、状态码分布、TOP 路径,输出格式化 JSON 报告到 out 目录。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:用 <code>os.Open</code> + <code>bufio.Scanner</code> 流式读取日志文件(覆盖:§7.1、§7.3 流式读取)</li>
+<li>任务 2:每行按 <code>|</code> 分隔解析为结构体,坏行跳过并计数(覆盖:§7.2 文本处理、字符串与转换)</li>
+<li>任务 3:统计状态码分布(map 聚合)、各路径访问次数(覆盖:§7.8 统计、map)</li>
+<li>任务 4:平均耗时与错误率计算,注意显式类型转换(覆盖:§7.2、第 1 章转换)</li>
+<li>任务 5:TOP 5 路径排序输出(覆盖:sort 切片)</li>
+<li>任务 6:用 <code>os.MkdirAll</code> + <code>filepath.Join</code> 建 out 目录并写报告(覆盖:§7.5 路径目录)</li>
+<li>任务 7:报告用 <code>json.MarshalIndent</code> 格式化输出(覆盖:§7.6 JSON)</li>
+<li>任务 8:支持命令行参数指定日志文件,错误走 stderr 并返回非零退出码(覆盖:§7.7 参数与标准流)</li>
+</ul>
+<p><b>实验环境:</b>Go 1.21+,<code>go run main.go logs.txt</code>;自行生成测试日志验证。</p>
+</div>
+
+<ol class="steps">
+<li>先写 parseLine 函数,单测它的四种输入:正常行、缺字段行、非数字行、空行</li>
+<li>主流程:打开 → Scanner 循环 → 聚合 map → 排序 → 写报告</li>
+<li>报告结构体定义好 tag,方便直接 Marshal</li>
+<li>最后加 os.Args 参数与 stderr 错误处理</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">// 日志解析统计工具:流式读取 + 聚合统计 + JSON 报告
+package main
+
+import (
+    "bufio"
+    "encoding/json"
+    "fmt"
+    "os"
+    "path/filepath"
+    "sort"
+    "strconv"
+    "strings"
+)
+
+// 一行日志:时间|路径|状态码|耗时ms
+type logLine struct {
+    Time string
+    Path string
+    Code int
+    Cost int
+}
+
+// 统计报告(带 JSON tag,§7.6)
+type report struct {
+    Total     int            `json:"total"`
+    AvgCost   float64        `json:"avg_cost"`
+    ErrorRate float64        `json:"error_rate"`
+    ByCode    map[string]int `json:"by_code"`
+    TopPaths  []pathCount    `json:"top_paths"`
+}
+
+type pathCount struct {
+    Path  string `json:"path"`
+    Count int    `json:"count"`
+}
+
+// parseLine 解析一行;格式错误返回 false(坏行计数由调用方负责)
+func parseLine(line string) (logLine, bool) {
+    parts := strings.Split(line, "|")
+    if len(parts) != 4 {
+        return logLine{}, false
+    }
+    code, err1 := strconv.Atoi(parts[2])
+    cost, err2 := strconv.Atoi(parts[3])
+    if err1 != nil || err2 != nil {
+        return logLine{}, false
+    }
+    return logLine{Time: parts[0], Path: parts[1], Code: code, Cost: cost}, true
+}
+
+// analyze 流式统计主逻辑
+func analyze(src string) (*report, error) {
+    f, err := os.Open(src)
+    if err != nil {
+        return nil, fmt.Errorf("打开日志失败: %w", err)
+    }
+    defer f.Close() // 无论成败,句柄必释放
+
+    var r report
+    r.ByCode = map[string]int{}
+    pathCounts := map[string]int{}
+    totalCost := 0
+    errors := 0
+    badLines := 0
+
+    scanner := bufio.NewScanner(f)
+    scanner.Buffer(make([]byte, 64*1024), 1024*1024) // 允许超长行
+    for scanner.Scan() {
+        ll, ok := parseLine(scanner.Text())
+        if !ok {
+            badLines++
+            continue // 坏行跳过,不影响整体
+        }
+        r.Total++
+        totalCost += ll.Cost
+        pathCounts[ll.Path]++
+        code := strconv.Itoa(ll.Code)
+        r.ByCode[code]++
+        if ll.Code >= 500 {
+            errors++
+        }
+    }
+    if err := scanner.Err(); err != nil {
+        return nil, fmt.Errorf("读取中断: %w", err)
+    }
+
+    if r.Total > 0 {
+        r.AvgCost = float64(totalCost) / float64(r.Total) // 显式转换
+        r.ErrorRate = float64(errors) / float64(r.Total) * 100
+    }
+    for p, c := range pathCounts {
+        r.TopPaths = append(r.TopPaths, pathCount{Path: p, Count: c})
+    }
+    sort.Slice(r.TopPaths, func(i, j int) bool {
+        return r.TopPaths[i].Count > r.TopPaths[j].Count
+    })
+    if len(r.TopPaths) > 5 {
+        r.TopPaths = r.TopPaths[:5] // 只保留 TOP 5
+    }
+    fmt.Printf("坏行 %d 条(已跳过)\n", badLines)
+    return &r, nil
+}
+
+func main() {
+    // 命令行参数:默认 logs.txt(§7.7)
+    src := "logs.txt"
+    if len(os.Args) > 1 {
+        src = os.Args[1]
+    }
+
+    r, err := analyze(src)
+    if err != nil {
+        fmt.Fprintln(os.Stderr, "分析失败:", err) // 错误走 stderr
+        os.Exit(1)                                 // 非零退出码
+    }
+
+    // JSON 报告:格式化输出(§7.6)
+    data, err := json.MarshalIndent(r, "", "  ")
+    if err != nil {
+        fmt.Fprintln(os.Stderr, "JSON 编码失败:", err)
+        os.Exit(1)
+    }
+
+    // 输出到 out 目录(§7.5)
+    outDir := "out"
+    if err := os.MkdirAll(outDir, 0755); err != nil {
+        fmt.Fprintln(os.Stderr, "创建目录失败:", err)
+        os.Exit(1)
+    }
+    outPath := filepath.Join(outDir, "report.json")
+    if err := os.WriteFile(outPath, data, 0644); err != nil {
+        fmt.Fprintln(os.Stderr, "写报告失败:", err)
+        os.Exit(1)
+    }
+    fmt.Println("报告已生成:", outPath)
+    fmt.Println(string(data))
+}</pre>
+<p><b>设计说明:</b>实验把本章 8 节全部织入:Scanner 流式读与 Buffer 调大(§7.3)、OpenFile 打开与 defer 关闭(§7.2)、按行解析与坏行容错(§7.2)、map 聚合与排序(§7.8)、JSON tag 与 MarshalIndent(§7.6)、MkdirAll 与 filepath.Join(§7.5)、os.Args 与 stderr/exit(§7.7)。测试数据可现场生成:<code>for i in {1..100}; do echo "2026-08-26 10:00:0$i|/api/user|200|12"; done &gt; logs.txt</code>。扩展:为 analyze 写单元测试(用 t.TempDir 生成临时日志),再加一个 <code>-out</code> flag 指定输出目录(覆盖 flag 包)。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第8章 网络通信。文件是"本地通道",下一章走出机器:从 C 的 socket/htons 到 Go 的 net 包,goroutine per connection 模式、UDP、HTTP 客户端与服务端,以及粘包/拆包协议设计——每个示例都能直接抄进生产。</p>
+
+</body>
+</html>

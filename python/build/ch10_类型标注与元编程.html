@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第10章 类型标注与元编程</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · PRODUCTION READY</div>
+
+<div class="chapter-title">第10章 类型标注与元编程</div>
+<div class="chapter-meta">TypeVar 与 Generic · Protocol · 描述符 · 元类与 __init_subclass__</div>
+
+<div class="box-goal">
+<p><b>本章目标:</b>讲透 Python 类型标注的进阶能力与"类的类"元编程:TypeVar/Generic 泛型、Protocol 结构化协议、描述符协议、元类与 __init_subclass__。学完你能写出既保持 Python 灵活、又能被 mypy 静态检查护航的生产代码,并理解装饰器、property 等语法糖背后的机制。</p>
+</div>
+
+<div class="box-intuition">
+<p><b>直觉起点:</b>C 的类型在编译期决定一切;Python 的类型标注是"写给检查器与人看的承诺",运行期基本不检查。泛型之于 Python,类似 C 的宏之于类型——但更安全。元编程则是"创建类的代码"——class 语句本身就是一个可拦截的构造过程,Python 把 C 的编译期魔法搬到了运行期。</p>
+</div>
+
+<div class="box-prereq">
+<p><b>前置要求:</b>第6章面向对象(类与继承)、第4章函数(标注语法)、第9章异常。</p>
+</div>
+
+<div class="box-route">
+<p><b>本章路线:</b>第一阶段(1.5 小时)读 §10.1–§10.3,掌握泛型与 Protocol;第二阶段(1.5 小时)读 §10.4–§10.6,理解描述符与类创建钩子;第三阶段(2 小时)读 §10.7–§10.8,完成章末实验。</p>
+</div>
+
+<div class="toc-map">
+<pre>
+本章知识导图
+├─ 10.1 标注语法速览 —— X | Y、内置泛型、3.8 兼容
+├─ 10.2 TypeVar 与 Generic —— 泛型函数与容器
+├─ 10.3 Protocol —— 鸭子类型的静态化
+├─ 10.4 描述符 —— __get__/__set__ 与 property 真相
+├─ 10.5 元类 —— class 语句背后的构造过程
+├─ 10.6 __init_subclass__ —— 更亲民的子类钩子
+├─ 10.7 dataclass —— 数据类的元编程红利
+└─ 10.8 生产实践 —— 元编程的边界与检查工具
+</pre>
+</div>
+
+<h2>§10.1 标注语法速览:X | Y、内置泛型</h2>
+
+<p>标注只对检查器有意义,运行期几乎不校验——这是理解本章的前提。语法上记住四个点:内置容器可直接标注(<code>list[int]</code>、<code>dict[str, int]</code>);可空用 <code>X | None</code>(3.10+)或 <code>Optional[X]</code>;联合用 <code>A | B</code>(3.10+)或 <code>Union[A, B]</code>;泛型参数给容器:</p>
+
+<pre class="code">from typing import Optional, Union
+
+# 3.10+ 新写法
+def lookup(name: str) -&gt; dict | None:
+    ...
+
+# 3.8 兼容写法:同一含义
+def lookup_old(name: str) -&gt; Optional[dict]:
+    ...
+
+# 3.8 里内置类型不能直接下标,要用 typing 版本
+from typing import List, Dict, Tuple
+def stats(scores: List[int]) -&gt; Tuple[int, float]:
+    ...
+</pre>
+
+<p><b>3.8 兼容注意:</b><code>list[int]</code> 这类内置泛型语法从 3.9 才有;3.8 必须写 <code>List[int]</code>。若项目仍在支持 3.8,统一用 typing 版别称;项目已是 3.10+,全用新语法,代码更短。除了语法,还要记住 <code>-></code> 后的返回值标注里写 <code>"Point"</code> 字符串(前向引用)可以避免定义顺序问题,或直接用 <code>from __future__ import annotations</code> 延迟求值。</p>
+
+<p>标注写错的代价不是崩溃而是误导:错误类型被检查器传给下游,错误像滚雪球。所以标注的纪律是"从入口到出口完整"——函数、类字段、返回值都要有,半标注比不标注更危险,因为它给了假的信心。</p>
+
+<h2>§10.2 TypeVar 与 Generic:泛型函数与容器</h2>
+
+<p><span class="term">TypeVar</span> 声明一个"类型变量",让一个函数或类对多种类型保持类型安全——同一参数位置的类型关系被检查器追踪,不会像 C 的 void* 那样失去类型信息:</p>
+
+<pre class="code">from typing import TypeVar, Generic
+
+T = TypeVar("T")                     # 任意类型
+U = TypeVar("U", int, float)         # 只允许数值类型
+
+
+def first(items: list[T]) -&gt; T:
+    """泛型函数:返回类型与元素类型一致"""
+    return items[0]
+
+
+def add_all(a: U, b: U) -&gt; U:
+    """类型变量同一位置要求同类型"""
+    return a + b
+
+
+class Stack(Generic[T]):             # 泛型类:Stack[str]、Stack[int]
+    """后进先出栈,元素类型在实例化时确定"""
+
+    def __init__(self) -&gt; None:
+        self._items: list[T] = []
+
+    def push(self, item: T) -&gt; None:
+        self._items.append(item)
+
+    def pop(self) -&gt; T:
+        return self._items.pop()
+
+
+s = Stack[int]()
+s.push(1)
+n: int = s.pop()                     # 检查器知道 pop 返回 int
+</pre>
+
+<table class="cmp">
+<tr><th>C(void*/宏)</th><th>Python(泛型标注)</th></tr>
+<tr><td>void* 传数据,类型信息丢失</td><td>T 被检查器全程追踪,返回类型精确</td></tr>
+<tr><td>宏展开错误在编译期报,信息晦涩</td><td>类型错误在 mypy 运行时报,信息直白</td></tr>
+<tr><td>强转(cast)全靠人肉保证</td><td>检查器验证类型关系,不一致即报错</td></tr>
+<tr><td>运行期零开销</td><td>标注运行期零开销(不检查,但也不约束)</td></tr>
+</table>
+
+<p>TypeVar 还有两个变体:<code>TypeVar("T", bound=Base)</code> 限制 T 必须是某基类或其子类;<code>TypeVar("T", covariant=True)</code> 用于"只读容器"的协变。日常 90% 用最朴素的 TypeVar("T") 就够。</p>
+
+<p>泛型标注要避免过度设计:一个函数用三个 TypeVar 多半是设计出了问题。经验法则:类型变量出现在两个以上位置才有价值;如果 T 只出现一次,直接用具体类型或 Any 更诚实。</p>
+
+<h2>§10.3 Protocol:鸭子类型的静态化</h2>
+
+<p>第6章说"长得像就用",运行时这么写没问题,但检查器看不到"长得像"的契约。<span class="term">Protocol</span> 把鸭子类型写成可检查的结构化协议——只要类型有这些方法,就被认定为协议实现者,无需继承:</p>
+
+<pre class="code">from typing import Protocol
+
+
+class Payable(Protocol):
+    """结构化协议:有 pay() 方法即满足,无需继承"""
+
+    def pay(self) -&gt; float: ...
+
+
+class Manager:                       # 完全不继承 Payable
+    def pay(self) -&gt; float:
+        return 20000.0
+
+
+def total_pay(staff: list[Payable]) -&gt; float:
+    return sum(p.pay() for p in staff)
+
+
+print(total_pay([Manager()]))        # mypy 通过,运行正常
+</pre>
+
+<div class="box-pitfall">
+<p><b>误区:拿 Protocol 当运行期检查。</b>Protocol 是给 mypy 看的契约,isinstance(obj, Payable) 默认直接报错——除非加 <code>@runtime_checkable</code> 装饰器,且只能做"方法存在性"检查。生产姿势:类型检查靠 Protocol,运行期防御靠 EAFP(直接调用 + 捕获 AttributeError),两层各司其职。</p>
+</div>
+
+<p>Protocol 的威力在大型项目:接口定义在库层,调用方与实现方互不认识也能类型联动;改协议时检查器立刻列出所有违约者。这比 C 的虚函数接口更松、比鸭子类型更严,是"Pythonic 的接口"。注意 Protocol 成员的 <code>...</code> 占位写法,以及协议方法不要写实现。</p>
+
+<h2>§10.4 描述符:__get__/__set__ 与 property 的真相</h2>
+
+<p><span class="term">描述符</span>是实现了 <code>__get__</code>/<code>__set__</code> 的对象,被赋值给类属性时,对实例属性的访问会转交给它。property、classmethod、staticmethod 全是描述符——理解了描述符,就理解了这些语法糖的底层:</p>
+
+<pre class="code">class Positive:
+    """字段描述符:拒绝负值,自动校验"""
+
+    def __init__(self, name: str) -&gt; None:
+        self.name = name             # 存储用的属性名
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self              # 类上访问时返回描述符本身
+        return obj.__dict__[self.name]
+
+    def __set__(self, obj, value) -&gt; None:
+        if value &lt; 0:
+            raise ValueError(f"{self.name} 不能为负")
+        obj.__dict__[self.name] = value
+
+
+class Account:
+    balance = Positive("balance")    # 描述符实例作为类属性
+
+    def __init__(self, balance: float) -&gt; None:
+        self.balance = balance       # 触发 __set__ 校验
+
+
+a = Account(1000)
+a.balance = 500                      # 正常
+a.balance = -5                       # ValueError: balance 不能为负
+</pre>
+
+<div class="box-pitfall">
+<p><b>误区:描述符的存储属性与描述符名冲突。</b>__set__ 里如果写成 <code>obj.balance = value</code>,会再次触发 __set__ 无限递归。正确姿势:把值存进实例的 <code>__dict__</code>,key 用描述符自己的名字(如 self.name="balance"),这是描述符的标准存储模式。另一个坑:描述符只在"类属性"上生效,塞进实例属性就完全失灵。</p>
+</div>
+
+<p>看完这个例子就明白 @property 是什么:Python 内置的 property 描述符,把 <code>fget</code>/<code>fset</code> 两个函数包装成属性访问。你自己写描述符的场景通常是"重复的字段校验"(如上),与 C 里"每个字段手写 setter"对照,描述符一次写好、处处复用。</p>
+
+<table class="cmp">
+<tr><th>C(手写访问器)</th><th>Python(描述符)</th></tr>
+<tr><td>每个字段一对 getter/setter,复制粘贴</td><td>描述符写一次,挂在任意字段</td></tr>
+<tr><td>校验逻辑散落在各字段函数里</td><td>校验集中在 __set__,一处修改全局生效</td></tr>
+<tr><td>新增字段忘了加访问器,数据裸奔</td><td>类属性上挂描述符,漏挂即属性不存在</td></tr>
+<tr><td>访问器改名,调用方全部要改</td><td>实例属性语法不变,升级无感知</td></tr>
+</table>
+
+<h2>§10.5 元类:class 语句背后的构造过程</h2>
+
+<p>类也是对象,由<span class="term">元类</span>创建——默认元类是 type。<code>class Foo:</code> 在运行期等价于调用 <code>type("Foo", (object,), namespace)</code>。自定义元类继承 type,重写 <code>__new__</code> 拦截"类创建"这一刻,实现 AOP 式增强:</p>
+
+<pre class="code">class TimedMeta(type):
+    """元类:给所有方法自动包一层计时日志"""
+
+    def __new__(mcls, name, bases, namespace):
+        for key, value in list(namespace.items()):
+            if callable(value) and not key.startswith("__"):
+                namespace[key] = mcls._wrap(value)
+        return super().__new__(mcls, name, bases, namespace)
+
+    @staticmethod
+    def _wrap(func):
+        import time
+        def wrapper(*args, **kwargs):
+            start = time.perf_counter()
+            result = func(*args, **kwargs)
+            print(f"{func.__name__} 耗时 "
+                  f"{(time.perf_counter() - start) * 1000:.2f} ms")
+            return result
+        return wrapper
+
+
+class Worker(metaclass=TimedMeta):
+    def job(self) -&gt; None:
+        for _ in range(1000000):
+            pass
+
+
+Worker().job()                       # 自动打印耗时,类体零改动
+</pre>
+
+<p>类创建三步:收集类体命名空间 → 调元类构造新类 → 绑定名字。自定义元类常用场景:框架层"注册所有子类"、"自动生成方法"、"统一接口校验"。代价是隐式魔法:新人看到 Worker 里没写计时,却输出了耗时——所以元类只该出现在库与框架层,业务代码慎用。</p>
+
+<p>想判断一个自动化是否该用元类,问三个问题:收益是否覆盖所有使用者、失败模式是否可解释(报错信息是否指向问题根源)、新人能否在五分钟内看懂。三个都答是,才值得写。</p>
+
+<h2>§10.6 __init_subclass__:更亲民的子类钩子</h2>
+
+<p>Python 3.6+ 提供了元类场景 90% 的替代品:<span class="term">__init_subclass__</span> 在"有人继承我"时被调用,直接写在普通类里,不需要元类。经典应用是插件注册表:</p>
+
+<pre class="code">class Plugin:
+    """插件基类:继承即注册,自动进入注册表"""
+    registry: dict[str, type] = {}
+
+    def __init_subclass__(cls, name: str = None, **kwargs) -&gt; None:
+        super().__init_subclass__(**kwargs)
+        key = name or cls.__name__.lower()
+        Plugin.registry[key] = cls   # 注册子类
+
+
+class HttpChecker(Plugin, name="http"):   # 自定义注册名
+    def run(self) -&gt; str:
+        return "检查 HTTP"
+
+
+class DnsChecker(Plugin):
+    def run(self) -&gt; str:
+        return "检查 DNS"
+
+
+print(sorted(Plugin.registry))       # ['dns', 'http']
+runner = Plugin.registry["http"]()
+print(runner.run())                  # 检查 HTTP
+</pre>
+
+<p>插件系统、ORM 模型收集、策略注册——"继承即登记"让新增功能只写一个类,调度代码零改动。与 C 的注册表(手工登记函数指针数组)相比,Python 把登记动作自动化了。注意细节:关键字参数必须显式命名并处理(**kwargs 传给 super),否则子类自定义参数会报错。</p>
+
+<table class="cmp">
+<tr><th>C(手工注册)</th><th>Python(继承即注册)</th></tr>
+<tr><td>新增插件要改注册表初始化函数</td><td>新增插件只写类,注册自动完成</td></tr>
+<tr><td>漏登记直到运行期才暴露</td><td>注册发生在导入期,启动即报错</td></tr>
+<tr><td>注册表与实现分离,易失同步</td><td>注册表与类定义同处一个模块,天然一致</td></tr>
+<tr><td>函数指针数组的类型检查靠约定</td><td>检查器校验子类确实满足接口</td></tr>
+</table>
+
+<div class="box-pitfall">
+<p><b>误区:元类与 __init_subclass__ 混用踩坑。</b>两者叠加时,执行顺序是"先元类构造类,再调 __init_subclass__";如果元类的 __new__ 里也做注册,会与 __init_subclass__ 重复执行或顺序颠倒。生产规则:同一份"子类收集"逻辑只选一个机制——优先 __init_subclass__(简单、可读),只有需要拦截"类创建过程本身"(改名、改基类、注入方法)才上元类。</p>
+</div>
+
+<h2>§10.7 dataclass:数据类的元编程红利</h2>
+
+<p><span class="term">dataclass</span> 是标准库对"数据载体类"的元编程自动化:声明字段即自动生成 __init__、__repr__、__eq__,还能参与比较与不可变:</p>
+
+<pre class="code">from dataclasses import dataclass, field
+
+@dataclass(frozen=True)              # frozen:不可变,可哈希
+class Product:
+    sku: str
+    name: str
+    price: float = 0.0
+    tags: list = field(default_factory=list)  # 可变默认值必须 factory
+
+    @property
+    def total(self) -&gt; float:
+        return self.price
+
+
+p = Product("P-001", "机械键盘", 399.0)
+print(p)                             # Product(sku='P-001', ...)
+print(p == Product("P-001", "机械键盘", 399.0))  # True
+# p.price = 1                        # frozen=True 时报错
+</pre>
+
+<p>与 C 写"字段 + 初始化 + 打印 + 比较"的样板对照,dataclass 一次省掉几十行。三个要点:字段默认值直接写在标注后;可变默认值(list/dict)必须用 field(default_factory=) 否则所有实例共享同一对象(与第4章可变默认参数同源);frozen=True 让实例不可变从而可哈希,适合作为 dict 的 key。</p>
+
+<p>dataclass 与字典的边界:临时打包几个值用 dict 够快,但"字段固定、需要方法、需要校验"的数据结构一律 dataclass——它把散落的键名拼接变成了拼写检查器能拦的字段访问,这是生产代码可维护性的关键差异。</p>
+
+<h2>§10.8 生产实践:元编程的边界</h2>
+
+<p>元编程是把双刃剑:自动化的另一面是隐式。三条生产纪律:<b>① 只写"一次"与"多处收益"的自动化</b>——注册表、校验字段、统一日志值得;为省两行代码写元类不值。② 元编程代码必须有单元测试与文档,它的失败模式(属性不存在、注册遗漏)比普通代码难排查。③ 团队约定:业务模块禁用元类,框架层允许,__init_subclass__ 全项目可用。</p>
+
+<div class="box-tip">
+<p><b>工程建议 1:</b>把 mypy 纳入 CI,标注覆盖率不用 100%,但新代码必须过检。Protocol + TypeVar + Generic 组合,让"运行期动态、检查期静态"成为项目常态——这是 Python 大型项目的唯一正解。</p>
+</div>
+
+<div class="box-tip">
+<p><b>工程建议 2:</b>数据类统一用 @dataclass,禁止手写 __init__/__repr__/__eq__ 样板;校验逻辑放 property 或 field 描述符,让非法数据在构造时失败——这比"运行到深处才爆"便宜一个数量级。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>场景</th><th>写法</th></tr>
+<tr><td>可空标注</td><td><code>X | None</code>(3.10+) / <code>Optional[X]</code></td></tr>
+<tr><td>联合类型</td><td><code>A | B</code>(3.10+) / <code>Union[A, B]</code></td></tr>
+<tr><td>内置泛型</td><td><code>list[int]</code>(3.9+);3.8 用 <code>List[int]</code></td></tr>
+<tr><td>泛型函数</td><td><code>T = TypeVar("T"); def f(x: list[T]) -&gt; T</code></td></tr>
+<tr><td>泛型类</td><td><code>class Stack(Generic[T]):</code></td></tr>
+<tr><td>限制类型变量</td><td><code>TypeVar("T", bound=Base)</code></td></tr>
+<tr><td>结构化接口</td><td><code>class Payable(Protocol): def pay(self) -&gt; float: ...</code></td></tr>
+<tr><td>运行期协议检查</td><td><code>@runtime_checkable</code> + isinstance(仅方法存在性)</td></tr>
+<tr><td>字段校验复用</td><td>自定义描述符(__get__/__set__)挂在类属性</td></tr>
+<tr><td>类创建拦截</td><td>元类继承 type,重写 __new__</td></tr>
+<tr><td>继承即注册</td><td><code>def __init_subclass__(cls, **kwargs)</code> + registry</td></tr>
+<tr><td>数据类</td><td><code>@dataclass(frozen=True)</code> + field(default_factory=)</td></tr>
+<tr><td>前向引用</td><td><code>from __future__ import annotations</code></td></tr>
+<tr><td>静态检查</td><td><code>mypy src/</code>,纳入 CI</td></tr>
+<tr><td>元类纪律</td><td>仅框架层使用,业务模块禁用</td></tr>
+<tr><td>样板禁止</td><td>手写 __init__/__repr__ 前先想 dataclass</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ol>
+<li>能写出 3.10+ 与 3.8 两套兼容的标注(联合、可空、内置泛型)</li>
+<li>能用 TypeVar + Generic 写出泛型函数与泛型容器,并解释 T 的追踪</li>
+<li>能用 Protocol 定义结构化接口,并说明它与继承接口、鸭子类型的区别</li>
+<li>能解释描述符的 __get__/__set__ 机制与存储模式,并说明 property 的原理</li>
+<li>能用 __init_subclass__ 实现"继承即注册",并说清它与元类的分工</li>
+<li>能用 @dataclass 声明数据类,并解释 default_factory 与 frozen 的用途</li>
+</ol>
+
+<h2>自测题</h2>
+
+<div class="q">
+<p><b>Q1.</b> 类型标注在运行期到底做什么?为什么说"标注只对检查器有意义"?</p>
+<div class="box-answer"><p><b>答案:</b>运行期基本不做事:函数标注存进 __annotations__ 属性供内省,但传参类型错误不会报错。校验由 mypy 等静态检查器在开发期完成。正因如此,标注写错不会崩,但检查器会立刻指出——所以标注的收益在"开发期拦截错误"与"文档化契约",不在运行期防御。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q2.</b> def first(items: list[T]) -&gt; T 中,T 与 C 的 void* 有什么区别?</p>
+<div class="box-answer"><p><b>答案:</b>void* 在编译期丢失元素类型,取用要强转,转错运行期崩溃;T 由检查器按"同一位置类型一致"规则推导并全程追踪,first(["a"]) 返回 str,first([1]) 返回 int,传错类型在检查期就报错。运行期两者都不存在——Python 的 T 不生成任何代码。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q3.</b> Protocol 与抽象基类(ABC)有什么区别?什么时候用哪个?</p>
+<div class="box-answer"><p><b>答案:</b>ABC 是"继承式"契约:必须显式继承并实现抽象方法,是运行时强制;Protocol 是"结构化"契约:类型长得像即满足,无需继承,是检查期强制。选型:定义框架接口、需要运行期 isinstance 强制用 ABC;想让第三方类型零侵入地参与你的多态(鸭子类型静态化)用 Protocol。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q4.</b> 描述符的 __set__ 里写 obj.xxx = value 为什么递归?正确存值方式是什么?</p>
+<div class="box-answer"><p><b>答案:</b>obj.xxx 触发属性查找,找到类上的描述符,再调 __set__,而 __set__ 里又执行 obj.xxx 赋值……无限递归直到 RecursionError。正确方式:把值存进 obj.__dict__["xxx"],__get__ 也读同一个 key;命名约定是描述符构造时接收存储名,与描述符自身的属性名一致。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q5.</b> __init_subclass__ 里为什么要 super().__init_subclass__(**kwargs)?不传会怎样?</p>
+<div class="box-answer"><p><b>答案:</b>子类声明中的关键字参数(如 name="http")先被 class 语句收集,传给 __init_subclass__;super() 调用把参数沿继承链继续传递,让父类的钩子也执行。若吞掉 kwargs 或漏调 super,深层继承时祖先钩子不执行,注册表缺类——这是"继承即注册"链断裂的头号原因。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q6.</b> @dataclass(frozen=True) 的实例为什么能当 dict 的 key?list 字段为什么必须 default_factory?</p>
+<div class="box-answer"><p><b>答案:</b>frozen=True 生成 __setattr__ 拦截赋值,实例不可变,dataclass 自动生成基于字段的 __hash__,因此可哈希可做 key。list 是可变对象,若直接 default=[],所有实例共享同一个列表(第4章可变默认参数坑的类级版本);default_factory=list 每次实例化调用一次工厂,生成独立列表。</p></div>
+</div>
+
+<h2>章末实验题:类型安全的插件系统</h2>
+
+<div class="box-lab">
+<p><b>实验 10·1 泛型检查器与插件注册表(覆盖:§10.2–§10.6)</b></p>
+<p><b>需求:</b>① 用 Protocol 定义 Checker 接口(方法 check() -&gt; Result);② 用 dataclass 定义 Result(code: int, message: str),支持比较;③ 用 __init_subclass__ 实现"继承即注册"的插件注册表,支持自定义注册名;④ 实现至少两个插件(如 HttpChecker、SqlChecker),检查逻辑用正则与 sleep 模拟;⑤ 用 TypeVar + Generic 写一个泛型函数 run_all(checkers: list[C]) -&gt; list[Result],要求返回类型与传入类型对应;⑥ main 从注册表按名字取插件并全部运行,输出汇总;⑦ 跑一遍 mypy 确认零错误。</p>
+<p><b>覆盖知识点:</b>Protocol 结构化协议(§10.3)/TypeVar 与 Generic(§10.2)/__init_subclass__ 注册表(§10.6)/dataclass(§10.7)。</p>
+<p><b>实验环境:</b>Python 3.10+,单文件 <code>plugins.py</code>。</p>
+</div>
+
+<pre class="code"># plugins.py —— 类型安全的插件注册表(覆盖第10章全部知识点)
+import re
+import time
+from dataclasses import dataclass
+from typing import Protocol, TypeVar
+
+
+@dataclass(frozen=True)
+class Result:
+    """检查结果:不可变,可按 code 比较排序"""
+    code: int                        # 0=通过,1=警告,2=失败
+    message: str
+
+    @property
+    def ok(self) -&gt; bool:
+        return self.code == 0
+
+
+class Checker(Protocol):
+    """结构化协议:有 check() 即插件,无需继承"""
+
+    def check(self) -&gt; Result: ...
+
+
+class Plugin:
+    """插件基类:继承即自动注册,支持自定义注册名"""
+    registry: dict[str, type] = {}
+
+    def __init_subclass__(cls, name: str = None, **kwargs) -&gt; None:
+        super().__init_subclass__(**kwargs)
+        key = name or cls.__name__.lower()
+        if key in Plugin.registry:
+            raise ValueError(f"插件名重复: {key}")
+        Plugin.registry[key] = cls
+
+
+class HttpChecker(Plugin, name="http"):
+    """检查 HTTP 服务:模拟探测"""
+
+    def __init__(self, url: str) -&gt; None:
+        self.url = url
+
+    def check(self) -&gt; Result:
+        time.sleep(0.05)             # 模拟网络探测
+        if not re.match(r"^https?://", self.url):
+            return Result(2, f"URL 格式不合法: {self.url}")
+        return Result(0, f"{self.url} 可达")
+
+
+class SqlChecker(Plugin):
+
+    def __init__(self, sql: str) -&gt; None:
+        self.sql = sql
+
+    def check(self) -&gt; Result:
+        if re.search(r"drop\s+table|;\s*--", self.sql, re.I):
+            return Result(2, "检测到危险 SQL 模式")
+        if re.search(r"\bselect\b", self.sql, re.I):
+            return Result(1, "SELECT 语句请走只读账号")
+        return Result(0, "SQL 检查通过")
+</pre>
+
+<pre class="code">C = TypeVar("C", bound=Checker)
+
+
+def run_all(checkers: list[C]) -&gt; list[Result]:
+    """泛型函数:接受任意 Checker 列表,返回对应结果"""
+    return [c.check() for c in checkers]
+
+
+def main() -&gt; None:
+    print("已注册插件:", sorted(Plugin.registry))
+    http_cls = Plugin.registry["http"]       # 按名取类
+    sql_cls = Plugin.registry["sqlchecker"]
+    jobs = [http_cls("https://example.com"),  # 工厂式构造
+            http_cls("ftp://bad.example"),
+            sql_cls("select * from users; -- x"),
+            sql_cls("update accounts set bal=0")]
+    results = run_all(jobs)                  # 泛型调用
+    for r in results:
+        print(f"[{'通过' if r.ok else '失败'}] {r.message}")
+    print(f"汇总: {sum(1 for r in results if r.ok)}/"
+          f"{len(results)} 通过")
+
+
+if __name__ == "__main__":
+    main()
+</pre>
+
+<p><b>设计说明:</b>① 注册名冲突在注册瞬间抛 ValueError,把"插件名重复"这类配置错误提前到导入期;② Result 用 frozen dataclass,不可变且自动带 __eq__/__repr__,正好呼应 §10.7;③ run_all 用 TypeVar(bound=Checker) 保证参数与返回的类型联动,乱传非 Checker 会被 mypy 拦截;④ Plugin 基类与业务插件分层,新增插件只写一个类——扩展系统不修改调度代码,这就是开闭原则的元编程实现;⑤ 最后在项目根执行 <code>python -m mypy plugins.py</code>,看到 Success 输出即类型安全达成。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第11章 反射与动态特性——dir/inspect/type 动态造类、__getattr__ 与属性拦截、猴子补丁的双刃剑。让程序在运行期自我审视、自我改造。</p>
+
+</body>
+</html>

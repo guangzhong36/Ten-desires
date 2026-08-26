@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第12章 注解与元编程</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<style>body{font-size:9.5pt;line-height:1.65}h2{font-size:13pt}h3{font-size:11pt}.code{font-size:7.8pt;line-height:1.4}.box{padding:5px 10px 6px;margin:7px 0}.box-answer{break-inside:auto}</style>
+<div class="kicker">FROM C TO JAVA · PRODUCTION READY</div>
+<h1 class="chapter-title">第12章 注解与元编程</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–6 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解注解的本质:编译器与框架可读的结构化元数据</li>
+<li>掌握注解定义语法:@interface、元素类型、默认值</li>
+<li>掌握四个核心元注解:Retention / Target / Documented / Inherited</li>
+<li>掌握运行时注解处理:反射读取与执行校验逻辑</li>
+<li>了解编译期注解处理(APT)与内置注解</li>
+<li>掌握注解驱动的工程模式:校验器、配置绑定</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Java:会执行的"注释"</div>
+<p>C 程序员对"注释"的心智:给人看的,编译器忽略。Java 的 <span class="term">注解(Annotation)</span> 是<span class="hl">给程序看的"注释"——编译器、框架、工具可以读取并据此行动的结构化元数据</span>。第11章"借用"过它:字段上的 @Column 注解,让一个不认识你的框架知道"这个字段导出叫什么名字"。</p>
+<p><b>注解 = 声明式编程。</b>你<span class="hl">声明"这个字段不能为 null",而不是写"if (x == null) throw ..."</span>;框架在运行时读注解,替你执行校验。好处:业务代码只写"是什么",通用逻辑(校验、序列化、注入)在框架里写一次,对所有带注解的类生效。这就是"配置与代码分离"的终极形态——配置就在代码里,但以元数据的形式。</p>
+<p><b>C 里最接近的东西是什么?</b>没有直接对应物。最像的是:代码生成器读取的特殊标记注释 + 函数指针表。X-Macro、__attribute__((...)) 有一点味道,但注解是类型安全、可携带参数、可被反射查询的正式语言设施。</p>
+<p><b>Retention 决定注解的命运。</b>SOURCE(编译完就扔,如 @Override)、CLASS(进字节码,默认)、RUNTIME(进字节码且反射可读)。<span class="hl">想要"运行时读取执行"的注解,必须标 RUNTIME</span>——这是新手第一坑:定义得挺好,反射却读不到。</p>
+<p>学习顺序:先懂"注解是什么"与内置注解(§12.1),定义语法(§12.2),元注解(§12.3),运行时处理(§12.4),编译期处理(§12.5),工程模式(§12.6)。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>第11章:反射读字段与注解(本章直接续写)</li>
+<li>第6章:封装与字段;第10章:泛型(注解元素与泛型约束)</li>
+<li>能识别 @Override/@Deprecated 等见过的注解</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(约 1 小时):</b>§12.1-12.2 定义与元注解,写出自己的第一个 @interface</li>
+<li><b>第二阶段(约 1.5 小时):</b>§12.3-12.4 Retention/Target 与运行时处理,实现字段校验器</li>
+<li><b>第三阶段(约 1.5 小时):</b>§12.5-12.6 编译期处理与工程模式,完成章末实验</li>
+<li><b>验收标准:</b>能定义带默认值注解;能解释四个元注解;能写出运行时校验器</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§12.1 注解的本质:元数据 / 内置注解</li>
+<li>§12.2 定义注解:@interface / 元素 / 默认值</li>
+<li>§12.3 元注解:Retention / Target / Documented / Inherited</li>
+<li>§12.4 运行时处理:反射读取与执行</li>
+<li>§12.5 编译期处理:APT 与内置注解</li>
+<li>§12.6 注解工程模式:校验器 / 配置绑定</li>
+</ul></div>
+
+<h2>§12.1 注解的本质与内置注解</h2>
+
+<h3>12.1.1 注解 vs 注释 vs C 的替代品</h3>
+<table class="cmp">
+<tr><th>对比项</th><th>C 注释</th><th>Java 注解</th></tr>
+<tr><td class="ctr">读者</td><td class="ctr">人</td><td class="ctr">编译器、框架、工具(人也读)</td></tr>
+<tr><td class="ctr">是否进产物</td><td class="ctr">编译后消失</td><td class="ctr">按 Retention:可进字节码、可反射</td></tr>
+<tr><td class="ctr">能否携带数据</td><td class="ctr">自由文本(无法结构化读取)</td><td class="ctr">结构化元素(类型检查的键值对)</td></tr>
+<tr><td class="ctr">能否触发行为</td><td class="ctr">不能</td><td class="ctr">能:编译器检查、处理器生成代码、框架执行逻辑</td></tr>
+<tr><td class="ctr">C 的近似物</td><td class="ctr">/* 注释 */、X-Macro 宏</td><td class="ctr">(无直接对应;__attribute__ 略近)</td></tr>
+</table>
+
+<h3>12.1.2 三个最常用的内置注解</h3>
+<table class="tight">
+<tr><th>注解</th><th>作用</th><th>谁消费它</th></tr>
+<tr><td class="ctr">@Override</td><td class="ctr">标记"这是重写父类方法"</td><td class="ctr">编译器:签名写错立即报错(第6章)</td></tr>
+<tr><td class="ctr">@Deprecated</td><td class="ctr">标记"别用了,有替代"</td><td class="ctr">编译器:使用时给警告;IDE 划线</td></tr>
+<tr><td class="ctr">@SuppressWarnings("...")</td><td class="ctr">压制特定警告(如 unchecked)</td><td class="ctr">编译器</td></tr>
+</table>
+
+<div class="code-title">示例 12-1 内置注解实战</div>
+<pre class="code">import java.util.List;
+
+public class BuiltinAnnotations {
+    // @Deprecated:标记旧 API,调用处会警告
+    @Deprecated
+    static void oldMethod() {
+        System.out.println("旧方法,请用 newMethod");
+    }
+
+    static void newMethod() {
+        System.out.println("新方法");
+    }
+
+    // @SuppressWarnings:压掉"裸类型"警告(旧代码迁移时的过渡手段)
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    static List rawList() {
+        return new java.util.ArrayList();   // 裸类型:正常会警告
+    }
+
+    public static void main(String[] args) {
+        newMethod();
+        oldMethod();            // IDE 会提示"已弃用"
+        System.out.println(rawList().size());
+    }
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:注解自己不做任何事</div>
+<p><span class="hl">注解本身是"标签",行为全部来自消费者</span>:@Override 没写对,编译器检查;@Deprecated 没处理,警告;自定义注解没人读,就是装饰。所以学注解 = 学"定义" + 学"消费"。消费有两类:编译器(编译期处理,§12.5)与反射/框架(运行时处理,§12.4)。</p>
+</div>
+
+<h2>§12.2 定义注解:@interface</h2>
+
+<h3>12.2.1 语法与元素规则</h3>
+<p>定义用 <code>@interface</code> 关键字;里面声明"元素"(像方法声明,没有方法体):<span class="hl">元素类型只允许 8 种基本类型、String、Class、枚举、注解、以及它们的数组</span>;可以有默认值(default)。使用时不写有默认值的元素。</p>
+
+<div class="code-title">示例 12-2 定义自己的注解</div>
+<pre class="code">import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+// 字段校验注解:标记"这个字段不能为空"
+@Retention(RetentionPolicy.RUNTIME)   // 运行时保留(反射可读)
+@Target(ElementType.FIELD)            // 只能用在字段上
+public @interface NotNull {
+    // 元素:使用时可省略(有默认值)
+    String message() default "字段不能为 null";
+
+    // 元素:必须显式提供(无默认值)
+    boolean checkEmpty();             // 空字符串也算非法
+}
+
+// 用法:把校验"声明"在字段上
+class User {
+    @NotNull(checkEmpty = true)
+    private String name;
+
+    @NotNull(checkEmpty = false, message = "邮箱可选,但不能为 null")
+    private String email;
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 1:元素类型与命名限制</div>
+<p><span class="hl">元素类型有限制:基本类型/String/Class/枚举/注解/它们的数组</span>——想存"任意对象"不行,想存 List 不行。命名惯例:只有一个元素时叫 value,使用时可省略 <code>=</code> 写成 <code>@Column("stu_id")</code>(第11章);多个元素时必须写 <code>@NotNull(checkEmpty = true)</code>。注解本身也是类型,可以嵌套(注解里放注解),框架里常见。</p>
+</div>
+
+<h2>§12.3 元注解:注解的注解</h2>
+
+<table class="cmp">
+<tr><th>元注解</th><th>作用</th><th>生产要点</th></tr>
+<tr><td class="ctr">@Retention</td><td class="ctr">注解活多久</td><td class="ctr">SOURCE 编译即弃;CLASS 进字节码;RUNTIME 反射可读(自定义运行逻辑必用)</td></tr>
+<tr><td class="ctr">@Target</td><td class="ctr">注解能标在哪</td><td class="ctr">TYPE 类/接口 / FIELD 字段 / METHOD 方法 / PARAMETER 参数 / CONSTRUCTOR 构造器 / ANNOTATION_TYPE 注解 / PACKAGE 包;不写 = 到处都能标(不推荐)</td></tr>
+<tr><td class="ctr">@Documented</td><td class="ctr">进 javadoc</td><td class="ctr">公开 API 注解建议加</td></tr>
+<tr><td class="ctr">@Inherited</td><td class="ctr">子类继承父类的注解</td><td class="ctr">只对类上的注解有效;字段/方法注解不继承</td></tr>
+</table>
+
+<div class="code-title">示例 12-3 元注解组合拳</div>
+<pre class="code">import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+// 类级别的"权限"注解:可继承、进 javadoc
+@Documented
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface RequiresAuth {
+    String role() default "user";     // 需要的角色
+
+    boolean audit() default false;    // 是否记录审计日志
+}
+
+// 用法:类上标一次,子类自动继承
+@RequiresAuth(role = "admin", audit = true)
+class AdminApi { }
+
+class SubAdminApi extends AdminApi { }   // 自动继承 @RequiresAuth</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2:Retention 没设成 RUNTIME,反射读不到</div>
+<p>默认 Retention 是 CLASS:注解进字节码,但 JVM 不保留给反射。<span class="hl">getAnnotation 返回 null,代码不报错,就是读不到</span>——最隐蔽的注解 bug。自检顺序:① RetentionPolicy.RUNTIME 写了没;② Target 包含你要标的元素类型没;③ 反射用 getDeclaredAnnotation 而不是 getAnnotation(后者对继承的处理不同)。</p>
+</div>
+
+<div class="code-title">示例 12-4 读取类级注解(含 @Inherited 效果)</div>
+<pre class="code">import java.lang.reflect.Method;
+
+public class ReadClassAnno {
+    // 读取类的权限注解:getAnnotation 对类级注解会沿继承链查找
+    static String roleOf(Class&lt;?&gt; type) {
+        RequiresAuth ra = type.getAnnotation(RequiresAuth.class);
+        return ra == null ? "(无权限要求)" : ra.role();
+    }
+
+    // 读取方法上的注解(不继承:重写后是新方法)
+    static boolean auditOf(Class&lt;?&gt; type, String methodName) throws Exception {
+        Method m = type.getMethod(methodName);
+        RequiresAuth ra = m.getAnnotation(RequiresAuth.class);
+        return ra != null &amp;&amp; ra.audit();
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.out.println(roleOf(AdminApi.class));       // admin
+        System.out.println(roleOf(SubAdminApi.class));    // admin:继承生效
+    }
+}
+// 注:RequiresAuth 定义见示例 12-3,此处省略</pre>
+
+<h2>§12.4 运行时处理:注解校验器</h2>
+
+<h3>12.4.1 处理流程:扫描 → 读注解 → 执行逻辑</h3>
+<p>运行时处理的标准三步(第11章已预热):<span class="hl">① getDeclaredFields 拿到字段;② 字段.getAnnotation(X.class) 读注解;③ 按注解参数执行通用逻辑</span>。下面实现一个完整的校验器——生产校验框架(Hibernate Validator)就是它的工程化版本。</p>
+
+<div class="code-title">示例 12-4 运行时注解校验器</div>
+<pre class="code">import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Validator {
+    // 注解 1:不能为 null/空串
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface NotEmpty {
+        String message() default "字段不能为空";
+    }
+
+    // 注解 2:数值范围
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Range {
+        int min() default 0;
+
+        int max() default Integer.MAX_VALUE;
+
+        String message() default "数值越界";
+    }
+
+    // 通用校验:不认识 Order 类也能校验它
+    static List&lt;String&gt; validate(Object obj) throws IllegalAccessException {
+        List&lt;String&gt; errors = new ArrayList&lt;&gt;();
+        for (Field f : obj.getClass().getDeclaredFields()) {
+            f.setAccessible(true);
+            Object value = f.get(obj);
+
+            NotEmpty ne = f.getAnnotation(NotEmpty.class);
+            if (ne != null &amp;&amp; (value == null
+                    || (value instanceof String s &amp;&amp; s.isEmpty()))) {
+                errors.add(f.getName() + ": " + ne.message());
+            }
+
+            Range r = f.getAnnotation(Range.class);
+            if (r != null &amp;&amp; value instanceof Number n
+                    &amp;&amp; (n.intValue() &lt; r.min() || n.intValue() &gt; r.max())) {
+                errors.add(f.getName() + ": " + r.message()
+                        + "(范围 " + r.min() + "~" + r.max() + ")");
+            }
+        }
+        return errors;
+    }
+
+    // 业务类:声明校验规则
+    static class Order {
+        @NotEmpty
+        private String orderId;
+
+        @NotEmpty(message = "收件人必须填写")
+        private String receiver;
+
+        @Range(min = 1, max = 9999, message = "数量不合法")
+        private int quantity;
+
+        // 构造器(演示用)
+        Order(String orderId, String receiver, int quantity) {
+            this.orderId = orderId;
+            this.receiver = receiver;
+            this.quantity = quantity;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        Order good = new Order("A1001", "张三", 3);
+        System.out.println("合法订单校验: " + validate(good));   // []
+
+        Order bad = new Order("", "   ", 0);
+        System.out.println("非法订单校验: " + validate(bad));
+        // [orderId: 字段不能为空, receiver: 收件人必须填写,
+        //  quantity: 数量不合法(范围 1~9999)]
+    }
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:声明式校验的三层收益</div>
+<p>① <span class="hl">规则与字段在一起</span>:读 Order 类源码,一眼看到每个字段的约束,不用翻校验方法;② <span class="hl">校验逻辑只写一次</span>:新类加注解即获校验能力,validate 一行不改;③ <span class="hl">规则可组合</span>:一个字段可以同时挂 @NotEmpty + @Range + 自定义注解,框架按顺序执行。这就是"声明式"vs"命令式"的差别:你声明"是什么",框架负责"怎么做"。</p>
+</div>
+
+<h2>§12.5 编译期处理与内置注解</h2>
+
+<h3>12.5.1 两种消费时机</h3>
+<table class="cmp">
+<tr><th>消费时机</th><th>工具</th><th>典型应用</th><th>是否进运行时</th></tr>
+<tr><td class="ctr">编译期</td><td class="ctr">注解处理器(APT,javac -processor)</td><td class="ctr">Lombok 生成 getter、DataBinding 生成代码、Google AutoService</td><td class="ctr">处理完即消失(或生成新源码)</td></tr>
+<tr><td class="ctr">运行时</td><td class="ctr">反射(getAnnotation + 逻辑)</td><td class="ctr">校验器(§12.4)、Spring 注入、MyBatis 映射</td><td class="ctr">必须 RetentionPolicy.RUNTIME</td></tr>
+</table>
+
+<div class="code-title">示例 12-5 编译期处理的最小形态(概念演示)</div>
+<pre class="code">// 编译器看到 @Override 时做的"处理",是内置注解处理器的范例:
+// 1. 扫描目标类的所有方法
+// 2. 对每个标注 @Override 的方法,检查父类/接口是否有同签名方法
+// 3. 没有 → 编译错误 "method does not override a method from its superclass"
+
+// 同理 @Deprecated:
+// 1. 扫描所有方法调用
+// 2. 若目标方法带 @Deprecated 且调用点未同时标注
+// 3. 生成警告,IDE 划线
+
+// 自研 APT 的骨架(javax.annotation.processing,JDK 老 API):
+// @SupportedAnnotationTypes("com.example.MyAnno")
+// public class MyProcessor extends AbstractProcessor {
+//     @Override
+//     public boolean process(Set&lt;? extends TypeElement> annotations,
+//                            RoundEnvironment roundEnv) {
+//         // 扫描带注解的元素,生成新 .java 文件或报错
+//         return true;
+//     }
+// }</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:什么时候用编译期,什么时候用运行时</div>
+<p><span class="hl">需要"生成代码"或"编译期报错"→ APT(Lombok、Builder 生成);需要"读取对象运行时状态再决策"→ 反射(校验、注入、序列化)</span>。APT 生成代码性能最好(没有反射开销),但开发体验重(要写处理器、处理增量编译);反射方案简单直接,代价是性能与可读性。多数业务项目的自定义注解走运行时,框架级工具才上 APT。</p>
+</div>
+
+<h2>§12.6 注解工程模式:配置绑定</h2>
+
+<h3>12.6.1 把 Properties 绑定到带注解的类</h3>
+<p>生产里的"配置类"模式:定义配置类,字段打上注解声明"从哪个配置键读取、默认值是什么",框架一行代码把 Properties 绑定成类型安全的配置对象——Spring 的 @ConfigurationProperties 就是这个模式的巅峰。</p>
+
+<div class="code-title">示例 12-6 注解驱动的配置绑定器</div>
+<pre class="code">import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
+
+public class ConfigBinder {
+    // 配置键注解
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Prop {
+        String key();
+
+        String def() default "";     // 默认值(字符串形态)
+    }
+
+    // 通用绑定:把 Properties 灌进任意"打了注解的类"
+    static &lt;T&gt; T bind(Class&lt;T&gt; type, Properties props) throws Exception {
+        T cfg = type.getDeclaredConstructor().newInstance();
+        for (Field f : type.getDeclaredFields()) {
+            Prop p = f.getAnnotation(Prop.class);
+            if (p == null) {
+                continue;
+            }
+            String raw = props.getProperty(p.key(), p.def());
+            f.setAccessible(true);
+            Class&lt;?&gt; ft = f.getType();
+            if (ft == int.class || ft == Integer.class) {
+                f.setInt(cfg, Integer.parseInt(raw.trim()));
+            } else if (ft == boolean.class || ft == Boolean.class) {
+                f.setBoolean(cfg, Boolean.parseBoolean(raw.trim()));
+            } else {
+                f.set(cfg, raw);
+            }
+        }
+        return cfg;
+    }
+
+    // 配置类:声明"我要什么配置"
+    static class ServerConfig {
+        @Prop(key = "server.port", def = "8080")
+        private int port;
+
+        @Prop(key = "server.name", def = "unnamed")
+        private String name;
+
+        @Prop(key = "server.debug", def = "false")
+        private boolean debug;
+
+        @Override
+        public String toString() {
+            return "ServerConfig{port=" + port + ", name='" + name
+                    + "', debug=" + debug + "}";
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        Properties props = new Properties();
+        Path f = Path.of("server.properties");
+        if (Files.exists(f)) {
+            try (var in = Files.newBufferedReader(f, StandardCharsets.UTF_8)) {
+                props.load(in);
+            }
+        }
+        // 模拟配置文件内容:
+        props.setProperty("server.port", "9001");
+        props.setProperty("server.name", "主站");
+
+        ServerConfig cfg = bind(ServerConfig.class, props);
+        System.out.println(cfg);
+        // ServerConfig{port=9001, name='主站', debug=false}
+        // port 与 name 来自配置,debug 用默认值:绑定器正确合并
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 3:注解默认值 vs 配置默认值,别混</div>
+<p>两套默认值要分清:<span class="hl">注解元素的 default(如 def="8080")是"代码里写死的缺省";Properties 里没有该键时用它</span>。真实配置有值则覆盖两者。生产还有第三层:环境变量覆盖配置(第7章)——绑定器的优先级链:环境变量 &gt; 配置文件 &gt; 注解默认值。设计配置系统时把这条链写清楚,是大型项目的必修课。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="tight">
+<tr><th>主题</th><th>要点</th></tr>
+<tr><td class="ctr">注解本质</td><td class="ctr">结构化元数据;标签本身不做事,行为来自消费者(编译器/框架)</td></tr>
+<tr><td class="ctr">定义语法</td><td class="ctr">public @interface X { 元素(); 元素() default 值; }</td></tr>
+<tr><td class="ctr">元素类型</td><td class="ctr">基本类型/String/Class/枚举/注解/数组;不能存任意对象或 List</td></tr>
+<tr><td class="ctr">@Retention</td><td class="ctr">SOURCE 编译即弃 / CLASS 进字节码 / RUNTIME 反射可读(自定义运行逻辑必选)</td></tr>
+<tr><td class="ctr">@Target</td><td class="ctr">TYPE/FIELD/METHOD/PARAMETER/CONSTRUCTOR/ANNOTATION_TYPE/PACKAGE;多值用花括号</td></tr>
+<tr><td class="ctr">@Inherited</td><td class="ctr">类注解可被子类继承;字段/方法注解不继承</td></tr>
+<tr><td class="ctr">读取</td><td class="ctr">field.getAnnotation(X.class) → null 表示没有;Retention 不对就永远 null</td></tr>
+<tr><td class="ctr">运行时处理</td><td class="ctr">getDeclaredFields → getAnnotation → 执行逻辑;校验器/注入/序列化</td></tr>
+<tr><td class="ctr">编译期处理</td><td class="ctr">APT 注解处理器:生成源码/编译报错;Lombok 的原理</td></tr>
+<tr><td class="ctr">内置注解</td><td class="ctr">@Override(编译检查)/ @Deprecated(警告)/ @SuppressWarnings(压警告)</td></tr>
+<tr><td class="ctr">工程模式</td><td class="ctr">声明式校验、配置绑定;优先级链:环境变量 &gt; 配置文件 &gt; 注解默认值</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能解释"注解是给程序看的注释"与三种消费方式</li>
+<li>能写出带默认值与必填元素的注解定义</li>
+<li>能说出四个元注解的作用与各自的生产要点</li>
+<li>能解释"Retention 不是 RUNTIME 时反射读不到"的排查顺序</li>
+<li>能写出字段校验器的完整代码(扫描-读取-执行)</li>
+<li>能说出 APT 与运行时处理的适用场景</li>
+<li>能写出配置绑定器,并说出默认值优先级链</li>
+</ul>
+
+<h2>自测题</h2>
+
+<p class="q">1. 你定义了一个注解,反射却读不到。列出按顺序排查的三步。</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>① Retention 是否为 RUNTIME(默认 CLASS 只进字节码,反射不可见);② Target 是否包含你要标注的元素类型(标到类上却 @Target(FIELD) 会编译错误,但标错"目标"是另一个坑:用了 @Target 未列出的位置会编译失败,说明 Target 限制了使用处);③ 读取 API 是否正确(getDeclaredAnnotation 管本类声明,getAnnotation 涉及继承规则)。</p>
+</div>
+
+<p class="q">2. 注解元素为什么不能是 List&lt;String&gt;?想要"多个值"怎么办?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>注解元素必须能在编译期常量折叠并写入字节码的"常量表",List 是运行时对象,装不进常量表。多值用数组:<code>String[] roles() default {"user"}</code>,使用 <code>@RequiresAuth(roles = {"admin", "ops"})</code>。枚举与注解也可以作元素类型,组合出嵌套结构。</p>
+</div>
+
+<p class="q">3. @Inherited 对方法上的注解生效吗?为什么?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>不生效。@Inherited 只对类级注解(标注在 TYPE 上的)生效:子类继承父类的类注解。方法被"重写"而非"继承"——重写后方法本体是新的,注解跟着方法声明走,所以方法注解不会自动传给重写版。需要"方法级继承"得自己处理:反射时沿父类找同名方法读注解。</p>
+</div>
+
+<p class="q">4. 校验器里,一个字段同时标了 @NotEmpty 与 @Range,执行顺序怎么保证?有什么坑?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>getDeclaredFields 的顺序不保证——两个注解的执行顺序在反射层面不可控(而且数组里多字段整体顺序也不保证)。坑:先执行 Range 时 value 为 null,Number 判断会跳过;先执行 NotEmpty 则正常。生产框架(Hibernate Validator)有明确的组与顺序机制;自研校验器要在文档里声明"顺序不保证",或按注解的显式 order 值排序。</p>
+</div>
+
+<p class="q">5. Lombok 的 @Getter 在编译期生成 getter——为什么不能靠运行时反射实现同样的效果?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>运行时反射可以"模拟读取",但调用方写的是 <code>user.getName()</code>——编译期就需要这个方法存在,反射无法让编译通过。Lombok 在编译期往字节码里真正生成 getName 方法,所以源码里不写、编译产物里有。这就是 APT 的典型价值:生成"编译期就要存在"的代码;运行时反射解决"编译期不知道类型"的问题。两者互补,选型看需求的时机。</p>
+</div>
+
+<p class="q">6. 配置绑定器里,int 字段 parse 失败(配置写成了 "abc"),程序会怎样?生产应该怎么做?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>NumberFormatException(RuntimeException)直接抛出,启动失败——这其实是"好的失败":配置错误必须在启动时暴露,而不是运行到一半才炸。生产增强:① 错误消息带键名("server.port 配置无法解析: abc");② 汇总所有字段的解析错误一次性报告(别修一个重启一次);③ 支持类型转换器注册表(第11章),把 String→LocalDate 等也纳管。</p>
+</div>
+
+<h2>章末实验题:表单校验器 + 配置中心</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 12:注解驱动的表单校验与配置绑定</div>
+<p><b>实验目标:</b>编写两部分程序:① 完整字段校验器(支持 @NotNull/@Range/@Regex 与链式错误汇总);② 配置绑定器(支持环境变量覆盖)。综合运用本章全部知识点。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:定义三个注解 @NotNull、@Range、@Regex(正则校验),均带 message 默认值,Retention 为 RUNTIME(覆盖 §12.2-12.3 定义与元注解)</li>
+<li>任务 2:校验器 validate(Object):扫描全部字段(含父类),收集所有错误到 List,不抛异常(覆盖 §12.4 运行时处理)</li>
+<li>任务 3:支持继承:父类字段也校验(覆盖 §12.4 继承链,第11章技巧)</li>
+<li>任务 4:定义表单类 RegisterForm(用户名/年龄/邮箱),打上三个注解,演示合法与非法两组数据(覆盖 §12.4 业务)</li>
+<li>任务 5:配置绑定器 bind(Class&lt;T&gt;, Properties):支持 int/boolean/String,缺失时用注解默认值(覆盖 §12.6 配置绑定)</li>
+<li>任务 6:绑定器支持"环境变量覆盖":System.getenv("APP_PORT") 存在且非空时优先(覆盖 §12.6 优先级链)</li>
+<li>任务 7:main 里演示:非法表单的错误清单、合法表单通过、配置绑定结果(覆盖全部)</li>
+</ul>
+<p><b>实验环境:</b>JDK 17+。</p></div>
+
+<ol class="steps">
+<li>先定义注解(不写处理逻辑),再写 validate 的骨架:遍历字段打印注解信息</li>
+<li>任务 3 复用第11章的 while (c != null) 继承链遍历</li>
+<li>任务 6 的环境变量:Windows 下先 set APP_PORT=9000 再运行(或代码里给默认路径)</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.regex.Pattern;
+
+/** 注解驱动表单校验器 + 配置绑定 —— 第12章综合实验参考答案
+ *  覆盖:注解定义、元注解、运行时处理、继承链、校验执行、配置绑定、优先级链
+ */
+public class AnnotationLab {
+
+    // ---- 任务 1:三个校验注解 ----
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface NotNull {
+        String message() default "不能为空";
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Range {
+        int min() default Integer.MIN_VALUE;
+
+        int max() default Integer.MAX_VALUE;
+
+        String message() default "数值越界";
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Regex {
+        String pattern();
+
+        String message() default "格式不合法";
+    }
+
+    // ---- 任务 2+3:校验器(含继承链)----
+    static List&lt;String&gt; validate(Object obj) throws IllegalAccessException {
+        List&lt;String&gt; errors = new ArrayList&lt;&gt;();
+        for (Class&lt;?&gt; c = obj.getClass(); c != null; c = c.getSuperclass()) {
+            for (Field f : c.getDeclaredFields()) {
+                f.setAccessible(true);
+                Object value = f.get(obj);
+                String where = c.getSimpleName() + "." + f.getName();
+
+                NotNull nn = f.getAnnotation(NotNull.class);
+                if (nn != null &amp;&amp; value == null) {
+                    errors.add(where + " " + nn.message());
+                }
+
+                Range rg = f.getAnnotation(Range.class);
+                if (rg != null &amp;&amp; value instanceof Number num
+                        &amp;&amp; (num.intValue() &lt; rg.min() || num.intValue() &gt; rg.max())) {
+                    errors.add(where + " " + rg.message() + "[" + rg.min()
+                            + "," + rg.max() + "]");
+                }
+
+                Regex rx = f.getAnnotation(Regex.class);
+                if (rx != null &amp;&amp; value != null
+                        &amp;&amp; !Pattern.matches(rx.pattern(), String.valueOf(value))) {
+                    errors.add(where + " " + rx.message());
+                }
+            }
+        }
+        return errors;
+    }
+
+    // ---- 任务 4:表单类 ----
+    static class RegisterForm {
+        @NotNull(message = "用户名必须填写")
+        @Regex(pattern = "[a-zA-Z0-9_]{4,16}", message = "用户名需 4-16 位字母数字")
+        private String username;
+
+        @NotNull
+        @Range(min = 18, max = 60, message = "年龄需在 18-60")
+        private Integer age;
+
+        @NotNull(message = "邮箱必须填写")
+        @Regex(pattern = "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", message = "邮箱格式不正确")
+        private String email;
+    }
+
+    // ---- 任务 5+6:配置绑定器(含环境变量覆盖)----
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Prop {
+        String key();
+
+        String def() default "";
+
+        String env() default "";     // 可选的环境变量名(优先级最高)
+    }
+
+    static class AppConfig {
+        @Prop(key = "app.port", def = "8080", env = "APP_PORT")
+        private int port;
+
+        @Prop(key = "app.name", def = "未命名应用", env = "APP_NAME")
+        private String name;
+
+        @Prop(key = "app.debug", def = "false", env = "APP_DEBUG")
+        private boolean debug;
+    }
+
+    static &lt;T&gt; T bind(Class&lt;T&gt; type, Properties props) throws Exception {
+        T cfg = type.getDeclaredConstructor().newInstance();
+        for (Field f : type.getDeclaredFields()) {
+            Prop p = f.getAnnotation(Prop.class);
+            if (p == null) continue;
+            String raw = null;
+            // 优先级:环境变量 &gt; 配置文件 &gt; 注解默认值
+            if (!p.env().isEmpty()) {
+                String env = System.getenv(p.env());
+                if (env != null &amp;&amp; !env.isBlank()) {
+                    raw = env;
+                }
+            }
+            if (raw == null) {
+                raw = props.getProperty(p.key(), p.def());
+            }
+            f.setAccessible(true);
+            Class&lt;?&gt; ft = f.getType();
+            if (ft == int.class || ft == Integer.class) {
+                f.setInt(cfg, Integer.parseInt(raw.trim()));
+            } else if (ft == boolean.class || ft == Boolean.class) {
+                f.setBoolean(cfg, Boolean.parseBoolean(raw.trim()));
+            } else {
+                f.set(cfg, raw);
+            }
+        }
+        return cfg;
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.out.println("== 任务 7a:表单校验 ==");
+        RegisterForm bad = new RegisterForm();
+        bad.username = "a";                       // 太短
+        bad.age = 17;                             // 太小
+        bad.email = "not-an-email";               // 格式错
+        System.out.println("非法表单错误清单:");
+        validate(bad).forEach(e -&gt; System.out.println("  - " + e));
+
+        RegisterForm good = new RegisterForm();
+        good.username = "zhangsan";
+        good.age = 25;
+        good.email = "zs@example.com";
+        System.out.println("合法表单错误数: " + validate(good).size());   // 0
+
+        System.out.println("== 任务 7b:配置绑定 ==");
+        Properties props = new Properties();
+        Path f = Path.of("app.properties");
+        if (Files.exists(f)) {
+            try (var in = Files.newBufferedReader(f, StandardCharsets.UTF_8)) {
+                props.load(in);
+            }
+        }
+        props.setProperty("app.name", "教务管理");   // 配置文件提供 name
+        // 若设置了环境变量 APP_PORT,它会覆盖 props 里的值
+        AppConfig cfg = bind(AppConfig.class, props);
+        System.out.println("port=" + cfg.port + " name=" + cfg.name
+                + " debug=" + cfg.debug);
+        System.out.println("实验完成。");
+    }
+}</pre>
+<p><b>设计说明:</b>任务 2 的 validate 故意"收集错误不抛异常"——表单校验需要一次给用户列全所有问题,抛第一个就返回是差体验;任务 3 的继承链与第11章实验同源,但这里每个字段标了"出处类"便于定位;任务 6 的优先级链(环境变量 &gt; 配置 &gt; 默认值)是生产配置系统的标准语义,Spring 的 PropertySource 顺序就是它;正则里的 \s 转义在 Java 字符串里要写 \\s,实验源码已正确处理。扩展方向:校验器支持"注解组"(表单分步校验)、绑定器加类型转换器注册表、用 APT 把校验在编译期生成(性能敏感场景)。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第13章 模块系统与构建工具。JPMS 模块化、Maven 依赖管理、jar 的生成与运行——把多个类组织成可交付的制品。</p>
+
+</body>
+</html>

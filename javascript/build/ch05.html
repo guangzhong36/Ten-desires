@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第5章 内存管理</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO JAVASCRIPT · PRODUCTION READY</div>
+<h1 class="chapter-title">第5章 内存管理</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解 GC 语言的内存模型:JS 里"变量在栈、对象在堆",但程序员看不到栈上指针</li>
+<li>掌握 V8 的垃圾回收机制:分代、标记-清除、增量标记,以及"GC 不可控"的含义</li>
+<li>掌握内存泄漏四大场景:全局变量、闭包、定时器、事件监听,以及排查工具</li>
+<li>理解 WeakMap/WeakRef 的弱引用语义与生产用途</li>
+<li>理解 Buffer 与 ArrayBuffer:二进制数据的两种容器与 C 的字节数组对照</li>
+<li>掌握资源释放惯用法:try/finally 与连接/句柄的关闭</li>
+<li>理解"C 中怎么做→JS 中怎么做":从手动 malloc/free 到自动回收</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 JavaScript:本章主题如何迁移</div>
+<p>C 程序员与内存的关系是"亲力亲为":malloc 申请、free 释放、野指针、双重释放、内存泄漏、悬垂指针,每一个都是深夜事故的常客。JS 把这个负担整体收走:<span class="hl">垃圾回收器(GC)自动管理对象生命周期</span>,没有 malloc/free,没有野指针,数组越界也只是 undefined 而不是写坏内存。</p>
+<p>但"自动"不等于"不会泄漏"。GC 只能回收"不再被引用的对象";只要还有一条引用链活着,对象就永远留在堆里。C 的泄漏是"忘了 free",JS 的泄漏是"忘了断引用"。所以本章的核心不是"怎么释放",而是<span class="hl">理解引用图:谁还握着这个对象</span>。</p>
+<p>V8(Node 与 Chrome 的引擎)把堆分成新生代与老生代,新生代用复制式 Scavenge 快速回收短命对象,老生代用标记-清除 + 增量标记清理长寿对象。GC 是自动的、不确定的:你不能手动触发"完整回收"(老代码的 <code>global.gc()</code> 只在 --expose-gc 下可用且仅用于调试),只能观察与调优。</p>
+<p>另一个重要的迁移:JS 没有"栈上结构体"的概念,一切对象都在堆上;变量只是引用。这解释了为什么"把一个对象传给函数"永远是共享的(第4章),也解释了为什么深拷贝需要专门手段。二进制数据则是本章的新知识点:Buffer(Node)与 ArrayBuffer(标准),它们与 C 的 <code>unsigned char buf[N]</code> 直接对应。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的栈/堆/静态区内存布局,malloc/free/calloc/realloc 的生命周期管理</li>
+<li>C 的指针、悬垂指针与内存泄漏概念</li>
+<li>C 的局部变量生命周期(函数返回即销毁)</li>
+<li>静态变量 static 的持久性</li>
+<li>C 的结构体拷贝与字节数组 unsigned char[]</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(模型):</b>读 §5.1–§5.2,建立"引用图 + 可达性"心智模型</li>
+<li><b>第二阶段(泄漏):</b>读 §5.3–§5.4,亲手复现四大泄漏场景,学会用 --heap-prof 观察</li>
+<li><b>第三阶段(二进制):</b>读 §5.5–§5.6,练习 Buffer 与 ArrayBuffer 的基本操作</li>
+<li><b>第四阶段(实验):</b>完成章末"泄漏复现与修复 + 内存观察"</li>
+<li><b>验收标准:</b>能独立说出四种泄漏场景与各自修复,能画出任意两对象的引用关系</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>第5章 内存管理
+  <ul>
+    <li>§5.1 内存模型:栈/堆、引用与可达性</li>
+    <li>§5.2 V8 回收机制:分代、标记-清除、不可控性</li>
+    <li>§5.3 内存泄漏四大场景与排查工具</li>
+    <li>§5.4 WeakMap / WeakRef 弱引用</li>
+    <li>§5.5 Buffer 与 ArrayBuffer 二进制数据</li>
+    <li>§5.6 资源释放惯用法:finally 与句柄关闭</li>
+    <li>§5.7 生产实践:泄漏检查清单、性能建议</li>
+  </ul>
+  </li>
+</ul></div>
+
+<h2>§5.1 内存模型:从 malloc/free 到引用图</h2>
+
+<table class="cmp">
+<tr><th>对比项</th><th>C</th><th>JS</th></tr>
+<tr><td>对象位置</td><td>栈(局部)或堆(malloc)</td><td>对象都在堆;变量只是堆上的引用</td></tr>
+<tr><td>释放</td><td>free() 手动释放</td><td>GC 自动,不可手动</td></tr>
+<tr><td>悬垂指针</td><td>存在(use-after-free)</td><td>不存在(GC 保证对象存活到无人引用)</td></tr>
+<tr><td>泄漏</td><td>忘了 free</td><td>忘了断引用</td></tr>
+<tr><td>双重释放</td><td>UB,崩溃</td><td>不可能</td></tr>
+<tr><td>数组越界</td><td>写坏相邻内存(UB)</td><td>返回 undefined,不损坏内存</td></tr>
+<tr><td>查看占用</td><td>sizeof / valgrind</td><td>process.memoryUsage() / heap snapshot</td></tr>
+</table>
+
+<pre class="code">// 引用图的直觉:变量指向对象
+let a = { data: '大对象' };   // 对象在堆上,a 是引用
+let b = a;                   // b 也指向同一个对象
+a = null;                    // 断掉一条引用
+// 对象仍被 b 引用,不会回收
+console.log(b.data);         // 大对象
+b = null;                    // 现在没有任何引用,GC 随时回收
+
+// 数组/对象嵌套:整棵引用树都活着
+const root = { list: [{ id: 1 }, { id: 2 }] };
+root.list = null;            // 断掉子树根,两个对象变成垃圾
+// 但 root 本身还活着
+
+// 查看进程内存(Node)
+console.log(process.memoryUsage());
+// { rss: ..., heapTotal: ..., heapUsed: ..., external: ..., arrayBuffers: ... }
+</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点结论:GC 回收的条件 = 不可达</div>
+<p>一个对象能被回收,当且仅当<span class="hl">从根(全局对象、当前执行栈)出发无法到达它</span>。环状引用(对象互相指)在 JS 里<span class="hl">不是泄漏</span>——C++ 的 shared_ptr 循环引用要手动破除,JS 的 GC 从根出发标记,互相指但没有根的环一样会被回收。这消除了 C++ 里最头疼的一类问题。</p>
+</div>
+
+<h2>§5.2 V8 的垃圾回收:分代与标记-清除</h2>
+
+<p>V8 将堆分成两个代:</p>
+<ul>
+<li><span class="term">新生代(young generation)</span>:放刚创建的对象,容量小,用 <span class="term">Scavenge(复制算法)</span> 回收——把存活对象复制到另一半空间,其余整体清空。大多数对象活不过几次回收。</li>
+<li><span class="term">老生代(old generation)</span>:存活多次回收的对象晋升到这里,用<span class="term">标记-清除(Mark-Sweep)</span>与<span class="term">增量标记</span>:先标记所有可达对象,再清除不可达对象;增量标记把大停顿拆成小片,避免卡顿。</li>
+</ul>
+
+<pre class="code">// GC 不可控性的演示:创建大量临时对象后,内存并不立即回落
+function createGarbage() {
+  const tmp = [];
+  for (let i = 0; i &lt; 1e5; i++) {
+    tmp.push({ i, s: '临时数据'.repeat(10) });   // 1e5 个对象
+  }
+  return tmp.length;          // 返回后 tmp 变成垃圾
+}
+const before = process.memoryUsage().heapUsed;
+console.log('创建垃圾:', createGarbage());
+global.gc?.();               // Node 加 --expose-gc 时可用,否则 undefined,不报错
+const after = process.memoryUsage().heapUsed;
+console.log('堆增量约:', Math.round((after - before) / 1024), 'KB');
+
+// 生产调优:启动参数控制堆上限
+// node --max-old-space-size=4096 app.js   # 老生代上限 4GB
+// node --expose-gc app.js                  # 暴露 global.gc()(仅调试)
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 5.1:以为"GC 会立刻回收"</div>
+<p>GC 的时机由引擎决定:内存压力大、代际晋升、空闲时都可能触发。你无法保证"置空引用后内存马上回落"。性能测试里"创建 → 置空 → 立刻看内存"得到的数据不可靠;要看趋势,用 <code>--heap-prof</code> 或 Chrome DevTools 的 Memory 面板拍堆快照,对比前后引用图。</p>
+</div>
+
+<h2>§5.3 内存泄漏四大场景</h2>
+
+<p>泄漏 = 对象长期被引用且不再需要。四大高频场景:</p>
+
+<h3>5.3.1 场景一:全局变量/全局容器无限增长</h3>
+<pre class="code">// ❌ 泄漏:全局数组无限追加
+const cache = [];                    // 模块级 = 全局生命周期
+function logEvent(e) {
+  cache.push({ at: Date.now(), e }); // 永远有人引用,永不回收
+}
+for (let i = 0; i &lt; 100; i++) logEvent('点击');
+
+// ✅ 修复:限制大小(固定上限的环形缓冲)
+const bounded = [];
+function logEventSafe(e) {
+  bounded.push({ at: Date.now(), e });
+  if (bounded.length &gt; 100) bounded.shift();   // 超限丢弃最旧
+}
+console.log(bounded.length);         // 100,封顶
+
+// 全局变量另一个形态:意外挂到全局
+// ❌ 严格模式下 this 是 undefined,不会误挂全局;但忘写声明的变量在非严格模式会变全局
+'use strict';
+function bad() {
+  // leak = 1;   // 严格模式下 ReferenceError;非严格模式会创建全局变量!
+}
+</pre>
+
+<h3>5.3.2 场景二:闭包意外持有大对象</h3>
+<pre class="code">// ❌ 泄漏:闭包捕获了大对象,即使只需要小字段
+function heavy() {
+  const bigData = new Array(1e6).fill('x');    // 800KB 级别
+  const id = 'user-1';
+  return () =&gt; id;                            // 只需要 id,但闭包持有整个环境
+}
+const fn = heavy();                           // bigData 一直被 fn 闭包引用
+
+// ✅ 修复:让闭包只捕获需要的东西(把大对象放在另一作用域)
+function light() {
+  const id = 'user-1';
+  {
+    const bigData = new Array(1e6).fill('x'); // 块级作用域,函数返回后不可达
+    console.log(bigData.length);              // 只在块内使用
+  }
+  return () =&gt; id;                            // 闭包只捕获 id
+}
+const fn2 = light();
+console.log(fn2());
+</pre>
+
+<h3>5.3.3 场景三:定时器/轮询未清理</h3>
+<pre class="code">// ❌ 泄漏:setInterval 永不清理,回调及其闭包永不释放
+const data = [];
+const timer = setInterval(() =&gt; {
+  data.push(Date.now());                     // data 无限增长
+}, 100);
+
+// ✅ 修复:明确停止条件与清理
+const timer2 = setInterval(() =&gt; {
+  if (data.length &gt; 10) {
+    clearInterval(timer2);                   // 条件满足就停
+    console.log('定时器已清理,元素数:', data.length);
+  } else {
+    data.push(Date.now());
+  }
+}, 100);
+
+// Node 进程不退出检查:进程是否还挂着 handle
+setTimeout(() =&gt; {
+  console.log('Node 主动退出(即使有未清定时器,但生产要清干净)');
+  clearInterval(timer);
+  process.exit(0);
+}, 500);
+</pre>
+
+<h3>5.3.4 场景四:事件监听器重复注册</h3>
+<pre class="code">const { EventEmitter } = require('node:events');
+
+// ❌ 泄漏:每调用一次就注册一个新监听,旧的永远在
+function subscribeOnce(emitter) {
+  emitter.on('data', (chunk) =&gt; {
+    console.log('收到:', chunk.length);
+  });
+}
+const em = new EventEmitter();
+for (let i = 0; i &lt; 1000; i++) subscribeOnce(em);   // 1000 个监听!
+console.log('监听器数量:', em.listenerCount('data')); // 1000
+
+// ✅ 修复:命名函数 + off 清理,或 once
+function handler(chunk) { console.log('收到:', chunk.length); }
+em.on('data', handler);
+em.off('data', handler);                 // 用完即移除
+em.once('data', (c) =&gt; console.log('一次性:', c.length)); // 只触发一次自动移除
+em.emit('data', Buffer.from('hello'));
+console.log('剩余监听器:', em.listenerCount('data'));    // 0
+</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议 5.1:泄漏排查三板斧</div>
+<p>① <code>node --inspect app.js</code> + Chrome DevTools Memory 面板:录制堆快照,对比前后,按"Retained Size"排序找大对象;② 连续采样两次快照的 Delta 视图,看哪些构造函数实例数只增不减(典型的监听器/闭包泄漏);③ <code>process.memoryUsage()</code> 打点监控,配合 <code>--max-old-space-size</code> 让泄漏快速触发 OOM 报警而不是拖垮服务器。Node 20 还支持 <code>node --heap-prof</code> 直接产出 .heapprofile 文件离线分析。</p>
+</div>
+
+<h2>§5.4 WeakMap 与 WeakRef:弱引用</h2>
+
+<p><span class="term">WeakMap</span> 的键不阻止垃圾回收:键对象变成垃圾时,键值对自动消失。典型用途:<span class="hl">给对象附加元数据(缓存、私有数据),而不延长对象生命周期</span>。WeakSet 同理。注意:WeakMap 的键必须是对象,不可遍历,没有 size。</p>
+
+<pre class="code">// 缓存元数据:WeakMap 不会让键对象"永远活着"
+const meta = new WeakMap();
+
+function track(obj) {
+  meta.set(obj, { visits: (meta.get(obj)?.visits ?? 0) + 1 });
+}
+let user = { name: '李雷' };
+track(user);
+track(user);
+console.log(meta.get(user));        // { visits: 2 }
+user = null;                        // 唯一引用断开
+// meta 中的条目随之消失(GC 时),不会造成泄漏
+
+// 对照:Map 会让键对象永远活着 ← 这就是"Map 版缓存"泄漏的根源
+const strong = new Map();
+strong.set(user, '某数据');
+
+// 典型生产用途:缓存计算结果,键是"不可控的外部对象"
+const cache = new WeakMap();
+function compute(key) {
+  if (!cache.has(key)) {
+    cache.set(key, expensiveCompute(key));
+  }
+  return cache.get(key);
+}
+function expensiveCompute(k) { return `结果:${k}`; }
+console.log(compute('a'), compute('a'));   // 第二次直接命中缓存
+
+// WeakRef(ES2021):更底层,持有"随时可能消失"的引用
+// 用途:大缓存/对象池,允许 GC 在压力大时回收
+let obj = { big: '数据' };
+const ref = new WeakRef(obj);
+console.log(ref.deref()?.big);      // 数据,deref() 可能返回 undefined(已被回收)
+obj = null;
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 5.2:用 Map 做对象缓存导致键永不释放</div>
+<p>Map 对键是强引用:<code>cache.set(key, value)</code> 后,即使业务代码不再引用 key,Map 也拉着它。用 WeakMap 的代价是:不可遍历、不可知大小、键必须对象——所以"需要遍历的缓存"用 Map + 手动淘汰(定期删除),"只按对象查元数据"用 WeakMap。两者分工要清楚。</p>
+</div>
+
+<h2>§5.5 Buffer 与 ArrayBuffer:二进制数据</h2>
+
+<p>C 的 <code>unsigned char buf[1024]</code> 在 JS 中有两个对应物:<span class="term">Buffer</span>(Node 专有,基于 Uint8Array,继承自标准 TypedArray,自带编码转换)与 <span class="term">ArrayBuffer</span>(ECMAScript 标准,浏览器与 Node 通用,纯粹的字节容器)。生产规则:Node 环境优先 Buffer(API 齐全),跨端/Web 场景用 ArrayBuffer + DataView/TypedArray。</p>
+
+<pre class="code">// Buffer:Node 二进制首选
+const buf = Buffer.from('你好', 'utf8');     // 字符串 → 字节(UTF-8)
+console.log(buf.length);                     // 6 ← 一个汉字 3 字节
+console.log(buf);                            // &lt;Buffer e4 bd a0 e5 a5 bd&gt;
+console.log(buf.toString('utf8'));           // 你好,字节 → 字符串
+console.log(buf.toString('hex'));            // e4bda0e5a5bd,十六进制串
+
+// 创建与读写
+const b2 = Buffer.alloc(4);                  // 4 字节,清零(类似 calloc)
+b2.writeUInt32BE(0x01020304, 0);             // 大端写入
+console.log(b2.toString('hex'));             // 01020304
+console.log(b2.readUInt16LE(2));             // 0x0304,小端读 16 位
+b2[0] = 0xff;                                // 像 C 一样按下标改字节
+console.log(b2[0]);                          // 255
+
+// Buffer 与 C 字节数组对照:切片是视图不是拷贝
+const big = Buffer.from([1, 2, 3, 4, 5, 6]);
+const view = big.subarray(1, 4);             // 视图,共享底层内存
+view[0] = 99;
+console.log(big);                            // &lt;Buffer 01 63 03 04 05 06&gt;
+
+// ArrayBuffer:标准字节容器
+const ab = new ArrayBuffer(8);               // 8 字节
+const u8 = new Uint8Array(ab);               // 视图:8 个字节
+u8[0] = 42;
+console.log(u8[0]);                          // 42
+const dv = new DataView(ab);                 // 任意类型读写
+dv.setFloat64(0, 3.14);
+console.log(dv.getFloat64(0));               // 3.14
+
+// 对象 → JSON 字符串 → 字节(网络传输常用)
+const payload = JSON.stringify({ ok: true, n: 7 });
+const wire = Buffer.from(payload, 'utf8');
+console.log(wire.toString('utf8'));          // {"ok":true,"n":7}
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 5.3:Buffer.from(string) 的默认编码</div>
+<p>默认是 utf8,但<span class="hl">Base64 场景常被搞错</span>:<code>Buffer.from(str, 'base64')</code> 的 str 必须是合法 Base64;把普通字符串当 Base64 解码会得到乱码。另外 <code>buffer.length</code> 是字节数不是字符数,与字符串的 length 语义不同——文件大小、网络包大小都用字节数。</p>
+</div>
+
+<h2>§5.6 资源释放惯用法:try/finally 与句柄关闭</h2>
+
+<p>C 用 free/fclose 释放;JS 的 GC 管内存,但<span class="hl">文件句柄、网络连接、定时器这些"外部资源"必须手动关闭</span>。惯用法是 try/finally(第9章详解异常,这里先用结论):</p>
+
+<pre class="code">const fs = require('node:fs');
+
+// ❌ 危险:中途抛错就不关闭
+function badWrite() {
+  const f = fs.openSync('/tmp/out.txt', 'w');
+  fs.writeSync(f, 'hello');
+  // 若 writeSync 抛错,f 永远不关 → 句柄泄漏
+  fs.closeSync(f);
+}
+
+// ✅ 正确:try/finally 保证释放
+function goodWrite() {
+  const f = fs.openSync('/tmp/out.txt', 'w');
+  try {
+    fs.writeSync(f, 'hello world');
+  } finally {
+    fs.closeSync(f);              // 无论是否抛错都执行
+  }
+}
+goodWrite();
+console.log('已安全写入并关闭');
+
+// 文件句柄超限的表现:EMFILE: too many open files
+// ulimit -n 调大 + 代码保证成对 open/close
+</pre>
+
+<h2>§5.7 生产实践:泄漏检查清单与性能</h2>
+
+<div class="box box-summary"><div class="box-title">生产泄漏检查清单(上线前过一遍)</div>
+<ul>
+<li>全局容器(数组/Map)有没有无上限追加?加上限或定期清理</li>
+<li>闭包有没有意外捕获大对象/大数组?把大对象放进块作用域</li>
+<li>setInterval/setTimeout 是否有清理路径?组件卸载、任务完成时 clear</li>
+<li>事件监听是否在"不再需要"时 off 了?监听函数是否具名可移除?</li>
+<li>缓存是 WeakMap 还是 Map?Map 是否带淘汰策略?</li>
+<li>流(stream)有没有 drain/close 处理?HTTP 响应是否 end?</li>
+<li>进程重启策略:崩溃自愈可以兜底"缓慢泄漏"(容器重启),但不能替代修复</li>
+</ul>
+</div>
+
+<pre class="code">// 性能注意:避免高频分配(与 C 的"频繁 malloc 慢"同理)
+// ❌ 循环内创建字符串/数组
+function buildBad(n) {
+  let s = '';
+  for (let i = 0; i &lt; n; i++) {
+    s += `item${i};`;           // 每次 += 都创建新字符串
+  }
+  return s;
+}
+// ✅ 数组收集 + join(分配次数从 O(n) 降到 O(1) 次)
+function buildGood(n) {
+  const parts = new Array(n);
+  for (let i = 0; i &lt; n; i++) {
+    parts[i] = `item${i};`;
+  }
+  return parts.join('');
+}
+console.log(buildGood(5));     // item0;item1;item2;item3;item4;
+
+// 对象池:高频临时对象复用(游戏/高频消息场景)
+class Pool {
+  constructor(make) {
+    this.make = make;
+    this.free = [];
+  }
+  acquire() {
+    return this.free.pop() ?? this.make();
+  }
+  release(obj) {
+    this.free.push(obj);
+  }
+}
+const pool = new Pool(() =&gt; ({ x: 0, y: 0 }));
+const p = pool.acquire();
+p.x = 1;
+pool.release(p);               // 归还复用,减少 GC 压力
+</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议 5.2:内存监控三件套</div>
+<p>① 进程级:<code>process.memoryUsage()</code> 每 10 秒采样入库,画出 heapUsed 趋势线(持续上升 = 泄漏);② 引擎级:老生代增长率 <code>--max-old-space-size</code> 与 <code>--trace-gc</code> 观察 GC 频率,GC 越来越频繁且每次回收量趋近于零 = 泄漏;③ 应用级:压测工具(如 autocannon)在稳定 QPS 下跑 30 分钟,内存曲线应走平;持续爬升即泄漏,配合堆快照定位。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>主题</th><th>速查要点</th></tr>
+<tr><td>内存模型</td><td>对象都在堆;变量是引用;GC 回收不可达对象</td></tr>
+<tr><td>回收算法</td><td>新生代 Scavenge(复制);老生代标记-清除 + 增量标记</td></tr>
+<tr><td>GC 特性</td><td>自动、不可控、无 STW 长停顿(增量);--max-old-space-size 调上限</td></tr>
+<tr><td>循环引用</td><td>不是泄漏!从根不可达即回收(与 C++ shared_ptr 不同)</td></tr>
+<tr><td>泄漏一</td><td>全局容器无限增长 → 加上限/定期清理</td></tr>
+<tr><td>泄漏二</td><td>闭包捕获大对象 → 只捕获所需变量</td></tr>
+<tr><td>泄漏三</td><td>定时器未清理 → 明确停止条件 + clearInterval</td></tr>
+<tr><td>泄漏四</td><td>监听器重复注册 → 具名函数 + off,或用 once</td></tr>
+<tr><td>排查</td><td>--heap-prof / DevTools 堆快照 Delta / memoryUsage 趋势</td></tr>
+<tr><td>WeakMap</td><td>键弱引用,不延长键生命周期;键必须对象,不可遍历</td></tr>
+<tr><td>WeakRef</td><td>弱引用,deref() 可能 undefined;用于大缓存</td></tr>
+<tr><td>Buffer</td><td>Node 二进制容器;length 是字节数;subarray 是视图</td></tr>
+<tr><td>ArrayBuffer</td><td>标准字节容器 + TypedArray/DataView 视图</td></tr>
+<tr><td>资源释放</td><td>句柄/连接/定时器用 try/finally 或清理函数成对释放</td></tr>
+<tr><td>字符串拼接</td><td>循环内 += 慢;用数组 join 或模板字符串</td></tr>
+<tr><td>对象池</td><td>高频临时对象复用,减少 GC 压力</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能解释"GC 回收不可达对象"并用两段代码演示引用断链</li>
+<li>能说出新生代/老生代的回收算法名称与"增量标记"解决什么问题</li>
+<li>能复现并修复四种泄漏场景中的至少三种</li>
+<li>能说出 WeakMap 与 Map 的三个差异(键弱引用/键必须对象/不可遍历)</li>
+<li>能说出 Buffer.length 与字符串 length 的差异,并完成 UTF-8 编解码</li>
+<li>能写出 try/finally 保证文件句柄关闭的模板代码</li>
+<li>能解释为什么 JS 没有悬垂指针与双重释放</li>
+<li>能用 subarray 做出共享内存的切片视图</li>
+<li>能说出循环拼接字符串的替代方案</li>
+<li>能画出一个三层对象嵌套的引用图并指出断哪条边可回收子树</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 下面的代码会不会内存泄漏?为什么?const a = {}; const b = {}; a.p = b; b.p = a; a = null; b = null;</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>不会。a 与 b 互相引用形成环,但环没有根可达,GC 的标记-清除从根出发,整个环不可达,会被回收。</p></div>
+<div class="q">2. 说出四种内存泄漏场景,并各给出修复关键词。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>① 全局容器无限增长 → 上限/清理;② 闭包持有大对象 → 缩小捕获;③ 定时器未清理 → clearInterval;④ 监听器重复注册 → off/once。</p></div>
+<div class="q">3. WeakMap 能遍历吗?它的键可以是字符串吗?用它做"用户会话缓存"合适吗?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>不能遍历,无 size;键必须是对象,字符串不行。用对象做键的会话元数据合适(键对象消失自动清理),需要遍历/统计的缓存用 Map。</p></div>
+<div class="q">4. Buffer.from('你好','utf8').length 是多少?为什么?如何取回原字符串?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>6。'你好' 两个汉字,UTF-8 每字 3 字节,length 是字节数。<code>.toString('utf8')</code> 还原。</p></div>
+<div class="q">5. 简述 V8 为什么用分代回收,以及增量标记解决什么问题。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>大多数对象短命,分代让"小空间频繁复制"代替"全堆扫描",效率高。增量标记把单次大停顿拆成小片穿插执行,避免浏览器/服务卡顿(STW 时间缩短)。</p></div>
+<div class="q">6. Node 里文件写入中途抛错会怎样?写出保证句柄关闭的模板。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>句柄泄漏,fd 不被释放,反复发生会 EMFILE。模板:openSync 后 try { 操作 } finally { closeSync }。</p></div>
+
+<h2>章末实验题:内存泄漏复现与修复实验室</h2>
+<div class="box box-example lab"><div class="box-title">实验 5:内存泄漏复现与修复实验室</div>
+<p><b>实验目标:</b>复现四种泄漏场景,观察堆增长,实现修复,并用 WeakMap/Buffer 完成收尾练习。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1(覆盖:全局容器泄漏):模拟"全局日志数组无限增长",修复为定长环形缓冲</li>
+<li>任务 2(覆盖:闭包泄漏):构造"闭包捕获大数组"案例,修复为只捕获所需字段</li>
+<li>任务 3(覆盖:定时器泄漏):演示未清理的 setInterval 使进程不退出,修复为条件 clearInterval</li>
+<li>任务 4(覆盖:事件监听泄漏):重复注册监听使 listenerCount 暴涨,修复为具名函数 + off/once</li>
+<li>任务 5(覆盖:WeakMap/WeakRef):用 WeakMap 做对象元数据缓存,验证键对象置空后条目消失</li>
+<li>任务 6(覆盖:Buffer/ArrayBuffer):把结构化数据编码为二进制并解码还原,演示字节长度与视图</li>
+<li>任务 7(覆盖:try/finally 资源释放):实现文件写入 + 强制 finally 关闭,并打印 heapUsed 对比</li>
+</ul>
+<p><b>实验环境:</b>Node.js 20+,运行 <code>node leaklab.js</code>;建议同时运行 <code>node --expose-gc leaklab.js</code> 观察 GC 效果。</p></div>
+<ol class="steps">
+<li><b>先写工具函数:</b>memNow() 返回 heapUsed;leakScenario() 循环创建对象并打点</li>
+<li><b>再写四场景函数:</b>每个场景"先泄漏版(可选开关)→ 修复版",打点对比</li>
+<li><b>最后写收尾:</b>WeakMap 生命周期演示 + Buffer 编解码 + finally 文件写入</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<p>核心:每个场景用 "泄漏版/修复版" 双函数 + 内存打点输出对比,收尾覆盖 WeakMap/Buffer/finally。约 130 行。</p>
+<pre class="code">// leaklab.js —— 运行:node leaklab.js(建议加 --expose-gc 观察 GC)
+'use strict';
+const fs = require('node:fs');
+const { EventEmitter } = require('node:events');
+
+// 工具:内存快照(覆盖:process.memoryUsage、模板字符串)
+function memNow() {
+  return `${Math.round(process.memoryUsage().heapUsed / 1024)}KB`;
+}
+function gcHint() {
+  if (typeof global.gc === 'function') {
+    global.gc();                 // --expose-gc 时强制回收(仅实验)
+    return '(已手动 GC)';
+  }
+  return '(未启用 --expose-gc)';
+}
+
+// 场景一:全局容器泄漏 → 修复(覆盖:全局引用、数组上限)
+const leakLog = [];
+function leakLogEvent(e) { leakLog.push({ at: Date.now(), e }); }
+
+const fixedLog = [];
+function fixedLogEvent(e) {
+  fixedLog.push({ at: Date.now(), e });
+  if (fixedLog.length &gt; 100) fixedLog.shift();
+}
+
+// 场景二:闭包泄漏 → 修复(覆盖:闭包捕获、块作用域)
+function leakClosure() {
+  const big = new Array(200000).fill('x');
+  const id = 'u-1';
+  return () =&gt; id;
+}
+function fixClosure() {
+  const id = 'u-1';
+  { const big = new Array(200000).fill('x'); console.log('big 仅块内可见:', big.length); }
+  return () =&gt; id;
+}
+
+// 场景三:定时器泄漏 → 修复(覆盖:setInterval、clearInterval)
+function leakTimer() {
+  const data = [];
+  const t = setInterval(() =&gt; data.push(Date.now()), 50);
+  return () =&gt; { clearInterval(t); return data.length; };
+}
+function fixTimer() {
+  const data = [];
+  let t = setInterval(() =&gt; {
+    if (data.length &gt;= 5) {
+      clearInterval(t);          // 条件满足即停
+    } else {
+      data.push(Date.now());
+    }
+  }, 50);
+  return () =&gt; data.length;
+}
+
+// 场景四:监听器泄漏 → 修复(覆盖:EventEmitter、on/off/once)
+function runEmitterDemo() {
+  const em = new EventEmitter();
+  function handler(chunk) { if (chunk.length &gt; 3) console.log('数据长度:', chunk.length); }
+  for (let i = 0; i &lt; 100; i++) em.on('data', handler);   // 重复注册(演示)
+  const before = em.listenerCount('data');
+  em.off('data', handler);                                 // 修复:全部移除
+  em.once('data', (c) =&gt; console.log('once 消费:', c.length)); // 一次性
+  em.emit('data', Buffer.from('abcd'));
+  return { before, after: em.listenerCount('data') };
+}
+
+// 场景五:WeakMap 元数据(覆盖:WeakMap、set/get、置空)
+function runWeakMapDemo() {
+  const meta = new WeakMap();
+  let user = { name: '李雷' };
+  meta.set(user, { visits: 1 });
+  user.visits = meta.get(user).visits;
+  console.log('WeakMap 读取:', meta.get(user)?.visits);
+  user = null;
+  console.log('键置空后条目随 GC 消失(无法验证 size,WeakMap 不可遍历)');
+}
+
+// 场景六:Buffer 二进制(覆盖:Buffer、utf8/hex、subarray 视图)
+function runBufferDemo() {
+  const b = Buffer.from('你好JS', 'utf8');
+  console.log('字节数:', b.length, '| hex:', b.toString('hex'));
+  console.log('还原:', b.toString('utf8'));
+  const big = Buffer.from([1, 2, 3, 4, 5]);
+  const view = big.subarray(1, 3);
+  view[0] = 99;
+  console.log('视图改字节,底层同步变化:', big);
+}
+
+// 场景七:try/finally 文件句柄(覆盖:资源释放、finally)
+function runFileDemo() {
+  const fd = fs.openSync('/tmp/leaklab.txt', 'w');
+  try {
+    fs.writeSync(fd, 'hello leaklab\n');
+    throw new Error('模拟中途出错');
+  } catch (err) {
+    console.log('捕获错误:', err.message);
+  } finally {
+    fs.closeSync(fd);
+    console.log('句柄已在 finally 中关闭');
+  }
+}
+
+// 主流程(覆盖:函数组织、对比输出)
+function main() {
+  console.log('== 场景一:全局日志 ==');
+  for (let i = 0; i &lt; 500; i++) { leakLogEvent(i); fixedLogEvent(i); }
+  console.log('泄漏版长度:', leakLog.length, '| 修复版长度:', fixedLog.length);
+
+  console.log('== 场景二:闭包 ==');
+  const lc = leakClosure();
+  const fc = fixClosure();
+  console.log('泄漏版闭包返回值:', lc(), '| 修复版:', fc(), gcHint());
+
+  console.log('== 场景三:定时器 ==');
+  const leakTimerFn = leakTimer();
+  const fixTimerFn = fixTimer();
+  setTimeout(() =&gt; {
+    console.log('泄漏版数据:', leakTimerFn(), '| 修复版数据:', fixTimerFn());
+  }, 300);
+
+  console.log('== 场景四:监听器 ==');
+  const { before, after } = runEmitterDemo();
+  console.log(`监听数 ${before} → ${after}`);
+
+  console.log('== 场景五:WeakMap ==');
+  runWeakMapDemo();
+
+  console.log('== 场景六:Buffer ==');
+  runBufferDemo();
+
+  console.log('== 场景七:资源释放 ==');
+  runFileDemo();
+
+  console.log('当前堆:', memNow());
+}
+
+main();
+</pre>
+<p><b>设计说明:</b>四个泄漏场景各自"泄漏版/修复版"成对出现,输出对比数据让修复效果可见;场景三用 setTimeout 等待定时器跑完再统计,演示 clearInterval 的效果;场景四演示 listenerCount 从 100 归零;场景七用 throw 验证 finally 必然执行。建议先跑 <code>node leaklab.js</code>,再看 <code>node --expose-gc leaklab.js</code> 输出中的手动 GC 提示。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第6章 面向对象 —— 原型链、class 语法糖背后的 prototype、# 私有字段与 getter/setter,从 C 的 struct+函数指针进化到真正的面向对象。</p>
+
+</body>
+</html>

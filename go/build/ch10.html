@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第10章 泛型与元编程</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO GO · PRODUCTION READY</div>
+<h1 class="chapter-title">第10章 泛型与元编程</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–6 小时 | <b>难度:</b>★★★★ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解 C 处理"类型无关代码"的两种笨办法:宏与 void* + 手工转换</li>
+<li>掌握类型参数语法:泛型函数、泛型类型、实例化与类型推断</li>
+<li>掌握约束系统:any、comparable、~ 底层类型、联合约束、自定义约束</li>
+<li>掌握泛型容器:泛型 struct、泛型接口与嵌套泛型</li>
+<li>掌握 Go 1.21+ 标准库泛型工具:slices 与 maps 包</li>
+<li>理解"方法不能带类型参数"等泛型边界,避免写出编译不过的代码</li>
+<li>理解 Go 的元编程哲学:没有宏、没有模板特化,复杂生成交给代码生成</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Go:本章主题如何迁移</div>
+<p>C 程序员对"类型无关代码"只有两件武器:①宏——<code>#define MAX(a,b) ((a)&gt;(b)?(a):(b))</code>,展开时类型自适配,但宏没有类型检查、不能调试、参数多求值(MAX(i++, j++) 是灾难),一旦复杂就不可维护;②void* + 函数指针——qsort/bsearch 的路线,类型信息被抹掉,使用方必须手工做类型转换,编译器再也帮不了你,转错就是未定义行为。</p>
+<p>Go 1.18 之前同样只有 interface{} 一件武器(第 6 章的 any 接口),底层还是类型断言,错误在运行时才炸。Go 1.18 引入的<b>泛型(类型参数)</b>是第三次革命:类型在编译期被"参数化",函数在调用处按实参类型自动实例化——既有宏的"类型自适应",又有完整编译期检查,还没有宏的求值副作用。</p>
+<p>但 Go 的泛型刻意保持克制:没有 C++ 模板特化、偏特化、SFINAE;方法不能有类型参数;约束基于"类型集"。<span class="hl">Go 的哲学是:元编程(模板、宏、反射代码生成)是复杂度的来源,能用普通代码解决的,绝不上元编程</span>——这就是为什么本书记住一件事就够:优先写普通函数,只有确实需要"类型无关的算法与容器"时才上泛型。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>第 6 章:接口与 any(interface{}),约束本质上就是接口的推广</li>
+<li>第 4 章:高阶函数(Filter/Map/Reduce 思路)</li>
+<li>C 的宏与 void* 用法(对照基线)</li>
+<li>Go 1.21+(本章代码全部在 1.18+ 语法范围内)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段:</b>§10.1–§10.3,先写第一个泛型函数,理解实例化与推断</li>
+<li><b>第二阶段:</b>§10.4–§10.5,泛型类型与约束系统(重点:~ 与 comparable)</li>
+<li><b>第三阶段:</b>§10.6–§10.8,标准工具包与边界,理解"克制"哲学</li>
+<li><b>验收标准:</b>能默写泛型 Set 与 Filter/Map 链式调用模板</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§10.1 C 的困境:宏的求值陷阱与 void* 的类型抹除</li>
+<li>§10.2 类型参数语法:func F[T any](…),推断与显式实例化</li>
+<li>§10.3 约束基础:any、comparable 与"方法集约束"</li>
+<li>§10.4 泛型类型:泛型 struct 与泛型接口</li>
+<li>§10.5 类型集:~ 底层类型与联合约束(为什么 int 不等于 ~int)</li>
+<li>§10.6 标准工具:slices 与 maps 包的泛型函数</li>
+<li>§10.7 泛型边界:方法无类型参数、类型推断的盲区</li>
+<li>§10.8 Go 无宏:元编程哲学与代码生成预告</li>
+</ul></div>
+
+<h2>§10.1 C 的困境:宏与 void* 的代价</h2>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>Go 的写法</th></tr>
+<tr><td class="ctr"><code>#define MAX(a,b) ((a)&gt;(b)?(a):(b))</code> — 类型自适应但无检查、重复求值</td><td class="ctr"><code>func Max[T comparable](a, b T) T</code> — 编译期检查、求值一次</td></tr>
+<tr><td class="ctr"><code>void qsort(void *base, …, cmp)</code> — 类型抹除,用方手工转换,错即 UB</td><td class="ctr"><code>slices.Sort([]T)</code> — 类型保留,编译器全程把关</td></tr>
+<tr><td class="ctr">宏展开进预处理阶段,与编译脱节</td><td class="ctr">泛型实例化发生在类型检查阶段,错误在编译期报告</td></tr>
+<tr><td class="ctr">模板特化/重载(宏层面模拟)极易失控</td><td class="ctr">无特化;算法对约束内所有类型一致行为</td></tr>
+<tr><td class="ctr">-Werror 也拦不住宏参数副作用</td><td class="ctr">参数就是普通表达式,求值一次,无副作用陷阱</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">易错点 10-1:宏的重复求值是 C 的老坑</div>
+<p><code>MAX(a++, b)</code> 中 a 可能被求值两次,结果是未定义的;Go 泛型调用 <code>Max(a+1, b)</code> 中实参表达式只求值一次。这提醒我们:把泛型当作"带类型的函数",而不是"会展开的宏"。</p>
+</div>
+
+<h2>§10.2 类型参数语法:第一个泛型函数</h2>
+
+<p>泛型函数在函数名后的方括号里声明类型参数:<code>func F[T 约束](参数…)</code>。调用时可以靠实参推断类型,也可以显式指定:<code>F[int](…)</code>。每个不同的实例化类型,编译器会生成对应版本的代码(类似于模板实例化,但发生在类型检查阶段,报错即编译错误)。</p>
+
+<div class="code-title">示例 10-1 泛型 Max 与推断</div>
+<pre class="code">package main
+
+import "fmt"
+
+// Max 对任何可比较类型求最大值
+func Max[T comparable](a, b T) T {
+    if a &gt; b { // comparable 保证可以使用 ==/!= 与比较
+        return a
+    }
+    return b
+}
+
+// First 泛型切片工具:返回首元素与是否非空
+func First[T any](s []T) (T, bool) {
+    if len(s) == 0 {
+        var zero T // 泛型零值:声明一个零值变量
+        return zero, false
+    }
+    return s[0], true
+}
+
+func main() {
+    fmt.Println(Max(3, 5))        // 推断为 int
+    fmt.Println(Max(2.5, 1.8))    // 推断为 float64
+    fmt.Println(Max("b", "a"))    // 推断为 string
+
+    fmt.Println(Max[int](10, 20)) // 显式实例化
+    fmt.Println(First([]string{"go", "lang"}))
+    fmt.Println(First([]int{})) // (0, false)
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:any 约束与 comparable 约束</div>
+<ul>
+<li><code>any</code>(interface{} 的别名):对类型无任何要求,函数内只能用赋值、传参、类型断言</li>
+<li><code>comparable</code>:要求类型支持 == 与 !=(内置可比较类型、可比较的结构体/指针/数组),可用在 map 的键、集合元素</li>
+<li>约束写在方括号内,多个参数:<code>func Pair[A any, B comparable]()</code></li>
+</ul>
+</div>
+
+<h2>§10.3 约束:接口即约束</h2>
+
+<p>约束的底层机制就是接口:一个"类型集"。内置约束 comparable 是接口,自定义约束也是接口。约束可以要求方法(像普通接口),也可以要求底层类型与联合(用 ~ 与 |)。</p>
+
+<div class="code-title">示例 10-2 方法集约束:自己定义约束</div>
+<pre class="code">package main
+
+import "fmt"
+
+// Formatter 自定义约束:要求实现了 String 方法
+type Formatter interface {
+    String() string
+}
+
+// Describe 对任何实现 Formatter 的类型工作
+func Describe[T Formatter](v T) string {
+    return "描述: " + v.String()
+}
+
+type Point struct{ X, Y int }
+
+func (p Point) String() string {
+    return fmt.Sprintf("(%d, %d)", p.X, p.Y)
+}
+
+func main() {
+    fmt.Println(Describe(Point{X: 1, Y: 2}))
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 10-2:约束里的接口不能有类型参数</div>
+<p>方法签名里不能出现类型参数——<code>func (s *Stack[T]) Push(v T)</code> 合法,但接口里写 <code>Set[T]</code> 的泛型方法是非法的(Go 明确禁止泛型方法)。这限制了"泛型接口"只能通过类型参数定义,不能通过方法实现多态。想突破时,先考虑是否能用接口 + 类型断言替代。</p>
+</div>
+
+<h2>§10.4 泛型类型:容器类</h2>
+
+<p>泛型 struct、map、channel 都可以:类型参数声明在类型名后。最典型的应用是容器:泛型栈、泛型集合。</p>
+
+<div class="code-title">示例 10-3 泛型栈</div>
+<pre class="code">package main
+
+import "fmt"
+
+// Stack 泛型栈:任意类型 T
+type Stack[T any] struct {
+    items []T
+}
+
+func (s *Stack[T]) Push(v T) {
+    s.items = append(s.items, v)
+}
+
+// Pop 弹出并返回:零值 + ok 判断空栈
+func (s *Stack[T]) Pop() (T, bool) {
+    n := len(s.items)
+    if n == 0 {
+        var zero T
+        return zero, false
+    }
+    v := s.items[n-1]
+    s.items = s.items[:n-1]
+    return v, true
+}
+
+func (s *Stack[T]) Len() int { return len(s.items) }
+
+func main() {
+    var st Stack[string] // 显式实例化类型
+    st.Push("第1条")
+    st.Push("第2条")
+    for st.Len() &gt; 0 {
+        if v, ok := st.Pop(); ok {
+            fmt.Println(v)
+        }
+    }
+}</pre>
+
+<h2>§10.5 类型集:~ 底层类型与联合约束</h2>
+
+<p>数值运算(加法、乘法)无法用 comparable 表达——接口约束只能表达方法。于是 Go 引入"类型集"语法:用 | 联合多个类型,用 ~ 表示"底层类型匹配"。这是泛型里最容易绕晕的部分,但也是最有用的部分。</p>
+
+<div class="code-title">示例 10-4 数值工具:类型集约束</div>
+<pre class="code">package main
+
+import "fmt"
+
+// Number 类型集:底层类型是整型或浮点型的类型
+// ~int 表示"底层类型为 int 的类型",含 type MyInt int
+type Number interface {
+    ~int | ~int8 | ~int16 | ~int32 | ~int64 |
+        ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
+        ~float32 | ~float64
+}
+
+// Sum 对任意数字切片求和
+func Sum[T Number](xs []T) T {
+    var total T // 零值起加
+    for _, x := range xs {
+        total += x
+    }
+    return total
+}
+
+type Money int // 底层类型是 int 的自定义类型
+
+func main() {
+    fmt.Println(Sum([]int{1, 2, 3, 4}))
+    fmt.Println(Sum([]float64{1.5, 2.5}))
+    fmt.Println(Sum([]Money{10, 20, 30})) // Money 也能用
+}</pre>
+
+<div class="code-title">示例 10-5 comparable 与 ~ 的对比</div>
+<pre class="code">package main
+
+import "fmt"
+
+// 约束顺序:先满足方法,再满足类型集
+type Ordered interface {
+    ~int | ~float64 | ~string
+}
+
+// Min 需要有序类型:类型集约束
+func Min[T Ordered](a, b T) T {
+    if a &lt; b {
+        return a
+    }
+    return b
+}
+
+func main() {
+    fmt.Println(Min(3, 2))
+    fmt.Println(Min(1.9, 2.1))
+    fmt.Println(Min("b", "a"))
+    // 注意:Min(Money(1), Money(2)) 也合法,因为 ~int 包含 Money
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 10-3:int 与 ~int 的区别</div>
+<p>约束写 <code>int</code> 只匹配内建 int 本身;写 <code>~int</code> 匹配所有"底层类型是 int"的类型(包括 <code>type MyInt int</code> 与枚举式的 <code>type Weekday int</code>)。约束里 <code>~</code> 只能修饰有底层类型的类型,不能修饰接口与指针(如 <code>~*T</code> 非法)。规则:想让自定义整数类型也能调用,用 ~;只想要内建类型,直接写类型名。</p>
+</div>
+
+<h2>§10.6 标准工具包:slices 与 maps(Go 1.21)</h2>
+
+<p>Go 1.21 把泛型工具收编进标准库:<code>slices</code> 包提供排序、查找、裁剪、比较;<code>maps</code> 包提供克隆、合并、删除。以前要手写或用第三方库的通用操作,现在开箱即用。</p>
+
+<div class="code-title">示例 10-6 slices/maps 开箱即用</div>
+<pre class="code">package main
+
+import (
+    "fmt"
+    "maps"
+    "slices"
+)
+
+func main() {
+    nums := []int{5, 2, 8, 1, 9}
+    slices.Sort(nums) // 泛型排序
+    fmt.Println("排序:", nums)
+
+    fmt.Println("二分查找 8 的位置:", slices.BinarySearch(nums, 8))
+
+    // slices.Compact:去除相邻重复
+    dup := []string{"a", "a", "b", "b", "c"}
+    fmt.Println("去重(相邻):", slices.Compact(dup))
+
+    m1 := map[string]int{"a": 1, "b": 2}
+    m2 := maps.Clone(m1) // 浅拷贝
+    m2["c"] = 3
+    fmt.Println("原 map 不受影响:", m1, "新 map:", m2)
+
+    maps.DeleteFunc(m2, func(_ string, v int) bool { return v &gt; 2 })
+    fmt.Println("删除后:", m2)
+}</pre>
+
+<h2>§10.7 泛型边界:什么不能做</h2>
+
+<ul>
+<li><b>方法不能有类型参数</b>:接口方法签名中出现类型参数是非法的</li>
+<li><b>类型参数不能用于结构体字段的接口断言目标之外</b>:如不能把 T 作为类型断言外的具体类型使用</li>
+<li><b>没有特化与偏特化</b>:一个约束对应一种实现,无法为 int 与 string 提供不同实现(想要就写两个函数)</li>
+<li><b>类型推断有限</b>:部分场景需显式写出类型参数(如约束无法从实参推出时)</li>
+<li><b>泛型不能用于 go 声明外的 lambda 推断</b>:匿名函数不能带类型参数</li>
+</ul>
+
+<div class="code-title">示例 10-7 推断失败的典型场景与修复</div>
+<pre class="code">package main
+
+import "fmt"
+
+// Pair 返回一对值:类型参数出现在返回类型而非参数
+func Pair[A any, B any](a A, b B) (A, B) { return a, b }
+
+// MustFirst 从 "值或错误" 的二元组取出值
+func MustFirst[T any](v T, err error) T {
+    if err != nil {
+        panic(err)
+    }
+    return v
+}
+
+func main() {
+    // 推断成功:参数里出现 A/B
+    fmt.Println(Pair("名字", 18))
+
+    // 推断失败示例:返回值类型无法推断时必须显式写
+    // r := New[User]()  // 显式实例化
+    x, y := Pair[int, string](1, "ok") // 显式写法
+    fmt.Println(x, y)
+
+    // 三元组解构的常见写法
+    v := MustFirst(parse(42))
+    fmt.Println("值:", v)
+}
+
+func parse(n int) (int, error) { return n * 2, nil }</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:克制地使用泛型</div>
+<p>三条纪律:①优先用普通函数与接口;②确实"类型无关且算法稳定"才上泛型(容器、排序、数学工具);③不要在 API 设计里堆砌三层嵌套的类型参数——可读性崩塌时,泛型的收益归零。标准库的判断法:如果 slices 包已经覆盖了需求,就别自己发明轮子。</p>
+</div>
+
+<h2>§10.8 Go 无宏:元编程的克制哲学</h2>
+
+<p>C 有宏与模板,C++ 有完整的模板元编程;Go 两者都没有,也没有装饰器、注解、AOP。为什么?Go 团队的立场:元编程把"程序生成程序"的复杂性引入编译过程,报错晦涩、调试困难、社区碎片化。Go 的替代方案是<b>代码生成</b>:需要重复样板(如为每个类型生成 String 方法)时,写一个小程序生成源文件,交给 go generate 一键执行——生成的是普通 Go 代码,可读、可审、可测试。下一章(第12章)会完整演示 stringer 工具。</p>
+
+<div class="box box-keypoint"><div class="box-title">重点:本章的元编程全景</div>
+<ul>
+<li>宏/模板(编译期展开):Go 用泛型替代,类型安全</li>
+<li>反射(运行期自省):Go 的 reflect 包,见第 11 章</li>
+<li>代码生成(构建期生成源文件):go:generate,见第 12 章</li>
+<li>注解/装饰器:AOP 式改写 — Go 没有,用中间件/包装函数替代(第 8 章 HTTP 中间件)</li>
+</ul>
+</div>
+
+<h2>本章速查表</h2>
+<table>
+<tr><th style="width:26%">主题</th><th>要点</th></tr>
+<tr><td class="ctr">泛型函数</td><td class="ctr"><code>func Max[T comparable](a, b T) T</code>;实参可推断,也可显式 Max[int](…)</td></tr>
+<tr><td class="ctr">any 约束</td><td class="ctr">无任何要求;函数内只能赋值/断言</td></tr>
+<tr><td class="ctr">comparable</td><td class="ctr">支持 ==/!=;map 键、集合元素、比较操作的前提</td></tr>
+<tr><td class="ctr">泛型类型</td><td class="ctr"><code>type Stack[T any] struct</code>;方法接收者带 [T]</td></tr>
+<tr><td class="ctr">类型集约束</td><td class="ctr"><code>~int | ~float64 | ~string</code>;~ 表示底层类型</td></tr>
+<tr><td class="ctr">自定义约束</td><td class="ctr">约束就是接口:可要求方法,也可用类型集语法</td></tr>
+<tr><td class="ctr">slices 包</td><td class="ctr">Sort/BinarySearch/Compact/Clip/Equal(Go 1.21+)</td></tr>
+<tr><td class="ctr">maps 包</td><td class="ctr">Clone/Copy/DeleteFunc/Equal(Go 1.21+)</td></tr>
+<tr><td class="ctr">方法限制</td><td class="ctr">方法不能有类型参数;匿名函数不能泛型</td></tr>
+<tr><td class="ctr">无特化</td><td class="ctr">无模板特化/偏特化;行为对约束内类型一致</td></tr>
+<tr><td class="ctr">元编程</td><td class="ctr">无宏/注解/AOP;需要时用代码生成(go generate)</td></tr>
+<tr><td class="ctr">使用纪律</td><td class="ctr">普通函数优先;容器与数学工具才泛型;不堆嵌套参数</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能默写泛型 Max[T comparable] 与泛型 Sum[~int|~float64]</li>
+<li>能默写泛型 Stack[T any] 完整类型与方法</li>
+<li>能说出 any 与 comparable 的差别及适用场景</li>
+<li>能解释 ~int 与 int 在约束中的区别,举出自定义类型示例</li>
+<li>能写出方法集约束(自定义 Formatter 接口)</li>
+<li>能说出三个"泛型不能做"的限制</li>
+<li>能默写 slices.Sort + BinarySearch 的调用</li>
+<li>能解释"Go 为什么没有宏"及 go generate 替代方案</li>
+</ul>
+
+<h2>自测题</h2>
+
+<div class="q">1. <code>func Max[T comparable](a, b T) T</code> 为什么不能用 any 约束?如果换成 any 会怎样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>函数体里做了 a &gt; b 的比较。any 不承诺任何操作,比较运算符(以及 ==/!=)在 any 上非法,编译不过;comparable 保证 T 支持 == 与 !=,但注意它<b>不</b>保证 >(有序性)——这就是为什么有序比较需要自定义类型集约束(如 Ordered 约束)而非 comparable。</p>
+</div>
+
+<div class="q">2. 约束里写 int 与写 ~int 有何区别?type MyInt int 分别能否通过?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>写 int 只接受内建 int;MyInt 的底层类型是 int 但类型名不同,不能通过。写 ~int 接受所有底层类型为 int 的类型(内建 int、MyInt、type Weekday int 等)。工程上处理自定义数值类型的约束几乎总是用 ~。</p>
+</div>
+
+<div class="q">3. 下面的代码哪里错了?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<pre class="code">type Adder interface {
+    Add(other Adder) Adder // 编译错误?
+}
+
+func Add[T Adder](a, b T) T {
+    return a.Add(b).(T) // 这行也错
+}</pre>
+<p>第一处:泛型方法(接口方法参数/返回值用 T)被禁止——接口里不能声明类型参数,必须改为 <code>Add(other Adder) Adder</code> 且不涉及 T;第二处:类型断言 .(T) 的目标必须是具体类型而非类型参数(Go 限制,类型参数不能作为类型断言的目标)。正确做法是让约束接口包含足够方法,或用类型开关。</p>
+</div>
+
+<div class="q">4. Go 1.21 的 slices 包能替代哪些手写代码?举三个。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>slices.Sort(手写 qsort/插入排序/冒泡)、slices.BinarySearch(手写二分)、slices.Compact(手写相邻去重)、slices.Equal(手写逐元素比较)、slices.Clip(手写缩容)。这些是标准库对"泛型工具函数"的最佳实践,应优先使用。</p>
+</div>
+
+<div class="q">5. 为什么 Go 不提供模板特化?需要"不同类型不同实现"时怎么办?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>特化让同一个函数名在不同类型上行为不同,代码读者必须脑内展开分支,可读性与可预测性受损;Go 的立场是"简单优于复杂"。替代方案:①写两个不同的函数(如 SortInts 与 SortStrings);②用接口方法分发(把差异封装进类型的方法);③确实必须生成大量样板时,用代码生成(go:generate)而非语言级特化。</p>
+</div>
+
+<div class="q">6. 泛型容器 Stack[T] 的 Pop 为什么返回 (T, bool) 而非直接返回 T?写出该方法的实现。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<pre class="code">// 空栈无法产生一个合法的 T 值返回
+func (s *Stack[T]) Pop() (T, bool) {
+    n := len(s.items)
+    if n == 0 {
+        var zero T
+        return zero, false
+    }
+    v := s.items[n-1]
+    s.items = s.items[:n-1]
+    return v, true
+}</pre>
+<p>泛型没有"空值字面量",只能声明零值变量返回;用 bool 标志调用方区分"零值"与"真实零值",与通道接收的 ok 断言同构。</p>
+</div>
+
+<h2>章末实验题:泛型工具库</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 10:泛型集合与函数式工具链</div>
+<p><b>实验目标:</b>实现一个泛型工具库:集合(Set)、高阶函数工具(Filter/Map/Reduce)、数值工具(Sum/Min/Max),全部基于类型参数与约束,覆盖本章全部知识点。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:Set[T comparable]:Add/Contains/Remove/Len,基于 map[T]struct{}(覆盖:§10.2 泛型类型)</li>
+<li>任务 2:Filter[T any](s, func(T) bool) []T 与 Map[T, U any] 转换(覆盖:§10.2 多类型参数)</li>
+<li>任务 3:Reduce[T, U any] 归约,支持"从空切片返回初始值"(覆盖:§10.2 零值泛型)</li>
+<li>任务 4:Sum/Product 用类型集约束 Number(覆盖:§10.5 ~ 与 |)</li>
+<li>任务 5:Min/Max 用自定义 Ordered 约束(覆盖:§10.3 自定义约束)</li>
+<li>任务 6:演示 type Money int 也能参与 Sum/Min(覆盖:§10.5 ~ 的意义)</li>
+<li>任务 7:与 slices/maps 标准包互操作:Sorted 返回排序切片(覆盖:§10.6)</li>
+<li>任务 8:实验一个"编译不过的泛型方法"并解释原因(覆盖:§10.7 边界)</li>
+</ul>
+<p><b>实验环境:</b>Go 1.21+;先手写再用 gofmt;最后跑 go vet 确认无告警。</p>
+</div>
+
+<ol class="steps">
+<li>先定义 Number 与 Ordered 两个约束接口</li>
+<li>实现 Set[T comparable](内嵌 map,方法全在指针接收者上)</li>
+<li>实现 Filter/Map/Reduce 三个纯函数(不动原切片,返回新切片)</li>
+<li>实现 Sum/Product(类型集)与 Min/Max(Ordered)</li>
+<li>main 中组合:构造集合、过滤、映射、归约、求和,全链路打印</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">// 实验 10:泛型工具库——集合 + 高阶函数 + 数值工具
+package main
+
+import (
+    "fmt"
+    "slices"
+)
+
+// 任务 4:数值类型集约束(§10.5)
+type Number interface {
+    ~int | ~int8 | ~int16 | ~int32 | ~int64 |
+        ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 |
+        ~float32 | ~float64
+}
+
+// 任务 5:有序类型约束(§10.3 自定义约束)
+type Ordered interface {
+    ~int | ~float64 | ~string
+}
+
+// ===== 任务 1:泛型集合(§10.2 泛型类型)=====
+type Set[T comparable] struct {
+    m map[T]struct{} // 空结构体作占位
+}
+
+func NewSet[T comparable]() *Set[T] {
+    return &amp;Set[T]{m: make(map[T]struct{})}
+}
+
+func (s *Set[T]) Add(v T)         { s.m[v] = struct{}{} }
+func (s *Set[T]) Remove(v T)      { delete(s.m, v) }
+func (s *Set[T]) Contains(v T) bool {
+    _, ok := s.m[v]
+    return ok
+}
+func (s *Set[T]) Len() int { return len(s.m) }
+
+// Elements 返回全部元素切片(§10.6:slices 包互操作)
+func (s *Set[T]) Elements() []T {
+    out := make([]T, 0, len(s.m))
+    for v := range s.m {
+        out = append(out, v)
+    }
+    return out
+}
+
+// Sorted 返回排序后的元素
+func (s *Set[T]) Sorted() []T {
+    es := s.Elements()
+    slices.Sort(es) // 标准库泛型排序(§10.6)
+    return es
+}
+
+// ===== 任务 2/3:高阶函数工具(§10.2 多类型参数)=====
+// Filter 保留满足条件的元素,不修改原切片
+func Filter[T any](s []T, keep func(T) bool) []T {
+    out := make([]T, 0, len(s))
+    for _, v := range s {
+        if keep(v) {
+            out = append(out, v)
+        }
+    }
+    return out
+}
+
+// Map 类型转换:[]T → []U
+func Map[T, U any](s []T, f func(T) U) []U {
+    out := make([]U, 0, len(s))
+    for _, v := range s {
+        out = append(out, f(v))
+    }
+    return out
+}
+
+// Reduce 归约:用初始值起步,依次折叠
+func Reduce[T, U any](s []T, init U, f func(U, T) U) U {
+    acc := init
+    for _, v := range s {
+        acc = f(acc, v)
+    }
+    return acc
+}
+
+// ===== 任务 4/5:数值与有序工具(§10.5)=====
+func Sum[T Number](s []T) T {
+    return Reduce(s, 0, func(acc, v T) T { return acc + v })
+}
+
+func Product[T Number](s []T) T {
+    return Reduce(s, 1, func(acc, v T) T { return acc * v })
+}
+
+func Min[T Ordered](s []T) T {
+    if len(s) == 0 {
+        panic("空切片求最小值")
+    }
+    m := s[0]
+    for _, v := range s[1:] {
+        if v &lt; m {
+            m = v
+        }
+    }
+    return m
+}
+
+func Max[T Ordered](s []T) T {
+    if len(s) == 0 {
+        panic("空切片求最大值")
+    }
+    m := s[0]
+    for _, v := range s[1:] {
+        if v &gt; m {
+            m = v
+        }
+    }
+    return m
+}
+
+// ===== main:全链路演示 =====
+type Money int // 底层类型是 int 的自定义类型(§10.5 ~ 的意义)
+
+func main() {
+    // 集合基本操作(任务 1)
+    s := NewSet[int]()
+    for _, v := range []int{3, 1, 4, 1, 5, 9, 2, 6} {
+        s.Add(v)
+    }
+    fmt.Println("集合:", s.Elements(), "大小:", s.Len())
+
+    // 排序互操作(任务 7)
+    fmt.Println("排序后:", s.Sorted())
+
+    // 过滤 + 映射 + 归约链(任务 2/3)
+    nums := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+    evens := Filter(nums, func(v int) bool { return v%2 == 0 })
+    doubled := Map(evens, func(v int) int { return v * 10 })
+    total := Reduce(doubled, 0, func(acc, v int) int { return acc + v })
+    fmt.Println("偶数:", evens, "×10:", doubled, "合计:", total)
+
+    // 数值工具 + 自定义类型(任务 4/6)
+    prices := []Money{30, 15, 75, 40}
+    fmt.Println("价格合计:", Sum(prices), "最低:", Min(prices), "最高:", Max(prices))
+
+    // 字符串有序比较(任务 5)
+    words := []string{"pear", "apple", "banana"}
+    fmt.Println("字典序最小:", Min(words))
+
+    // 任务 8 思考:接口里写 func Add(T) T 无法编译——
+    // Go 禁止泛型方法;要"泛型 + 多态"请用类型参数而非方法签名
+    fmt.Println("=== 全部工具工作正常 ===")
+}</pre>
+<p><b>设计说明:</b>实验代码覆盖本章全部任务点:Set 用 map[T]struct{} 演示"空结构体零开销占位"这一经典惯用法;Filter/Map/Reduce 验证多类型参数与"返回新切片、不动原数据"的值语义;Sum/Product 通过类型集约束让 Money 这类自定义整数类型自动可用——这正是 ~ 的价值;Min/Max 用 Ordered 约束且对空切片显式 panic,把"不该发生的情况"暴露出来;Sorted 与标准库 slices 协作,展示"自己造的工具与官方工具协同"的分工。改动建议:给 Set 加 Union/Intersect/Difference 三个集合运算(练习约束复用);给 Reduce 增加"无初始值版本"返回 (T, bool);把 Filter 改为原地过滤并对比语义差异。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第11章 反射与动态特性。泛型解决"编译期类型无关",反射解决"运行期类型自省":reflect 三法则、struct tag 读取、以及一个 40 行的迷你 JSON 编解码器——然后我们讨论性能与克制。</p>
+
+</body>
+</html>

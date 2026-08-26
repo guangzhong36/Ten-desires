@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第14章 类型系统进阶:结构类型、TS 与领域建模</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO JAVASCRIPT · PRODUCTION READY</div>
+<h1 class="chapter-title">第14章 类型系统进阶:结构类型、TS 与领域建模</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★★★★ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解结构类型(鸭子类型)与 C 标称类型的本质差异</li>
+<li>掌握运行时类型检查的三层防线:typeof / instanceof / shape 校验</li>
+<li>掌握判别联合(tag 字段 + switch)的建模方法</li>
+<li>掌握 JSON 作为"类型边界"的六种类型与四个转换坑</li>
+<li>掌握深浅拷贝的边界:展开符、structuredClone 与手写递归</li>
+<li>掌握空安全:?? 与 ?. 的组合规则</li>
+<li>理解 TypeScript 与 JSDoc 渐进类型的方向,形成生产判断</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 JavaScript:本章主题如何迁移</div>
+<p>C 是<em>标称类型</em>(nominal typing):<code>struct Point</code> 与 <code>struct Circle</code> 就算布局一模一样也是两种类型,传参要显式强转;类型检查发生在编译期,运行期没有"类型"这个实体。JS 是<em>结构类型</em>(structural typing):<span class="hl">运行时只看对象的形状</span>——"凡是长着 Point 样子的对象都能当 Point 用"。这把 C 里"编译期说了算"的权力移交给了运行时,代价是错误发现变晚,收益是极大的灵活性与可组合性(鸭子类型、动态 JSON、无样板的数据管道)。</p>
+<p>类型不是"有或没有"的问题,而是<span class="hl">三道防线如何分工</span>:typeof 挡原始值,instanceof 挡类实例,手写 shape 校验挡"形状不符"的结构体。再加上判别联合(给对象一个 status 标签字段,用 switch 精确分支),C 程序员用 union + enum 才能表达的"一种数据多种形态",在 JS 里用普通对象就能优雅建模。</p>
+<p>生产环境的真实图景是"渐进类型":核心边界(输入/输出/配置文件)要么用运行时校验兜底,要么引入 TypeScript 或 JSDoc 注解获得编译期检查;业务内部保持动态自由。第14章的实验(订单 + 商品 + 用户的领域模型)把本章所有技术串成一套真实系统:你会看到"校验函数 + 判别联合 + JSON 往返 + 深拷贝"如何组装出一个可运行、可维护的订单引擎——这是从"会写 C 程序"到"会设计 JS 系统"的最后一跃。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的 struct/union/enum、强转、NULL 指针检查</li>
+<li>第1章八种类型与 typeof;第6章原型链与 instanceof</li>
+<li>第7章 JSON 序列化基础;第11章反射与 Object 反射全家</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(类型观):</b>读 §14.1–§14.2,建立"结构类型 + 三层防线"的心智模型</li>
+<li><b>第二阶段(边界):</b>读 §14.3–§14.5,吃透 JSON 转换坑、深浅拷贝与空安全</li>
+<li><b>第三阶段(工具):</b>读 §14.6,理解 TS 与 JSDoc 渐进类型的定位</li>
+<li><b>第四阶段(建模):</b>读 §14.7 并完成章末领域模型实验</li>
+<li><b>验收标准:</b>能用"校验函数 + 判别联合 + JSON 往返"独立建模一个带状态的业务实体</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>第14章 类型系统进阶:结构类型、TS 与领域建模
+  <ul>
+    <li>§14.1 C 的标称类型 vs JS 的结构类型</li>
+    <li>§14.2 运行时类型检查的三层防线</li>
+    <li>§14.3 JSON:类型系统的外部边界</li>
+    <li>§14.4 深浅拷贝:边界与工具</li>
+    <li>§14.5 空安全:?? 与 ?. 的组合规则</li>
+    <li>§14.6 TypeScript 与 JSDoc:渐进类型的方向</li>
+    <li>§14.7 生产建议:运行时校验与领域建模</li>
+  </ul>
+  </li>
+</ul></div>
+
+<h2>§14.1 C 的标称类型 vs JS 的结构类型</h2>
+
+<pre class="code">// C:标称类型 —— 类型名即类型,布局相同也互不兼容
+struct Point { int x, y; };
+struct Circle { int x, y, r; };   // 布局包含 Point,但不是 Point
+
+void draw(struct Point p) { /* ... */ }
+
+struct Circle c = {1, 2, 5};
+// draw(c);              // 编译警告:不兼容的类型
+draw((struct Point)c);  // 强转:程序员负责,编译器闭嘴
+</pre>
+
+<pre class="code">// JS:结构类型 —— 只看形状,不认名字
+function draw(p) {
+  // 不检查 p 是什么"类",只要求它有 x 和 y
+  console.log('draw at (' + p.x + ', ' + p.y + ')');
+}
+
+draw({ x: 1, y: 2 });          // 普通对象,OK
+draw({ x: 3, y: 4, r: 5 });    // 多一个 r,OK —— 形状满足即可
+draw({ x: 1 });                // 缺 y:运行时不报错,打印 (1, undefined)
+</pre>
+
+<p>结构类型的本质是<span class="hl">"接口隐含于形状"</span>:调用方与被调方之间没有显式契约,契约就是"你需要哪些字段"。这带来两面的结果:</p>
+<ul>
+<li><b>好的一面:</b>松耦合。测试时传一个假对象(测试替身)不需要继承任何类;函数天然多态——任何"长得像"的输入都能用。第6章的鸭子类型在这里有了理论依据。</li>
+<li><b>代价:</b>拼错字段名不会报错,只会在运行时产生 undefined 与神秘 bug。C 编译器替你把的关,现在要自己把——这就是 §14.2 三层防线存在的理由。</li>
+</ul>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 14.1:字段名拼错是"小事"</div>
+<p><code>user.name</code> 拼成 <code>user.nane</code>:不报错,拿到 undefined,后续拼接字符串变成 "undefined",存进数据库才发现。C 里这是编译错误,JS 里是"迟到的数据事故"。对策:关键字段在入口处做 shape 校验(§14.2),或引入 TS/JSDoc(§14.6)。</p>
+</div>
+
+<h2>§14.2 运行时类型检查的三层防线</h2>
+
+<p>三层防线各管一段,生产代码按"成本从低到高"使用:</p>
+<pre class="code">// 第一层:typeof —— 管原始值(成本最低)
+function toStr(x) {
+  if (typeof x === 'string') return x;          // 已经是字符串
+  if (typeof x === 'number') return String(x);  // 数字转字符串
+  return '';                                    // 其余给空串
+}
+
+// 第二层:instanceof —— 管类实例
+class Account { /* ... */ }
+function deposit(a, amount) {
+  if (!(a instanceof Account)) throw new TypeError('需要 Account 实例');
+  // 跨 realm 场景(第11章)注意 instanceof 会失效,用品牌字段替代
+}
+
+// 第三层:shape 校验 —— 管"结构体形状"(成本最高,用在边界)
+function isProduct(obj) {
+  return (
+    obj !== null &&
+    typeof obj === 'object' &&
+    typeof obj.id === 'string' &&          // 字段存在且类型正确
+    typeof obj.name === 'string' &&
+    typeof obj.price === 'number' &&
+    Number.isFinite(obj.price) &amp;&amp;          // 拒绝 NaN/Infinity
+    obj.price &gt;= 0                          // 值域约束
+  );
+}
+const raw = JSON.parse(await fetch('/api/products/1').then((r) =&gt; r.json()));
+if (!isProduct(raw)) throw new Error('商品数据格式错误: ' + JSON.stringify(raw));
+</pre>
+
+<p><b>判别联合:</b>当同一份数据有多种形态时(C 的 union + enum 组合),用一个"标签字段"区分:</p>
+
+<pre class="code">// 订单三态:tag 字段 status + switch 精确分支
+function formatOrder(order) {
+  switch (order.status) {
+    case 'pending':   return '待支付: ' + order.id;
+    case 'paid':      return '已支付: ' + order.id + ', 金额 ¥' + order.total;
+    case 'cancelled': return '已取消: ' + order.id + ' (原因: ' + order.reason + ')';
+    default:
+      // 未知分支必须抛错:宁可让系统亮红灯,也不要静默返回错误数据
+      throw new Error('未知订单状态: ' + order.status);
+  }
+}
+</pre>
+
+<p>判别联合三原则:<span class="hl">标签字段放显眼位置(status)、default 分支必抛错、每个分支只访问自己该有的字段</span>(cancelled 才有 reason)。这正是 C 里 enum + union + switch 的运行时版,且更安全——没有"谁都能乱读 union"的问题。</p>
+
+<h2>§14.3 JSON:类型系统的外部边界</h2>
+
+<p>JSON 只有六种类型:null、boolean、number、string、array、object。JS 的世界比它宽,跨边界时会发生<em>隐式转换</em>:</p>
+
+<pre class="code">const order = {
+  id: 1,
+  createdAt: new Date(),        // Date 不在 JSON 类型里
+  note: undefined,              // undefined 没有 JSON 表示
+  score: NaN,                   // NaN 不是 JSON number
+  big: 9007199254740993n,       // BigInt 不支持序列化
+};
+
+const json = JSON.stringify(order);
+console.log(json);
+// {"id":1,"createdAt":"2026-08-26T08:00:00.000Z","score":null}
+// Date → ISO 字符串;undefined 属性整个被丢弃;NaN → null;BigInt 直接抛错
+</pre>
+
+<ul>
+<li><b>Date → 字符串:</b>序列化后是 ISO 字符串,反序列化回来仍是字符串,不是 Date。<span class="hl">JSON 往返改变类型</span>——领域模型里要显式转换(<code>new Date(obj.createdAt)</code>)。</li>
+<li><b>undefined/NaN:</b>undefined 属性被丢弃,NaN/Infinity 变成 null。数据静默变形,是"看起来没丢,用起来错了"的经典来源。</li>
+<li><b>大整数:</b>超过 2^53 - 1 的整数 id(如雪花 ID)精度丢失。生产规则:大 ID 用字符串承载。</li>
+<li><b>循环引用:</b>JSON.stringify 抛 TypeError。深度遍历要先做防环(第11章的 Set 技巧)。</li>
+</ul>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 14.2:JSON 是"无损的"</div>
+<p>JSON 只是序列化格式,不是 JS 的镜像。Date/undefined/NaN/BigInt 四个类型跨边界都会变形或报错。<span class="hl">规则:跨 JSON 边界前,先把类型显式转换成 JSON 六型之一</span>(日期 → ISO 字符串、大整数 → 字符串、undefined → 省略),反序列化后再显式还原。</p>
+</div>
+
+<h2>§14.4 深浅拷贝:边界与工具</h2>
+
+<pre class="code">const a = { user: { name: '李雷', tags: ['a', 'b'] } };
+
+// 浅拷贝:{...a} 只复制第一层,内层对象仍然共享
+const shallow = { ...a };
+shallow.user.name = '韩梅梅';
+console.log(a.user.name);            // '韩梅梅' ← 原对象被污染了!
+
+// 深拷贝:structuredClone(ES2022 内置,支持 Date/Map/Set/循环引用)
+const deep = structuredClone(a);
+deep.user.name = '张三';
+console.log(a.user.name);            // '韩梅梅' —— 原对象不受影响
+
+// 浅拷贝的另一写法(老代码常见)
+const old = Object.assign({}, a);
+</pre>
+
+<p>深浅拷贝的边界要记牢:</p>
+<ul>
+<li><b>{...obj} / Object.assign:</b>只复制可枚举自身属性,且只复制"引用"本身——内层对象/数组仍是同一份。<span class="hl">90% 的"拷贝 bug"都是把它当深拷贝用</span>。</li>
+<li><b>structuredClone:</b>现代深拷贝首选:支持循环引用、Date、Map、Set、TypedArray。限制:函数与类实例(非结构化数据)会抛 DataCloneError,Symbol 键会丢失。</li>
+<li><b>手写递归 clone:</b>教学与特殊场景(过滤字段、转换类型)才需要;必须带 WeakMap 防循环引用:</li>
+</ul>
+
+<pre class="code">function deepClone(obj, seen = new WeakMap()) {
+  if (obj === null || typeof obj !== 'object') return obj; // 原始值原样返回
+  if (seen.has(obj)) return seen.get(obj);                 // 防循环引用
+  const clone = Array.isArray(obj) ? [] : {};
+  seen.set(obj, clone);
+  for (const [k, v] of Object.entries(obj)) {
+    clone[k] = deepClone(v, seen);                          // 递归
+  }
+  return clone;
+}
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 14.3:改"拷贝"影响了原数据</div>
+<p>排查顺序:先确认是不是浅拷贝共享了内层引用。生产规则:<span class="hl">默认用 structuredClone;只在"确信内层会被替换而不会被修改"时用浅拷贝</span>(如 React 的不可变更新惯例)。</p>
+</div>
+
+<h2>§14.5 空安全:?? 与 ?. 的组合规则</h2>
+
+<pre class="code">// C:NULL 指针解引用 → 段错误,程序当场崩溃
+// JS:null/undefined 上访问属性 → TypeError(同理,但可防御)
+
+// 空值合并 ?? :只在 null/undefined 时取默认值
+const port = process.env.PORT ?? 8080;
+const name = user.name ?? '匿名';
+const zero = 0 ?? 100;          // 0 —— 空值合并不吞 0
+const empty = '' ?? '默认';     // '' —— 空值合并不吞空串
+
+// 对比 || :把 falsy 值一视同仁(0/''/NaN 都会被替换)
+const a = 0 || 100;             // 100 ← 逻辑或吞掉了 0
+const b = 0 ?? 100;             // 0   ← 空值合并保留 0
+
+// 可选链 ?. :路径上任何一环为空,整个表达式短路为 undefined
+const city = user?.address?.city ?? '未知';
+// 等价于:
+// const city = (user != null &amp;&amp; user.address != null)
+//   ? (user.address.city ?? '未知')
+//   : '未知';
+
+// 组合调用:函数可能不存在时
+const result = config?.parser?.call(config, raw) ?? null;
+</pre>
+
+<p>空安全的黄金组合:<span class="hl">?. 负责"路",?? 负责"默认值",两者总是成对出现</span>。对照 C:JS 的空访问不会崩溃进程,但会静默传播 undefined——所以"默认值"必须显式给出,否则 undefined 会一路流到 UI 层变成 "undefined" 字样。</p>
+
+<table class="cmp">
+<tr><th>表达式</th><th>x = 0</th><th>x = ''</th><th>x = null</th><th>x = undefined</th></tr>
+<tr><td>x || '默认'</td><td>'默认'</td><td>'默认'</td><td>'默认'</td><td>'默认'</td></tr>
+<tr><td>x ?? '默认'</td><td>0</td><td>''</td><td>'默认'</td><td>'默认'</td></tr>
+</table>
+
+<h2>§14.6 TypeScript 与 JSDoc:渐进类型的方向</h2>
+
+<pre class="code">// TypeScript —— 带类型的 JS 超集:编译期检查,编译产物就是 JS
+interface Product {
+  id: string;
+  price: number;
+}
+
+function total(products: Product[]): number {
+  return products.reduce((s, p) =&gt; s + p.price, 0);
+}
+
+total([{ id: 'a', price: 9.9 }]);   // 编译通过
+// total([{ id: 'a' }]);            // 编译错误:缺少 price —— 错误在写代码时发现
+</pre>
+
+<p>TS 对 C 程序员非常友好:它把"标称感"带回来了——interface 声明形状,函数签名约束参数,编辑器即时报错,像 C 的编译期检查提前到输入阶段。但它<em>不改变运行行为</em>:类型在编译时被擦除,运行时仍是动态 JS——所以 TS 检查通过不意味着数据合法(网络 JSON 依然要校验)。</p>
+
+<p><b>联合类型</b>是 TS 对判别联合的静态化:</p>
+
+<pre class="code">type OrderStatus = 'pending' | 'paid' | 'cancelled';
+
+interface Order {
+  id: string;
+  status: OrderStatus;
+  total: number;
+}
+
+// status 写错成 'penging' 会在编译期被拦下 —— 这就是 §14.2 判别联合的静态版
+</pre>
+
+<p><b>JSDoc 渐进类型:</b>不想引入构建步骤时,用 JSDoc 注释获得同样的编辑器检查(零依赖,VS Code 原生支持):</p>
+
+<pre class="code">// @ts-check           ← 文件顶部的注释:开启本文件类型检查
+/** @param {{ id: string, price: number }[]} products */
+function total(products) {
+  return products.reduce((s, p) =&gt; s + p.price, 0);
+}
+
+/** @typedef {{ id: string, price: number }} Product */
+/** @type {Product[]} */
+const list = [];
+</pre>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 14.4:TS 检查通过 = 数据安全</div>
+<p>TS 的类型在运行时被擦除,JSON.parse 出来的数据它管不着。生产规则:<span class="hl">TS/JSDoc 管"代码内部",运行时校验管"系统边界"</span>——网络响应、文件内容、用户输入,一律在入口用 shape 校验(§14.2)把关,再信任内部。</p>
+</div>
+
+<h2>§14.7 生产建议:运行时校验与领域建模</h2>
+
+<p>把全章收敛成三条工程原则:</p>
+<ul>
+<li><b>原则一(边界校验):</b>在"不可信数据"进入系统的四个入口做校验——HTTP 请求体、JSON 文件、环境变量/配置、用户输入。校验失败立即抛错,错误信息要带原始数据片段,方便排查。</li>
+<li><b>原则二(判别联合优先):</b>一个实体有多种状态/形态时,用 status 标签 + switch,default 抛错。不要用"一堆可选字段 + 到处 if"——那会让非法状态静默存在。</li>
+<li><b>原则三(默认值显式):</b>所有"可能为空"的读取都用 ?? 给出显式默认;绝不把 undefined 留在数据里流向 UI 或数据库。C 程序员把它想成"每次解引用前先判 NULL"的纪律,只是更优雅。</li>
+</ul>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 14.5:校验函数到处复制粘贴</div>
+<p>isProduct 这种 shape 校验是纯函数、无状态——<span class="hl">把它放进专门的 domain/validators 文件,统一导出</span>;校验失败抛出的错误统一包装成带字段名的 Error,方便上层日志聚合。生产包(如 zod)提供声明式 schema,一行顶十行,值得了解。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>主题</th><th>速查要点</th></tr>
+<tr><td>标称类型</td><td>C:类型名即类型;布局相同也不兼容;强转是程序员承诺</td></tr>
+<tr><td>结构类型</td><td>JS:运行时只看形状;缺字段不报错,产生 undefined</td></tr>
+<tr><td>三层防线</td><td>typeof 管原始值;instanceof 管类实例;shape 校验管形状与值域</td></tr>
+<tr><td>判别联合</td><td>status 标签 + switch;default 必须抛错;分支只碰自己的字段</td></tr>
+<tr><td>JSON 六型</td><td>null/boolean/number/string/array/object;其余类型跨界会变形</td></tr>
+<tr><td>JSON 转换坑</td><td>Date→字符串;undefined 属性丢弃;NaN→null;BigInt 抛错</td></tr>
+<tr><td>大整数</td><td>超过 2^53-1 精度丢失;生产用字符串承载大 ID</td></tr>
+<tr><td>浅拷贝</td><td>{...a}/Object.assign:只复制第一层,内层共享引用</td></tr>
+<tr><td>深拷贝</td><td>structuredClone:循环引用/Date/Map/Set 安全;函数不可克隆</td></tr>
+<tr><td>手写 clone</td><td>递归 + WeakMap 防环;只在特殊场景(过滤/转换)需要</td></tr>
+<tr><td>?? 空值合并</td><td>只在 null/undefined 时取默认;0 与 '' 保留</td></tr>
+<tr><td>?. 可选链</td><td>路径上任一环为空即短路;与 ?? 成对使用</td></tr>
+<tr><td>TypeScript</td><td>编译期检查、编译后擦除;interface/联合类型;不替代运行时校验</td></tr>
+<tr><td>JSDoc 渐进</td><td>// @ts-check + /** @type */ 零依赖获得编辑器检查</td></tr>
+<tr><td>生产三原则</td><td>边界校验 / 判别联合优先 / 默认值显式</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能解释标称类型与结构类型的差异及各自的代价</li>
+<li>能说出三层防线的分工与使用顺序</li>
+<li>能写出 isProduct 风格的 shape 校验函数(含值域检查)</li>
+<li>能用 status + switch 建模多态实体,并坚持 default 抛错</li>
+<li>能说出 JSON 六种类型与四个转换坑(Date/undefined/NaN/BigInt)</li>
+<li>能说出 {...a} 与 structuredClone 的边界,并给出排查思路</li>
+<li>能写出带 WeakMap 防环的手写深拷贝</li>
+<li>能解释 ?? 与 || 的区别,并正确使用 ?. 与 ?? 组合</li>
+<li>能说出 TS 与 JSDoc 的定位(编译期/编辑器检查,运行期擦除)</li>
+<li>能按"边界校验、判别联合、显式默认值"三原则设计一个领域模型</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 结构类型与标称类型的本质区别是什么?JS 为此付出的代价是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>标称类型看"名字/声明",布局相同也互不兼容;结构类型只看形状,有需要的字段就能用。代价:拼错字段不报编译错,运行时产生 undefined;错误发现变晚,需要自行加强校验。</p></div>
+<div class="q">2. {...obj} 是深拷贝吗?请举一个它"污染原对象"的具体例子。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>不是,只复制第一层。例:const b = { ...a }; b.user.name = 'x' 会修改 a.user.name,因为内层 user 是共享引用。要深拷贝用 structuredClone。</p></div>
+<div class="q">3. 写出 0 ?? 5 与 0 || 5 的结果,并解释差异。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>0 ?? 5 是 0(空值合并只在 null/undefined 时取默认,0 是合法值被保留);0 || 5 是 5(逻辑或把 0 当 falsy 替换)。配置默认值场景优先用 ??。</p></div>
+<div class="q">4. JSON.stringify({ d: new Date(), u: undefined, n: NaN }) 输出什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>{"d":"2026-08-26T...(ISO 字符串)","n":null}:Date 变字符串、undefined 属性被丢弃、NaN 变 null。这就是"JSON 往返改变类型"的三个例子。</p></div>
+<div class="q">5. structuredClone 不能克隆什么?遇到循环引用会怎样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>不能克隆函数与类实例(抛 DataCloneError),Symbol 键丢失;循环引用是支持的(内置处理),不需要手动防环——这正是它相对 JSON.stringify 的优势。</p></div>
+<div class="q">6. 判别联合的 default 分支为什么必须抛错而不是返回一个兜底值?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div><p>返回兜底值会掩盖非法状态——数据从"脏"变成"静默的错误结果",后续在业务深处爆炸,极难定位。抛错让错误在边界处立刻暴露,带着上下文日志,符合"失败要早"原则。</p></div>
+
+<h2>章末实验题:订单领域模型</h2>
+<div class="box box-example lab"><div class="box-title">实验 14:订单引擎(商品 + 用户 + 订单领域模型)</div>
+<p><b>实验目标:</b>用"校验函数 + 判别联合 + JSON 往返 + 深拷贝"建模一个可运行的订单系统,覆盖全章知识点。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1(覆盖:shape 校验):createProduct/createUser/createOrder 三个工厂,入参校验失败抛带字段名的 Error</li>
+<li>任务 2(覆盖:判别联合):订单状态 pending/paid/cancelled 用 status 标签建模;describe(order) 按状态输出不同描述,default 抛错</li>
+<li>任务 3(覆盖:金额与精度):金额用"整数分"存储,展示 priceInCents 计算,避免浮点误差;大 ID 用字符串</li>
+<li>任务 4(覆盖:JSON 往返):订单序列化保存、反序列化还原;Date 字段显式转换;undefined 属性显式省略</li>
+<li>任务 5(覆盖:深拷贝):用 structuredClone 复制订单并修改副本,验证原订单不受影响</li>
+<li>任务 6(覆盖:空安全):读取可能缺失的用户地址,用 ?. + ?? 输出"未知城市"</li>
+<li>任务 7(覆盖:JSDoc):为每个工厂函数加 /** @param */ 与 /** @returns */ 注解(用 // @ts-check 验证编辑器提示)</li>
+</ul>
+<p><b>实验环境:</b>Node.js 20+,运行 <code>node order.js</code>。</p></div>
+<ol class="steps">
+<li><b>先建校验:</b>把 isProduct/isUser 写成独立纯函数,工厂复用它们——边界校验与业务逻辑分离</li>
+<li><b>再建模:</b>订单 = 用户 + 商品数组 + 状态机;金额一律用分(整数),输出时再转元</li>
+<li><b>最后串流程:</b>创建订单 → 支付 → 序列化 → 反序列化 → 深拷贝实验,输出完整演示日志</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<p>核心:纯校验函数 + status 判别联合 + 分单位金额 + JSON 往返 + structuredClone 深拷贝。约 130 行,覆盖全章知识点。</p>
+<pre class="code">// order.js —— Node.js 20+ 运行:node order.js
+// @ts-check
+'use strict';
+
+// ===== 校验层:纯函数,无副作用,可复用 =====
+/** @param {unknown} v @returns {v is { id: string, name: string, priceCents: number }} */
+function isProduct(v) {
+  return (
+    v !== null && typeof v === 'object' &&
+    typeof v.id === 'string' && v.id.length &gt; 0 &&
+    typeof v.name === 'string' &&
+    typeof v.priceCents === 'number' &&
+    Number.isInteger(v.priceCents) &amp;&amp; v.priceCents &gt;= 0
+  );
+}
+
+/** @param {unknown} v @returns {v is { id: string, name: string, city: string }} */
+function isUser(v) {
+  return (
+    v !== null && typeof v === 'object' &&
+    typeof v.id === 'string' &&
+    typeof v.name === 'string' &&
+    (v.city === undefined || typeof v.city === 'string')
+  );
+}
+
+// ===== 工厂层:入参校验,失败立即抛错 =====
+/** @param {string} id @param {string} name @param {number} priceCents */
+function createProduct(id, name, priceCents) {
+  const p = { id, name, priceCents };
+  if (!isProduct(p)) throw new Error('商品参数非法: ' + JSON.stringify(p));
+  return p;
+}
+
+/** @param {string} id @param {string} name @param {string} [city] */
+function createUser(id, name, city) {
+  const u = { id, name, city };
+  if (!isUser(u)) throw new Error('用户参数非法: ' + JSON.stringify(u));
+  return u;
+}
+
+/** @param {{ id: string, user: object, items: object[] }} args */
+function createOrder(args) {
+  if (!isUser(args.user)) throw new Error('订单用户非法');
+  if (!Array.isArray(args.items) || args.items.some((it) =&gt; !isProduct(it))) {
+    throw new Error('订单商品列表非法');
+  }
+  const totalCents = args.items.reduce((s, it) =&gt; s + it.priceCents, 0);
+  return {
+    id: args.id,
+    status: 'pending',            // 判别联合:初始状态唯一合法值
+    user: args.user,
+    items: args.items,
+    totalCents,
+    createdAt: new Date(),
+    paidAt: null,                 // 显式 null:表示"尚不存在",而非 undefined
+  };
+}
+
+// ===== 状态机:判别联合的 switch,default 必须抛错 =====
+function pay(order) {
+  if (order.status !== 'pending') throw new Error('只有 pending 可支付: ' + order.status);
+  order.status = 'paid';
+  order.paidAt = new Date();
+}
+function cancel(order, reason) {
+  if (order.status === 'paid') throw new Error('已支付订单不能取消');
+  order.status = 'cancelled';
+  order.reason = reason;
+}
+
+function describe(order) {
+  const yuan = (order.totalCents / 100).toFixed(2);
+  switch (order.status) {
+    case 'pending':   return '待支付 ' + order.id + ', 金额 ¥' + yuan;
+    case 'paid':      return '已支付 ' + order.id + ', 金额 ¥' + yuan;
+    case 'cancelled': return '已取消 ' + order.id + ': ' + order.reason;
+    default: throw new Error('未知订单状态: ' + order.status);
+  }
+}
+
+// ===== JSON 往返:日期显式转换,undefined 显式省略 =====
+function toJSON(order) {
+  return {
+    id: order.id,
+    status: order.status,
+    user: order.user,
+    items: order.items,
+    totalCents: order.totalCents,
+    createdAt: order.createdAt.toISOString(),   // Date → 字符串
+    paidAt: order.paidAt ? order.paidAt.toISOString() : null,
+  };
+}
+function fromJSON(json) {
+  const order = createOrder({
+    id: json.id,
+    user: json.user,
+    items: json.items,
+  });
+  order.status = json.status;                   // 还原状态
+  order.createdAt = new Date(json.createdAt);   // 字符串 → Date
+  order.paidAt = json.paidAt ? new Date(json.paidAt) : null;
+  order.totalCents = json.totalCents;
+  return order;
+}
+
+// ===== 主流程 =====
+function main() {
+  const apple = createProduct('P-001', '苹果', 550);   // ¥5.50,分单位
+  const milk = createProduct('P-002', '牛奶', 1200);   // ¥12.00
+  const user = createUser('U-9001', '李雷', '北京');
+
+  const order = createOrder({ id: 'ORD-9001', user, items: [apple, milk] });
+  console.log(describe(order));                 // 待支付 ORD-9001, 金额 ¥17.50
+  pay(order);
+  console.log(describe(order));                 // 已支付 ...
+  cancel(order, '用户取消');                     // 抛错:已支付不能取消
+
+  // 深拷贝:改副本不影响原件
+  const copy = structuredClone(order);
+  copy.user.name = '韩梅梅';
+  console.log('原件用户:', order.user.name);     // 李雷
+  console.log('副本用户:', copy.user.name);      // 韩梅梅
+
+  // JSON 往返
+  const json = JSON.stringify(toJSON(order));
+  const restored = fromJSON(JSON.parse(json));
+  console.log('往返一致:', restored.id === order.id &amp;&amp;
+    restored.totalCents === order.totalCents);
+  console.log('还原的日期类型:', restored.createdAt instanceof Date); // true
+
+  // 空安全:地址可能缺失
+  const guest = createUser('U-9002', '韩梅梅');   // 没有 city
+  console.log('城市:', guest?.city ?? '未知');    // 未知
+}
+main();
+</pre>
+<p><b>设计说明:</b>金额用"分"整数存储,totalCents 由 items 归约计算,输出时再转元——规避浮点误差;paidAt 用显式 null 而非 undefined,让 JSON 往返行为可预测;createOrder 在构造时即校验,保证系统内不存在非法订单;copy 演示 structuredClone 深拷贝隔离;guest?.city ?? '未知' 是空安全黄金组合。运行后应看到:支付成功描述、取消抛错、深拷贝互不影响、往返一致为 true、日期还原为 Date 实例。</p>
+</div>
+
+<hr class="thin">
+<p class="small">全书写到这里。从第1章的数字与类型,到第14章的领域建模,你已经走完了"从 C 到 JavaScript"的完整进阶之路。祝你在 Node.js 与浏览器两个世界都写出清晰、健壮、可维护的代码。</p>
+
+</body>
+</html>

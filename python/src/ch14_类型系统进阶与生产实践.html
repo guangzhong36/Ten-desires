@@ -1,0 +1,438 @@
+<title>第14章 类型系统进阶与生产实践</title>
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · PRODUCTION READY</div>
+
+<div class="chapter-title">第14章 类型系统进阶与生产实践</div>
+<div class="chapter-meta">深浅拷贝 · Optional 与 Union · dataclass · mypy 静态检查</div>
+
+<div class="box-goal">
+<p><b>本章目标:</b>全书收官。把动态类型哲学推向生产:值语义与引用语义的边界、深浅拷贝陷阱、None 与 Optional 的工程语义、Union 与 match 的窄化、dataclass 深度用法,以及 mypy 静态检查如何把"动态的自由"变成"静态的保障"。学完你能写出"标注完整、可静态检查、行为可预期"的生产级代码。</p>
+</div>
+
+<div class="box-intuition">
+<p><b>直觉起点:</b>C 的类型系统在编译期把关,Python 的类型系统在运行期自由。两者不是对错,而是时机:mypy 把类型检查提前到开发期,运行时保留动态灵活性——"渐进式类型"让你在自由与安全之间自选刻度,这正是 Python 进生产环境的钥匙。</p>
+</div>
+
+<div class="box-prereq">
+<p><b>前置要求:</b>第4章传参语义、第10章类型标注基础(TypeVar/Protocol)、第13章工程化流程。本章是全书综合应用。</p>
+</div>
+
+<div class="box-route">
+<p><b>本章路线:</b>第一阶段(1.5 小时)读 §14.1–§14.3,吃透对象语义与拷贝;第二阶段(1.5 小时)读 §14.4–§14.6,掌握 None/Union/dataclass;第三阶段(2 小时)读 §14.7–§14.8 并完成章末实验,配 mypy 实战。</p>
+</div>
+
+<div class="toc-map">
+<pre>
+本章知识导图
+├─ 14.1 类型推导 —— 显式优于隐式,动态≠无类型
+├─ 14.2 值语义与引用语义 —— 可变性的边界
+├─ 14.3 深浅拷贝 —— copy 模块与嵌套陷阱
+├─ 14.4 None 与 Optional —— 空值的工程语义
+├─ 14.5 Union 与 match —— 类型的窄化
+├─ 14.6 dataclass 深度 —— frozen/slots/field
+├─ 14.7 mypy 静态检查 —— 标注兑现为保障
+└─ 14.8 静态与动态的平衡 —— 渐进式类型决策
+</pre>
+</div>
+
+<h2>§14.1 类型推导:显式优于隐式</h2>
+
+<p>Python 不需要声明变量类型,但<b>标注</b>让意图显式化。类型推导(annotation inference)由 mypy 等检查器完成:它顺着赋值与调用推导每个变量的类型,再与标注比对,不一致就报错——检查发生在开发期,运行期零开销:</p>
+
+<pre class="code">def greet(name: str, times: int = 1) -&gt; str:
+    return f"你好,{name}!" * times
+
+
+count = 3                      # mypy 推导 count: int
+count = "三"                   # 错误:不能把 str 赋给 int
+
+name = "张三"                  # 推导为 str
+print(greet(name, count))      # 类型全部吻合,检查通过
+</pre>
+
+<table class="cmp">
+<tr><th>C(编译期类型)</th><th>Python(标注+mypy)</th></tr>
+<tr><td>类型强制,无标注概念</td><td>标注是文档,检查器强制</td></tr>
+<tr><td>类型错误在编译期拦截</td><td>mypy 在 CI 中拦截,运行时不受限</td></tr>
+<tr><td>泛型模板写起来重</td><td>TypeVar/Protocol 轻量表达形状</td></tr>
+<tr><td>类型与实现强耦合</td><td>渐进式:可只给关键接口加标注</td></tr>
+</table>
+
+<p>生产规范:公共函数与模块边界<b>必须有标注</b>(入参、返回值),内部实现可省略;新代码从第一行就写标注,存量代码按模块逐步迁移。第10章的 TypeVar/Generic/Protocol 是标注的进阶词汇,本章在此之上解决"对象语义"与"空值"两大生产痛点。</p>
+
+<h2>§14.2 值语义与引用语义:可变性的边界</h2>
+
+<p>一切皆对象,但对象分两类:不可变(int、float、str、tuple、frozenset)与可变(list、dict、set、自定义实例)。int 赋值像 C 的值传递(复制),list 赋值是引用传递(共享)——第4章的传参语义在此深化:可变对象传进函数,函数内修改会"逃逸"出去:</p>
+
+<pre class="code">def add_item(bag: list, item: str) -&gt; None:
+    bag.append(item)              # 直接改共享对象
+
+
+my_bag = ["水"]
+add_item(my_bag, "面包")
+print(my_bag)                     # ['水', '面包'] —— 外部被改了!
+
+
+def add_item_safe(bag: list, item: str) -&gt; list:
+    return bag + [item]           # 返回新列表,不改原对象
+</pre>
+
+<p>生产纪律:<b>函数默认不修改入参</b>,需要产出新值就返回新对象(纯函数风格,便于测试与并发);确实要原地修改(排序、批量更新)就把意图写进函数名与 docstring。不可变对象的"值语义"让它们天然可作 dict 的 key 与 set 的元素——可变对象不可哈希,硬塞会 TypeError。</p>
+
+<h2>§14.3 深浅拷贝:嵌套结构的复制陷阱</h2>
+
+<p><code>copy.copy</code>(浅拷贝)只复制最外层,内层还是共享引用;<code>copy.deepcopy</code>(深拷贝)递归复制全部。生产事故高发区:你以为复制了一份,实际内层列表被两边共享修改:</p>
+
+<pre class="code">import copy
+
+menu = {"soup": ["蛋花汤", "酸辣汤"], "price": 18}
+shallow = copy.copy(menu)        # 浅拷贝:内层列表仍共享
+deep = copy.deepcopy(menu)       # 深拷贝:完全独立
+
+shallow["soup"].append("番茄汤")
+print(menu["soup"])              # ['蛋花汤', '酸辣汤', '番茄汤'] ← 被改了!
+
+deep["soup"].append("菌菇汤")
+print(menu["soup"])              # 不变,深拷贝完全隔离
+</pre>
+
+<div class="box-pitfall">
+<p><b>误区:浅拷贝当深拷贝用。</b>列表推导、list()、切片、dict.copy 都是浅拷贝——嵌套结构改内层,原对象跟着变,排查时百思不得其解。判据:数据结构只有一层用浅拷贝,多层嵌套(字典套列表、列表套字典)一律 deepcopy。注意 deepcopy 有代价(递归+缓存),大对象循环复用时要评估性能。</p>
+</div>
+
+<p>与 C 对照:浅拷贝相当于"指针复制",深拷贝相当于"结构体整体复制"。Python 的默认是引用,深拷贝需要显式表达——这也再次印证"Python 是引用语义的 C",理解这一点,所有拷贝问题都有了坐标。</p>
+
+<h2>§14.4 None 与 Optional:空值的工程语义</h2>
+
+<p>C 用 NULL 表示空,Python 用 None——但 None 是一个<b>对象</b>,可以到处传递。标注 <code>Optional[int]</code>(等价 <code>int | None</code>)声明"可能没有值",而调用方必须处理这种可能。mypy 会用"None 检查"强制你窄化,否则拒绝通过:</p>
+
+<pre class="code">def find_user(uid: int) -&gt; dict | None:
+    """按 id 查用户;查不到返回 None"""
+    if uid &gt; 100:
+        return {"id": uid, "name": "未知"}
+    return None
+
+
+user = find_user(7)
+print(user["name"])              # mypy 报错:user 可能是 None
+
+if user is not None:             # 窄化后,user 确定为 dict
+    print(user["name"])          # 通过
+
+name = (user or {}).get("name", "缺省")   # 或用 or 兜底
+</pre>
+
+<div class="box-pitfall">
+<p><b>误区:标注 Optional 却裸调属性。</b>返回值标注了 dict | None,调用方直接 user["name"],运行时 AttributeError,标注形同虚设。规范:① 返回值可能是 None 就标注 Optional;② 调用方一律先判空(is not None / or 兜底 / match);③ 内部工具函数可声明"永不返回 None"(直接返回 dict),把判空责任收敛到边界。</p>
+</div>
+
+<p>None 还承担"哨兵"职责:dict.get 找不到返回 None、正则不匹配返回 None、队列取空返回 None——统一约定"失败给 None",配合 Optional 标注,失败路径变得可检查、可测试。这与 C 的错误码哲学不同:Python 更倾向"异常抛错 + None 表示空值",二者分工在第9章已讲。</p>
+
+<p>另一个常被忽视的点:None 与布尔值的关系。None 在 if 判断中为假,但“为假”不等同于 None——0、空字符串、空列表都为假。判空一律写 is None 而不是 not x,否则空列表被误判为“查询失败”,业务语义被布尔逻辑偷换,这是空值相关的第二类常见 bug。</p>
+
+<h2>§14.5 Union 与 match:类型的窄化</h2>
+
+<p><code>int | str</code> 声明一个值可能是多种类型,<code>match</code> 语句按类型分支并窄化——比一堆 isinstance 更可读、更类型安全。Python 3.10+ 的 match 与第3章的 if/else 不同,它更适合"按类型或结构分派"的场景:</p>
+
+<pre class="code">def render(value: int | str | float) -&gt; str:
+    match value:
+        case int() as n:
+            return f"整数:{n}"
+        case str() as s:
+            return f"字符串:{s}"
+        case float() as f:
+            return f"浮点:{f:.2f}"
+        case _:                  # 兜底分支:标注之外的形状
+            return f"未知:{value!r}"
+
+
+print(render(42))                # 整数:42
+print(render("hi"))              # 字符串:hi
+print(render(3.14159))           # 浮点:3.14
+</pre>
+
+<p>Union 标注配合 match,mypy 能推导每个 case 分支里 value 的具体类型(类型窄化):case int() 分支里 n 就是 int,可直接做算术。这比手写 isinstance 链的优势:结构清晰、兜底强制、检查器可验证"所有分支都覆盖"。生产上还常用 <code>dict | None</code>、<code>list[str] | None</code> 这类组合,判断与处理逻辑统一走"判空→窄化→使用"三拍。</p>
+
+<h2>§14.6 dataclass 深度:frozen 与 slots</h2>
+
+<p>第10章见过 dataclass 基础,这里补齐生产三件套:<span class="term">frozen=True</span>(不可变,防意外修改)、<span class="term">field(default_factory=...)</span>(可变默认值)、<span class="term">slots=True</span>(省内存、禁动态加属性):</p>
+
+<pre class="code">from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True, slots=True)
+class Order:
+    order_id: int
+    items: list[str] = field(default_factory=list)   # 新列表,不共享
+    status: str = field(default="created", kw_only=True)
+
+    def add_item(self, name: str) -&gt; None:
+        # frozen 不能改字段,但可变字段内部仍可改
+        self.items.append(name)
+
+
+o1 = Order(1, items=["键盘"])
+o2 = Order(1)                    # items 是全新的空列表
+o2.items.append("鼠标")          # 不影响 o1
+
+o1.status = "paid"               # 报错:frozen 实例禁止改字段
+</pre>
+
+<div class="box-pitfall">
+<p><b>误区:可变默认值直接写 =[]。</b>dataclass 的 =[] 与函数的默认参数一样,只创建一次,所有实例共享同一个列表——给 A 加数据,B 的列表里也出现。必须用 field(default_factory=list) 让每个实例执行一次工厂函数。同理 dict 用 default_factory=dict。这是面试与评审的经典陷阱,也是线上 bug 的常见源头。</p>
+</div>
+
+<p>frozen + slots 的组合等于"C 风格的结构体":字段固定、内存紧凑、不可被随意改写——非常适合配置对象、领域模型、跨线程传递的不可变消息。需要"修改"时,用 dataclasses.replace(o, status="paid") 生成新实例,保持不可变语义。可哈希需求再加 eq=True、frozen 实例天然可哈希,可直接进 set 与 dict 的 key。</p>
+
+<p>至此回顾全书:第1章的变量绑定、第4章的传参、第5章的引用计数、本章的深浅拷贝与 None 语义——一条“对象与引用”的主线贯穿始终。能把这个模型讲清楚,Python 的绝大多数行为都有了解释;剩下的是熟练度与工程习惯。</p>
+
+<h2>§14.7 mypy 静态检查:把标注兑现为保障</h2>
+
+<p>标注本身不检查,<span class="term">mypy</span> 负责兑现。接入流程:pyproject.toml 配置 + 命令行运行 + CI 强制。mypy 发现"类型对不上"就报错,相当于把 C 编译器的类型检查搬到 Python 开发期:</p>
+
+<pre class="code"># pyproject.toml 中的 mypy 配置
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+check_untyped_defs = true
+
+# 命令行运行
+# python -m mypy src/
+
+# 常见检查结果:
+# error: Argument 1 to "greet" has incompatible type "int"; expected "str"
+# error: Item "None" of "dict | None" has no attribute "get"
+</pre>
+
+<pre class="code"># before.py —— 未标注,错误潜伏到运行时
+def total(prices):
+    return sum(prices)
+
+
+# after.py —— 标注后,mypy 在开发期拦截错误调用
+def total(prices: list[float]) -&gt; float:
+    return sum(prices)
+
+
+# 别处调用 total([1, "a"]) → mypy 报错:int 与 str 混入列表
+# 而运行时 sum 也会 TypeError —— 检查器把故障提前了
+</pre>
+
+<p>mypy 的 strict 模式把遗漏标注、Any 泄漏都当错误——初上手会觉得"烦",但坚持两周后,改代码的胆量明显变大:重构有检查器托底,删字段有引用报错,协作时接口契约一目了然。生产实践:① 新项目从 strict 起步;② 存量项目先开 check_untyped_defs 再逐步收严;③ CI 里 mypy 与 pytest 并列,不过不放行——动态语言的自由,交给运行时;类型的安全,交给检查器。</p>
+
+<h2>§14.8 静态与动态的平衡:渐进式类型决策</h2>
+
+<p>本书最后谈"度"。Python 的生产哲学不是"静态或动态",而是按边界选策略:</p>
+
+<table class="cmp">
+<tr><th>场景</th><th>策略</th></tr>
+<tr><td>核心业务模型、公共库 API</td><td>全量标注 + mypy strict</td></tr>
+<tr><td>内部实现、一次性脚本</td><td>轻量标注,类型靠 docstring</td></tr>
+<tr><td>与外部系统交互(JSON、数据库行)</td><td>边界转 typed dict / dataclass</td></tr>
+<tr><td>性能热点</td><td>运行时少做类型检查,靠测试保证</td></tr>
+<tr><td>测试代码</td><td>标注可省,断言即契约</td></tr>
+</table>
+
+<p>动态特性(第11章)与类型检查并不矛盾:getattr、鸭子类型在标注时代仍有用武之地,只是<b>要圈在明确边界内</b>——内部动态,边界静态,是 Python 生产化的黄金比例。一个可复用的经验:凡是"别人会调用"的函数,标注;凡是"只有自己调用"的函数,随心。标注是写给下一个维护者的,而下一个维护者大概率就是三个月后的你。</p>
+
+<div class="box-tip">
+<p><b>工程建议 1:</b>给团队定一份"标注契约":函数签名必须完整、Optional 必须被处理、公共模型用 frozen dataclass、新代码禁止裸 dict 出入接口。契约比工具更能防住"标注了却没用"的形式主义。</p>
+</div>
+
+<div class="box-tip">
+<p><b>工程建议 2:</b>用 dataclasses.replace 与不可变模型实现"事件溯源"式修改流:每次变更生成新对象、记录变更日志,排查线上问题时重放即真相——这是类型安全与可观测性的双赢组合。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>场景</th><th>写法</th></tr>
+<tr><td>函数标注</td><td><code>def f(x: int) -&gt; str:</code></td></tr>
+<tr><td>可能为空的返回值</td><td><code>dict | None</code>(等价 Optional[dict])</td></tr>
+<tr><td>多类型参数</td><td><code>int | str | float</code>(3.10+)</td></tr>
+<tr><td>判空后再用</td><td><code>if x is not None: ...</code></td></tr>
+<tr><td>多类型分派</td><td><code>match x: case int() as n: ...</code></td></tr>
+<tr><td>浅拷贝</td><td><code>copy.copy(x)</code>(仅一层)</td></tr>
+<tr><td>深拷贝</td><td><code>copy.deepcopy(x)</code>(嵌套结构)</td></tr>
+<tr><td>不可变数据类</td><td><code>@dataclass(frozen=True)</code></td></tr>
+<tr><td>省内存数据类</td><td><code>@dataclass(slots=True)</code></td></tr>
+<tr><td>可变默认值</td><td><code>field(default_factory=list)</code></td></tr>
+<tr><td>生成修改版</td><td><code>dataclasses.replace(o, status="paid")</code></td></tr>
+<tr><td>静态检查</td><td><code>python -m mypy src/</code>(strict)</td></tr>
+<tr><td>可哈希数据类</td><td>frozen=True + eq=True(天然可哈希)</td></tr>
+<tr><td>引用传递铁律</td><td>函数不修改入参,要新值返回新对象</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ol>
+<li>能说出 Python 可变/不可变对象的引用语义,并解释函数修改入参的逃逸后果</li>
+<li>能判断何时用浅拷贝、何时用深拷贝,并说出三种"假拷贝"写法</li>
+<li>能解释 None 的工程语义,写出判空窄化的规范代码</li>
+<li>能用 Union + match 做类型分派,并说清每个分支的窄化结果</li>
+<li>能写出 frozen/slots/default_factory 齐全的 dataclass,并解释各自作用</li>
+<li>能配置并运行 mypy strict,读懂其报错并修复</li>
+<li>能按场景制定"静态/动态"边界策略,说出渐进式类型的取舍</li>
+</ol>
+
+<h2>自测题</h2>
+
+<div class="q">
+<p><b>Q1.</b> 浅拷贝与深拷贝的本质区别?为什么嵌套结构必须 deepcopy?</p>
+<div class="box-answer"><p><b>答案:</b>浅拷贝只复制最外层容器,内层仍是共享引用;深拷贝递归复制所有层。嵌套结构浅拷贝后,修改内层元素会同时影响原对象(共享),表现为"复制了却互相干扰"。判据:单层结构浅拷贝,多层嵌套深拷贝。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q2.</b> 为什么 dataclass 的可变默认值必须用 field(default_factory=...)?直接 =[] 会发生什么?</p>
+<div class="box-answer"><p><b>答案:</b>默认值表达式在类定义时求值一次,=[] 让所有实例共享同一个列表,给 A 实例添加元素,B 实例的"默认列表"也出现该元素,状态互相泄漏。default_factory 在每个实例创建时执行工厂函数,得到独立对象。这是可变默认值陷阱(第4章函数参数同理)在 dataclass 的复现。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q3.</b> 标注 dict | None 后,mypy 为什么拒绝 user["name"] 直接访问?两种合规写法?</p>
+<div class="box-answer"><p><b>答案:</b>user 可能是 None,None 上没有下标访问,运行时必炸;mypy 要求先窄化。合规写法:① if user is not None: 分支内访问;② (user or {}).get("name", 缺省) 兜底。更彻底的做法是边界函数保证非 None,把判空责任上移。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q4.</b> match 与 isinstance 链相比,类型安全上的优势是什么?</p>
+<div class="box-answer"><p><b>答案:</b>match 的每个 case 分支都会由检查器推导窄化后的具体类型,分支内直接用窄化类型(如 case int() 分支内 n 是 int)而无需断言;结构清晰、必须有兜底分支、遗漏类型时更易发现。isinstance 链则每个分支都要自己保证类型与逻辑一致,分支多了难维护。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q5.</b> frozen=True 的数据类还能"修改"吗?怎么表达变更?</p>
+<div class="box-answer"><p><b>答案:</b>字段层面不能原地赋值(报错),但可:① 可变字段(如 list)内部仍可改;② 用 dataclasses.replace(o, status="paid") 生成新实例;③ 需要彻底不可变时,连 items 也用 tuple 存储。不可变模型配合 replace,天然形成"变更即新对象"的日志式数据流。</p></div>
+</div>
+
+<div class="q">
+<p><b>Q6.</b> mypy 与运行时类型检查(第10章 isinstance)分工是什么?为什么说"标注是给下一个维护者的"?</p>
+<div class="box-answer"><p><b>答案:</b>mypy 在开发期静态检查,零运行时开销,抓"类型写错、忘判 None、传错参数";isinstance 在运行期保护真实数据,用于边界(反序列化、外部输入)。标注本身不执行,它的价值是契约与文档——下一个维护者(常是未来的自己)靠签名理解接口,靠检查器保证改动的安全。</p></div>
+</div>
+
+<h2>章末实验题:类型安全领域模型</h2>
+
+<div class="box-lab">
+<p><b>实验 14·1 订单系统领域模型(覆盖:§14.1–§14.8)</b></p>
+<p><b>需求:</b>① 用 frozen+slots dataclass 定义 User(不可变)与 Order(含可变 items),items 用 default_factory;② 定义 Coupon 类型(Union:满减券或折扣券),用 match 计算优惠并验证窄化;③ 结算函数返回 dict | None,含判空窄化与 None 兜底;④ 用 deepcopy 实现"订单快照",验证与原订单完全隔离;⑤ 全部函数标注完整,运行 mypy --strict 零错误;⑥ 写 pytest 覆盖:优惠计算、None 分支、快照隔离、replace 变更。</p>
+<p><b>覆盖知识点:</b>引用语义与拷贝(§14.2、§14.3)/None 与 Optional(§14.4)/Union 与 match(§14.5)/dataclass 深度(§14.6)/mypy(§14.7)/边界策略(§14.8)。</p>
+<p><b>实验环境:</b>Python 3.10+,安装 mypy 与 pytest。</p>
+</div>
+
+<pre class="code"># domain.py —— 领域模型与结算逻辑
+"""类型安全订单模型:不可变主体 + 显式拷贝 + 静态检查"""
+from dataclasses import dataclass, field, replace
+from copy import deepcopy
+
+
+@dataclass(frozen=True, slots=True)
+class User:
+    uid: int
+    name: str
+
+
+@dataclass(frozen=True, slots=True)
+class Order:
+    order_id: int
+    user: User
+    items: list[str] = field(default_factory=list)
+
+    def add_item(self, name: str) -&gt; "Order":
+        return replace(self, items=self.items + [name])
+
+
+@dataclass(frozen=True)
+class FullCut:
+    """满减券:满 threshold 减 discount"""
+    threshold: float
+    discount: float
+
+
+@dataclass(frozen=True)
+class RateCoupon:
+    """折扣券:打 rate 折(0.8 = 八折)"""
+    rate: float
+
+
+Coupon = FullCut | RateCoupon     # 类型别名:两种券的并集
+
+
+def calc_price(subtotal: float, coupon: Coupon | None) -&gt; dict:
+    """结算:返回账单;coupon 为 None 时不优惠"""
+    if coupon is None:
+        return {"subtotal": subtotal, "pay": subtotal}
+
+    match coupon:
+        case FullCut(threshold=t, discount=d) if subtotal &gt;= t:
+            pay = subtotal - d
+        case RateCoupon(rate=r):
+            pay = subtotal * r
+        case _:
+            pay = subtotal            # 满减未达门槛,原价
+    return {"subtotal": subtotal, "pay": round(pay, 2)}
+
+
+def find_order(oid: int) -&gt; Order | None:
+    """模拟查询:id 为偶数返回订单,奇数返回 None"""
+    if oid % 2 == 0:
+        return Order(oid, User(1, "张三"), ["键盘"])
+    return None
+</pre>
+
+<pre class="code"># test_domain.py —— 测试与 mypy 验收
+"""对 domain.py 的行为验证"""
+from copy import deepcopy
+
+import pytest
+
+from domain import FullCut, Order, RateCoupon, User, calc_price, find_order
+
+
+def test_fullcut_above_threshold() -&gt; None:
+    bill = calc_price(300.0, FullCut(200, 30))
+    assert bill["pay"] == 270.0
+
+
+def test_fullcut_below_threshold() -&gt; None:
+    bill = calc_price(100.0, FullCut(200, 30))
+    assert bill["pay"] == 100.0
+
+
+def test_rate_coupon() -&gt; None:
+    bill = calc_price(200.0, RateCoupon(0.8))
+    assert bill["pay"] == 160.0
+
+
+def test_no_coupon() -&gt; None:
+    bill = calc_price(88.0, None)
+    assert bill["pay"] == 88.0
+
+
+def test_frozen_user_rejected() -&gt; None:
+    user = User(1, "张三")
+    with pytest.raises(Exception):
+        user.name = "李四"            # frozen 禁止赋值
+
+
+def test_replace_creates_new_order() -&gt; None:
+    order = Order(1, User(1, "张三"), ["键盘"])
+    grown = order.add_item("鼠标")
+    assert order.items == ["键盘"]   # 原订单不变
+    assert grown.items == ["键盘", "鼠标"]
+
+
+def test_deepcopy_isolated() -&gt; None:
+    order = Order(2, User(2, "李四"), ["书"])
+    snap = deepcopy(order)
+    snap.items.append("笔")
+    assert order.items == ["书"]     # 快照修改不影响原订单
+
+
+def test_find_order_none() -&gt; None:
+    order = find_order(7)            # 奇数 id 返回 None
+    assert order is None
+    if order is not None:            # 窄化:此分支内 order 是 Order
+        assert order.user.name == "张三"
+</pre>
+
+<p><b>验收清单:</b>① <code>python -m mypy --strict domain.py</code> 输出 Success,零错误(若有 Any 泄漏逐一消除);② <code>python -m pytest test_domain.py -v</code> 全绿;③ 检查代码中每处 dict | None 都有判空或兜底;④ 尝试把 add_item 改成 self.items.append(name) 会得到 frozen 报错,确认 replace 是正确姿势;⑤ 用 typing.reveal_type 在结算函数里确认 match 各分支的窄化类型。全部通过,即完成全书的最后一次实践——带着"标注、检查、测试"三件套进入生产。</p>
+</div>
+
+<hr class="thin">
+<p class="small">全书完。从 C 到 Python,从语法到哲学,从自由到纪律——愿你写出优雅、安全、可交付的 Python 代码。</p>

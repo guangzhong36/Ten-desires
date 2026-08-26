@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第6章 面向对象</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<style>body{font-size:9.5pt;line-height:1.65}h2{font-size:13pt}h3{font-size:11pt}.code{font-size:7.8pt;line-height:1.4}.box{padding:5px 10px 6px;margin:7px 0}.box-answer{break-inside:auto}</style>
+<div class="kicker">FROM C TO JAVA · PRODUCTION READY</div>
+<h1 class="chapter-title">第6章 面向对象</h1>
+<div class="chapter-meta"><b>建议学时:</b>5–7 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握类与对象的声明、构造器、this 与字段初始化</li>
+<li>掌握封装与四种访问修饰符,理解"信息隐藏"的工程意义</li>
+<li>掌握继承 extends、super、方法重写与 @Override 注解</li>
+<li>理解多态与动态绑定,与 C 的虚函数表对照</li>
+<li>掌握抽象类与接口的区别与选择,会写接口默认方法</li>
+<li>掌握 equals/hashCode 契约:为什么必须同时重写、怎么写才对</li>
+<li>掌握内部类、匿名类与 static 嵌套类的使用场景</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Java:面向对象的动机</div>
+<p>C 程序员其实一直在写"半吊子面向对象":结构体 = 类字段;<code>shape_area(s)</code> 函数 = 方法;<code>void*</code> + 函数指针表 = 多态。Java 把这套手工活变成语言级设施:<span class="hl">数据与操作它的函数被强制绑在一起(封装),类型体系显式表达"是什么/能干什么"(继承与接口),运行时按实际类型选方法(多态)</span>。</p>
+<p><b>继承在 C 里是"结构体嵌套 + 指针强转"</b>——Linux 内核的 list_head 就是这么玩的,但类型不安全、容易错。Java 的 <code>extends</code> 让"子类是父类的一种"成为编译器检查的规则,漏了转型错误直接编译失败。</p>
+<p><b>接口是 C 程序员最陌生的概念。</b>它像"纯函数指针表 + 契约"的组合:类通过 <code>implements</code> 承诺"我能做这些事",调用方只依赖接口不依赖具体类——这是插件、框架、测试替身(mock)的地基。C 里你手工写 <code>struct ops { int (*area)(void*); }</code>,Java 里就是 <code>interface Shape { double area(); }</code>。</p>
+<p><b>equals/hashCode 是重灾区。</b>C 里比较结构体用 memcmp(有坑:padding 字节);Java 里 <code>==</code> 比较引用、<code>equals</code> 比较内容——但"内容相同"由你定义。写错 hashCode 的直接后果:HashMap/HashSet 里的元素找不到。这是面试与生产事故的高发区,§6.6 给出唯一正确的写法模板。</p>
+<p>学习顺序:§6.1-6.4 建立"类/继承/多态"三板斧,§6.5 接口,§6.6 equals/hashCode 契约(必考必用),§6.7-6.8 补充形态。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 结构体、函数指针、void* 类型擦除式多态</li>
+<li>第1章:类型与数组;第4章:方法;第5章:对象在堆上的生命周期</li>
+<li>第2章:== 与 equals 的区别将在本章展开</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(约 2 小时):</b>§6.1-6.4,把 C 的 struct+函数指针 逐个翻译成 Java 类,体会"语言设施 vs 手工约定"</li>
+<li><b>第二阶段(约 1.5 小时):</b>§6.5 接口与 §6.7 匿名类,理解"面向接口编程"</li>
+<li><b>第三阶段(约 1.5 小时):</b>§6.6 equals/hashCode 契约反复抄写模板,再完成章末实验</li>
+<li><b>验收标准:</b>能讲清"封装=让状态只被自己的方法修改";能写出放 HashMap 的键类;能说出接口与抽象类的选择依据</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§6.1 类与对象:声明 / 构造器 / this</li>
+<li>§6.2 封装与访问控制:private / public / protected</li>
+<li>§6.3 继承:extends / super / 重写 / final</li>
+<li>§6.4 多态与动态绑定:与 C 虚函数对照</li>
+<li>§6.5 抽象类与接口:默认方法 / 选择依据</li>
+<li>§6.6 equals / hashCode 契约</li>
+<li>§6.7 内部类 / 匿名类 / static 嵌套类</li>
+<li>§6.8 static 成员与初始化顺序</li>
+</ul></div>
+
+<h2>§6.1 类与对象</h2>
+
+<h3>6.1.1 从结构体到类</h3>
+<table class="cmp">
+<tr><th>C 结构体</th><th>Java 类</th></tr>
+<tr><td class="ctr">struct Point { int x, y; };</td><td class="ctr">class Point { int x, y; }</td></tr>
+<tr><td class="ctr">Point p = {1, 2};(栈上)</td><td class="ctr">Point p = new Point();(堆上,字段默认 0/null)</td></tr>
+<tr><td class="ctr">函数:double dist(Point* p)</td><td class="ctr">方法:double dist()(直接访问自己的字段)</td></tr>
+<tr><td class="ctr">初始化靠手写或 memset</td><td class="ctr">构造器保证"对象一出生就合法"</td></tr>
+</table>
+
+<div class="code-title">示例 6-1 类的基本形态</div>
+<pre class="code">public class PointDemo {
+    static class Point {
+        int x;                        // 字段:默认 0
+        int y;                        // 字段:默认 0
+
+        // 构造器:与类同名,没有返回类型;new 时自动执行
+        Point(int x, int y) {
+            this.x = x;               // this 区分"参数 x"与"字段 x"
+            this.y = y;
+        }
+
+        // 无参构造器(重载):如果没写任何构造器,编译器会送一个默认的
+        Point() {
+            this(0, 0);               // 调用另一个构造器(必须是第一句)
+        }
+
+        double distance() {           // 方法:能直接摸自己的字段
+            return Math.sqrt((double) x * x + y * y);
+        }
+
+        @Override
+        public String toString() {    // 第11章讲注解;这里标记"重写"
+            return "(" + x + ", " + y + ")";
+        }
+    }
+
+    public static void main(String[] args) {
+        Point p = new Point(3, 4);    // new = 分配堆内存 + 调构造器
+        Point q = new Point();        // 用无参构造器
+        System.out.println(p);        // (3, 4):println 自动调 toString
+        System.out.println(p.distance());   // 5.0
+        System.out.println(q);        // (0, 0)
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 1:忘了 new 与字段默认值</div>
+<p>C 里 <code>Point p;</code> 是"申请栈空间,内容未定义";Java 里局部变量不初始化直接读会<span class="hl">编译报错</span>(比 C 安全);但字段(成员变量)不写也有默认值:int 0、double 0.0、boolean false、引用 null。<span class="hl">"字段有默认值、局部变量没有"</span>是新手最容易错记的规则。另外 <code>new Point()</code> 是"堆上造对象",<code>Point p;</code> 只是声明一个引用变量,不调用构造器。</p>
+</div>
+
+<h2>§6.2 封装与访问控制</h2>
+
+<h3>6.2.1 四种访问级别</h3>
+<table class="cmp">
+<tr><th>修饰符</th><th>同类</th><th>同包</th><th>子类</th><th>任意处</th><th>C 的对应概念</th></tr>
+<tr><td class="ctr">private</td><td class="ctr">✓</td><td class="ctr"></td><td class="ctr"></td><td class="ctr"></td><td class="ctr">static 函数里的内部状态(头文件里藏起来)</td></tr>
+<tr><td class="ctr">(无,包私有)</td><td class="ctr">✓</td><td class="ctr">✓</td><td class="ctr"></td><td class="ctr"></td><td class="ctr">同 .c 文件内的静态符号</td></tr>
+<tr><td class="ctr">protected</td><td class="ctr">✓</td><td class="ctr">✓</td><td class="ctr">✓</td><td class="ctr"></td><td class="ctr">"继承者可见"的半公开 API</td></tr>
+<tr><td class="ctr">public</td><td class="ctr">✓</td><td class="ctr">✓</td><td class="ctr">✓</td><td class="ctr">✓</td><td class="ctr">头文件里导出的接口</td></tr>
+</table>
+
+<div class="code-title">示例 6-2 封装:状态只由方法修改</div>
+<pre class="code">public class BankAccountDemo {
+    static class BankAccount {
+        private double balance;      // 私有:外面碰不到
+
+        BankAccount(double init) {
+            if (init &lt; 0) throw new IllegalArgumentException("初始金额不能为负");
+            this.balance = init;
+        }
+
+        public void deposit(double amount) {   // 公开接口
+            if (amount &lt;= 0) throw new IllegalArgumentException("金额必须为正");
+            balance += amount;
+        }
+
+        // 取款:内部校验余额,这是"业务规则"放在方法里的意义
+        public boolean withdraw(double amount) {
+            if (amount &lt;= 0) throw new IllegalArgumentException("金额必须为正");
+            if (balance &lt; amount) return false;    // 余额不足,拒绝
+            balance -= amount;
+            return true;
+        }
+
+        public double getBalance() {             // 只读访问器(getter)
+            return balance;
+        }
+    }
+
+    public static void main(String[] args) {
+        BankAccount acc = new BankAccount(100);
+        acc.deposit(50);
+        acc.withdraw(30);
+        System.out.println("余额: " + acc.getBalance());   // 120.0
+        // acc.balance = 999999;   // 编译错误:balance 是 private
+    }
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:封装的工程意义</div>
+<p>封装不是"不让别人用",是<span class="hl">让状态的变化只能经过"你的规则"</span>。C 里 <code>acc.balance = -5;</code> 随手就写;Java 里 balance 私有后,唯一的入口是带校验的 deposit/withdraw,非法状态在编译期就被挡在门外。生产要点:字段全 private,方法按需 public;需要只读暴露用 getter,不要直接开字段。校验失败用异常(第9章)而非静默容忍。</p>
+</div>
+
+<h2>§6.3 继承:extends 与 super</h2>
+
+<h3>6.3.1 继承 = is-a + 代码复用</h3>
+<p>子类 <code>extends</code> 父类:自动拥有父类的非私有字段与方法,可重写(override)方法改变行为,<code>super</code> 调用父类版本。Java 单继承(一个类只有一个父类)。<span class="hl">构造器链:new 子类时,先从父类构造器开始(隐式调 super()),再到子类</span>。</p>
+
+<div class="code-title">示例 6-3 继承与重写</div>
+<pre class="code">public class InheritDemo {
+    static class Animal {
+        protected String name;             // protected:子类可见
+
+        Animal(String name) { this.name = name; }
+
+        public void speak() {
+            System.out.println(name + " 发出声音");
+        }
+    }
+
+    static class Dog extends Animal {      // 继承
+        Dog(String name) { super(name); }  // 必须第一句调用父类构造器
+
+        @Override                          // 注解:让编译器检查"真的重写了"
+        public void speak() {
+            System.out.println(name + " 汪汪叫");
+        }
+
+        public void fetch() {              // 子类新增能力
+            System.out.println(name + " 捡球");
+        }
+    }
+
+    public static void main(String[] args) {
+        Dog d = new Dog("旺财");
+        d.speak();        // 旺财 汪汪叫(重写生效)
+        d.fetch();        // 旺财 捡球(子类独有)
+
+        Animal a = new Dog("大黄");   // 子类对象赋给父类引用:向上转型
+        a.speak();                    // 大黄 汪汪叫(动态绑定,见 §6.4)
+        // a.fetch();                 // 编译错误:Animal 没有 fetch(静态类型说了算)
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2:重写与重载是两回事</div>
+<p><span class="term">重写(override)</span>:子类方法签名与父类完全一致,行为替换;加 @Override 让编译器把关(签名写错会编译报错)。<span class="term">重载(overload)</span>:同一类里同名不同参(第4章)。C 没有这两个概念——重写在 C 里靠函数指针表替换,重载靠名字不同(printf_float 之类的命名)。<span class="hl">重写看对象类型,重载看引用类型</span>,这个区分在第4章与本章的交叉点高频出错。</p>
+</div>
+
+<h2>§6.4 多态与动态绑定</h2>
+
+<h3>6.4.1 C 的虚函数表 vs Java 的动态绑定</h3>
+<p>C 的面向对象多态:<code>struct ShapeOps { double (*area)(void*); }</code>,每个形状结构体里放自己的函数指针表,调用 <code>ops-&gt;area(shape)</code> 时按"表里存的函数"分发。Java 做的是一模一样的事,由 JVM 自动完成:<span class="hl">方法调用时,按对象的实际类型(不是引用类型)查找方法并执行</span>——这就是动态绑定(多态)。</p>
+
+<div class="code-title">示例 6-4 多态:一个接口,多种实现</div>
+<pre class="code">public class PolyDemo {
+    static abstract class Shape {            // 抽象类(§6.5):不能 new
+        abstract double area();              // 抽象方法:子类必须实现
+    }
+
+    static class Circle extends Shape {
+        final double r;
+        Circle(double r) { this.r = r; }
+        double area() { return Math.PI * r * r; }
+    }
+
+    static class Rect extends Shape {
+        final double w, h;
+        Rect(double w, double h) { this.w = w; this.h = h; }
+        double area() { return w * h; }
+    }
+
+    public static void main(String[] args) {
+        Shape[] shapes = {new Circle(1), new Rect(2, 3), new Circle(2)};
+        double total = 0;
+        for (Shape s : shapes) {
+            total += s.area();               // 运行时按实际类型分发!
+        }
+        System.out.printf("总面积 = %.2f%n", total);   // 3.14+6+12.57 = 21.71
+        // C 的写法:shapes[i].ops->area(shapes[i]);Java 自动完成
+    }
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:多态解决什么问题</div>
+<p>多态让"新增一种形状"不需要修改汇总代码:再写一个 <code>Triangle extends Shape</code>,上面循环零改动就能算面积。<span class="hl">开闭原则:对扩展开放,对修改关闭</span>——这是框架、插件、测试替身的技术根基。生产中的日常形态:接口定义契约,多个实现类,调用方只依赖接口(面向接口编程)。</p>
+</div>
+
+<h2>§6.5 抽象类与接口</h2>
+
+<h3>6.5.1 两者的区别与选择</h3>
+<table class="cmp">
+<tr><th>对比项</th><th>抽象类</th><th>接口</th></tr>
+<tr><td class="ctr">关键词</td><td class="ctr">abstract class</td><td class="ctr">interface</td></tr>
+<tr><td class="ctr">继承方式</td><td class="ctr">extends(单继承)</td><td class="ctr">implements(可多实现)</td></tr>
+<tr><td class="ctr">字段</td><td class="ctr">可有实例字段</td><td class="ctr">只能有常量(public static final)</td></tr>
+<tr><td class="ctr">构造器</td><td class="ctr">有(子类走 super)</td><td class="ctr">没有</td></tr>
+<tr><td class="ctr">方法</td><td class="ctr">抽象方法 + 普通方法</td><td class="ctr">抽象方法 + 默认方法(default) + 静态方法</td></tr>
+<tr><td class="ctr">语义</td><td class="ctr">"is-a" 且共享状态/逻辑</td><td class="ctr">"能做什么"的契约</td></tr>
+<tr><td class="ctr">C 的对应</td><td class="ctr">结构体 + 部分实现的函数指针</td><td class="ctr">纯函数指针表(ops 结构)</td></tr>
+</table>
+
+<div class="code-title">示例 6-5 接口与默认方法</div>
+<pre class="code">public class InterfaceDemo {
+    // 接口:定义"能做什么"
+    interface Sortable {
+        int size();
+
+        boolean less(int i, int j);
+
+        void swap(int i, int j);
+
+        // 默认方法:JDK8+,给接口补"附带实现"的能力
+        default void sort() {              // 冒泡排序,直接可复用
+            for (int i = 0; i &lt; size() - 1; i++) {
+                for (int j = 0; j &lt; size() - 1 - i; j++) {
+                    if (less(j + 1, j)) {
+                        swap(j, j + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    // 实现接口:只需三个抽象方法,sort 白送
+    static class IntArray implements Sortable {
+        private final int[] data;
+
+        IntArray(int[] data) { this.data = data; }
+
+        public int size() { return data.length; }
+
+        public boolean less(int i, int j) { return data[i] &lt; data[j]; }
+
+        public void swap(int i, int j) {
+            int t = data[i];
+            data[i] = data[j];
+            data[j] = t;
+        }
+    }
+
+    public static void main(String[] args) {
+        IntArray arr = new IntArray(new int[]{5, 3, 8, 1, 9, 2});
+        arr.sort();                        // 默认方法:一行排序
+        System.out.println(java.util.Arrays.toString(arr.data));  // [1, 2, 3, 5, 8, 9]
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 3:接口 vs 抽象类的选择</div>
+<p>选择口诀:<span class="hl">"要共享状态、且语义是 is-a" → 抽象类;"定义契约、允许多角色" → 接口</span>。典型错误:为了复用一段代码就继承一个不相干的类(比如让 Account 继承 ArrayList)——继承是"is-a"关系,不是"拿来用"。Java 类单继承、接口可多实现,接口是组合式的"能力声明",抽象类才是"家族血统"。</p>
+</div>
+
+<h2>§6.6 equals 与 hashCode 契约</h2>
+
+<h3>6.6.1 为什么必须同时重写</h3>
+<p><code>==</code> 比较引用是否同一个;Object 的默认 equals 就是 <code>==</code>。想让"内容相同"成立,重写 equals。而 HashMap/HashSet 靠 hashCode 分桶:<span class="hl">两个对象 equals 为 true,则 hashCode 必须相等;hashCode 相等不要求 equals</span>(碰撞)。只重写 equals 不重写 hashCode:<code>map.put(k1, v); map.get(k2)</code>(k1.equals(k2)) 返回 null——因为 k2 哈希到了另一个桶。这就是契约:违反的代价是集合失灵。</p>
+
+<div class="code-title">示例 6-6 equals/hashCode 标准模板(JDK7+ 写法)</div>
+<pre class="code">import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class EqualsDemo {
+    static class Student {
+        private final String id;      // 学号:判等依据
+        private final String name;
+
+        Student(String id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        // 模板步骤:① 自反 ② 类型判断 ③ 字段逐个比
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;                 // 同引用,直接相等
+            if (!(o instanceof Student)) return false;  // 类型不符(含 null)
+            Student s = (Student) o;
+            return id.equals(s.id) &amp;&amp; name.equals(s.name);
+        }
+
+        // 与 equals 用同一组字段
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, name);   // JDK7+:一行生成
+        }
+
+        @Override
+        public String toString() {
+            return id + ":" + name;
+        }
+    }
+
+    public static void main(String[] args) {
+        Map&lt;Student, String&gt; grades = new HashMap&lt;&gt;();
+        Student s1 = new Student("2024001", "张三");
+        Student s2 = new Student("2024001", "张三");   // 内容相同,引用不同
+        grades.put(s1, "A");
+
+        System.out.println(s1 == s2);       // false:引用不同
+        System.out.println(s1.equals(s2));  // true:内容相同
+        System.out.println(grades.get(s2)); // A:靠 hashCode 找到同桶 + equals 命中
+
+        // 反例:只改 equals 不改 hashCode 会导致 get 返回 null
+    }
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 4:equals 的对称性与可变字段</div>
+<p>两条生产铁律:<span class="hl">① equals/hashCode 依据的字段必须是"不可变"的</span>(final 或从不修改)——字段变了,对象的哈希就变了,放进 HashSet 后再改字段,元素会"失踪";② 继承场景重写 equals 要小心对称性:父类 p.equals(子类 s) 为 true 但 s.equals(p) 为 false 会破坏契约——生产建议:需要子类判等时,用"字段比较"而非 instanceof,或干脆组合优先于继承。</p>
+</div>
+
+<h2>§6.7 内部类、匿名类与静态嵌套类</h2>
+
+<h3>6.7.1 三种形态与用途</h3>
+<ul>
+<li><span class="term">静态嵌套类</span>:<code>static class Inner</code>,不持有外部类引用,当"把相关类型聚在一起"用(第4章实验里的 Point 就是)</li>
+<li><span class="term">内部类</span>:普通内部类,隐式持有外部类引用,可访问外部私有成员;常用于"服务外部类的小助手"</li>
+<li><span class="term">匿名类</span>:<code>new 接口() { 实现 }</code>,一次性实现;在 lambda 出现后,单方法接口优先用 lambda</li>
+</ul>
+
+<div class="code-title">示例 6-7 匿名类与 lambda 的等价替换</div>
+<pre class="code">import java.util.Arrays;
+import java.util.Comparator;
+
+public class AnonymousDemo {
+    public static void main(String[] args) {
+        String[] names = {"Tom", "Alice", "Bob"};
+
+        // 匿名类:JDK8 之前唯一的"内联实现"方式
+        Arrays.sort(names, new Comparator&lt;String&gt;() {
+            @Override
+            public int compare(String a, String b) {
+                return a.length() - b.length();
+            }
+        });
+
+        // lambda:完全等价,现代写法
+        Arrays.sort(names, (a, b) -&gt; a.length() - b.length());
+
+        // 方法引用:最短
+        Arrays.sort(names, Comparator.comparingInt(String::length));
+
+        System.out.println(Arrays.toString(names));   // [Tom, Bob, Alice]
+    }
+}</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:匿名类的去留</div>
+<p><span class="hl">新代码里,函数式接口一律用 lambda;匿名类只留给"多个方法的接口需要一次性实现"的场景</span>。匿名类持有外部引用,可能造成意外捕获(比如在回调里误用了可变外部变量)——lambda 捕获 effectively final 变量(§4.5),匿名类同样受限,但写法上更容易犯错。看到旧代码里的匿名类,能读、能改写成 lambda 即可。</p>
+</div>
+
+<h2>§6.8 static 成员与初始化顺序</h2>
+
+<h3>6.8.1 static = 属于类,不属于对象</h3>
+<p><code>static</code> 字段:所有实例共享一份(相当于 C 的全局变量,但归属类);<code>static</code> 方法:不依赖实例(工具方法,第4章);<code>static</code> 初始化块:类第一次加载时执行一次。初始化顺序:<span class="hl">父类 static → 子类 static → 父类字段/构造 → 子类字段/构造</span>。用 static 字段做计数器是经典用法。</p>
+
+<div class="code-title">示例 6-8 静态计数器与初始化顺序</div>
+<pre class="code">public class StaticDemo {
+    static class Employee {
+        private static int nextId = 1;      // 类级:所有实例共享
+        private final int id;               // final 字段:构造时定死
+
+        static {                            // 静态块:类加载时执行一次
+            System.out.println("[静态块] Employee 类加载");
+        }
+
+        Employee() {
+            this.id = nextId++;             // 每 new 一个,编号递增
+        }
+
+        int getId() { return id; }
+    }
+
+    public static void main(String[] args) {
+        Employee e1 = new Employee();
+        Employee e2 = new Employee();
+        Employee e3 = new Employee();
+        System.out.println(e1.getId() + "," + e2.getId() + "," + e3.getId());
+        // 1,2,3:编号是类级计数器分配的,实例间共享
+        System.out.println(Employee.nextId);   // 4:static 字段可直接类名访问
+    }
+}
+// 输出:[静态块] Employee 类加载 只出现一次——类只加载一次</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 5:static 方法里不能碰实例成员</div>
+<p><code>static</code> 方法没有 this——<span class="hl">在 static 方法里访问实例字段/实例方法,编译报错</span>。C 的对等直觉:static 方法 = "不传 this 的全局函数"。main 是 static 的,所以所有代码都在 static 上下文里开场,想用实例成员必须 new 出来。另一个坑:static 字段是全局的,多线程并发读写要加锁(第9章)。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table class="tight">
+<tr><th>主题</th><th>要点</th></tr>
+<tr><td class="ctr">类 vs 结构体</td><td class="ctr">类=字段+方法+构造器;new 在堆上造对象;字段有默认值,局部变量没有</td></tr>
+<tr><td class="ctr">构造器</td><td class="ctr">与类同名无返回;this(...) 链式调用必须第一句;不写构造器有默认无参版</td></tr>
+<tr><td class="ctr">访问控制</td><td class="ctr">private 最严 → 包私有 → protected(子类可见)→ public;字段一律 private</td></tr>
+<tr><td class="ctr">封装</td><td class="ctr">状态只经方法修改;getter 只读暴露;非法状态在方法内拦截</td></tr>
+<tr><td class="ctr">继承</td><td class="ctr">extends 单继承;构造器链先父后子;super 调父类;final 类不可继承</td></tr>
+<tr><td class="ctr">重写</td><td class="ctr">签名相同、行为替换,必须加 @Override;与重载(同名不同参)区分</td></tr>
+<tr><td class="ctr">多态</td><td class="ctr">按实际类型动态绑定;C 的虚函数表自动版;开闭原则</td></tr>
+<tr><td class="ctr">抽象类</td><td class="ctr">abstract class;可含字段与实现;is-a 共享状态时用</td></tr>
+<tr><td class="ctr">接口</td><td class="ctr">implements 可多实现;纯契约;default 方法 JDK8+</td></tr>
+<tr><td class="ctr">equals/hashCode</td><td class="ctr">equals 相同 → hashCode 必须相同;模板:this==o / instanceof / 字段比;Objects.hash 生成</td></tr>
+<tr><td class="ctr">判等字段</td><td class="ctr">必须不可变;变了会让 HashSet 元素"失踪"</td></tr>
+<tr><td class="ctr">三种嵌套类</td><td class="ctr">static 嵌套(无外部引用)/ 内部类(有外部引用)/ 匿名类(一次性;单方法用 lambda)</td></tr>
+<tr><td class="ctr">static 成员</td><td class="ctr">属于类;static 方法无 this 不能用实例成员;初始化顺序:父 static → 子 static → 构造</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能写出含构造器、this、getter 的类,并说出字段默认值与局部变量的区别</li>
+<li>能说出四种访问修饰符的可见范围与 C 的对应</li>
+<li>能写出继承 + super + @Override 重写的代码,并解释构造器链顺序</li>
+<li>能解释多态与动态绑定,说出它与 C 虚函数表的关系</li>
+<li>能说出抽象类与接口的选择依据,会写接口 default 方法</li>
+<li>能默写 equals/hashCode 标准模板并解释契约</li>
+<li>能说出三种嵌套类的区别,会把匿名类改写为 lambda</li>
+</ul>
+
+<h2>自测题</h2>
+
+<p class="q">1. 下列哪些是合法重写(有 @Override)?父类 <code>void f(int x)</code>:① <code>void f(int x)</code>;② <code>int f(int x)</code>;③ <code>void f(long x)</code>;④ <code>void f(int x) throws Exception</code></p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>只有 ① 合法。② 返回类型不同且不是协变,编译错误;③ 参数不同是重载不是重写(父类方法仍存在);④ 重写方法不能抛比父类更宽泛的 checked 异常——Exception 比父类的(无)宽,编译错误。</p>
+</div>
+
+<p class="q">2. 为什么 HashMap 的键类必须同时重写 equals 和 hashCode?只重写 equals 会怎样?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>HashMap 先用 hashCode 定位桶,再用 equals 在桶内比较。两个"内容相同"的键,若 hashCode 不同就落入不同桶,get 用第二个键查找时找不到第一个键存入的值。契约:equals 相同 → hashCode 必须相同。所以必须用同一组字段同时实现两者。</p>
+</div>
+
+<p class="q">3. 一个 Student 类以学号 id 为判等字段。把两个内容相同的 Student 放入 HashSet 后,再调用 set 里那个对象的 setId("2024999"),会发生什么?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>元素"失踪":hashCode 依赖 id,id 变了哈希变,但对象在 HashSet 里还是按旧哈希所在桶存放。contains/remove 用新哈希查找,找不到。这就是"判等字段必须不可变"的原因——这也是为什么生产代码的 id 通常 final。</p>
+</div>
+
+<p class="q">4. 接口与抽象类各自适合什么场景?举一个"该用接口却用了抽象类"的反例。</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>接口:定义"能做什么"的契约,允许多角色(如 Runnable、Comparable);抽象类:is-a 关系且要共享状态与实现。反例:让 Cat extends Dog 只为复用 eat()——没有血缘关系却继承,应改成 interface Eatable + 组合。判断标准:问"子类是父类的一种吗?",不是就绝不继承。</p>
+</div>
+
+<p class="q">5. 写出结果:父类构造器打印 "A",子类构造器打印 "B",<code>new Child()</code> 输出什么?如果父类只有带参构造器呢?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>输出 "A" 然后 "B":子类构造器隐式调用 super(),先执行父类构造器。若父类没有无参构造器,子类必须显式 <code>super(参数)</code> 且必须是构造器第一句,否则编译错误。C 的对应:结构体嵌套时先初始化内层成员。</p>
+</div>
+
+<p class="q">6. 为什么生产代码里字段要 private?直接 public 不更简单吗?</p>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>public 字段把"状态"与"规则"分离:任何代码都能改成非法值(负余额、空名称)。private + 方法入口,让所有修改经过校验逻辑;同时改内部实现(比如 balance 从 double 改 BigDecimal)不影响调用方。这正是 C 里"头文件只暴露函数,结构体定义藏在 .c 里"的同一门手艺。</p>
+</div>
+
+<h2>章末实验题:教务管理系统</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 6:教务管理系统</div>
+<p><b>实验目标:</b>编写一个小型教务管理系统,综合运用本章全部知识点:类与构造器、封装、继承、多态、接口、equals/hashCode、匿名类/lambda。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:定义 <code>Person</code> 类:私有 name/age 字段 + 构造器 + getter + toString(覆盖 §6.1-6.2 类与封装)</li>
+<li>任务 2:定义 <code>Student extends Person</code>:新增学号 id,重写 toString;定义 <code>Teacher extends Person</code>:新增课程 course(覆盖 §6.3 继承)</li>
+<li>任务 3:定义接口 <code>Assessable</code>(能考核):<code>double score()</code>;Student 按成绩、Teacher 按课时返回(覆盖 §6.4-6.5 多态与接口)</li>
+<li>任务 4:给 Student 按学号实现 equals/hashCode,用 HashSet 去重:同号学生只留一个(覆盖 §6.6 契约)</li>
+<li>任务 5:用 lambda 按成绩降序排序并打印前 3 名(覆盖 §6.7 函数式与比较器)</li>
+<li>任务 6:定义静态计数器统计创建的学生总数(覆盖 §6.8 static)</li>
+<li>任务 7:main 输出完整报告:人员名单、去重结果、排名(覆盖全部)</li>
+</ul>
+<p><b>实验环境:</b>JDK 17+;<code>javac SchoolSystem.java</code> 编译运行。</p></div>
+
+<ol class="steps">
+<li>先写 Person/Student/Teacher 骨架,编译通过后再加接口与判等</li>
+<li>任务 4 验证去重:put 两个同号不同名对象,set.size() 应为 1</li>
+<li>任务 5 与第4章的 Stream 结合:用 stream().sorted(...) 完成排名</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+/** 教务管理系统 —— 第6章综合实验参考答案
+ *  覆盖:类/封装、继承、多态、接口、equals/hashCode、lambda、static
+ */
+public class SchoolSystem {
+
+    // 任务 1:基类,封装 name/age
+    static class Person {
+        private final String name;
+        private final int age;
+
+        Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        public String getName() { return name; }
+
+        public int getAge() { return age; }
+
+        @Override
+        public String toString() { return name + "(" + age + ")"; }
+    }
+
+    // 任务 2:学生,继承 Person,新增学号
+    static class Student extends Person {
+        private final String id;
+        private final double examScore;      // 期末成绩
+
+        Student(String id, String name, int age, double examScore) {
+            super(name, age);                // 先父后子
+            this.id = id;
+            this.examScore = examScore;
+        }
+
+        public String getId() { return id; }
+
+        @Override
+        public String toString() { return id + ":" + super.toString(); }
+
+        // 任务 4:按学号判等(判等字段 final,永不改变)
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Student)) return false;
+            Student s = (Student) o;
+            return id.equals(s.id);
+        }
+
+        @Override
+        public int hashCode() { return Objects.hash(id); }
+
+        // 任务 3:实现接口的方法
+        @Override
+        public double score() { return examScore; }
+    }
+
+    // 任务 2:教师
+    static class Teacher extends Person {
+        private final String course;
+
+        Teacher(String name, int age, String course) {
+            super(name, age);
+            this.course = course;
+        }
+
+        @Override
+        public String toString() { return super.toString() + " 教 " + course; }
+
+        @Override
+        public double score() { return 40.0; }   // 课时考核分(演示)
+    }
+
+    // 任务 3:考核接口(能力契约)
+    interface Assessable {
+        double score();
+    }
+
+    // 任务 6:静态计数器
+    private static int totalCreated = 0;
+
+    static &lt;T extends Person&gt; T register(T person) {
+        totalCreated++;
+        return person;
+    }
+
+    public static void main(String[] args) {
+        List&lt;Person&gt; people = new ArrayList&lt;&gt;();
+        people.add(register(new Student("2024001", "张三", 19, 88.5)));
+        people.add(register(new Student("2024002", "李四", 20, 76.0)));
+        people.add(register(new Student("2024003", "王五", 18, 93.0)));
+        people.add(register(new Teacher("陈老师", 35, "数据结构")));
+        people.add(register(new Teacher("刘老师", 41, "操作系统")));
+        System.out.println("任务6 共登记 " + totalCreated + " 人");
+
+        System.out.println("== 任务1-3 人员名单(多态:toString 各打各的) ==");
+        for (Person p : people) {
+            System.out.println("  " + p);
+            if (p instanceof Assessable) {
+                System.out.println("    考核分 = " + p.score());   // 动态绑定
+            }
+        }
+
+        System.out.println("== 任务4 按学号去重 ==");
+        Set&lt;Student&gt; students = new HashSet&lt;&gt;();
+        students.add(new Student("2024001", "张三", 19, 88.5));
+        students.add(new Student("2024001", "张山", 20, 90.0));  // 同号:应去重
+        students.add(new Student("2024002", "李四", 20, 76.0));
+        System.out.println("  去重后学生数: " + students.size() + " (应为 2)");
+
+        System.out.println("== 任务5 按成绩降序前3名 ==");
+        students.stream()
+                .sorted((a, b) -&gt; Double.compare(b.score(), a.score()))  // lambda 比较器
+                .limit(3)
+                .forEach(s -&gt; System.out.println("  " + s + " 成绩 " + s.score()));
+
+        System.out.println("== 任务7 报告完成 ==");
+    }
+}</pre>
+<p><b>设计说明:</b>任务 3 把 score() 做成接口方法,main 里统一按 Assessable 调用——新增"行政人员"类只需实现接口,统计代码零改动(开闭原则);任务 4 用"同号不同名"验证 equals 按学号判等,同时演示了为什么判等字段要 final;任务 5 的 <code>Double.compare</code> 比直接减号更安全(防 NaN 与溢出)。扩展方向:成绩从控制台输入(第3章)、用 Map&lt;String, Student&gt; 按学号索引(第6章)、异常处理(第9章)、record 简化 Person(第14章)。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第7章 文件与 I/O。字节流与字符流、Files/Path API、序列化与反序列化——把数据落盘,是程序离开内存的第一步。</p>
+
+</body>
+</html>

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第11章 反射与动态特性</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="box box-goal"><div class="box-title">本章目标</div>
+<p>诚实认识 C++ 的反射现状:标准至今没有运行时反射,动态特性由 RTTI(typeid、dynamic_cast)、类型萃取(编译期反射)与宏/代码生成三块拼成。掌握这三块工具的能力边界,知道生产环境用哪些库补齐反射,并理解多态、序列化、日志等场景的真实解法。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识</div>
+<p>熟悉虚函数与多态(第6章)、模板与特化(第10章)、强制转换的初步概念。本章代码基于 C++17;RTTI 默认开启,若用 -fno-rtti 编译,typeid 与 dynamic_cast 不可用。</p>
+</div>
+
+<div class="toc-map">
+<table class="tight">
+<tr><td>§11.1 没有反射的 C++</td><td>§11.2 typeid 与 type_info</td><td>§11.3 dynamic_cast 安全转型</td></tr>
+<tr><td>§11.4 编译期类型查询</td><td>§11.5 宏与代码生成</td><td>§11.6 生产环境的选择</td></tr>
+</table>
+</div>
+
+<h2>§11.1 先说实话:C++ 没有标准反射</h2>
+
+<p>Java 的 getClass()、C# 的 typeof 都能在运行时拿到类型的完整信息:字段列表、方法表、注解,然后做序列化、依赖注入、对象浏览器。C++ 呢?标准委员会讨论了二十多年,反射提案到 C++26 仍在推进,标准库至今没有 getFields() 这种东西。作为工程师,正确姿势不是叹息,而是看清替代拼图:typeid 能拿到类型身份,type_traits 能在编译期查询类型性质,模板特化能按类型生成定制行为,宏与代码生成工具能产出"字段表"。四块拼起来,反射的主要用途(序列化、日志、类型分派)都做得成,只是不像 Java 那样"免费"。</p>
+
+<p>第二个要说清的事实:很多"需要反射"的需求其实不需要反射。想在运行时按对象类型执行不同逻辑?虚函数(第6章)就是类型分派的原生机制,效率远高于查反射表。想写"每种类型都适用的算法"?模板(第10章)在编译期就完成了分派。反射真正不可替代的场景是有限的:把对象转成字符串/JSON(序列化)、从配置/数据库按字段名填值、类型名注册表。抓住这三类场景,下文逐一给出现有工具的正解。</p>
+
+<h2>§11.2 typeid 与 type_info</h2>
+
+<p>typeid 是 RTTI(Run-Time Type Information,运行时类型信息)的入口:typeid(表达式) 或 typeid(类型) 返回 std::type_info 的引用,携带类型的身份信息。typeid 对多态对象给出动态类型(派生类),对非多态对象给出静态类型。type_info 能做的有限:== 判断两个类型是否相同,hash_code() 得到稳定哈希,name() 返回实现定义的名称——注意 name() 的格式因编译器而异(GCC 是修饰名),只适合日志,绝不能当协议字符串。</p>
+
+<p>typeid 的实际用途比想象中窄:它适合"查类型身份"(如 assert 某个对象确实是预期类型)、调试与日志(打印动态类型名)。它不适合字段遍历、方法调用——type_info 根本不含这些信息。RTTI 的开销:每个多态类型增加一份类型信息表,typeid 是查表操作,代价很小;但 -fno-rtti 的嵌入式环境会去掉全部 RTTI,此时 typeid 无法编译,只能退回到模板方案。</p>
+
+<div class="code-title">清单 11-1 typeid 与 type_info</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;typeinfo&gt;
+
+class Animal {
+public:
+    virtual ~Animal() = default;      // 多态:typeid 才反映动态类型
+};
+
+class Dog : public Animal {};
+class Cat : public Animal {};
+
+int main() {
+    Animal* p = new Dog;
+    // 多态对象:typeid 给出实际类型 Dog
+    std::cout &lt;&lt; "动态类型: " &lt;&lt; typeid(*p).name() &lt;&lt; "\n";
+    if (typeid(*p) == typeid(Dog)) {
+        std::cout &lt;&lt; "确实是 Dog\n";
+    }
+    // 非多态对象:typeid 只认静态类型
+    Animal plain;
+    std::cout &lt;&lt; "静态类型: " &lt;&lt; typeid(plain).name() &lt;&lt; "\n";
+
+    std::cout &lt;&lt; "hash: " &lt;&lt; typeid(Dog).hash_code() &lt;&lt; "\n";
+    delete p;
+    return 0;
+}</pre>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th><th>说明</th></tr>
+<tr><td>struct { int tag; union {...}; } 手写类型标记</td><td>typeid 由编译器维护</td><td>类型信息不可伪造,不会忘初始化</td></tr>
+<tr><td>switch (obj-&gt;tag) 手工分派</td><td>虚函数 / dynamic_cast</td><td>C 每加类型改全部分派点,C++ 新增类零改动</td></tr>
+<tr><td>tag 与真实数据可能对不上</td><td>typeid 永远与对象一致</td><td>RTTI 信息由编译器生成</td></tr>
+</table>
+
+<h2>§11.3 dynamic_cast:带检查的向下转型</h2>
+
+<p>C 的多态转型只有一个工具:(Dog*)p 裸强转——程序员保证 p 真的是 Dog,编译器不检查,错了就是未定义行为。C++ 的 dynamic_cast 把检查做进语言:dynamic_cast&lt;Dog*&gt;(p) 运行时核实 p 的动态类型与目标兼容,成功返回指针,失败返回 nullptr;引用版本失败抛 std::bad_cast。转型的目标必须是多态类型(含虚函数),否则编译错误——这是编译期的强制约束,杜绝了"C 里对任意结构体瞎转"的自由。</p>
+
+<p>工程上 dynamic_cast 的正确位置:偶尔需要"基类指针 + 派生类专属方法"时,它比维护一整套虚函数接口要轻;但把它当常规流程(每个对象都转一遍)就是设计气味——能靠虚函数表达的多态,别靠转型表达。规则:基类接口能完成的事用虚函数;确实只有特定派生类才有的能力,用 dynamic_cast 判空后使用;判空不可省略,空指针访问是崩溃。</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th><th>说明</th></tr>
+<tr><td>(Dog*)p 裸强转,不检查</td><td>dynamic_cast&lt;Dog*&gt;(p) 运行时检查</td><td>C 错了是未定义行为,C++ 失败返回空</td></tr>
+<tr><td>对任意结构体都能强转</td><td>目标必须多态,否则编译错误</td><td>C++ 在编译期就拦住乱转</td></tr>
+<tr><td>类型判断靠手写标记字段</td><td>typeid 比较动态类型</td><td>C++ 类型信息由编译器维护</td></tr>
+</table>
+
+<div class="code-title">清单 11-2 dynamic_cast 安全转型</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+
+class Shape {
+public:
+    virtual ~Shape() = default;
+    virtual double area() const = 0;
+};
+
+class Circle : public Shape {
+public:
+    explicit Circle(double r) : r(r) {}
+    double area() const override { return 3.14159 * r * r; }
+    double radius() const { return r; }        // 派生类专属方法
+private:
+    double r;
+};
+
+class Rect : public Shape {
+public:
+    Rect(double w, double h) : w(w), h(h) {}
+    double area() const override { return w * h; }
+private:
+    double w, h;
+};
+
+int main() {
+    std::vector&lt;std::unique_ptr&lt;Shape&gt;&gt; shapes;
+    shapes.push_back(std::make_unique&lt;Circle&gt;(1.0));
+    shapes.push_back(std::make_unique&lt;Rect&gt;(2.0, 3.0));
+
+    for (const auto&amp; s : shapes) {
+        if (auto c = dynamic_cast&lt;Circle*&gt;(s.get())) {  // 失败返回空
+            std::cout &lt;&lt; "圆形,半径 " &lt;&lt; c-&gt;radius() &lt;&lt; "\n";
+        } else {
+            std::cout &lt;&lt; "非圆形,面积 " &lt;&lt; s-&gt;area() &lt;&lt; "\n";
+        }
+    }
+    return 0;
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 1:dynamic_cast 的结果不判空</div>
+<p>dynamic_cast&lt;T*&gt; 转型失败返回空指针,直接解引用就是空指针崩溃。引用版本失败则抛 std::bad_cast。指针版必判空,或用 if (auto x = dynamic_cast&lt;T*&gt;(p)) 的组合写法,把检查与使用绑在一起。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2:对空指针做 typeid</div>
+<p>typeid(*p) 当 p 是空指针时,对多态类型会抛出 std::bad_typeid,而不是安静地返回未知类型。日志代码最容易踩:为了打印类型名对空指针解引用。先判空再 typeid,或让空指针走独立分支。</p>
+</div>
+
+<h2>§11.4 编译期类型查询:type_traits</h2>
+
+<p>反射的另一个方向是编译期:std::type_traits 头文件提供一整组类型性质查询——is_same_v 判断类型相同、is_base_of_v 判断继承关系、is_arithmetic_v 判断算术类型、is_convertible_v 判断可转换性,加上 decltype 取表达式类型,配合 if constexpr(第10章),类型判断全部在编译期完成,零运行开销。这就是 C++ 的"编译期反射":信息不藏在运行时表里,而是由模板机制在编译时推导。</p>
+
+<p>类型萃取与模板特化组合,能做出"类型字典"级别的定制:为每种类型声明一个 traits 特化,提供类型名称、默认值、序列化函数等元信息;通用模板给默认实现,特化按类型覆盖。标准库就是这样组织的:std::iterator_traits、std::numeric_limits 都是 traits 的样板。这套方案的价值在"按类型定制且零开销",局限也在编译期——字段列表、运行时按名字查找字段,仍然做不了,那是 §11.5 的领域。</p>
+
+<div class="code-title">清单 11-3 type_traits 编译期查询</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;type_traits&gt;
+
+// traits 特化:每种类型提供"类型名"
+template &lt;typename T&gt;
+struct TypeName { static constexpr const char* value = "未知"; };
+
+template &lt;&gt;
+struct TypeName&lt;int&gt; { static constexpr const char* value = "整数"; };
+
+template &lt;&gt;
+struct TypeName&lt;double&gt; { static constexpr const char* value = "浮点"; };
+
+template &lt;typename T&gt;
+std::string typeInfo(T v) {
+    if constexpr (std::is_arithmetic_v&lt;T&gt;) {
+        return std::string(TypeName&lt;T&gt;::value) + " " + std::to_string(v);
+    } else {
+        return std::string(TypeName&lt;T&gt;::value) + " " + v;
+    }
+}
+
+int main() {
+    std::cout &lt;&lt; typeInfo(42) &lt;&lt; "\n";                    // 整数 42
+    std::cout &lt;&lt; typeInfo(3.14) &lt;&lt; "\n";                  // 浮点 3.14
+    std::cout &lt;&lt; typeInfo(std::string("文本")) &lt;&lt; "\n";   // 未知 文本
+    std::cout &lt;&lt; std::boolalpha
+              &lt;&lt; std::is_base_of_v&lt;std::string, std::string&gt; &lt;&lt; "\n";
+    return 0;
+}</pre>
+
+<h2>§11.5 宏与代码生成:运行时反射的替代品</h2>
+
+<p>真正需要"运行时拿到字段/枚举信息"时,标准工具是宏与代码生成。X-macro 是其中最优雅的模式:把数据列表写一遍,用宏把它展开进多份代码——一份生成枚举定义,一份生成枚举到字符串的映射,一份生成字符串到枚举的解析。改动列表只需改一处,三份代码同步更新,彻底消灭"枚举与字符串数组对不上"这类 C 时代的经典 bug。这就是"代码生成"思想的手工版:让数据定义成为唯一事实来源。</p>
+
+<p>生产环境通常直接用现成的代码生成器:protobuf 从 .proto 文件生成 C++ 序列化类,flatbuffers 同理,生成的代码自带字段表、序列化、反射接口;header 级库方面,PFR(基于模板技巧在编译期数出结构体字段个数,无宏)、magic_enum(枚举与字符串互转)、reflect-cpp(完整序列化框架)都是经过生产检验的选择。选型建议:字段多、要跨语言 → protobuf 类工具;只想要枚举转字符串 → magic_enum;只想少写样板 → PFR 或 reflect-cpp。它们共同的哲学与 X-macro 一致:元信息由工具生成,而不是手写。</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th><th>说明</th></tr>
+<tr><td>枚举与字符串数组两份手工维护</td><td>X-macro:一份列表生成多份代码</td><td>单一事实来源,改一处全同步</td></tr>
+<tr><td>结构体字段表手写,易对不上</td><td>protobuf / PFR 生成字段信息</td><td>生成代码由工具保证一致</td></tr>
+<tr><td>类型名映射手写数组</td><td>type_traits + 特化自动查询</td><td>编译期查询,零运行开销</td></tr>
+</table>
+
+<div class="code-title">清单 11-4 X-macro:一份列表生成枚举与字符串</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 数据列表:唯一事实来源
+#define COLOR_LIST(X) \
+    X(Red)   \
+    X(Green) \
+    X(Blue)  \
+    X(Count)
+
+// 第一次展开:生成枚举
+enum Color {
+#define X(name) name,
+    COLOR_LIST(X)
+#undef X
+};
+
+// 第二次展开:生成枚举到字符串的映射
+const char* colorName(Color c) {
+    switch (c) {
+#define X(name) case name: return #name;
+        COLOR_LIST(X)
+#undef X
+    }
+    return "未知";
+}
+
+// 第三次展开:生成字符串到枚举的解析
+bool colorParse(const std::string&amp; s, Color&amp; out) {
+#define X(name) if (s == #name) { out = name; return true; }
+    COLOR_LIST(X)
+#undef X
+    return false;
+}
+
+int main() {
+    Color c = Green;
+    std::cout &lt;&lt; colorName(c) &lt;&lt; "\n";          // Green
+    Color parsed;
+    if (colorParse("Blue", parsed)) {
+        std::cout &lt;&lt; "解析成功 " &lt;&lt; colorName(parsed) &lt;&lt; "\n";
+    }
+    return 0;
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 3:宏不尊重作用域,展开不可调试</div>
+<p>X-macro 的 #define 会污染全局命名空间,#undef 必须与 #define 成对,宏内的拼接与字符串化写法晦涩,调试时断点打在展开后的代码上。规则:宏模式只用于"多份代码必须同步"的机械展开;能写成模板或 constexpr 的逻辑,优先语言特性,宏是最后的工具。</p>
+</div>
+
+<h2>§11.6 生产环境的选择:需求对表</h2>
+
+<p>把本章的工具按需求对表:需要对象转 JSON/序列化——protobuf、reflect-cpp 或手写 toJson(模板+if constexpr 自动遍历);需要枚举与字符串互转——magic_enum,一个头文件;需要按字段名从配置填值——代码生成器生成的解析器;需要类型名/注册表——typeid 加静态注册;需要按运行时类型分派——虚函数,而不是反射。对照下来你会发现,Java 反射解决的问题,在 C++ 里几乎都有专门的正解,代价是"每个问题都要选对工具",而不是一个万能 API。</p>
+<p>还有一个常被忽略的工具是静态注册:程序启动时用全局对象的构造函数把"类型名与工厂函数"登记进注册表(见清单 11-5),运行时按字符串查找。配合 typeid 的类型名与模板注册函数,几十行代码就能实现插件系统与按名创建对象,这是反射需求里性价比最高的自建方案,也是 codegen 之外最常见的工程实践。</p>
+
+<p>最后是心态建议:不要为"没有反射"写哀歌,也别为"假装有反射"造一个蹩脚的通用框架。C++ 的哲学是把能力分散给专门的机制:多态给虚函数,编译期计算给模板,元信息给生成代码。三者的组合比单一反射更强——虚函数快、模板零开销、生成代码可审计,这正是 C++ 在系统级软件里不可替代的原因。</p>
+
+<div class="code-title">清单 11-5 类型注册表:typeid 哈希做键</div>
+<pre class="code">#include &lt;functional&gt;
+#include &lt;map&gt;
+#include &lt;memory&gt;
+#include &lt;typeinfo&gt;
+#include &lt;string&gt;
+
+struct Registry {                    // 类型名 -&gt; 工厂函数
+    std::map&lt;std::string, std::function&lt;void*()&gt;&gt; makers;
+
+    template &lt;typename T&gt;
+    void reg() {                     // 模板注册:自动取类型名
+        makers[typeid(T).name()] = [] { return new T(); };
+    }
+
+    void* create(const std::string&amp; name) {
+        auto it = makers.find(name);
+        return it == makers.end() ? nullptr : it-&gt;second();
+    }
+};
+
+struct A {}; struct B {};
+
+int main() {
+    Registry r;
+    r.reg&lt;A&gt;();
+    r.reg&lt;B&gt;();
+    void* a = r.create(typeid(A).name());   // 按名字创建
+    std::cout &lt;&lt; (a ? "A 创建成功" : "A 创建失败") &lt;&lt; "\n";
+    delete static_cast&lt;A*&gt;(a);
+    return 0;
+}</pre>
+
+<h2>反射与动态特性速查表</h2>
+<table class="tight">
+<tr><th>概念</th><th>语法示例</th><th>要点</th></tr>
+<tr><td>RTTI</td><td>运行时类型信息</td><td>typeid 与 dynamic_cast 的基础</td></tr>
+<tr><td>typeid</td><td>typeid(x) / typeid(T)</td><td>多态对象返回动态类型</td></tr>
+<tr><td>type_info</td><td>typeid(x).name()</td><td>name 实现定义,只适合日志</td></tr>
+<tr><td>类型比较</td><td>typeid(a) == typeid(B)</td><td>判断动态类型是否相同</td></tr>
+<tr><td>hash_code</td><td>typeid(T).hash_code()</td><td>稳定哈希,可做注册表键</td></tr>
+<tr><td>dynamic_cast</td><td>dynamic_cast&lt;T*&gt;(p)</td><td>多态向下转型,失败返回空</td></tr>
+<tr><td>bad_cast</td><td>引用版转型失败抛出</td><td>catch 处理引用转型失败</td></tr>
+<tr><td>类型萃取</td><td>std::is_same_v&lt;T, U&gt;</td><td>编译期查询,零运行开销</td></tr>
+<tr><td>继承判断</td><td>std::is_base_of_v&lt;B, D&gt;</td><td>编译期判断继承关系</td></tr>
+<tr><td>decltype</td><td>decltype(expr)</td><td>取表达式类型</td></tr>
+<tr><td>X-macro</td><td>列表宏展开多份代码</td><td>枚举/字符串/解析同步生成</td></tr>
+<tr><td>magic_enum</td><td>magic_enum::enum_name(v)</td><td>枚举字符串互转,单头文件</td></tr>
+<tr><td>PFR</td><td>pfr::get&lt;i&gt;(obj)</td><td>编译期结构体字段访问</td></tr>
+<tr><td>代码生成</td><td>protobuf / flatbuffers</td><td>从描述文件生成序列化代码</td></tr>
+</table>
+
+<h2>自测题</h2>
+<p class="q">1. C++ 为什么没有 Java 那样的运行时反射?标准反射提案的现状如何?</p>
+<p class="q">2. typeid 返回什么?type_info::name() 为什么不能当协议字符串?</p>
+<p class="q">3. dynamic_cast 与 C 的裸强转有何区别?为什么目标类型必须多态?</p>
+<p class="q">4. type_traits 能实现哪类"反射"?它有什么局限?</p>
+<p class="q">5. X-macro 为什么能保证枚举与字符串数组一致?生产环境有哪些现成替代?</p>
+
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>1. 反射提案在标准委员会讨论了二十多年,C++26 仍在推进,标准库没有 getFields 之类的接口。设计上 C++ 优先零开销抽象与显式机制,反射的通用性以运行时开销与代码膨胀为代价,与语言哲学相悖。</p>
+<p>2. typeid 返回 std::type_info 引用,描述类型的身份;name() 的格式由编译器实现决定(GCC 是修饰名),不同编译器不同版本都可能不同,只适合日志展示,作为协议字符串会跨编译器失配。</p>
+<p>3. C 的裸强转不做任何检查,类型错了是未定义行为;dynamic_cast 运行时核实动态类型,失败指针版返回空、引用版抛 bad_cast。目标必须多态是因为检查要查虚表里的类型信息,非多态类没有虚表。</p>
+<p>4. type_traits 在编译期回答类型性质问题:是否相同、是否算术类型、是否继承、是否可转换,配合 if constexpr 做零开销分派。局限:没有运行时字段表,不能按名字查字段、不能枚举方法。</p>
+<p>5. X-macro 只有一份数据列表,枚举定义、名称映射、解析函数都从它展开,改列表即改全部,不存在两份手工维护的偏差。生产替代:magic_enum(枚举)、PFR(结构体字段)、protobuf/reflect-cpp(完整序列化)。</p>
+</div>
+
+<h2>实验:日志系统的类型感知输出</h2>
+
+<p>本实验构建一个带类型感知的日志与序列化系统:typeid 打印动态类型,type_traits 与 if constexpr 按类型格式化数值与文本,traits 特化提供类型名,X-macro 定义日志级别枚举与字符串映射,dynamic_cast 安全访问派生类专属字段。代码分三部分,覆盖点已在注释中标明。</p>
+
+<div class="code-title">实验 11·第一部分:类型名与格式化(覆盖:typeid、type_traits、if constexpr、traits 特化)</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;typeinfo&gt;
+#include &lt;type_traits&gt;
+#include &lt;sstream&gt;
+
+// 覆盖:traits 特化——每个类型提供中文类型名
+template &lt;typename T&gt;
+struct TypeName { static constexpr const char* value = "未知"; };
+template &lt;&gt;
+struct TypeName&lt;int&gt; { static constexpr const char* value = "整数"; };
+template &lt;&gt;
+struct TypeName&lt;double&gt; { static constexpr const char* value = "浮点"; };
+template &lt;&gt;
+struct TypeName&lt;std::string&gt; { static constexpr const char* value = "文本"; };
+
+// 覆盖:type_traits + if constexpr 按类型格式化
+template &lt;typename T&gt;
+std::string formatValue(const T&amp; v) {
+    if constexpr (std::is_arithmetic_v&lt;T&gt;) {
+        return std::to_string(v);
+    } else if constexpr (std::is_same_v&lt;T, std::string&gt;) {
+        return v;
+    } else {
+        return "?";
+    }
+}
+
+// 覆盖:typeid 打印动态类型名,type_info 比较
+std::string dynamicTag(const void* p, const std::type_info&amp; dyn) {
+    (void)p;
+    return dyn.name();               // 实现定义的名称,仅日志用
+}</pre>
+
+<div class="code-title">实验 11·第二部分:日志级别与动态转型(覆盖:X-macro、dynamic_cast、多态)</div>
+<pre class="code">// 覆盖:X-macro——日志级别:一份列表,生成枚举与字符串
+#define LEVEL_LIST(X) \
+    X(Debug) \
+    X(Info)  \
+    X(Warn)  \
+    X(Error) \
+    X(Count)
+
+enum Level {
+#define X(name) name,
+    LEVEL_LIST(X)
+#undef X
+};
+
+const char* levelName(Level l) {
+    switch (l) {
+#define X(name) case name: return #name;
+        LEVEL_LIST(X)
+#undef X
+    }
+    return "?";
+}
+
+// 覆盖:多态基类,为 dynamic_cast 提供目标
+struct LogEntry {
+    virtual ~LogEntry() = default;
+    virtual std::string summary() const = 0;
+};
+
+struct ErrorEntry : LogEntry {        // 派生类专属字段
+    int code;
+    explicit ErrorEntry(int c) : code(c) {}
+    std::string summary() const override {
+        return "错误码 " + std::to_string(code);
+    }
+};
+
+struct TextEntry : LogEntry {
+    std::string text;
+    explicit TextEntry(std::string t) : text(std::move(t)) {}
+    std::string summary() const override { return text; }
+};</pre>
+
+<div class="code-title">实验 11·第三部分:main 调度(覆盖:typeid 分派、dynamic_cast 判空、综合输出)</div>
+<pre class="code">int main() {
+    // 覆盖:typeid 动态类型识别
+    TextEntry t("连接建立");
+    LogEntry* p = &amp;t;
+    std::cout &lt;&lt; "动态类型: " &lt;&lt; typeid(*p).name() &lt;&lt; "\n";
+    if (typeid(*p) == typeid(TextEntry)) {
+        std::cout &lt;&lt; "识别为文本条目\n";
+    }
+
+    // 覆盖:dynamic_cast 判空后访问派生类专属字段
+    LogEntry* e = new ErrorEntry(500);
+    if (auto err = dynamic_cast&lt;ErrorEntry*&gt;(e)) {
+        std::cout &lt;&lt; "错误码 " &lt;&lt; err-&gt;code &lt;&lt; "\n";
+    } else {
+        std::cout &lt;&lt; "不是错误条目\n";
+    }
+    delete e;
+
+    // 覆盖:traits 类型名 + 格式化 + X-macro 级别
+    int n = 42;
+    std::cout &lt;&lt; levelName(Warn) &lt;&lt; " " &lt;&lt; TypeName&lt;decltype(n)&gt;::value
+              &lt;&lt; " " &lt;&lt; formatValue(n) &lt;&lt; "\n";
+    std::cout &lt;&lt; levelName(Info) &lt;&lt; " " &lt;&lt; TypeName&lt;std::string&gt;::value
+              &lt;&lt; " " &lt;&lt; formatValue(std::string("运行中")) &lt;&lt; "\n";
+    std::cout &lt;&lt; levelName(Error) &lt;&lt; " " &lt;&lt; TypeName&lt;double&gt;::value
+              &lt;&lt; " " &lt;&lt; formatValue(0.5) &lt;&lt; "\n";
+    return 0;
+}</pre>
+
+<p>实验覆盖点核对:typeid 动态类型识别与 type_info 比较、dynamic_cast 判空后访问派生类专属字段、type_traits 的 is_arithmetic_v/is_same_v 与 if constexpr 格式化、traits 特化提供类型名(TypeName)、X-macro 生成枚举与字符串映射(levelName)、多态基类与虚函数(summary)。扩展练习:给 Level 增加解析函数(字符串转枚举);或实现一个简单的 Entry 注册表,用 typeid(T).hash_code() 做键。</p>
+
+<div class="box box-tip"><div class="box-title">工程建议 1:日志与序列化优先生成代码</div>
+<p>新项目要序列化与日志反射,第一时间评估 protobuf、flatbuffers、reflect-cpp,而不是手写 X-macro 与映射函数:生成代码经得起生产考验,字段变更全自动同步,还有跨语言红利。手写元信息只适合字段极少、库引入成本高的场合。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">工程建议 2:分派优先虚函数,转型是最后手段</div>
+<p>代码里出现"逐个 dynamic_cast 试类型"是设计信号:把分支逻辑上移为虚函数或访问者模式,新类型不用改分发代码。dynamic_cast 保留给"偶尔需要派生类专属能力"的少数场景,并且判空永远不省。</p>
+</div>
+
+<div class="box box-summary"><div class="box-title">本章小结</div>
+<p>C++ 没有 Java 式反射,但四块工具各司其职:typeid 识别类型身份,dynamic_cast 做安全检查的转型,type_traits 在编译期查询类型,宏与代码生成提供运行时元信息。序列化、日志、类型分派的真实解法都落在这四块上。下一章进入注解与编译期指令:标准属性。</p>
+</div>
+
+</body>
+</html>

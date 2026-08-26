@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第4章 函数与方法</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · PRODUCTION READY</div>
+<h1 class="chapter-title">第4章 函数与方法</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–6 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握 <code>def</code> 定义、参数与返回值的完整语法,以及 docstring 规范</li>
+<li><b>讲透"传对象引用"</b>:可变对象在函数内被修改会反映到外部,不可变对象不会;知道 <code>a = ...</code> 与 <code>a.append(...)</code> 的本质区别</li>
+<li>掌握默认参数的经典坑:可变对象做默认值只初始化一次,正确姿势是 <code>None</code> 哨兵</li>
+<li>掌握 <code>*args</code>/<code>**kwargs</code> 与关键字参数、<code>/</code> 与 <code>*</code> 分隔符(PEP 570/3102)</li>
+<li>掌握多返回值(元组解构)、lambda、高阶函数(<code>map</code>/<code>filter</code>/<code>sorted</code> 的 <code>key</code>)</li>
+<li>理解闭包与<b>晚期绑定</b>坑,知道循环变量捕获问题与修复</li>
+<li>会用 <code>if __name__ == "__main__":</code> 组织可执行脚本</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Python:本章主题如何迁移</div>
+<p>C 里函数是"函数",Python 里函数是<b>对象</b>——它可以被赋值给变量、塞进列表、作为参数传递、作为返回值,甚至可以给函数"附加属性"。C 用函数指针实现的回调,在 Python 里是日常语法;C 里"把函数传给函数"要小心翼翼写 <code>int (*cmp)(const void*, const void*)</code>,Python 直接写 <code>sorted(data, key=func)</code>。</p>
+<p>最大的认知跨越在<b>参数传递</b>。C 是传值;想改外部变量,必须传指针。Python 是"传对象引用":参数拿到的是对象引用的<b>拷贝</b>——所以"重新给形参赋值"不影响外部(和传值一样),但"通过形参就地修改可变对象"会反映到外部(和传指针一样)。C 程序员需要同时丢弃两个直觉:①Python 没有"传引用给普通变量"这回事——函数内 <code>x = 新值</code> 只是让形参重新绑定;②Python 也不存在"值拷贝"——函数内 <code>list 参数.append(...)</code> 改的就是外面的那个对象。</p>
+<p>第三个迁移点是<b>重载</b>。C 没有重载(除非 C11 <code>_Generic</code>);C++ 有重载。Python 没有重载:一个名字一个函数。替代方案是默认参数、<code>*args</code>、类型分派(<code>isinstance</code>)或干脆不同名字——实践中默认参数 + <code>None</code> 哨兵覆盖了 90% 的重载需求。</p>
+<p>最后一个迁移点是闭包。C 的函数指针只能指向"静态的全局函数";Python 的函数可以<b>捕获创建它的作用域里的变量</b>,形成闭包。这让"工厂函数"成为可能:调用一次 <code>make_counter()</code> 得到一个带私有状态的函数。代价是晚期绑定坑:闭包捕获的是变量<b>本身</b>而非创建时的值——循环里生成的闭包全部共享同一个循环变量,本章会给出生产级修复。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查(你已会的 C 基础)</div>
+<ul>
+<li>C 函数的声明/定义/调用、参数与返回类型;<code>main(int argc, char *argv[])</code></li>
+<li>传值 vs 传指针:<code>void f(int x)</code> 与 <code>void f(int *p)</code> 的行为差异</li>
+<li>函数指针与回调:<code>qsort</code> 的 <code>cmp</code> 参数</li>
+<li>可变参数:<code>va_list</code>/<code>va_arg</code>(printf 的实现)</li>
+<li><code>static</code> 函数与文件作用域;<code>errno</code> 错误返回约定</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1.5 小时,语法):</b>读 §4.1–§4.3,重点做 §4.2 的"函数内修改是否影响外部"判断练习</li>
+<li><b>第二阶段(1.5 小时,参数与返回):</b>读 §4.4–§4.5,练 *args/**kwargs 与多返回值</li>
+<li><b>第三阶段(1.5 小时,一等函数与闭包):</b>读 §4.6–§4.8,复现晚期绑定坑并修复</li>
+<li><b>第四阶段(实验,1.5 小时):</b>完成章末实验"可配置统计管线"</li>
+<li><b>验收标准:</b>能不看资料回答"函数内 <code>lst.append(1)</code> 与 <code>lst = [1]</code> 对外部的影响分别是什么"</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§4.1 函数定义与调用(def、docstring、类型标注)</li>
+<li>§4.2 参数传递:传对象引用(可变/不可变行为表)</li>
+<li>§4.3 默认参数与可变默认值经典坑</li>
+<li>§4.4 关键字参数、*args/**kwargs、参数分隔符</li>
+<li>§4.5 返回值:多返回值与 None 的语义</li>
+<li>§4.6 一等函数:lambda 与高阶函数</li>
+<li>§4.7 闭包与晚期绑定坑</li>
+<li>§4.8 递归与深度限制</li>
+<li>§4.9 入口与结构:__name__ == "__main__"</li>
+</ul></div>
+
+<h2>§4.1 函数定义与调用</h2>
+
+<p>语法要点:<code>def</code> 关键字、函数名、括号参数、冒号、缩进体。<b>没有返回类型声明</b>(返回值类型用标注表示,仅文档意义);没有函数原型/声明分离——定义即生效,但<b>调用必须发生在定义之后</b>(模块从上到下执行)。docstring(三引号字符串)是函数文档,<code>help(f)</code> 会显示它,生产代码必写。</p>
+
+<div class="code-title">示例 4-1 定义、docstring 与标注</div>
+<pre class="code">def calc_avg(scores: list) -&gt; float:
+    """计算平均分。
+
+    参数:
+        scores: 数字列表(非空)
+    返回:
+        平均分;空列表返回 0.0
+    """
+    if not scores:
+        return 0.0
+    return sum(scores) / len(scores)
+
+
+print(calc_avg([80, 90, 95]))        # 88.33333333333333
+print(calc_avg([]))                  # 0.0
+# help(calc_avg)                     # 查看 docstring
+# 注意:函数必须在调用前定义——模块按从上到下顺序执行</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:以为函数返回类型"强制"了返回值</div>
+<p><code>-&gt; float</code> 只是标注,解释器不检查。返回 <code>None</code> 或字符串都"合法",直到运行时才可能炸。这与 C 的编译期类型检查完全不同——所以生产项目要么加 mypy(第14章),要么在函数开头用 <code>assert</code>/异常做防御性校验。标注的价值在文档与静态分析,不在运行时。</p>
+</div>
+
+<h2>§4.2 参数传递:传对象引用(本章最重要)</h2>
+
+<p>精确语义只有一条:<span class="hl">参数传递 = 把实参对象引用赋值给形参</span>(等价于 <code>param = arg</code>)。由此推出全部行为:</p>
+
+<table class="cmp">
+<tr><th>函数内的操作</th><th>C 的等价</th><th>对外部的影响</th></tr>
+<tr><td><code>x = 新对象</code>(给形参赋值)</td><td>传值:<code>f(int x)</code> 修改 x</td><td>无影响(形参重新绑定)</td></tr>
+<tr><td><code>lst.append(1)</code>(就地修改)</td><td>传指针:<code>f(int *p)</code> 修改 *p</td><td><b>有影响</b>(对象被改)</td></tr>
+<tr><td><code>s = s + "!"</code>(str 拼接)</td><td>传值</td><td>无影响(不可变,产生新对象)</td></tr>
+<tr><td><code>d["k"] = v</code>(dict 写键)</td><td>传指针</td><td><b>有影响</b></td></tr>
+<tr><td><code>n += 1</code>(int 运算)</td><td>传值</td><td>无影响(int 不可变)</td></tr>
+</table>
+
+<div class="code-title">示例 4-2 可变与不可变的行为对照</div>
+<pre class="code">def demo(lst, n, s, d):
+    lst.append(100)          # 就地修改 → 外部可见
+    lst = [0, 0]             # 重新绑定 → 外部不可见(重要!)
+    n = n + 1                # int 不可变 → 外部不可见
+    s = s + "!"              # str 不可变 → 外部不可见
+    d["new"] = 1             # dict 就地修改 → 外部可见
+
+
+a, num, text, data = [1, 2], 10, "hi", {"k": 0}
+demo(a, num, text, data)
+print(a)                     # [1, 2, 100]     append 生效
+print(num, text)             # 10 hi          不受影响
+print(data)                  # {'k': 0, 'new': 1}  写键生效
+
+# 一句话记忆:能就地改的(可变对象)就影响外部;
+# 产生新对象的(不可变对象或重新赋值)就不影响外部</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:想"传引用"修改变量本身</div>
+<p>C 程序员遇到"函数内改不了外部 int"时,第一反应是找引用语法。Python <b>没有</b>这种能力,也不该有:函数修改外部变量意味着隐藏耦合,是 bug 温床。正确姿势:①返回新值由调用方赋值;<code>def f(x): return x + 1</code>,然后 <code>x = f(x)</code>;②把要改的东西装进可变容器(dict/list/对象属性);③或直接用一个类。生产代码里,<span class="hl">函数要么返回结果,要么就地修改传入的可变对象,二选一,绝不混着来</span>。</p>
+</div>
+
+<h2>§4.3 默认参数与经典坑</h2>
+
+<p>默认参数语法 <code>def f(a, b=10)</code> 与 C++ 相同,但有一个 C++ 没有的坑:<b>默认值在定义时求值一次,且被所有调用共享</b>。用可变对象做默认值,等于让所有调用共用同一个列表——这是 Python 界排名前三的经典 bug。</p>
+
+<div class="code-title">示例 4-3 可变默认参数坑与修复</div>
+<pre class="code"># 反例:全世界的 Python 初学者都会踩的坑
+def add_item(item, bag=[]):          # 默认列表只创建一次!
+    bag.append(item)
+    return bag
+
+
+print(add_item("苹果"))              # ['苹果']
+print(add_item("香蕉"))              # ['苹果', '香蕉']  ← 上一次的残留!
+# 不同调用者共享了同一个默认列表
+
+# 正例:None 哨兵 + 函数内创建
+def add_item_ok(item, bag=None):
+    if bag is None:                  # 每次调用都新建列表
+        bag = []
+    bag.append(item)
+    return bag
+
+
+print(add_item_ok("苹果"))           # ['苹果']
+print(add_item_ok("香蕉"))           # ['香蕉']
+
+# 不可变默认值(数字/字符串/None)没有此问题,放心用
+def greet(name, greeting="你好"):    # "你好" 是不可变 str
+    return f"{greeting}, {name}"</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:以为默认参数"每次调用重新求值"</div>
+<p>默认参数在 <code>def</code> 执行时求值一次(模块加载时),之后是同一个对象。可变的默认值(列表/字典/集合)被修改后,污染会保留给下一次调用。生产纪律:<span class="hl">默认参数只允许不可变对象;需要可变就用 <code>None</code> 哨兵 + 函数内创建</span>。这条规则比背一万个 API 都值钱。</p>
+</div>
+
+<h2>§4.4 关键字参数、*args 与 **kwargs</h2>
+
+<p>Python 函数调用时可以用<b>关键字参数</b>按名字传参:<code>f(a=1, b=2)</code>——调用顺序可以与定义顺序不同,这是 C 没有的能力。参数定义侧还可以用 <code>*args</code>(收位置参数的元组)与 <code>**kwargs</code>(收关键字参数的字典);调用侧用 <code>*iterable</code> 展开序列、<code>**dict</code> 展开映射。3.8+/3.10+ 的分隔符语法:<code>/</code> 前只能按位置传,<code>*</code> 后必须按关键字传。</p>
+
+<div class="code-title">示例 4-4 参数全家桶</div>
+<pre class="code">def connect(host, port, timeout=30, *, use_ssl=True):
+    """* 之后的参数必须按关键字传"""
+    print(host, port, timeout, use_ssl)
+
+
+connect("db.example.com", 5432)                 # 位置 + 默认
+connect("db.example.com", 5432, timeout=5)      # 关键字覆盖默认
+connect(host="h", port=1, use_ssl=False)        # 全关键字,顺序随意
+# connect("h", 1, True)        # TypeError: use_ssl 必须关键字
+
+
+def log(level, *messages, **extra):
+    """*messages 收任意多个位置参数,**extra 收任意关键字"""
+    print(f"[{level}]", " ".join(str(m) for m in messages))
+    for k, v in extra.items():
+        print(f"    {k} = {v}")
+
+
+log("INFO", "启动完成", "耗时 0.3s", user="alice", env="prod")
+
+# 调用侧展开
+params = {"host": "h", "port": 1}
+connect(**params)                # 等价 connect(host="h", port=1)
+nums = [1, 2, 3]
+print(*nums)                     # 1 2 3(等价 print(1, 2, 3))</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:签名设计三原则</div>
+<p>① 参数多于 4 个时,考虑把强相关的几个收进 <code>**kwargs</code> 或数据类(第14章);② 布尔开关参数一律用关键字调用,调用处写 <code>send(data, retry=True)</code> 而不是 <code>send(data, 1, 0)</code>,否则没人知道 <code>True</code> 是谁;③ <code>*args</code>/<code>**kwargs</code> 主要用于"转发"(写框架、装饰器,第12章),业务函数别滥用——丢失了签名可读性。</p>
+</div>
+
+<h2>§4.5 返回值:多返回值与 None</h2>
+
+<p>C 的函数只能返回一个值,多值靠出参指针或结构体;Python 返回元组即可:<code>return a, b</code>(打包),调用方 <code>x, y = f()</code>(解包)。没有显式 <code>return</code> 的函数返回 <code>None</code>——它就是 C 的 <code>void</code> 加上"无值"标记。C 的错误返回约定(返回 -1/errno)在 Python 里由<b>异常</b>取代(第9章);返回 <code>None</code> 表示"没有结果"是合法的数据语义。</p>
+
+<div class="code-title">示例 4-5 多返回值</div>
+<pre class="code">def stats(nums: list) -&gt; tuple:
+    """返回 (总和, 个数, 平均值);空列表平均值为 None"""
+    total = sum(nums)
+    count = len(nums)
+    avg = total / count if count else None
+    return total, count, avg          # 打包成元组返回
+
+
+total, count, avg = stats([10, 20, 30])   # 解包接收
+print(total, count, avg)              # 60 3 20.0
+
+# 丢弃不需要的值
+_, n, _ = stats([1, 2, 3])
+print(n)                              # 3
+
+# C 的"出参"风格(不推荐):刻意不这么写
+# def fill(buf): buf["x"] = 1  —— 除非是就地修改已有容器</pre>
+
+<h2>§4.6 一等函数:lambda 与高阶函数</h2>
+
+<p>函数是对象:<code>f = len; f([1,2])</code> 合法;函数可以放进 list/dict,可以传参、返回。lambda 是单表达式匿名函数,等价于 C 的回调函数指针——但写法短得多。对照关系:</p>
+
+<table class="cmp">
+<tr><th>C 的做法</th><th>Python 的做法</th></tr>
+<tr><td><code>qsort(a, n, sz, cmp)</code> 传比较函数指针</td><td><code>sorted(a, key=func)</code> 传取键函数</td></tr>
+<tr><td><code>void (*cb)(int); register_cb(cb);</code></td><td><code>cb = lambda x: print(x); register_cb(cb)</code></td></tr>
+<tr><td>函数只能全局定义</td><td>函数可嵌套、可捕获变量(闭包)</td></tr>
+<tr><td>回调里传状态要 void* ctx</td><td>闭包直接捕获,无需额外参数</td></tr>
+</table>
+
+<p>Python 官方推荐的高阶函数风格:</p>
+<ul>
+<li><code>sorted(data, key=func)</code> — 按 key 排序,取代 C 的 <code>qsort</code> + 比较回调</li>
+<li><code>map(func, it)</code> / <code>filter(func, it)</code> — 批量映射/过滤(常被列表推导替代,但 map 惰性)</li>
+<li><code>functools.reduce</code> — 归约(求积等;可读性差,慎用)</li>
+<li>把函数存进 dict 做"分发表"(第3章实验已见)</li>
+</ul>
+
+<div class="code-title">示例 4-6 高阶函数与 lambda</div>
+<pre class="code">users = [
+    {"name": "李雷", "age": 18},
+    {"name": "韩梅梅", "age": 17},
+    {"name": "张三", "age": 22},
+]
+
+# key 参数:排序的"取键函数"(取代 qsort 的比较回调)
+by_age = sorted(users, key=lambda u: u["age"])
+print([u["name"] for u in by_age])          # 韩梅梅 李雷 张三
+
+by_name = sorted(users, key=lambda u: u["name"])   # 字符串排序
+
+# map/filter:惰性迭代器
+ages = map(lambda u: u["age"], users)       # 不立即执行
+print(list(ages))                           # [18, 17, 22]
+
+adults = filter(lambda u: u["age"] &gt;= 18, users)
+print([u["name"] for u in adults])          # 李雷 张三
+
+# 函数作返回值:工厂
+def make_multiplier(k):
+    def mul(x):
+        return x * k
+    return mul
+
+
+double = make_multiplier(2)
+print(double(21))                           # 42</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:lambda 用不用</div>
+<p>lambda 体只能有一个表达式——逻辑超过一行,立刻改用 <code>def</code> 并起个名字。生产判据:给这个 lambda 起名后,名字能否说明意图?能(<code>key=lambda u: u["age"]</code>),用;不能,写 def。另外排序的 key 函数调用次数是 O(n log n),昂贵操作(如解析时间戳)请先缓存(<code>users.sort(key=cache)</code> 或提前构造键值对)。</p>
+</div>
+
+<h2>§4.7 闭包与晚期绑定坑</h2>
+
+<p>闭包 = 函数 + 它捕获的外部变量。上面的 <code>make_multiplier</code> 就是闭包:<code>mul</code> 捕获了 <code>k</code>。C 的函数指针做不到这点——被指向的函数没有"记忆"。但闭包有一个著名陷阱:<b>晚期绑定</b>——闭包捕获的是变量本身,不是创建时的值。循环里创建的一批闭包,全部共享循环结束后的最终值:</p>
+
+<div class="code-title">示例 4-7 晚期绑定坑与修复</div>
+<pre class="code"># 坑:循环里生成 3 个闭包,想记住 i=0,1,2
+funcs = []
+for i in range(3):
+    funcs.append(lambda: i)          # 捕获的是变量 i 本身!
+
+print([f() for f in funcs])          # [2, 2, 2]  ← 全是 2!
+
+# 修复一:默认参数立即绑定值(推荐,简单)
+funcs = []
+for i in range(3):
+    funcs.append(lambda i=i: i)      # i=i:默认参数在定义时求值
+print([f() for f in funcs])          # [0, 1, 2]
+
+# 修复二:工厂函数(更明确)
+def make_fn(i):
+    return lambda: i
+
+
+funcs = [make_fn(i) for i in range(3)]
+print([f() for f in funcs])          # [0, 1, 2]</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:以为闭包"拍快照"了创建时的值</div>
+<p>闭包捕获的是<b>变量单元</b>而非值。在循环/回调场景(定时器、事件、线程池提交任务)里,所有闭包会看到循环变量的最终值。修复首选"默认参数绑定" <code>lambda i=i: i</code>;语义上它把当前值固化到函数自己的局部变量里。生产事故经典场景:for 循环里给按钮绑定回调,点哪个都是最后一个——记住这个坑,第9章线程池还会再见它。</p>
+</div>
+
+<h2>§4.8 递归与深度限制</h2>
+
+<p>Python 支持递归,但有<b>深度限制</b>(默认 1000,<code>sys.getrecursionlimit()</code> 可查)。C 的递归受栈大小限制(通常几万层);Python 的每个调用帧开销大,1000 层就会抛 <code>RecursionError</code>。没有尾递归优化(PEP 622 之类一直未落地),不要指望编译器帮你。生产结论:深度可能超过几百的递归(树/图遍历通常没问题,链表求长等线性递归要小心),改写成迭代或用显式栈。</p>
+
+<div class="code-title">示例 4-8 递归与迭代改写</div>
+<pre class="code">import sys
+print(sys.getrecursionlimit())       # 1000(默认)
+
+# 经典递归:目录树节点求和(深度可控,放心用)
+def tree_sum(node):
+    total = node.get("value", 0)
+    for child in node.get("children", []):
+        total += tree_sum(child)
+    return total
+
+
+# 线性递归:深度 = n,大 n 会炸
+def fact(n):
+    return 1 if n &lt;= 1 else n * fact(n - 1)
+
+
+# 改迭代:显式栈(深度任意)
+def fact_iter(n):
+    result = 1
+    while n &gt; 1:
+        result *= n
+        n -= 1
+    return result
+
+
+print(fact(10), fact_iter(10))       # 3628800 3628800
+# sys.setrecursionlimit(10000)       # 可调,但只是推迟问题</pre>
+
+<h2>§4.9 入口与结构:__name__ == "__main__"</h2>
+
+<p>C 程序的入口是 <code>main()</code>;Python 没有固定入口——模块顶层代码直接执行。习惯上把"运行时动作"放进 <code>main()</code>,并用 <code>if __name__ == "__main__":</code> 保护:</p>
+
+<table class="cmp">
+<tr><th>C 程序</th><th>Python 脚本</th></tr>
+<tr><td><code>int main(int argc, char **argv)</code></td><td><code>def main(): ...</code>(无强制签名)</td></tr>
+<tr><td>运行即从 main 开始</td><td>顶层代码从上到下执行</td></tr>
+<tr><td>—(无"导入"概念)</td><td><code>if __name__ == "__main__": main()</code> 防导入副作用</td></tr>
+<tr><td><code>argc</code>/<code>argv</code></td><td><code>sys.argv</code>(第7章)</td></tr>
+</table>
+
+<p>直接运行本文件时 <code>__name__</code> 是 <code>"__main__"</code>,被 import 时是模块名——于是同一个文件既能当脚本跑,又能被导入复用函数而不会误触发副作用。这是 Python 脚本组织的第一纪律。</p>
+
+<div class="code-title">示例 4-9 main 守卫</div>
+<pre class="code"># tools.py
+def fetch_data(url: str) -&gt; str:
+    return f"模拟数据:{url}"
+
+
+def process(text: str) -&gt; int:
+    return len(text)
+
+
+def main() -&gt; None:
+    data = fetch_data("https://example.com")
+    print(f"处理结果:{process(data)}")
+
+
+if __name__ == "__main__":
+    main()          # python tools.py 时执行
+# 被 import tools 时,main() 不会执行——这是关键</pre>
+
+<h2>本章速查表</h2>
+<table class="cmp">
+<tr><th>主题</th><th>写法 / 结论</th></tr>
+<tr><td>定义</td><td><code>def f(a, b=10) -&gt; int:</code> 冒号 + 缩进;docstring 三引号</td></tr>
+<tr><td>调用</td><td>位置参数、关键字参数 <code>f(a=1)</code>、混用(位置在前)</td></tr>
+<tr><td>传参语义</td><td>传对象引用:就地修改可变对象影响外部;重新赋值不影响</td></tr>
+<tr><td>改外部变量</td><td>没有引用语法;用返回值或就地修改可变对象</td></tr>
+<tr><td>默认参数</td><td>定义时求值一次;可变默认值用 <code>None</code> 哨兵</td></tr>
+<tr><td>*args</td><td>收位置参数为元组;<code>print(*nums)</code> 调用侧展开</td></tr>
+<tr><td>**kwargs</td><td>收关键字参数为字典;<code>connect(**params)</code> 展开</td></tr>
+<tr><td>分隔符</td><td><code>/</code> 前只能位置;<code>*</code> 后必须关键字(3.8+/3.10+)</td></tr>
+<tr><td>多返回值</td><td><code>return a, b</code> + <code>x, y = f()</code>;<code>_</code> 丢弃</td></tr>
+<tr><td>无返回</td><td>返回 <code>None</code>,等价 C 的 void</td></tr>
+<tr><td>lambda</td><td>单表达式;<code>sorted(data, key=lambda u: u["age"])</code></td></tr>
+<tr><td>map/filter</td><td>惰性迭代器;多与推导式二选一</td></tr>
+<tr><td>闭包</td><td>函数捕获外层变量;循环闭包有晚期绑定坑</td></tr>
+<tr><td>晚期绑定修复</td><td><code>lambda i=i: i</code> 或工厂函数</td></tr>
+<tr><td>递归</td><td>默认上限 1000;线性递归改迭代或显式栈</td></tr>
+<tr><td>入口</td><td><code>if __name__ == "__main__": main()</code></td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能说出"传对象引用"的精确语义,并判断任意一段"函数内修改代码"是否影响外部</li>
+<li>能解释可变默认参数 bug 的机制,并写出 None 哨兵修复版</li>
+<li>能写出 *args/**kwargs 的定义与调用侧展开</li>
+<li>能解释 <code>/</code> 与 <code>*</code> 分隔符的作用(PEP 570/3102)</li>
+<li>能写出多返回值函数与解包调用</li>
+<li>能用 key 参数实现按字典字段排序</li>
+<li>能解释 lambda 捕获循环变量的坑,并给出两种修复</li>
+<li>能写出闭包计数器/乘法器工厂</li>
+<li>能说出递归上限默认值与 RecursionError 的应对</li>
+<li>能写出 __name__ 守卫并解释 import 与直接运行的区别</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 写出下列代码的最终输出:<code>def f(a, lst=[]): lst.append(a); return lst</code>,依次调用 <code>f(1)</code>、<code>f(2)</code>、<code>f(3, [9])</code>。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>输出 <code>[1]</code>、<code>[1, 2]</code>、<code>[9, 3]</code>。前两次共享同一个默认列表(定义时创建),第二次看到第一次的残留;第三次显式传了新列表。修复:<code>def f(a, lst=None): lst = [] if lst is None else lst</code>。</p>
+</div>
+
+<div class="q">2. 函数 <code>def g(x): x.append(1); x = [9]; return x</code>,调用 <code>a = [0]; r = g(a)</code> 后,<code>a</code> 与 <code>r</code> 分别是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>a == [0, 1]</code>(append 就地修改,外部可见);<code>r == [9]</code>(重新绑定只影响形参)。这题是传参语义的照妖镜:append 改对象,赋值换标签。</p>
+</div>
+
+<div class="q">3. 用 lambda + sorted 按字符串长度从短到长排序 <code>words = ["python", "c", "rust", "java"]</code>。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>sorted(words, key=lambda w: len(w))</code> → <code>['c', 'rust', 'java', 'python']</code>。要点:key 是"取键函数",不是比较函数——这是与 qsort 比较回调的本质区别。</p>
+</div>
+
+<div class="q">4. 为什么下面的代码输出 <code>[2, 2, 2]</code>?给出修复。<code>funcs = [lambda: i for i in range(3)]; print([f() for f in funcs])</code></div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>晚期绑定:lambda 捕获的是循环变量 <code>i</code> 本身,调用时 i 已是最终值 2。修复:<code>[lambda i=i: i for i in range(3)]</code> 或 <code>[make(i) for i in range(3)]</code> 其中 <code>def make(i): return lambda: i</code>。</p>
+</div>
+
+<div class="q">5. 用 *args 写一个函数 <code>join_all(sep, *parts)</code>,把 parts 用 sep 连接后返回。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<pre class="code">def join_all(sep, *parts):
+    """用 sep 连接任意多个 parts;sep 是普通位置参数"""
+    return sep.join(parts)
+
+
+print(join_all("-", "a", "b", "c"))   # a-b-c
+print(join_all(" ", "Python", "3.10"))  # Python 3.10
+print(join_all("+", *[1, 2, 3]))      # 1+2+3(调用侧展开)</pre>
+</div>
+
+<div class="q">6. 一个函数既有可变默认参数又有递归,深度 2000 的递归会怎样?如何验证与应对?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>抛 <code>RecursionError: maximum recursion depth exceeded</code>(默认上限 1000)。验证:<code>sys.getrecursionlimit()</code>;应对:改写为迭代/显式栈,或万不得已 <code>sys.setrecursionlimit(5000)</code>(只是推迟,且可能触发 C 栈溢出崩溃,生产慎用)。</p>
+</div>
+
+<h2>章末实验题:可配置统计管线</h2>
+<div class="box box-example lab"><div class="box-title">实验 4:可配置的数组统计/过滤管线</div>
+<p><b>实验目标:</b>用函数式风格(回调、闭包、高阶函数、多返回值全覆盖)实现一个数据统计管线:一段数字经过"过滤 → 变换 → 统计"三步,每一步都可配置。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:写 <code>filter_data(data, keep)</code>,keep 是谓词回调(如"只保留正数"),返回新列表且不修改原列表(知识点:传对象引用、回调、列表推导)</li>
+<li>任务 2:写 <code>map_data(data, transform)</code>,transform 是变换回调(如平方、放大倍数)(知识点:高阶函数)</li>
+<li>任务 3:写 <code>make_range_checker(lo, hi)</code> 闭包工厂,返回"判断 x 是否在 [lo, hi]"的谓词;验证不同工厂实例互不干扰(知识点:闭包、工厂)</li>
+<li>任务 4:写 <code>make_scaler(k)</code> 闭包工厂,返回乘以 k 的变换函数;同时演示晚期绑定坑,用 <code>lambda k=k:</code> 修复后给三个缩放器 k=1,2,3 分别映射(知识点:晚期绑定与修复)</li>
+<li>任务 5:写 <code>statistics(data)</code> 返回 (总和, 个数, 平均值, 最大, 最小) 五元组,空列表返回 None 平均(知识点:多返回值)</li>
+<li>任务 6:主流程用 <code>if __name__ == "__main__":</code> 驱动:过滤 → 变换 → 统计 三步,每步打印输入/输出;默认参数全部用 None 哨兵风格设计(知识点:main 守卫、默认参数)</li>
+</ul>
+<p><b>实验环境:</b>Python 3.10+,单文件 <code>pipeline.py</code>。</p></div>
+<ol class="steps">
+<li>先写三个工厂函数(make_range_checker/make_scaler),它们返回闭包——先跑通"闭包有记忆"的直觉</li>
+<li>filter_data 与 map_data 内部用列表推导实现,保持"不修改入参"的纯函数风格</li>
+<li>统计函数返回五元组,调用处用 <code>total, count, avg, mx, mn = ...</code> 解包</li>
+<li>最后用守卫把三阶段串起来,每个阶段打印前后数据,肉眼验证</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案要点(代码分两段)</div>
+<p>第一段:纯函数与闭包工厂。核心设计:数据流单向(入参只读、返回新列表),工厂闭包携带私有状态——这是函数式风格的骨架。</p>
+<pre class="code"># pipeline.py —— 可配置统计管线(覆盖第4章全部知识点)
+
+
+def filter_data(data: list, keep) -&gt; list:
+    """按谓词 keep 过滤,返回新列表,不修改入参"""
+    return [x for x in data if keep(x)]
+
+
+def map_data(data: list, transform) -&gt; list:
+    """按变换 transform 映射,返回新列表"""
+    return [transform(x) for x in data]
+
+
+def make_range_checker(lo, hi):
+    """闭包工厂:返回"判断 x 是否在 [lo, hi]"的谓词"""
+    def keep(x):
+        return lo &lt;= x &lt;= hi       # 链式比较
+    return keep
+
+
+def make_scaler(k):
+    """闭包工厂:返回乘以 k 的变换函数"""
+    def scale(x):
+        return x * k
+    return scale
+
+
+def statistics(data: list) -&gt; tuple:
+    """多返回值:返回 (总和, 个数, 平均值, 最大, 最小)"""
+    total = sum(data)
+    count = len(data)
+    avg = total / count if count else None
+    return total, count, avg, max(data, default=None), min(data, default=None)</pre>
+<p>第二段:主流程。演示晚期绑定坑与修复——循环里生成三个缩放器,不修复则全部按最后一个 k 缩放。</p>
+<pre class="code">def main() -&gt; None:
+    raw = [3, -1, 7, 0, 4, -5, 9, 2]
+
+    # 1. 过滤:闭包工厂产生谓词
+    keep_positive = make_range_checker(0, 10**9)
+    step1 = filter_data(raw, keep_positive)
+    print(f"过滤后: {step1}")
+
+    # 2. 变换:演示晚期绑定坑
+    # 反例:三个缩放器共享循环变量 k,全变成 ×3
+    bad = [make_scaler(k) for k in (1, 2, 3)]
+    print(f"坑: {[f(10) for f in bad]}")          # [30, 30, 30]
+
+    # 修复:默认参数立即绑定
+    def make_scaler_fixed(k, _k=k):
+        return lambda x: x * _k
+
+    ok = [make_scaler_fixed(k) for k in (1, 2, 3)]
+    print(f"修复: {[f(10) for f in ok]}")          # [10, 20, 30]
+
+    # 3. 变换:平方后取正数区
+    step2 = map_data(step1, lambda x: x * x)
+    step3 = filter_data(step2, keep_positive)
+    print(f"平方后: {step2}")
+
+    # 4. 统计:多返回值解包
+    total, count, avg, mx, mn = statistics(step3)
+    print(f"个数={count} 总和={total} 平均={avg} "
+          f"最大={mx} 最小={mn}")
+
+    # 5. 空列表语义:平均值为 None
+    print(statistics([]))          # (0, 0, None, None, None)
+
+
+if __name__ == "__main__":
+    main()</pre>
+<p><b>设计说明:</b>① 管线各阶段是纯函数(只读入参、返回新列表),可以任意组合、单独测试——这是函数式风格的工程收益;② 晚期绑定修复用了"默认参数立即绑定"技巧,并在实验里同时演示"坑"与"修复",读代码的人一眼看懂两种行为;③ 统计函数返回五元组,主流程一次性解包,避免了 5 个全局变量;④ main 守卫保证本文件既可 <code>python pipeline.py</code> 运行,也可被导入复用 <code>filter_data</code> 等函数。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第5章 内存管理——引用计数与分代 GC 的工作原理、gc 模块、循环引用与 __del__ 的坑、with 上下文管理器,以及"在 GC 语言里内存泄漏怎么发生"。</p>
+
+</body>
+</html>

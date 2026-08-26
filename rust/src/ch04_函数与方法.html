@@ -1,0 +1,747 @@
+<title>第4章 函数与方法</title>
+<!-- no-katex -->
+<style>.box-answer { break-inside: auto; page-break-inside: auto; }</style>
+<div class="kicker">FROM C TO RUST · PRODUCTION READY</div>
+<h1 class="chapter-title">第4章 函数与方法</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握函数定义语法:fn 关键字、参数、返回类型、表达式与语句的区分</li>
+<li>深入理解<span class="hl">参数传递的所有权模型</span>:传值拷贝 vs 所有权移动 vs 借用——C 的"传值 + 指针模拟引用"如何被 Rust 的显式语义取代</li>
+<li>掌握多返回值(元组)与解构接收;了解返回引用的限制(第5章展开生命周期)</li>
+<li>掌握方法:impl 块、self/&amp;self/&amp;mut self 三态、关联函数(构造函数惯例)</li>
+<li>掌握闭包语法与<span class="hl">捕获三态 Fn / FnMut / FnOnce</span>,理解 move 关键字,体会闭包如何超越 C 的函数指针</li>
+<li>掌握高阶函数:map/filter/fold、函数作为参数与返回值</li>
+<li>理解 Rust 没有重载与默认参数,掌握生产替代方案(泛型、配置结构体、不同函数名)</li>
+<li>了解递归与栈溢出、main 的形态(env::args 替代 argc/argv)、Result 错误返回约定</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Rust:本章主题如何迁移</div>
+<p>C 的函数只有一种"传参哲学":值传递。想修改外部,就传指针;想传大结构体,也传指针。于是每个函数签名都要靠程序员心算"这个指针会不会被改、生命周期到哪"——信息全在注释和约定里,编译器一概不管。Rust 把参数传递分成三种显式语义:<span class="hl">按值移动(move)、不可变借用(&amp;T)、可变借用(&amp;mut T)</span>,写进签名,由编译器强制执行。C 程序员最需要改的习惯是:"传指针"在 Rust 里要明确回答——你要借来看,还是要借去改,还是要整个拿走?</p>
+<p>C 的函数指针是二等公民:能存、能传,但捕获不了上下文(回调需要额外的 void* 参数手工传递状态)。Rust 的闭包把"函数 + 捕获的环境"打包成一个整体,而且捕获方式受控(三态 Fn/FnMut/FnOnce)。你在 C 里见过的 <code>qsort(data, n, sizeof(int), cmp)</code> 式回调,在 Rust 里变成 <code>data.sort_by(|a, b| a.cmp(b))</code>——更短,且不依赖任何全局状态。</p>
+<p>Rust 没有重载、没有默认参数、没有可变参数(printf 式)。初看像倒退,实际是把"同名不同义"的暧昧从语言里赶走:重载造成的隐式转换与歧义(C++ 里 <code>f(1)</code> 该调哪个 f?)在 Rust 中不存在,替代品是泛型(第10章)、配置结构体和 Builder。函数签名于是成为精确契约:<span class="hl">看到 fn f(x: &amp;str) -&gt; Result&lt;i32, Err&gt;,你就知道它借用一个字符串、可能失败</span>——这比 C 里任何注释都可靠。</p>
+<p>最后是"入口与出口":Rust 的 main 没有 argc/argv(用 env::args() 获取),函数没有 errno(错误通过返回值 Result 显式传播,第9章详解)。整章的主线可以概括为一句话:<span class="hl">函数的一切约定,都从"注释里的口头协议"变成"签名里的类型契约"</span>。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>C 的函数定义、值传递、指针参数、返回语句</li>
+<li>C 的函数指针:typedef、回调(如 qsort 的 cmp)</li>
+<li>C 的 argc/argv、errno 错误返回约定</li>
+<li>C 的 struct 与"传结构体指针"惯用法</li>
+<li>第1–3章:所有权伏笔、Option、match、迭代器基本遍历</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(约1小时):</b>§4.1–§4.3,吃透参数传递三态——本章最核心的概念</li>
+<li><b>第二阶段(约1.5小时):</b>§4.4–§4.6,方法与闭包;闭包三态多写几遍直到形成直觉</li>
+<li><b>第三阶段(约1.5小时):</b>§4.7–§4.8 与章末实验,把高阶函数用进真实管线</li>
+<li><b>验收标准:</b>能说出"传 &amp;T、传 &amp;mut T、传 T"各适用什么场景;能写出 Fn/FnMut/FnOnce 三个闭包示例</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map">
+<ul>
+<li>§4.1 函数定义与调用:fn、参数、返回、表达式风格</li>
+<li>§4.2 参数传递:所有权移动 vs 借用(全对照表)</li>
+<li>§4.3 返回值:多返回值、引用返回与生命周期预告</li>
+<li>§4.4 方法:impl、self 三态、关联函数</li>
+<li>§4.5 闭包:语法、捕获三态 Fn/FnMut/FnOnce、move</li>
+<li>§4.6 高阶函数:函数指针、map/filter/fold、回调</li>
+<li>§4.7 无重载无默认参数:替代方案;递归与栈溢出</li>
+<li>§4.8 入口与错误返回:main、env::args、Result 约定</li>
+<li>速查表 → 最小必会清单 → 自测题 → 章末实验</li>
+</ul>
+</div>
+
+<h2>§4.1 函数定义与调用</h2>
+
+<h3>4.1.1 基本形态</h3>
+<p>函数以 <code>fn</code> 开头,参数必须注解类型,返回类型用 <code>-&gt;</code> 声明(没有返回值时省略)。函数体是表达式风格:最后一个不带分号的表达式就是返回值,等价于 C 的 return:</p>
+
+<pre class="code">// C: int add(int a, int b) { return a + b; }
+fn add(a: i32, b: i32) -&gt; i32 {
+    a + b                    // 无分号:这是函数的返回值
+}
+
+// 无返回值:C 的 void;实际返回单元类型 ()
+fn greet(name: &amp;str) {
+    println!("你好,{name}");
+    // 没有 return 语句
+}
+
+// 显式 return 也合法:提前返回时用
+fn abs(n: i32) -&gt; i32 {
+    if n &lt; 0 {
+        return -n;           // 提前返回
+    }
+    n
+}
+
+fn main() {
+    println!("{}", add(3, 4));   // 7
+    greet("张三");
+    println!("{}", abs(-5));     // 5
+}</pre>
+
+<h3>4.1.2 语句与表达式:函数体是"表达式串"</h3>
+<p>每个函数体可以看作一列"表达式 + 分号":<span class="hl">带分号的是语句(执行副作用,值被丢弃),最后一个不带分号的表达式是函数的值</span>。C 程序员最常见的编译错误 "expected `()`, found `i32`" 或相反,根源都是"最后一行该不该加分号"——检查顺序:函数声明了 <code>-&gt; i32</code>,最后一行就必须是 i32 表达式,不能加分号。</p>
+
+<div class="box box-example"><div class="box-title">示例 4-1 三种返回值写法对照</div>
+<pre class="code">fn f1() -&gt; i32 {
+    return 42;               // C 风格:显式 return
+}
+
+fn f2() -&gt; i32 {
+    42                       // Rust 风格:尾表达式
+}
+
+fn f3() -&gt; i32 {
+    let x = 40;
+    x + 2                    // 尾表达式可以是任意表达式
+}
+
+fn main() {
+    println!("{} {} {}", f1(), f2(), f3());
+}</pre>
+</div>
+
+<h2>§4.2 参数传递:移动与借用(本章核心)</h2>
+
+<h3>4.2.1 C 的"值 + 指针"二分 vs Rust 的"移动 + 借用"三分</h3>
+<p>C 的规则很简单:一切按值拷贝;想影响外部就传指针。但"传指针"到底是只读还是可写,靠的是注释和程序员自觉。Rust 把参数传递显式分成三种,写进类型签名:</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>Rust 的写法</th><th>语义</th></tr>
+<tr><td>void f(int x)</td><td>fn f(x: i32)</td><td>传值:内部修改不影响外部(C 同理)</td></tr>
+<tr><td>void f(const int *p)</td><td>fn f(x: &amp;i32)</td><td>不可变借用:只看不改(C 靠 const 约定)</td></tr>
+<tr><td>void f(int *p)</td><td>fn f(x: &amp;mut i32)</td><td>可变借用:可修改外部(编译器强制独占)</td></tr>
+<tr><td>void f(Item *p)(大结构体)</td><td>fn f(x: &amp;Item)</td><td>只读借用,不拷贝(替代 C 的传指针省拷贝)</td></tr>
+<tr><td>(无对应)</td><td>fn f(x: Item)</td><td>所有权移动:数据被搬进函数,调用后原变量失效</td></tr>
+</table>
+
+<h3>4.2.2 移动语义:值被"搬走"而不是"拷贝"</h3>
+<p>第5章会系统讲所有权,这里先看行为:<span class="hl">对 String、Vec 等"拥有堆数据"的类型,按值传参意味着所有权从调用方转移到函数内部</span>;调用后原变量不再可用(编译器报 moved 错误)。对 i32 等 Copy 类型,传参就是拷贝,原变量照常可用:</p>
+
+<pre class="code">fn take(s: String) {
+    println!("收到:{s}");
+} // 离开作用域,String 被自动释放(第5章的 drop)
+
+fn main() {
+    let name = String::from("张三");
+    take(name);                  // 所有权被搬进 take
+    // println!("{name}");       // 编译错误:value borrowed after move
+    let n = 5;
+    add_and_print(n);            // i32 是 Copy:只是拷贝
+    println!("{n}");             // 5,照常可用
+}
+
+fn add_and_print(x: i32) {
+    println!("{}", x + 1);
+}</pre>
+
+<h3>4.2.3 借用参数:&amp;T 与 &amp;mut T</h3>
+<p>当函数只需要"看"数据时,传 <code>&amp;T</code>(不可变借用)——不拷贝大对象,也不搬走所有权;需要"改"外部数据时,传 <code>&amp;mut T</code>。C 里 <code>f(&amp;x)</code> 之后 x 的命运全靠约定,Rust 里签名直接写死:</p>
+
+<pre class="code">// 只读借用:可以传数组、Vec、String 的任何"视图"
+fn total(v: &amp;[i32]) -&gt; i32 {
+    let mut s = 0;
+    for &amp;x in v {
+        s += x;
+    }
+    s
+}
+
+// 可变借用:直接修改外部数据,不需要 C 的解引用链
+fn bump(x: &amp;mut i32, by: i32) {
+    *x += by;                   // *x 解引用,与 C 的 *p 相同
+}
+
+fn main() {
+    let arr = [1, 2, 3, 4];
+    println!("{}", total(&amp;arr));          // 10:传 &amp;arr 借出
+
+    let mut score = 80;
+    bump(&amp;mut score, 5);                  // 修改外部变量
+    println!("{score}");                  // 85
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 1:传参时漏写 &amp;,或把 &amp;mut 当 &amp; 用</div>
+<p>三种报错天天见:<b>①</b> <code>fn f(x: &amp;i32)</code> 却写 <code>f(x)</code>——编译器提示 "expected &amp;i32, found i32",补上 <code>&amp;x</code>;<b>②</b> 函数签名是 <code>&amp;mut i32</code>,调用处必须 <code>&amp;mut x</code>,且调用前 x 必须声明为 mut;<b>③</b> 把可变借用的值再传给只读函数没问题(可以同时借用),但反过来——函数内先拿了 <code>&amp;mut</code> 又想读——要按借用规则排队(第5章详讲)。先记住一句话:<span class="hl">函数要"看"就传 &amp;,要"改"就传 &amp;mut,要"拿走"就传值</span>。</p>
+</div>
+
+<h2>§4.3 返回值</h2>
+
+<h3>4.3.1 多返回值:C 的"输出参数"被元组取代</h3>
+<p>C 里函数要返回多个结果,要么用输出参数 <code>int div(int a, int b, int *q, int *r)</code>,要么定义一个临时结构体。Rust 用元组直接返回,调用处解构:</p>
+
+<pre class="code">// 返回 (商, 余数):元组类型写进签名
+fn div_mod(a: i32, b: i32) -&gt; (i32, i32) {
+    (a / b, a % b)
+}
+
+fn main() {
+    let (q, r) = div_mod(17, 5);       // 解构接收:q=3, r=2
+    println!("商 {q},余数 {r}");
+
+    // 也可以整体存下再取下标
+    let result = div_mod(20, 3);
+    println!("{} ... {}", result.0, result.1);
+}</pre>
+
+<h3>4.3.2 返回引用:生命周期问题初现</h3>
+<p>函数可以返回借用,但编译器要能证明"返回的引用不会悬垂"。这个证明就是生命周期标注(第5章详讲),这里先看两个形态:返回参数里的借用(合法),返回局部变量的借用(编译错误):</p>
+
+<pre class="code">// 合法:返回的引用来自参数(编译器能证明它活得比函数长)
+fn first_word(text: &amp;str) -&gt; &amp;str {
+    match text.find(' ') {
+        Some(pos) =&gt; &amp;text[..pos],
+        None =&gt; text,
+    }
+}
+
+fn main() {
+    let s = String::from("hello world");
+    let w = first_word(&amp;s);
+    println!("第一个单词:{w}");
+
+    // 编译错误:返回局部变量的引用(悬垂引用!)
+    // fn bad() -&gt; &amp;String {
+    //     let s = String::from("x");
+    //     &amp;s    // s 在函数结束时被释放,引用悬空
+    // }
+}</pre>
+
+<h2>§4.4 方法:impl 块</h2>
+
+<h3>4.4.1 方法与 self 三态</h3>
+<p>C 把"对结构体的操作"写成 <code>rect_area(&amp;r)</code> 之类的自由函数;Rust 允许把函数挂在类型上成为<span class="term">方法</span>,第一个参数是 <code>self</code>。self 有三种形态:<span class="hl">self(拿走所有权)、&amp;self(只读)、&amp;mut self(可变)</span>——与参数传递三态完全一致:</p>
+
+<pre class="code">struct Rectangle {
+    width: f64,
+    height: f64,
+}
+
+impl Rectangle {
+    // &amp;self:只读方法(C 的 const 指针版本)
+    fn area(&amp;self) -&gt; f64 {
+        self.width * self.height
+    }
+
+    // &amp;mut self:修改自身
+    fn scale(&amp;mut self, factor: f64) {
+        self.width *= factor;
+        self.height *= factor;
+    }
+
+    // self:消费自身(拿走所有权)
+    fn into_square(self) -&gt; Rectangle {
+        Rectangle { width: self.width, height: self.width }
+    }
+}
+
+fn main() {
+    let mut r = Rectangle { width: 3.0, height: 4.0 };
+    println!("面积:{}", r.area());        // 12(调用后 r 仍可用)
+    r.scale(2.0);                          // 修改 r
+    println!("放大后:{}", r.area());       // 48
+    let sq = r.into_square();              // r 被消费
+    // println!("{}", r.area());           // 编译错误:r 已 move
+    println!("正方形:{}", sq.area());      // 64
+}</pre>
+
+<h3>4.4.2 关联函数:没有 self 的"静态方法"</h3>
+<p>不接收 self 的函数挂在 impl 块里,称为<span class="term">关联函数</span>,用 <code>::</code> 调用;惯例上以 new 命名的关联函数充当构造函数——这替代了 C 里"手写 init 函数 + 调用者负责初始化"的脆弱模式:</p>
+
+<pre class="code">struct Point {
+    x: f64,
+    y: f64,
+}
+
+impl Point {
+    // 关联函数(构造函数惯例):Point::new(...)
+    fn new(x: f64, y: f64) -&gt; Point {
+        Point { x, y }
+    }
+
+    fn origin() -&gt; Point {
+        Point { x: 0.0, y: 0.0 }
+    }
+
+    fn dist(&amp;self, other: &amp;Point) -&gt; f64 {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        (dx * dx + dy * dy).sqrt()
+    }
+}
+
+fn main() {
+    let a = Point::new(1.0, 1.0);        // 关联函数:类型名::函数名
+    let b = Point::origin();
+    println!("距离:{}", a.dist(&amp;b));
+}</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:方法 vs 自由函数的选择</div>
+<ul>
+<li>操作"明显属于"这个类型(读字段、改字段):方法。C 的 <code>strlen(s)</code> 在 Rust 里是 <code>s.len()</code></li>
+<li>两个类型协同的操作(如 point.dist(&amp;other)):方法更自然</li>
+<li>与类型关系不强的纯计算:自由函数,避免"万物皆方法"的 Java 式强迫症</li>
+<li>构造函数一律叫 new,是社区惯例;需要"解析/尝试构造"时用 <code>from_str</code>/<code>try_from</code>(第1章见过)</li>
+</ul>
+</div>
+
+<h2>§4.5 闭包:捕获环境的函数</h2>
+
+<h3>4.5.1 语法:参数与体</h3>
+<pre class="code">fn main() {
+    // C 函数指针:int (*f)(int);Rust 闭包:
+    let double = |x| x * 2;              // 参数类型可推导(常用)
+    let greet = |name: &amp;str| { println!("你好,{name}") };  // 多语句用 {} 包裹
+    println!("{}", double(4));           // 8
+    greet("李四");
+}</pre>
+
+<p>闭包的类型无法显式书写(编译器自动推断),这反而是优点:你只需要写参数与体。闭包与 C 函数指针的本质区别:<span class="hl">闭包能捕获定义处的变量(上下文),函数指针不能</span>。C 要模拟捕获,只能靠额外的 void* 参数。</p>
+
+<h3>4.5.2 捕获三态:Fn / FnMut / FnOnce(必会)</h3>
+<p>闭包按"如何使用捕获的变量"分成三类,对应三个 trait(第6章详解 trait;这里记住行为和名字):</p>
+
+<table class="cmp">
+<tr><th>trait</th><th>捕获方式</th><th>能调用几次</th><th>例子</th></tr>
+<tr><td>Fn</td><td>只读借用(&amp;T)</td><td>任意多次</td><td>|x| x + base(只读 base)</td></tr>
+<tr><td>FnMut</td><td>可变借用(&amp;mut T)</td><td>任意多次</td><td>|x| { total += x; }(改 total)</td></tr>
+<tr><td>FnOnce</td><td>拿走所有权(move)</td><td>一次</td><td>move || drop(owner)</td></tr>
+</table>
+
+<pre class="code">fn main() {
+    // Fn:只"看"不"动"
+    let base = 10;
+    let add = |x| x + base;            // 捕获 &amp;base
+    println!("{} {}", add(1), add(2)); // 可反复调用
+
+    // FnMut:闭包内部修改捕获的变量(计数器模式)
+    let mut total = 0;
+    let mut accumulate = |x: i32| {
+        total += x;                    // 捕获 &amp;mut total
+    };
+    accumulate(5);
+    accumulate(7);
+    println!("累计:{total}");          // 12(借用已结束)
+
+    // FnOnce:把值搬进闭包,之后外部不可再用
+    let owner = String::from("机密数据");
+    let consume = move || println!("{owner}");   // move:彻底搬走
+    consume();
+    // consume();          // 编译错误:FnOnce 只能调用一次
+    // println!("{owner}");// 编译错误:已被搬走
+
+    // 判断口诀:用到值就得 move(FnOnce);改值就是 FnMut;只看就是 Fn
+}</pre>
+
+<h3>4.5.3 move 关键字:主动搬入</h3>
+<p>闭包默认"按需借用"捕获;用 <code>move</code> 强制把所有捕获值搬进闭包。最典型的场景是<span class="hl">把数据交给新线程(第9章)</span>——线程可能活得比函数长,借用必然悬垂,必须 move:</p>
+
+<pre class="code">fn main() {
+    let data = vec![1, 2, 3];
+    // 不 move:闭包借用了 data,离开作用域后 data 被释放,闭包悬垂
+    // let bad = || println!("{data:?}");
+
+    // move:data 的所有权进入闭包,闭包生命周期自持
+    let owned = move || println!("{data:?}");
+    owned();                              // [1, 2, 3]
+    // println!("{data:?}");              // 编译错误:已 move 进闭包
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">易错点 2:闭包调用次数与捕获方式的错配</div>
+<p>经典报错:<b>①</b> "cannot move out of `owner`, a captured variable in an `Fn` closure"——闭包没写 move 却要消费值,给闭包加 move 即可;<b>②</b> "cannot borrow `total` as mutable, as it is not declared as mutable"——闭包要改捕获变量,闭包本身也要声明 mut;<b>③</b> 把一个 FnOnce 闭包存进 Vec 想循环调用——编译器告诉你只能调一次,要么换 FnMut,要么重新设计。三态的区分不是考试题,是编译器每天都在执行的检查:它知道你的闭包会怎么用捕获的变量。</p>
+</div>
+
+<h2>§4.6 高阶函数:函数作为参数与返回值</h2>
+
+<h3>4.6.1 函数指针类型 fn 与回调</h3>
+<p>函数名本身就是值,类型写作 <code>fn(i32) -&gt; i32</code>(与 C 的函数指针一一对应,但写法不带星号)。接受函数参数的函数叫高阶函数:</p>
+
+<pre class="code">// 接受"处理函数"作参数:C 的 void apply(int *a, int n, int (*f)(int))
+fn apply_each(data: &amp;[i32], f: fn(i32) -&gt; i32) -&gt; Vec&lt;i32&gt; {
+    let mut out = Vec::new();
+    for &amp;x in data {
+        out.push(f(x));
+    }
+    out
+}
+
+fn triple(x: i32) -&gt; i32 {
+    x * 3
+}
+
+fn main() {
+    let nums = [1, 2, 3, 4];
+    let tripled = apply_each(&amp;nums, triple);   // 传函数名
+    println!("{tripled:?}");                   // [3, 6, 9, 12]
+
+    // 函数指针也是值:可以存、可以传
+    let f: fn(i32) -&gt; i32 = triple;
+    println!("{}", f(5));                      // 15
+}</pre>
+
+<h3>4.6.2 迭代器方法链:map / filter / fold</h3>
+<p>标准库把"遍历 + 变换 + 归约"做成了迭代器方法,配合闭包使用——这是 C 里必须手写循环三件套(map 之于 for 循环,filter 之于 if 判断,fold 之于累加):</p>
+
+<pre class="code">fn main() {
+    let data = [3, 5, 8, 12, 15, 20];
+
+    // map:每个元素变换(等价 C 的"循环里 push 新值")
+    let doubled: Vec&lt;i32&gt; = data.iter().map(|x| x * 2).collect();
+    println!("{doubled:?}");
+
+    // filter:按条件筛选(等价 C 的"循环里 if 判断再 push")
+    let evens: Vec&lt;&amp;i32&gt; = data.iter().filter(|&amp;&amp;x| x % 2 == 0).collect();
+    println!("{evens:?}");
+
+    // fold:归约成单个值(等价 C 的累加器)
+    let sum: i32 = data.iter().fold(0, |acc, &amp;x| acc + x);
+    println!("{sum}");
+
+    // 链式组合:筛选 → 变换 → 求和,一次遍历
+    let result: i32 = data.iter()
+        .filter(|&amp;&amp;x| x &gt; 5)
+        .map(|x| x * x)
+        .fold(0, |acc, x| acc + x);
+    println!("{result}");   // 8^2+12^2+15^2+20^2 = 713
+}</pre>
+
+<p>注意 <code>filter</code> 的闭包参数是 <code>&amp;&amp;i32</code>(迭代器产生引用,filter 又传引用),写法 <code>|&amp;&amp;x|</code> 直接解构——这是 Rust 迭代器中最常见的一个"仪式感",见多了自然记住。</p>
+
+<h2>§4.7 没有重载与默认参数:替代方案</h2>
+
+<h3>4.7.1 重载的替代</h3>
+<p>C 没有重载(靠不同函数名),C++ 有静态重载。Rust 没有重载,但有更系统的替代:<span class="hl">① 泛型</span>(第10章)——<code>fn max&lt;T: PartialOrd&gt;(a: T, b: T) -&gt; T</code> 一个函数服务所有类型;<span class="hl">② 枚举参数</span>——把"同操作不同细节"收进一个枚举;<span class="hl">③ 不同函数名</span>——<code>from_bytes</code>、<code>from_str</code> 明确区分。结论:重载带来的"同名歧义"被消灭,代价是函数名略长。</p>
+
+<h3>4.7.2 默认参数的替代:配置结构体</h3>
+<pre class="code">// C 的典型场景:draw(color, width, style) 想省略参数——用宏或重载;
+// Rust 的做法:把可选项收进配置结构体,配合 Default 与更新语法
+struct DrawOpts {
+    color: u32,
+    width: u32,
+    style: &amp;'static str,
+}
+
+impl DrawOpts {
+    fn default() -&gt; Self {
+        DrawOpts { color: 0x000000, width: 1, style: "solid" }
+    }
+}
+
+fn draw(opts: &amp;DrawOpts) {
+    println!("画 {},颜色 0x{:06X},{}px", opts.style, opts.color, opts.width);
+}
+
+fn main() {
+    let defaults = DrawOpts::default();        // 全默认
+    draw(&amp;defaults);
+
+    // 只改一个参数:..defaults 更新语法(第14章详解)
+    let red = DrawOpts { color: 0xFF0000, ..defaults };
+    draw(&amp;red);
+}</pre>
+
+<h3>4.7.3 递归与栈溢出</h3>
+<pre class="code">fn factorial(n: u64) -&gt; u64 {
+    if n &lt;= 1 {
+        return 1;
+    }
+    n * factorial(n - 1)
+}
+
+fn main() {
+    println!("{}", factorial(5));   // 120
+
+    // 深递归会栈溢出:Rust 与 C 一样使用系统栈(默认 8MB),
+    // 且不保证尾递归优化(TCO)——深递归请改写为循环
+    let mut result: u64 = 1;
+    let mut i = 20;
+    while i &gt; 1 {
+        result *= i;
+        i -= 1;
+    }
+    println!("{result}");
+}</pre>
+
+<h2>§4.8 入口与错误返回约定</h2>
+
+<h3>4.8.1 main 的形态与命令行参数</h3>
+<pre class="code">use std::env;
+
+// C 的 int main(int argc, char *argv[]) → Rust 的 fn main()
+fn main() {
+    // argc/argv 由 env::args() 提供:返回迭代器
+    let args: Vec&lt;String&gt; = env::args().collect();
+    println!("程序名:{}", args[0]);
+    if args.len() &gt; 1 {
+        for (i, a) in args.iter().enumerate().skip(1) {
+            println!("参数 {i}:{a}");
+        }
+    } else {
+        println!("没有参数;用法:程序名 &lt;参数1&gt; ...");
+    }
+}</pre>
+
+<h3>4.8.2 错误返回约定:Result 取代 errno</h3>
+<p>C 的错误返回约定靠 errno + 返回码,调用链上每层都要"检查、传播、清理",漏一层就静默失败。Rust 的约定是<span class="hl">函数签名里直接声明可能失败的返回值类型 Result&lt;T, E&gt;</span>(第9章系统讲):</p>
+
+<pre class="code">// C: int divide(int a, int b, int *out); 返回 errno,成功与否查全局
+// Rust:失败与否写在类型里,调用方必须处理
+fn divide(a: f64, b: f64) -&gt; Result&lt;f64, String&gt; {
+    if b == 0.0 {
+        return Err("除数为零".to_string());
+    }
+    Ok(a / b)
+}
+
+fn main() {
+    match divide(10.0, 2.0) {
+        Ok(v) =&gt; println!("结果:{v}"),
+        Err(e) =&gt; println!("错误:{e}"),
+    }
+    match divide(1.0, 0.0) {
+        Ok(v) =&gt; println!("结果:{v}"),
+        Err(e) =&gt; println!("错误:{e}"),
+    }
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:本章贯穿线索——签名即契约</div>
+<p>回顾全章:参数是 <code>&amp;T</code> 还是 <code>&amp;mut T</code> 还是 <code>T</code>,方法取 <code>&amp;self</code> 还是 <code>self</code>,闭包是 Fn 还是 FnOnce,返回值是 <code>i32</code> 还是 <code>Result&lt;i32, E&gt;</code>——<span class="hl">每个决定都写在签名里,编译器逐条执行</span>。C 程序里那些"看注释才知道的约定",在 Rust 里都是类型。写函数时先想清楚签名,再写体;这是 Rust 生产开发的头号习惯。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">易错点 3:需要"函数做参数"时,优先闭包而不是 fn 指针</div>
+<p>fn 指针类型 <code>fn(i32) -&gt; i32</code> 不能捕获环境(它只是裸函数地址);闭包能捕获。生产里"回调参数"的签名优先写成泛型 <code>F: Fn(...)</code> 或 <code>&amp;impl Fn(...)</code>,除非明确不需要捕获。对照 C:函数指针是唯一选项,所以 C 的回调都要靠"上下文指针"参数传状态;Rust 的闭包把"上下文"打包进闭包自身,少一个容易接错的 void*。</p>
+</div>
+
+<h2>本章速查表</h2>
+<table>
+<tr><th>主题</th><th>结论 / 写法</th></tr>
+<tr><td>函数定义</td><td>fn name(a: i32, b: i32) -&gt; i32 { ... };无返回值省略 -&gt;</td></tr>
+<tr><td>返回值</td><td>最后一个不带分号的表达式;return 用于提前返回</td></tr>
+<tr><td>传值</td><td>fn f(x: i32):Copy 类型拷贝;String/Vec 等是所有权移动</td></tr>
+<tr><td>不可变借用</td><td>fn f(x: &amp;T):只看不改;不拷贝大对象</td></tr>
+<tr><td>可变借用</td><td>fn f(x: &amp;mut T):可修改外部;调用处写 &amp;mut x</td></tr>
+<tr><td>多返回值</td><td>fn f() -&gt; (i32, i32);调用处 let (a, b) = f();</td></tr>
+<tr><td>返回引用</td><td>只能返回参数/外部借来的引用;返回局部引用是编译错误</td></tr>
+<tr><td>方法</td><td>impl T { fn m(&amp;self) {} };三态 self / &amp;self / &amp;mut self</td></tr>
+<tr><td>关联函数</td><td>impl T { fn new() -&gt; T {...} };调用 T::new()</td></tr>
+<tr><td>闭包</td><td>|x| x + 1;可捕获上下文;参数类型多可推导</td></tr>
+<tr><td>Fn</td><td>只读捕获,可多次调用</td></tr>
+<tr><td>FnMut</td><td>可变捕获(闭包要声明 mut),可多次调用</td></tr>
+<tr><td>FnOnce</td><td>move 捕获,只能调用一次</td></tr>
+<tr><td>高阶函数</td><td>fn 类型可作参数;map/filter/fold 方法链</td></tr>
+<tr><td>重载/默认参数</td><td>无!替代:泛型、配置结构体 + Default、不同函数名</td></tr>
+<tr><td>递归</td><td>支持,但无 TCO 保证;深递归用循环改写</td></tr>
+<tr><td>main / 参数</td><td>fn main();env::args() 替代 argc/argv</td></tr>
+<tr><td>错误返回</td><td>Result&lt;T, E&gt; 写进签名;match 或 ? 处理(第9章)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能写出三种参数形态(传值/&amp;/&amp;mut)并说出各自语义与适用场景</li>
+<li>能解释"String 传参后原变量失效"并说出原因(所有权移动)</li>
+<li>能用元组返回多个值并在调用处解构</li>
+<li>能写一个 struct + impl,包含 &amp;self 方法、&amp;mut self 方法、关联函数 new</li>
+<li>能写出 Fn/FnMut/FnOnce 各一个闭包示例,并解释捕获方式差异</li>
+<li>能说出 move 关键字的作用与"交给线程"场景</li>
+<li>能用 map/filter/fold 组合完成一次数据管线处理</li>
+<li>能说出 Rust 无重载/无默认参数时三种替代方案</li>
+<li>能用 env::args() 读取命令行参数</li>
+<li>能写出返回 Result 的函数并用 match 处理</li>
+</ul>
+
+<h2>自测题</h2>
+
+<div class="q">1. <code>fn f(s: String) { ... }</code> 与 <code>fn g(s: &amp;String) { ... }</code> 调用后,原变量还能用吗?为什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>f 按值传参:String 的所有权被搬进函数,调用后原变量失效(编译错误 moved)。g 只借用,&amp;String 不转移所有权,原变量照常使用。选择依据:函数是否需要拿走数据;只需查看时永远优先 &amp;。</p>
+</div>
+
+<div class="q">2. C 的 <code>void swap(int *a, int *b)</code> 用 Rust 怎么写?与 C 相比少做了什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>fn swap(a: &amp;mut i32, b: &amp;mut i32) { std::mem::swap(a, b); }</code>。与 C 相比:不需要手动解引用赋值(用标准库 swap),调用处必须写 &amp;mut x——编译器保证两个可变借用不冲突,杜绝 C 里"同一个变量传两个指针"的别名问题。</p>
+</div>
+
+<div class="q">3. 下面闭包属于 Fn、FnMut 还是 FnOnce?<code>let c1 = |x| x * 2;</code>、<code>let mut n = 0; let c2 = |x| { n += x; };</code>、<code>let s = String::from("a"); let c3 = move || drop(s);</code></div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>c1 不捕获任何变量(或只读),是 Fn;c2 修改捕获的 n,是 FnMut;c3 用 move 搬走 s 并消费,是 FnOnce。判断顺序:会不会消费值(会→FnOnce)、会不会修改(会→FnMut)、否则 Fn。</p>
+</div>
+
+<div class="q">4. 用 map/filter/fold 把 [1, 2, 3, 4, 5, 6] 中偶数的平方求和(期望 4+16+36=56)。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>let sum: i32 = [1,2,3,4,5,6].iter().filter(|&amp;&amp;x| x % 2 == 0).map(|x| x * x).fold(0, |acc, x| acc + x);</code> 结果 56。注意 filter 的闭包形参是 &amp;&amp;i32。</p>
+</div>
+
+<div class="q">5. Rust 没有默认参数,draw(color, width, style) 想省略参数时该怎么办?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>把可选项收进配置结构体 DrawOpts,实现 Default,调用处 <code>DrawOpts { color: 0xFF0000, ..defaults }</code> 只覆盖需要的字段。相比 C++ 默认参数,类型契约更清晰:配置本身是类型,IDE 与编译器都能参与检查。</p>
+</div>
+
+<div class="q">6. 为什么 Rust 的闭包能超越 C 的函数指针?C 里如何模拟"捕获"?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>函数指针只是地址,不能携带上下文;C 用"回调 + void* 参数"模拟,类型安全全靠自觉。Rust 闭包把"代码 + 捕获的环境(按 Fn/FnMut/FnOnce 受控)"打包,类型系统管理捕获方式,编译器检查借用与所有权。生产中最直接的好处:sort_by、线程 spawn、迭代器方法链都无需手工传递上下文。</p>
+</div>
+
+<h2>章末实验题:可配置的数组统计管线</h2>
+
+<div class="box box-example lab"><div class="box-title">实验 4:可配置的数组统计管线</div>
+<p><b>实验目标:</b>实现一个"配置驱动"的数据统计管线:用配置结构体控制统计规则,用函数 + 闭包 + 高阶函数完成多路统计,覆盖全章函数知识点。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:定义 StatsConfig 配置结构体与 Stats 结果元组(覆盖:无默认参数的替代——配置结构体 §4.7)</li>
+<li>任务 2:analyze 函数借用输入与配置,一次遍历完成多项统计并返回元组(覆盖:借用参数 &amp;[i32] §4.2、多返回值 §4.3)</li>
+<li>任务 3:实现带 &amp;self/&amp;mut self 方法的 Counter 计数器类型(覆盖:方法三态 §4.4)</li>
+<li>任务 4:用闭包实现"偶数计数"(FnMut 捕获可变变量)与"加偏移"(move 捕获)(覆盖:闭包三态 §4.5)</li>
+<li>任务 5:用 map/filter/fold 组合完成过滤与求和(覆盖:高阶函数 §4.6)</li>
+<li>任务 6:main 入口读取命令行参数作为数据来源之一,失败给出提示(覆盖:main 与 env::args §4.8、Result 匹配)</li>
+</ul>
+<p><b>实验环境:</b>cargo new stats_pipeline;数据先用固定数组,任务 6 再用 env::args 读取。</p>
+</div>
+
+<ol class="steps">
+<li><b>第一步:</b>先写纯函数 analyze:签名 <code>fn analyze(data: &amp;[i32], cfg: &amp;StatsConfig) -&gt; Stats</code>,内部 for + if 过滤</li>
+<li><b>第二步:</b>实现 Counter 与它的三个方法;在 main 里用可变方法累加</li>
+<li><b>第三步:</b>写 FnMut 闭包(计数)与 move 闭包(偏移),调用并打印</li>
+<li><b>第四步:</b>任务 5 用方法链一行完成;与任务 2 的手写循环对比可读性</li>
+<li><b>第五步:</b>最后接 env::args:把第 2 个参数解析为 i32 加入数据,失败打印提示</li>
+</ol>
+
+<div class="box box-answer"><div class="box-title">参考答案要点</div>
+<pre class="code">// ===== 实验 4:可配置的数组统计管线 =====
+// 覆盖知识点:函数定义与表达式风格(§4.1)、借用参数与移动(§4.2)、
+//            多返回值元组(§4.3)、方法三态(§4.4)、
+//            闭包三态与 move(§4.5)、高阶函数 map/filter/fold(§4.6)、
+//            配置结构体替代默认参数(§4.7)、main 与 env::args、Result(§4.8)
+
+use std::env;
+
+/// 统计配置:把"默认参数"做成结构体(§4.7 的替代方案)
+struct StatsConfig {
+    title: String,
+    min: i32,     // 低于此值忽略
+    step: i32,    // 只统计 step 的倍数
+}
+
+/// 统计结果:元组即"多返回值"
+type Stats = (usize, i32, f64, i32);   // (数量, 总和, 平均, 最大)
+
+/// 一次遍历完成所有统计:借用输入与配置,不搬走任何所有权
+fn analyze(data: &amp;[i32], cfg: &amp;StatsConfig) -&gt; Stats {
+    let mut count: usize = 0;
+    let mut sum: i32 = 0;
+    let mut max: i32 = i32::MIN;
+    for &amp;x in data {
+        if x &lt; cfg.min {
+            continue;
+        }
+        if x % cfg.step != 0 {
+            continue;
+        }
+        count += 1;
+        sum += x;
+        if x &gt; max {
+            max = x;
+        }
+    }
+    let avg = if count &gt; 0 { sum as f64 / count as f64 } else { 0.0 };
+    (count, sum, avg, max)
+}
+
+/// 计数器:方法三态演示(&amp;self 只读、&amp;mut self 修改)
+struct Counter {
+    total: i32,
+    calls: i32,
+}
+
+impl Counter {
+    /// 关联函数:构造函数惯例
+    fn new() -&gt; Self {
+        Counter { total: 0, calls: 0 }
+    }
+
+    fn add(&amp;mut self, x: i32) {
+        self.total += x;
+        self.calls += 1;
+    }
+
+    fn snapshot(&amp;self) -&gt; (i32, i32) {
+        (self.total, self.calls)
+    }
+}
+
+fn main() {
+    // 任务 6 前置:读取命令行参数作为额外数据
+    let args: Vec&lt;String&gt; = env::args().collect();
+    let extra: Option&lt;i32&gt; = args.get(1).and_then(|s| s.parse().ok());
+
+    let mut data = vec![3, 5, 8, 12, 15, 20, 23, 30, 31, 40, 42];
+    match extra {
+        Some(v) =&gt; data.push(v),
+        None =&gt; println!("提示:可传入一个整数作为额外数据"),
+    }
+
+    // 任务 2:借用配置,返回多值,解构接收
+    let cfg = StatsConfig {
+        title: String::from("不小于 10 的偶数"),
+        min: 10,
+        step: 2,
+    };
+    let (count, sum, avg, max) = analyze(&amp;data, &amp;cfg);
+    println!("{}: 数量 {count}, 总和 {sum}, 平均 {avg:.1}, 最大 {max}", cfg.title);
+
+    // 任务 3:Counter 方法使用
+    let mut counter = Counter::new();
+    for &amp;x in &amp;data {
+        counter.add(x);
+    }
+    let (total, calls) = counter.snapshot();
+    println!("计数器:累计 {total},被调 {calls} 次");
+
+    // 任务 4a:FnMut 闭包——可变捕获计数
+    let mut even_count = 0i32;
+    let mut tally = |x: i32| {
+        if x % 2 == 0 {
+            even_count += 1;
+        }
+    };
+    for &amp;x in &amp;data {
+        tally(x);
+    }
+    println!("偶数个数(闭包计数):{even_count}");
+
+    // 任务 4b:move 闭包——把 base 搬进闭包
+    let base = 1000;
+    let offset = move |x: i32| x + base;
+    let shifted: Vec&lt;i32&gt; = data.iter().map(|&amp;x| offset(x)).collect();
+    println!("加 {base} 偏移后的前 3 个:{:?}", &amp;shifted[..3]);
+
+    // 任务 5:高阶函数方法链——筛选、变换、归约
+    let sum_of_squares: i32 = data.iter()
+        .filter(|&amp;&amp;x| x % 3 == 0)       // 只留 3 的倍数
+        .map(|&amp;x| x * x)                 // 平方
+        .fold(0, |acc, x| acc + x);      // 求和
+    println!("3 的倍数的平方和:{sum_of_squares}");
+
+    // 函数指针作参数:与 C 的 qsort 回调对照
+    let tripled: Vec&lt;i32&gt; = data.iter().map(|&amp;x| triple(x)).collect();
+    println!("翻三倍的前 3 个:{:?}", &amp;tripled[..3]);
+}
+
+/// 普通函数:fn 类型,可传给高阶函数
+fn triple(x: i32) -&gt; i32 {
+    x * 3
+}</pre>
+<p>设计说明:实验把"配置化"贯穿始终——统计规则(阈值、步长)是配置而不是硬编码,这正对应生产里"策略可配置"的需求;闭包与高阶函数负责数据流变换,方法与函数各司其职。验证方式:改变 cfg.min/step 观察统计变化;不带参数运行一次,再带参数运行一次,确认 env::args 路径生效。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第5章 内存管理——全册的灵魂章节。C 的 malloc/free 时代有三大痛点:泄漏、悬垂指针、重复释放;Rust 用"所有权三法则 + 借用 + 生命周期"把这三类事故全部变成编译错误。Box/Rc/Arc/RefCell 各司其职,unsafe 划定安全边界。这一章读透了,后面的每一章都会轻松很多。</p>
