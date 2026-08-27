@@ -1,0 +1,247 @@
+<title>第2章 线性时不变系统</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第2章 线性时不变系统</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第2章 | <b>建议学时:</b>8–10 小时 | <b>难度:</b>★★★☆☆(全书第一道坎)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解"<span class="hl">任何信号都可以分解为冲激的加权叠加</span>"这一核心思想(离散:求和;连续:积分)</li>
+<li>掌握卷积和 \(y[n]=\sum_{k}x[k]h[n-k]\) 与卷积积分 \(y(t)=\int x(\tau)h(t-\tau)d\tau\),会解析计算、会图解</li>
+<li>会用<span class="term">单位冲激响应 \(h\)</span> 判断系统的因果性、稳定性、记忆性、可逆性</li>
+<li>认识微分方程/差分方程(LCCDE)与 LTI 系统的关系,会画系统框图</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查(第1章的"欠账"先补上)</div>
+<ul>
+<li>\(\delta\) 的筛选性质:\(\sum_k x[k]\delta[n-k]=x[n]\)(离散)、\(\int x(\tau)\delta(t-\tau)d\tau=x(t)\)(连续)——<b>本章第一节的起点就是它</b></li>
+<li>系统的线性与时不变定义(第1章 §1.8.5、§1.8.6 的判定流程)</li>
+<li>几何级数求和:\(\sum_{k=0}^{n}a^k=\dfrac{1-a^{n+1}}{1-a}\;(a\neq 1)\),\(\sum_{k=0}^{\infty}a^k=\dfrac{1}{1-a}\;(|a|<1)\)——解卷积题天天用</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>先吃透思想(1.5小时):</b>§2.1.1 的推导只要求理解三行逻辑:分解 → 线性叠加 → 时不变。看不懂公式没关系,先把"翻转-平移-相乘-求和"八字口诀和图 2-2 看懂</li>
+<li><b>再练图解法(2小时):</b>离散、连续各画 3 道卷积图,直到能"徒手画三角脉冲卷积"</li>
+<li><b>解析计算(2小时):</b>§2.1.3 与 §2.2.2 的两道经典例题必须独立重算一遍,<span class="hl">重点是会正确地写积分上下限</span></li>
+<li><b>性质速记(1.5小时):</b>§2.3 的判据表背下来(因果⟺h 在负区间为零;稳定⟺绝对可和/绝对可积),配合 §2.6 自测题</li>
+<li><b>方程与框图(1小时):</b>§2.4 看懂结构即可,求解方法留给第 9、10 章(拉氏/Z 变换),现在不必深究</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch02_map.svg"></div>
+<div class="mindmap-caption">图 2-0 第2章知识导图:本章围绕"冲激响应 h 完全表征 LTI 系统"这一主线展开</div>
+<p>全章核心结论一句话:<span class="hl">线性时不变系统的一切行为,都浓缩在它对单位冲激的响应 \(h\) 之中;任意输入的输出 = 输入与 \(h\) 的卷积</span>。学完本章,你将告别"逐个系统单独分析"的时代。</p>
+
+<h2 class="sec">§2.1 离散时间 LTI 系统:卷积和</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:搭积木的思想</div>
+<p>设想一个"钱庄"系统:今天存 1 元,明天账上多 0.9 元,后天多 0.81 元……(响应逐日衰减)。如果今天存 1 元、明天又存 2 元,总余额怎么算?<span class="hl">把每一天的存款看作独立的"冲激",把各自的响应错开叠加即可</span>:今天这 1 元产生的余额,加上明天那 2 元产生的(延迟一天的)余额。这就是卷积和的生活原型:拆开、分别响应、对齐叠加。</p>
+</div>
+
+<h3>2.1.1 核心思想:用冲激表示任何信号</h3>
+<p>由筛选性质,任意序列 \(x[n]\) 都可以写成<span class="term">加权延迟冲激之和</span>:</p>
+<div class="formula"><span class="fname">信号的冲激分解(本章起点)</span>
+\[ x[n] = \sum_{k=-\infty}^{+\infty} x[k]\,\delta[n-k] \]
+</div>
+<p><b>0 基础解读:</b>第 \(k\) 项 \(x[k]\delta[n-k]\) 是"位于 \(n=k\)、强度为 \(x[k]\)"的一根冲激。把所有位置 \(k\) 的冲激加起来,恰好还原整个序列——就像把条形图看成一根根"竖条"的集合。连续时间同理:\(x(t)=\int x(\tau)\delta(t-\tau)d\tau\)(把求和换成积分)。</p>
+
+<h3>2.1.2 三步推导卷积和(本章最重要的三行)</h3>
+<p>设 \(h[n]\) 为系统对 \(\delta[n]\) 的响应(单位冲激响应)。对输入 \(x[n]\):</p>
+<ol>
+<li><b>分解:</b>\(x[n]=\sum_k x[k]\delta[n-k]\)</li>
+<li><b>线性:</b>把系统"搬进"求和号:\(y[n]=\sum_k x[k]\,\mathcal{T}\{\delta[n-k]\}\)——每根冲激各自响应,再叠加</li>
+<li><b>时不变:</b>\(\mathcal{T}\{\delta[n-k]\}=h[n-k]\)(对 \(\delta[n]\) 的响应延迟 \(k\) 拍)→</li>
+</ol>
+<div class="formula"><span class="fname">卷积和(卷积和方程)</span>
+\[ y[n] = x[n]*h[n] = \sum_{k=-\infty}^{+\infty} x[k]\, h[n-k] \]
+</div>
+<div class="box box-keypoint"><div class="box-title">必背结论:卷积的"位置语义"</div>
+<p>\(h[n-k]\) 是"\(h\) 反转后平移 \(n\)"得到的函数。<b>卷积输出 \(y[n]\) 在时刻 \(n\) 的值 = 把 \(x[k]\) 与 \(h[n-k]\) 逐点相乘再求和</b>。口诀:<span class="hl">翻转(flip)→ 平移(shift)→ 相乘(multiply)→ 求和(sum)</span>,四步缺一不可。</p>
+</div>
+
+<h3>2.1.3 图解法:看得见的卷积</h3>
+<div data-svg="fig_ch02_convsum.svg"></div>
+<div class="mindmap-caption">图 2-1 图解卷积和:\(x=\{1,1,1\}\),\(h=\{1,2,1\}\)。(a) 原信号;(b) 把 h 沿纵轴翻转;(c) 向右平移 n=1;(d) 重叠部分相乘求和得 y[1]=3</div>
+<p><b>操作流程:</b>①以 \(k\) 为横轴画出 \(x[k]\) 与 \(h[k]\);②把 \(h[k]\) 翻转成 \(h[-k]\);③对每个 \(n\),把 \(h[-k]\) 平移 \(n\) 得 \(h[n-k]\);④重叠处逐点相乘求和,即 \(y[n]\)。\(n\) 从 \(-\infty\) 滑到 \(+\infty\),\(y[n]\) 就逐点诞生。</p>
+
+<div class="box box-example"><div class="box-title">例题 2.1 解析法求卷积和</div>
+<p>设 \(x[n]=\alpha^n u[n]\)(\(0<\alpha<1\)),\(h[n]=u[n]\),求 \(y[n]=x[n]*h[n]\)。</p>
+<ol class="steps">
+<li>写出卷积和:\(y[n]=\displaystyle\sum_{k=-\infty}^{+\infty} \alpha^k u[k]\, u[n-k]\)。</li>
+<li><b>由两个阶跃定出求和范围(关键一步):</b>\(u[k]\) 要求 \(k\ge 0\);\(u[n-k]\) 要求 \(k\le n\)。两者同时成立 → \(0\le k\le n\)(且 \(n\ge 0\),否则无解,\(y[n]=0\))。</li>
+<li>求几何级数:\(y[n]=\displaystyle\sum_{k=0}^{n}\alpha^k=\frac{1-\alpha^{n+1}}{1-\alpha}\),对 \(n\ge 0\)。</li>
+<li>合写:\(y[n]=\dfrac{1-\alpha^{n+1}}{1-\alpha}\,u[n]\)。物理图景:存钱系统的余额先线性增长,后趋于饱和值 \(1/(1-\alpha)\)。</li>
+</ol>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 1:卷积和的上限直接写成 \(n\)</div>
+<p>只对"两个信号都从 0 开始"的情形成立。一般原则:<span class="hl">由 \(u[k]\)、\(u[n-k]\) 这类约束交叉定出 \(k\) 的真实范围</span>,而不是背模板。若 \(h[n]=u[n-3]\)(延迟 3 拍),则约束变成 \(k\le n-3\),上限是 \(n-3\)——写错上下限是卷积题丢分第一大原因。</p>
+</div>
+
+<h2 class="sec">§2.2 连续时间 LTI 系统:卷积积分</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:离散是"求和",连续是"积分"</div>
+<p>离散时间把信号拆成一根根冲激"竖条";连续时间则把信号看作无数无限窄的冲激"细丝"连续铺成,叠加自然从求和过渡为积分。其余思想完全一致。</p>
+</div>
+
+<p>与离散完全平行:分解 \(x(t)=\int x(\tau)\delta(t-\tau)d\tau\) → 线性 → 时不变,得到:</p>
+<div class="formula"><span class="fname">卷积积分</span>
+\[ y(t) = x(t)*h(t) = \int_{-\infty}^{+\infty} x(\tau)\, h(t-\tau)\, d\tau \]
+</div>
+
+<h3>2.2.1 图解法</h3>
+<div data-svg="fig_ch02_convint.svg"></div>
+<div class="mindmap-caption">图 2-2 图解卷积积分:矩形脉冲自卷积。(a) x(τ);(b) h(−τ) 翻转;(c) 平移 t=1;(d) 重叠区 [0,1] 即积分区,面积就是 y(1)</div>
+<p><b>口诀相同:</b>以 \(\tau\) 为横轴 → 翻转 \(h\) → 平移 \(t\) → 重叠区相乘积分。矩形自卷积的结果是三角脉冲:重叠区长度先线性增长(t 从 0 到 2),再线性缩短(t 从 2 到 4)——面积曲线自然是"三角形"。</p>
+
+<div class="box box-example"><div class="box-title">例题 2.2 指数信号过积分器(经典题)</div>
+<p>设 \(x(t)=e^{-at}u(t)\;(a>0)\),\(h(t)=u(t)\),求 \(y(t)=x(t)*h(t)\)。</p>
+<ol class="steps">
+<li>代入:\(y(t)=\displaystyle\int_{-\infty}^{+\infty} e^{-a\tau}u(\tau)\,u(t-\tau)\,d\tau\)。</li>
+<li><b>定积分限:</b>\(u(\tau)\) 要求 \(\tau\ge 0\);\(u(t-\tau)\) 要求 \(\tau\le t\)。→ 对 \(t>0\):\(0\le\tau\le t\);对 \(t<0\):无解,积分为 0。</li>
+<li>计算:\(y(t)=\displaystyle\int_0^t e^{-a\tau}d\tau = -\frac{1}{a}e^{-a\tau}\Big|_0^t = \frac{1-e^{-at}}{a}\),\(t>0\)。</li>
+<li>合写:\(y(t)=\dfrac{1-e^{-at}}{a}u(t)\)。<b>解读:</b>输出是"充到 1 的指数充电曲线"——这正是积分器对指数输入的响应。</li>
+</ol>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 2:图解法时忘记"先翻转"</div>
+<p>初学者最容易直接把 \(h(\tau)\) 平移后与 \(x(\tau)\) 相乘,算出的其实是"相关"而不是"卷积"。<span class="hl">卷积必须 \(h(-\tau)\) 再平移</span>。自检:用矩形脉冲自卷积,正确结果是三角(最大值在中间);不翻转算出来是最大值在边上的错误波形。另外注意 \(h(t-\tau)\) 中变量是 \(\tau\),\(t\) 是"滑动的参数"——画图时别把坐标轴搞混。</p>
+</div>
+
+<h2 class="sec">§2.3 卷积的性质:LTI 系统互联的数学</h2>
+
+<div class="formula"><span class="fname">卷积三大运算律</span>
+\[ x*h = h*x \;\text{(交换)}, \qquad x*(h_1*h_2) = (x*h_1)*h_2 \;\text{(结合)}, \qquad x*(h_1+h_2) = x*h_1 + x*h_2 \;\text{(分配)} \]
+</div>
+<ul>
+<li><b>交换律</b>⟺ 串联次序无关:系统 1→2 与 2→1 的输出相同。<b>计算技巧:</b>选"简单的那边"来翻转平移</li>
+<li><b>结合律</b>⟺ 级联可合并:两个串联系统的等效冲激响应 \(h=h_1*h_2\)</li>
+<li><b>分配律</b>⟺ 并联可合并:等效冲激响应 \(h=h_1+h_2\)</li>
+</ul>
+
+<div class="box box-example"><div class="box-title">例题 2.3 用性质巧算</div>
+<p>求 \(u[n]*u[n]\)。</p>
+<ol class="steps">
+<li>用交换律,把两个 \(u\) 互换后卷积和不变。</li>
+<li>直接套例题 2.1 中 \(\alpha=1\) 的情形:<b>注意!</b>\(\alpha=1\) 时几何级数公式退化,\(\sum_{k=0}^{n}1=n+1\)。</li>
+<li>\(y[n]=(n+1)u[n]\)。这就是<span class="term">斜坡序列</span>——两个阶跃卷积出斜坡,与"积分两次出抛物线"同类,记这个手感很有用。</li>
+</ol>
+</div>
+
+<h3>2.3.1 六大性质在 h 上的"判据"</h3>
+<p>LTI 系统的性质完全由 \(h\) 决定,这是本章第二个核心结论:</p>
+<table>
+<tr><th style="width:16%">性质</th><th style="width:42%">离散时间判据</th><th>连续时间判据</th></tr>
+<tr><td class="ctr"><b>记忆</b></td><td class="ctr">无记忆 ⟺ \(h[n]=0\;(n\neq0)\)</td><td class="ctr">无记忆 ⟺ \(h(t)=0\;(t\neq0)\)</td></tr>
+<tr><td class="ctr"><b>因果</b></td><td class="ctr">因果 ⟺ \(h[n]=0\;(n<0)\)</td><td class="ctr">因果 ⟺ \(h(t)=0\;(t<0)\)</td></tr>
+<tr><td class="ctr"><b>稳定</b></td><td class="ctr">稳定 ⟺ \(\sum_n |h[n]|<\infty\) 绝对可和</td><td class="ctr">稳定 ⟺ \(\int |h(t)|dt<\infty\) 绝对可积</td></tr>
+<tr><td class="ctr"><b>可逆</b></td><td class="ctr" colspan="2">存在 \(h_1\) 使 \(h*h_1=\delta\)(逆系统的冲激响应)</td></tr>
+</table>
+<p><b>0 基础解读:</b>因果性判据最直观——\(h[n]\) 在负区间非零,说明系统对 \(n=0\) 的冲激"提前"有了响应,等于预知未来。稳定性判据注意是<span class="hl">绝对</span>可和/可积(带绝对值),不是普通可和:\(h[n]=\dfrac{\sin n}{n}\) 类条件收敛序列对应的系统并不稳定。</p>
+
+<div class="box box-example"><div class="box-title">例题 2.4 用 h 做"体检"</div>
+<p>(a) \(h[n]=\delta[n]-\delta[n-1]\)(一阶差分器);(b) \(h(t)=e^{-2t}u(t)\);(c) \(h[n]=2^n u[n]\)。判断因果性与稳定性。</p>
+<ol class="steps">
+<li>(a) \(n<0\) 时 \(h=0\) → 因果;\(\sum|h[n]|=1+1=2<\infty\) → 稳定;\(h[1]\neq0\) → 有记忆。</li>
+<li>(b) \(t<0\) 时 \(h=0\) → 因果;\(\int_0^\infty e^{-2t}dt=\dfrac{1}{2}<\infty\) → 稳定。</li>
+<li>(c) 因果 ✓;但 \(\sum 2^n=\infty\) → <b>不稳定</b>(对 \(x[n]=u[n]\),输出 \(y[n]=\sum_{k=0}^{n}2^k=2^{n+1}-1\) 指数爆炸)。</li>
+</ol>
+</div>
+
+<h2 class="sec">§2.4 微分方程与差分方程描述的 LTI 系统</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:用方程"画"系统</div>
+<p>现实系统的物理规律(电路、力学)往往直接给出微分/差分方程。例如电容的充电方程、存款账户的递推关系。反过来,方程也可以用框图"画"出来——由加法器、乘系数器、延迟器(离散)或积分器(连续)搭建。</p>
+</div>
+
+<p>离散时间系统的 <span class="term">N 阶线性常系数差分方程(LCCDE)</span>:</p>
+<div class="formula"><span class="fname">线性常系数差分方程</span>
+\[ \sum_{k=0}^{N} a_k\, y[n-k] = \sum_{k=0}^{M} b_k\, x[n-k] \]
+</div>
+<p>连续时间对应为<span class="term">线性常系数微分方程</span>(把 \(y[n-k]\) 换成 \(d^k y/dt^k\))。例如 \(y[n]-\frac{1}{2}y[n-1]=x[n]\),其解为 \(y[n]=\left(\frac{1}{2}\right)^n u[n]*x[n]\),即冲激响应 \(h[n]=\left(\frac{1}{2}\right)^n u[n]\)——第 10 章将用 Z 变换系统求解这类方程。</p>
+
+<div data-svg="fig_ch02_block.svg"></div>
+<div class="mindmap-caption">图 2-3 反馈型差分方程 \(y[n]=x[n]+a\,y[n-1]\) 的框图:输出经延迟一拍、乘 \(a\) 后负反馈回输入端</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 3:LCCDE 本身并不唯一确定一个系统</div>
+<p>同一个方程配不同<span class="hl">初值/初始松弛条件</span>,对应不同系统(甚至不一定是 LTI 的)。"初始松弛"(因果的零初始条件)下,由 LCCDE 确定的系统才是 LTI 的。第 9、10 章讲拉氏/Z 变换时会用"收敛域"精确处理这件事,现在只需有这个意识。</p>
+</div>
+
+<h2>§2.5 奇异函数与冲激响应族</h2>
+<p>对 \(\delta(t)\) 逐次积分得到一族奇异函数:<span class="term">单位冲激偶</span> \(u_1(t)=\delta'(t)\)(微分器对 \(\delta\) 的响应)、<span class="term">单位斜坡</span> \(u_2(t)=t\,u(t)\) 等,满足 \(u_{k}(t)=u_{k-1}(t)*u(t)\)。它们的意义:把"理想的物理操作"(微分、积分)纳入统一框架。本节了解概念即可,工程计算中直接使用 \(\delta\) 与 \(u\) 就足够了。</p>
+
+<h2 class="sec">§2.6 本章公式速查表</h2>
+<table>
+<tr><th style="width:26%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">冲激分解</td><td class="ctr">\(x[n]=\sum_k x[k]\delta[n-k]\);\(x(t)=\int x(\tau)\delta(t-\tau)d\tau\)</td></tr>
+<tr><td class="ctr">卷积和 / 卷积积分</td><td class="ctr">\(y[n]=\sum_k x[k]h[n-k]\);\(y(t)=\int x(\tau)h(t-\tau)d\tau\)</td></tr>
+<tr><td class="ctr">运算律</td><td class="ctr">交换 \(x*h=h*x\);结合 \((x*h_1)*h_2=x*(h_1*h_2)\);分配 \(x*(h_1+h_2)=x*h_1+x*h_2\)</td></tr>
+<tr><td class="ctr">因果性</td><td class="ctr">\(h[n]=0\;(n<0)\);\(h(t)=0\;(t<0)\)</td></tr>
+<tr><td class="ctr">稳定性</td><td class="ctr">\(\sum_n|h[n]|<\infty\);\(\int|h(t)|dt<\infty\)</td></tr>
+<tr><td class="ctr">无记忆</td><td class="ctr">\(h[n]=c\,\delta[n]\);\(h(t)=c\,\delta(t)\)</td></tr>
+<tr><td class="ctr">阶跃响应 s</td><td class="ctr">\(s[n]=\sum_{k=-\infty}^{n}h[k]\);\(s(t)=\int_{-\infty}^{t}h(\tau)d\tau\)(s 与 h 互为累加/差分、积分/微分)</td></tr>
+<tr><td class="ctr">常用卷积</td><td class="ctr">\(u[n]*u[n]=(n+1)u[n]\);\(e^{-at}u(t)*u(t)=\dfrac{1-e^{-at}}{a}u(t)\);\(\alpha^n u[n]*u[n]=\dfrac{1-\alpha^{n+1}}{1-\alpha}u[n]\)</td></tr>
+</table>
+
+<h2 class="sec">§2.7 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 7 件事</div>
+<ol>
+<li>能用三行推导写出卷积和/卷积积分的定义(分解→线性→时不变)</li>
+<li>会做图解卷积:翻转 → 平移 → 相乘 → 求和(积分),能画出矩形自卷积的三角结果</li>
+<li>会正确地由 \(u[k]\)、\(u[n-k]\) 交叉约束定出卷积的求和/积分上下限</li>
+<li>会用 \(\delta\) 的性质化简卷积:\(x*\delta=x\)、\(x[n]*\delta[n-n_0]=x[n-n_0]\)(延迟即卷积)</li>
+<li>能由 \(h\) 一眼判断因果性(负区间为零)与稳定性(绝对可和/可积)</li>
+<li>理解串联/并联的等效 \(h\) 分别为 \(h_1*h_2\) 与 \(h_1+h_2\)</li>
+<li>认识 LCCDE 的一般形式,能画出 \(y[n]=x[n]+a y[n-1]\) 的框图</li>
+</ol>
+</div>
+
+<h2 class="sec">§2.8 自测题(答案附后)</h2>
+
+<p class="q">已知 \(h[n]=\left(\frac{1}{3}\right)^n u[n]\),判断系统因果性、稳定性;再求阶跃响应 \(s[n]\)。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p><b>因果✓:</b>\(n<0\) 时 \(h=0\)。<b>稳定✓:</b>\(\sum_{n=0}^{\infty}(1/3)^n=\dfrac{1}{1-1/3}=\dfrac{3}{2}<\infty\)。<b>阶跃响应:</b>\(s[n]=u[n]*h[n]=\displaystyle\sum_{k=0}^{n}\left(\frac{1}{3}\right)^k=\frac{1-(1/3)^{n+1}}{1-1/3}=\frac{3}{2}\left[1-\left(\frac{1}{3}\right)^{n+1}\right]u[n]\)。</p>
+</div>
+
+<p class="q">用图解法求 \(x[n]=\{1,2,3\}_{n=0,1,2}\) 与 \(h[n]=\{1,1,1\}_{n=0,1,2}\) 的卷积。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(y=\{1,3,6,5,3\}\)(n=0..4)。验算:\(y[2]=1·1+2·1+3·1=6\);总能量校验 \(\sum x·\sum h = 6·3 = 18 = \sum y\) ✓(卷积和的总和等于两序列总和之积,是极好的快速自检)。</p>
+</div>
+
+<p class="q">设 \(x(t)=u(t)-u(t-2)\)(宽度 2 的矩形脉冲),求 \(y(t)=x(t)*x(t)\) 并画出结果。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>矩形自卷积为三角:\(t<0\) 或 \(t>4\) 时 \(y=0\);\(0<t<2\):重叠长度 \(t\),\(y(t)=t\);\(2<t<4\):重叠长度 \(4-t\),\(y(t)=4-t\)。合写:\(y(t)=t\,[u(t)-u(t-2)]+(4-t)\,[u(t-2)-u(t-4)]\)。峰值 \(y(2)=2\)。</p>
+</div>
+
+<p class="q">判断 \(y[n]=x[n]+x[n-1000]\) 的因果性、稳定性、记忆性(该系统的 h 是什么?)</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(h[n]=\delta[n]+\delta[n-1000]\)。因果✓(负区间为零);稳定✓(\(\sum|h|=2\));有记忆(h 在 n≠0 处非零)。这是一个"回声"系统:输出包含延迟 1000 拍的输入副本。</p>
+</div>
+
+<p class="q">两个 LTI 系统级联:\(h_1[n]=\delta[n]-\delta[n-1]\),\(h_2[n]=u[n]\)。求等效冲激响应,并判断整体系统的因果性与稳定性。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(h[n]=h_1[n]*h_2[n]=(\delta[n]-\delta[n-1])*u[n]=u[n]-u[n-1]=\delta[n]\)——差分器与累加器互逆,级联后是恒等系统!因果✓、稳定✓、无记忆。这个例子也直观展示了"可逆性"的判据 \(h*h_1=\delta\)。</p>
+</div>
+
+<h2 class="sec">§2.9 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟建立手感)</div>
+<pre class="code">x = [1 1 1];  h = [1 2 1];
+y = conv(x, h)                  % y = [1 3 4 3 1],与例题 2.1 图解法对照
+
+n = 0:20;
+x = 0.8.^n;  h = (n>=0);        % 例题 2.1 的连续版验证
+y = conv(x, h);  y = y(1:21);
+plot(n, y, 'o-'); hold on;
+plot(n, (1-0.8.^(n+1))/(1-0.8), 'r--');  % 理论值,应完全重合
+
+s = filter([1], [1 -0.5], ones(1,20));    % 差分方程 y-0.5y[n-1]=x[n] 的阶跃响应
+stem(s); title('一阶系统阶跃响应')</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第3章 周期信号的傅里叶级数表示</div>
+<p>卷积告诉我们 LTI 系统对任意输入的响应。第 3 章将提出一个更省力的思路:<span class="hl">复指数 \(e^{j\omega n}\) 是 LTI 系统的"特征函数"</span>——系统对复指数的响应只是把它乘一个复数(特征值)而已。由此,把周期信号拆成复指数之和,求系统响应就从"卷积"降级为"乘系数"。学习前请复习:欧拉公式、周期信号的基波周期、冲激的筛选性质。</p>
+</div>

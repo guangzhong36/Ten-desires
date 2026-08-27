@@ -1,0 +1,371 @@
+<title>第1章 信号与系统</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第1章 信号与系统</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第1章 | <b>建议学时:</b>6–8 小时 | <b>难度:</b>★★☆☆☆(入门)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解<span class="term">信号</span>(携带信息的函数)与<span class="term">系统</span>(对信号做处理的"黑箱")两个核心概念</li>
+<li>熟练完成信号的自变量变换:时移、时间反转、尺度变换及其组合</li>
+<li>会判断离散时间复指数信号 \(e^{j\omega_0 n}\) 是否周期,并会求基波周期</li>
+<li>掌握单位冲激 \(\delta(t)\) 与单位阶跃 \(u(t)\) 的定义与相互关系</li>
+<li><span class="hl">重点:</span>能按固定流程判断系统的六大性质——记忆性、可逆性、因果性、稳定性、时不变性、线性</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查(零基础也请放心)</div>
+<p>本章只需要高中数学,外加一点<span class="term">复数</span>常识。请先用 5 分钟确认:</p>
+<ul>
+<li>复数 \(a+jb\):\(j\) 是虚数单位,\(j^2=-1\)。模 \(|a+jb|=\sqrt{a^2+b^2}\) 表示"长度"</li>
+<li><span class="term">欧拉公式</span>(全书的万能钥匙):\(e^{j\theta}=\cos\theta+j\sin\theta\)。特别地 \(e^{j\pi}=-1\)</li>
+<li>\(\cos\theta=\dfrac{e^{j\theta}+e^{-j\theta}}{2}\),\(\sin\theta=\dfrac{e^{j\theta}-e^{-j\theta}}{2j}\) —— 正弦波可以由复指数"合成",第3章傅里叶分析的种子就埋在这里</li>
+<li>分段函数、求和符号 \(\sum\) 的读法</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线(建议按顺序走)</div>
+<ol>
+<li><b>第一阶段(约2小时,建立直觉):</b>只读 §1.1、§1.6、§1.7,搞清楚"信号长什么样、冲激是什么、系统怎么连",配合波形图看图说话,不求记公式</li>
+<li><b>第二阶段(约2小时,动手计算):</b>做 §1.2 的变换题(随手画几个信号变一变)、§1.3 的周期判断题、§1.4 的奇偶分解题——这三类题都是<span class="hl">计算型</span>,练手见效最快</li>
+<li><b>第三阶段(约2小时,概念攻坚):</b>主攻 §1.8 六大性质。每学一个性质,立刻用「输入→输出」流程做 §1.8.7 的判定程序,并用 §1.11 自测题验收</li>
+<li><b>验收标准:</b>不看任何资料,能独立说出六大性质的<b>定义一句话版本</b>与<b>一个反例</b>,即算过关</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch01_map.svg"></div>
+<div class="mindmap-caption">图 1-0 第1章知识导图:信号(上半部分)→ 系统(下半部分),先认识信号,再研究系统</div>
+<p>全章逻辑一句话:<span class="hl">先学会描述信号(§1.1–§1.6),再学会用"六大性质"给系统"体检"(§1.7–§1.8)</span>。这两块内容将为第2章的卷积运算打好地基。</p>
+
+<h2 class="sec">§1.1 连续时间与离散时间信号</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:什么是信号?</div>
+<p><span class="term">信号(signal)</span>就是<span class="hl">携带信息的量</span>。唱歌时麦克风输出的电压随时间连续变化,是信号;股票每天的收盘价逐日记录,也是信号。我们不必关心这个量是电压还是价格——在数学上,它们都只是一个"自变量 → 数值"的函数,于是可以用同一套数学工具分析。</p>
+</div>
+
+<h3>1.1.1 连续时间信号与离散时间信号</h3>
+<p><b>定义:</b>若自变量 \(t\) 在实数范围内连续取值,信号记为 \(x(t)\)(圆括号),称为<span class="term">连续时间信号</span>(continuous-time,CT);若自变量只在整数点取值,信号记为 \(x[n]\)(方括号),称为<span class="term">离散时间信号</span>(discrete-time,DT)。</p>
+<p><b>0 基础解读:</b>区分 CT 与 DT 只看<span class="hl">自变量是否连续</span>,与函数值无关。例如 \(x(t)=\sin t\) 是 CT 信号;而 \(x[n]=\sin(0.1n)\) 中 \(n\) 只取整数,是 DT 信号。注意 \(\delta(t)\) 这种"奇怪对象"也算 CT 信号——因为它的自变量 \(t\) 是连续实数。</p>
+
+<div data-svg="fig_ch01_ut.svg"></div>
+<div class="mindmap-caption">图 1-1 (a) 连续时间阶跃信号:注意 \(t=0\) 处有"跳变",空心圆表示取不到,实心圆表示取得到;(b) 离散时间阶跃序列:只在整数点有定义,像一排"茎"</div>
+
+<h3>1.1.2 信号的两种"体能指标":能量与功率</h3>
+<p>信号携带的"总能量"与"平均功率"是贯穿全书的重要概念。对连续时间信号:</p>
+<div class="formula"><span class="fname">信号的能量与功率(连续时间)</span>
+\[ E_{\infty} \triangleq \int_{-\infty}^{+\infty} |x(t)|^2\, dt, \qquad P_{\infty} \triangleq \lim_{T\to\infty} \frac{1}{2T} \int_{-T}^{T} |x(t)|^2\, dt \]
+</div>
+<p>对离散时间信号,把积分换成求和即可:</p>
+<div class="formula"><span class="fname">信号的能量与功率(离散时间)</span>
+\[ E_{\infty} \triangleq \sum_{n=-\infty}^{+\infty} |x[n]|^2, \qquad P_{\infty} \triangleq \lim_{N\to\infty} \frac{1}{2N+1} \sum_{n=-N}^{N} |x[n]|^2 \]
+</div>
+<p><b>0 基础解读:</b>\(|x(t)|^2\) 相当于"瞬时强度",积分就是"总量"。总能量有限的信号叫<span class="term">能量信号</span>(如单个脉冲);总能量无限但平均功率有限的叫<span class="term">功率信号</span>(如正弦波、阶跃信号)。<span class="hl">周期信号一定是功率信号</span>。</p>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 1:以为"连续时间信号"必须画成连续曲线</div>
+<p>错。\(u(t)\)(阶跃)、锯齿波、方波都有跳变点,但自变量 \(t\) 连续,它们都是连续时间信号。反过来,把 CT 信号 \(x(t)\) 隔一段采一个点得到的序列 \(x[n]=x(nT_s)\),就是离散时间信号——第7章"采样"讲的就是这个转换过程。</p>
+</div>
+
+<h2 class="sec">§1.2 自变量的变换:时移、反转、尺度</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:三种变换就是"改时间标签"</div>
+<p>把信号的波形看作一张画在透明纸上的曲线:<span class="term">时移</span>是左右平移这张纸;\(x(-t)\) 是沿纵轴<b>翻面</b>;\(x(2t)\) 是把纸<b>水平压扁</b>一半。注意:<span class="hl">所有变换都是作用在自变量上</span>,而不是作用在函数值上——\(x(2t)\) 在时刻 \(t\) 的值,等于原信号在时刻 \(2t\) 的值。</p>
+</div>
+
+<h3>1.2.1 时移(shift)</h3>
+<p>\(x(t-t_0)\):当 \(t_0>0\) 时,新波形比原波形<span class="term">滞后</span> \(t_0\)(整体右移 \(t_0\),所以叫"延迟");\(t_0&lt;0\) 时整体左移(超前)。</p>
+<p><b>秒懂检验法:</b>看"特殊点"。若原信号在 \(t=0\) 处有尖峰,则 \(x(t-t_0)\) 的尖峰出现在 \(t-t_0=0\),即 \(t=t_0\) 处。尖峰从 0 挪到了 \(t_0\)——右移,正确。</p>
+
+<h3>1.2.2 时间反转(reversal)</h3>
+<p>\(x(-t)\):把波形沿纵轴镜像翻转。<b>秒懂检验法:</b>原信号在 \(t=2\) 处的值,现在出现在 \(t=-2\) 处。</p>
+
+<h3>1.2.3 尺度变换(scaling)</h3>
+<p>\(x(at)\):\(a&gt;1\) 时波形沿时间轴<span class="term">压缩</span>(快进,比如 \(x(2t)\) 只需一半时间走完同样的形状);\(0&lt;a&lt;1\) 时<span class="term">展宽</span>(慢放)。<b>秒懂检验法:</b>尖峰在 \(t=0\) 的信号,\(x(2t)\) 的尖峰仍在 \(t=0\),但两边"变瘦"。</p>
+
+<div data-svg="fig_ch01_transform.svg"></div>
+<div class="mindmap-caption">图 1-2 时移与反转:以不对称三角脉冲为例,(b) 是 (a) 的镜像;(c) 整体右移 1;(d) 先反转再左移 1</div>
+
+<div data-svg="fig_ch01_scaling.svg"></div>
+<div class="mindmap-caption">图 1-3 尺度变换:(b) 中 \(a=2\),波形压缩一半;(c) 中 \(a=1/2\),波形展宽一倍。注意三种波形在 \(t=0\) 处的高度都等于 \(x(0)\)</div>
+
+<h3>1.2.4 组合变换:\(x(at+b)\) 怎么做?</h3>
+<div class="box box-example"><div class="box-title">例题 1.1 画出 \(x(-t-1)\) 的波形</div>
+<p>已知 \(x(t)\) 为图 1-2(a) 所示的三角脉冲,求 \(x(-t-1)\)。</p>
+<ol class="steps">
+<li><b>改写为标准形式:</b>把 \(x(-t-1)\) 写成 \(x(-(t+1))\)。这就是"先变换 \(t+1\),再变号"。</li>
+<li><b>法一(先移后反):</b>第一步 \(x(t+1)\):整体<span class="hl">左移</span> 1 → 得到图 1-2(c) 左移一位的波形,尖峰从 \(t=0\) 移到 \(t=-1\);第二步 \(x(-(t+1))\):沿纵轴镜像 → 尖峰仍在 \(t=-1\),但倾斜方向反转,即图 1-2(d)。</li>
+<li><b>法二(先反后移):</b>第一步 \(x(-t)\):镜像,得图 1-2(b);第二步对 \(x(-t)\) 再做 \(x(-(t+1))\) 即左移 1 → 同样得到图 1-2(d)。两种顺序结果一致。</li>
+<li><b>验证:</b>原信号尖峰在 \(t=0\),令 \(-t-1=0\) 得 \(t=-1\),新尖峰应在 \(t=-1\) ✓;原信号在 \(t=1\) 处为零,令 \(-t-1=1\) 得 \(t=-2\),新信号在 \(t=-2\) 处为零 ✓。</li>
+</ol>
+</div>
+
+<div class="box box-keypoint"><div class="box-title">必背规则:变换顺序</div>
+<p>对 \(x(at+b)\),推荐流程:<span class="hl">①先写 \(x(a(t+b/a))\) ②先时移 \(b/a\)(注意符号)③再尺度/反转</span>。或者记住口诀"<b>先移后缩,参数还原</b>":\(x(2t+1)=x\big(2(t+\tfrac{1}{2})\big)\) 表示"左移 \(1/2\) 后再压缩一半",而不是"左移 1"。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 2:\(x(2t+1)\) 直接当成"左移 1 再压缩"</div>
+<p>这是本章错误率最高的点。\(x(2t+1)\) 中 \(2t+1\) 整体才是"新时间",所以左移量是 \(1/2\) 而不是 1:<span class="hl">先提出系数,再读平移量</span>。尖峰检验:令 \(2t+1=0\) 得 \(t=-1/2\),尖峰在 \(-1/2\),不在 \(-1\)。</p>
+</div>
+
+<h2 class="sec">§1.3 周期信号</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:周期就是"每隔一段,原样重来"</div>
+<p>钟摆的运动、交流电的波形、昼夜的交替都是周期的。数学上,存在一个最小的"重复间隔",信号每隔这个间隔完全重现,这个最小间隔就是<span class="term">基波周期</span>。</p>
+</div>
+
+<p><b>定义:</b>若存在正数 \(T_0\) 使 \(x(t)=x(t+T_0)\) 对一切 \(t\) 成立,则 \(x(t)\) 是周期信号,其中最小的 \(T_0\) 称为<span class="term">基波周期</span>。离散时间类似:存在正整数 \(N\) 使 \(x[n]=x[n+N]\),最小者称为基波周期。</p>
+
+<div data-svg="fig_ch01_periodic.svg"></div>
+<div class="mindmap-caption">图 1-4 周期三角波:每隔 \(T_0=4\) 波形完全重现</div>
+
+<h3>1.3.1 连续时间复指数:永远周期</h3>
+<p>\(e^{j\omega_0 t}\) 以 \(T_0=\dfrac{2\pi}{\omega_0}\) 为基波周期(\(\omega_0 \neq 0\))。<b>为什么?</b>因为 \(e^{j\omega_0(t+T)}=e^{j\omega_0 t}e^{j\omega_0 T}\),当 \(\omega_0 T=2\pi k\)(整数圈)时等于自身,最小正 \(T\) 即 \(2\pi/\omega_0\)。<span class="hl">无论 \(\omega_0\) 多大,CT 复指数都有周期</span>。</p>
+
+<h3>1.3.2 离散时间复指数:有时周期,有时不周期——本章第一个"惊喜"</h3>
+<p><b>结论:</b>\(e^{j\omega_0 n}\) 是周期序列<span class="term">当且仅当</span> \(\dfrac{\omega_0}{2\pi}\) 是有理数。此时若 \(\dfrac{\omega_0}{2\pi}=\dfrac{m}{N}\)(最简分数),则基波周期为 \(N=m\cdot\dfrac{2\pi}{\omega_0}\)。</p>
+<p><b>0 基础解读:</b>因为序列只能在整数点上取值,必须存在整数个采样点恰好凑成整数圈:需要 \(\omega_0 N=2\pi m\)(\(N,m\) 为整数),即 \(\omega_0/2\pi=m/N\) 为有理数。<b>记住口诀:</b><span class="hl">CT 看大小,DT 看比值是否有理</span>。</p>
+
+<div class="box box-example"><div class="box-title">例题 1.2 判断下列信号的周期性</div>
+<p>(a) \(x[n]=\cos\left(\dfrac{8\pi n}{31}\right)\)　(b) \(x[n]=\cos\left(\dfrac{n}{4}\right)\)　(c) \(x(t)=e^{j\pi t}\)</p>
+<ol class="steps">
+<li>(a) \(\omega_0=\dfrac{8\pi}{31}\),则 \(\dfrac{\omega_0}{2\pi}=\dfrac{4}{31}\) 是有理数,且已是最简分数 → <b>周期信号</b>,基波周期 \(N=31\)。</li>
+<li>(b) \(\omega_0=\dfrac{1}{4}\),则 \(\dfrac{\omega_0}{2\pi}=\dfrac{1}{8\pi}\) 是<b>无理数</b> → <b>非周期</b>。虽然 \(\cos(n/4)\) 数值上看起来"有规律",但序列永不精确重现——可用计算器验证 \(\cos 0\) 与 \(\cos(n/4)\) 永远不可能回到完全相同的整点序列。</li>
+<li>(c) CT 复指数,\(\omega_0=\pi\),基波周期 \(T_0=\dfrac{2\pi}{\pi}=2\) → <b>周期信号</b>。</li>
+</ol>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 3:用"画图看起来重复"判断 DT 信号的周期性</div>
+<p>错。\(x[n]=\cos(n/4)\) 画出来的点看似有起伏规律,但它是非周期序列。DT 周期判定只有一个标准:\(\omega_0/2\pi\) 是否为有理数。同理,CT 信号 \(\cos t\) 一定周期(\(T_0=2\pi\)),不要和 DT 的情形混淆。</p>
+</div>
+
+<h2 class="sec">§1.4 偶信号与奇信号:信号的"对称分解"</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:把信号拆成"对称部分+反对称部分"</div>
+<p>任何一个数都能拆成"一半对称 + 一半反对称"(如 \(7=5+2\) 中 5 由 7 与 7 对称而来)。信号也可以:取波形与它的镜像,相加平均得到<span class="term">偶部</span>(关于纵轴对称),相减平均得到<span class="term">奇部</span>(关于原点中心对称)。</p>
+</div>
+
+<p><b>定义:</b>\(x(-t)=x(t)\) 为<span class="term">偶信号</span>;\(x(-t)=-x(t)\) 为<span class="term">奇信号</span>。任意信号可唯一分解:</p>
+<div class="formula"><span class="fname">奇偶分解公式</span>
+\[ \mathrm{Ev}\{x(t)\} = \frac{x(t)+x(-t)}{2}, \qquad \mathrm{Od}\{x(t)\} = \frac{x(t)-x(-t)}{2} \]
+</div>
+
+<div data-svg="fig_ch01_evenodd.svg"></div>
+<div class="mindmap-caption">图 1-5 奇偶分解:(b) 偶部关于纵轴对称;(c) 奇部关于原点对称。任意时刻(b)与(c)相加恰好恢复(a)</div>
+
+<div class="box box-example"><div class="box-title">例题 1.3 求 \(x[n]=u[n]\) 的偶部与奇部</div>
+<ol class="steps">
+<li>写出镜像:\(u[-n]\) 在 \(n&lt;0\) 时取 1,在 \(n&gt;0\) 时取 0。</li>
+<li>偶部:\(\mathrm{Ev}\{u[n]\}=\dfrac{u[n]+u[-n]}{2}=\dfrac{1}{2}+\dfrac{1}{2}\delta[n]\)(除了 \(n=0\) 处叠加出 1,其余处处为 \(1/2\))。</li>
+<li>奇部:\(\mathrm{Od}\{u[n]\}=\dfrac{u[n]-u[-n]}{2}\),即 \(n&gt;0\) 时为 \(1/2\),\(n&lt;0\) 时为 \(-1/2\),\(n=0\) 时为 0。</li>
+<li>检验:偶部 \(+\) 奇部 \(=u[n]\) ✓。</li>
+</ol>
+</div>
+
+<div class="box box-tip"><div class="box-title">为什么现在就要学奇偶分解?</div>
+<p>因为第3章会揭示:偶信号的傅里叶级数<b>只有余弦项</b>,奇信号的傅里叶级数<b>只有正弦项</b>;偶信号的频谱是实函数,奇信号的是纯虚函数。现在把分解练熟,第3、4章能省一半力气。这属于"磨刀不误砍柴工"型知识。</p>
+</div>
+
+<h2 class="sec">§1.5 指数信号与正弦信号</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:复指数是"旋转指针",正弦是它的影子</div>
+<p>把 \(e^{j\omega_0 t}\) 想象成复平面上一根以角速度 \(\omega_0\)(弧度/秒)匀速旋转的单位指针:它的实部就是 \(\cos\omega_0 t\)(指针在水平轴上的投影),虚部就是 \(\sin\omega_0 t\)(在竖直轴上的投影)。<span class="hl">整个信号与系统课程,都在用这根"旋转指针"做文章</span>——第3章傅里叶分析的本质就是"把任意信号拆成一堆转速不同的指针"。</p>
+</div>
+
+<h3>1.5.1 连续时间复指数与正弦信号</h3>
+<div class="formula"><span class="fname">欧拉关系(CT)</span>
+\[ e^{j\omega_0 t} = \cos\omega_0 t + j\sin\omega_0 t, \qquad \cos\omega_0 t = \frac{e^{j\omega_0 t}+e^{-j\omega_0 t}}{2}, \qquad \sin\omega_0 t = \frac{e^{j\omega_0 t}-e^{-j\omega_0 t}}{2j} \]
+</div>
+<p>一般实指数 \(Ce^{at}\):\(a&gt;0\) 增长(如复利),\(a&lt;0\) 衰减(如放电)。把两者结合:\(Ce^{at}=C e^{\sigma t}e^{j\omega_0 t}\),其中 \(a=\sigma+j\omega_0\)——<span class="term">包络 \(e^{\sigma t}\) 决定涨落,复指数决定振荡</span>。这是第9章拉普拉斯变换的雏形。</p>
+
+<h3>1.5.2 离散时间复指数:与 CT 的"重大差异"</h3>
+<p>\(e^{j\omega_0 n}\) 是频率为 \(\omega_0\) 的离散振荡,但存在两个 CT 世界里没有的现象:</p>
+<ul>
+<li><b>周期折叠:</b>\(e^{j(\omega_0+2\pi)n}=e^{j\omega_0 n}\)——频率相差 \(2\pi\) 的 DT 复指数<b>完全相同</b>!所以在 DT 世界,只需考虑 \(0\le\omega_0&lt;2\pi\)(或 \(-\pi&lt;\omega_0\le\pi\))的频率范围</li>
+<li><b>高频反而"折返":</b>\(\omega_0\) 从 0 增大到 \(\pi\) 振荡越来越快,但超过 \(\pi\) 后反而变慢——\(\omega_0=\pi\) 是 DT 世界里的"最高频率"(对应 CT 世界频率无限大的角色)</li>
+</ul>
+
+<table>
+<tr><th style="width:20%">对比项</th><th>连续时间 \(e^{j\omega_0 t}\)</th><th>离散时间 \(e^{j\omega_0 n}\)</th></tr>
+<tr><td class="ctr">是否总为周期</td><td class="ctr">是(\(\omega_0\neq0\)),\(T_0=2\pi/\omega_0\)</td><td class="ctr">不一定,要求 \(\omega_0/2\pi\) 为有理数</td></tr>
+<tr><td class="ctr">频率增大时</td><td class="ctr">振荡无限加快</td><td class="ctr">到 \(\omega_0=\pi\) 最快,之后"折返"变慢</td></tr>
+<tr><td class="ctr">频率唯一性</td><td class="ctr">不同 \(\omega_0\) 给出不同信号</td><td class="ctr">相差 \(2\pi\) 的信号完全相同</td></tr>
+</table>
+
+<h2 class="sec">§1.6 单位冲激与单位阶跃</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:冲激是"一记极快、极强、总效应为1的敲击"</div>
+<p>想象用锤子敲钟:接触时间极短(趋于 0),瞬时力极大(趋于无穷),但冲量(力×时间的积分)是有限的"1"。这记敲击就是 \(\delta(t)\)。<span class="hl">记住三个关键词:瞬间、强度、面积恒为 1</span>。</p>
+</div>
+
+<p><b>定义(工作定义):</b>\(\delta(t)\) 由两条性质刻画:</p>
+<div class="formula"><span class="fname">单位冲激的工作定义</span>
+\[ \int_{-\infty}^{+\infty} \delta(t)\, dt = 1, \qquad \delta(t)=0 \;\; (t\neq 0) \]
+</div>
+<p><b>0 基础解读:</b>\(\delta(t)\) 不是普通函数——不存在"只在一点取无穷大、其余为零、积分还等于 1"的普通函数。它是一个<span class="term">广义函数(分布)</span>:用"积分后的效果"来定义。对你来说,它最实用的形象是:<span class="hl">宽度趋于 0、高度趋于无穷、面积恒为 1 的窄脉冲的极限</span>。</p>
+
+<div data-svg="fig_ch01_delta.svg"></div>
+<div class="mindmap-caption">图 1-6 (a) 连续时间冲激用箭头表示,箭头旁标注面积"1";(b) 离散时间冲激 \(\delta[n]\):只在 \(n=0\) 取 1,其余全 0</div>
+
+<p>单位阶跃与单位冲激互为"积分/微分"关系:</p>
+<div class="formula"><span class="fname">阶跃与冲激的关系</span>
+\[ u(t)=\int_{-\infty}^{t} \delta(\tau)\, d\tau, \qquad \delta(t)=\frac{d u(t)}{dt}, \qquad u[n]=\sum_{k=-\infty}^{n} \delta[k], \qquad \delta[n]=u[n]-u[n-1] \]
+</div>
+
+<div class="box box-keypoint"><div class="box-title">冲激的两条核心性质(全书反复使用)</div>
+<ul>
+<li><b>筛选性质(最最重要):</b>\(x(t)\,\delta(t-t_0)=x(t_0)\,\delta(t-t_0)\),进一步 \(\displaystyle\int_{-\infty}^{+\infty} x(t)\delta(t-t_0)\,dt = x(t_0)\) —— 一个积分瞬间"筛出"函数在 \(t_0\) 的值。第2章卷积、第7章采样、第9章拉氏变换全靠它</li>
+<li><b>尺度性质:</b>\(\delta(at)=\dfrac{1}{|a|}\delta(t)\) —— 把冲激"压扁",面积不变,高度必须变化</li>
+</ul>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 4:把 \(\delta(t)\) 当普通函数,讨论"\(\delta(0)\) 等于多少"</div>
+<p>没有意义。\(\delta(t)\) 只在<b>积分号下</b>有生命:\(\int x(t)\delta(t)dt=x(0)\)。判断含 \(\delta\) 的等式是否正确,标准做法是"两侧同乘任意函数并积分,看结果是否相同"。忘掉点值,记住面积——这是初学最大的坎,迈过去就通了。</p>
+</div>
+
+<h2 class="sec">§1.7 系统及其互联</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:系统就是"对信号动手脚的装置"</div>
+<p>音响放大器把微弱电压变成大电压(放大系统);存款账户把每月存款映射成余额(累加系统)。共同点:给一个输入信号,按固定规则产生一个输出信号。我们把它画成一个带箭头的盒子:</p>
+</div>
+
+<p style="text-align:center"><b>输入 \(x(t)\) ⟶ [系统] ⟶ 输出 \(y(t)\)</b></p>
+<p>数学上写作 \(y(t)=\mathcal{T}\{x(t)\}\) 或 \(x(t)\xrightarrow{\;\mathcal{T}\;} y(t)\),读作"系统 \(\mathcal{T}\) 把 \(x(t)\) 变成 \(y(t)\)"。<span class="hl">全书的任务就是研究这个黑箱的内部结构与外部特性</span>。</p>
+
+<p><b>三种互联方式:</b></p>
+<div data-svg="fig_ch01_interconn.svg"></div>
+<div class="mindmap-caption">图 1-7 系统的三种基本互联:(a) 串联——前级的输出是后级的输入;(b) 并联——同一输入分送两系统,输出相加;(c) 反馈——输出的一部分(经系统2处理)送回输入端,带负号与输入比较</div>
+
+<div class="box box-example"><div class="box-title">例题 1.4 写出反馈结构的输入输出关系</div>
+<p>图 1-7(c) 中,若系统 1 是"加 1 后除以 2",系统 2 是"延迟一拍"(离散时间),即 \(y[n]=\dfrac{x[n]+1}{2}\) 与反馈量 \(f[n]=y[n-1]\),且反馈带负号,则:</p>
+<ol class="steps">
+<li>加法器(带负号)输出:\(e[n]=x[n]-f[n]=x[n]-y[n-1]\)。</li>
+<li>系统 1 的方程:\(y[n]=\dfrac{e[n]+1}{2}\)。</li>
+<li>代入消去 \(e[n]\):\(y[n]=\dfrac{x[n]-y[n-1]+1}{2}\),即 \(y[n]+\dfrac{1}{2}y[n-1]=\dfrac{x[n]+1}{2}\)。</li>
+<li>这是一个<span class="term">差分方程</span>——离散时间反馈系统的标准形式,第2章将系统学习它的解法。</li>
+</ol>
+</div>
+
+<h2 class="sec">§1.8 系统的基本性质:给系统做"六项体检"</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:为什么是这六个性质?</div>
+<p>六大性质各回答一个朴素的问题:<span class="term">记忆性</span>——算输出时要翻"旧账"吗?<span class="term">可逆性</span>——知道输出能倒推出输入吗?<span class="term">因果性</span>——输出会"预知未来"吗?<span class="term">稳定性</span>——输入有界,输出能保证有界吗?<span class="term">时不变性</span>——系统行为会随时间漂移吗?<span class="term">线性</span>——两路输入能"各算各的再加起来"吗?其中<b>线性与时不变</b>组合出本书的主角 LTI 系统,其他性质刻画"工程上是否合理"。</p>
+</div>
+
+<h3>1.8.1 记忆性</h3>
+<p><b>定义:</b>输出只依赖<b>当前</b>输入,称为无记忆系统;否则为记忆系统。判例:\(y[n]=x^2[n]\) 无记忆;\(y[n]=x[n-1]\) 有记忆(要"记住"上一拍);积分器 \(y(t)=\int_{-\infty}^{t}x(\tau)d\tau\) 有记忆(累加器天然有记忆)。</p>
+
+<h3>1.8.2 可逆性</h3>
+<p><b>定义:</b>能从输出唯一恢复输入的系统称为可逆系统,逆系统 \(\mathcal{T}^{-1}\) 满足 \(\mathcal{T}^{-1}\{\mathcal{T}\{x\}\}=x\)。判例:\(y(t)=2x(t)\) 可逆(逆为 \(w=y/2\));\(y[n]=\sum_{k=-\infty}^{n}x[k]\) 可逆(逆为差分 \(x[n]=y[n]-y[n-1]\));<span class="hl">\(y=x^2\) 不可逆</span>(正负输入给出相同输出)。</p>
+
+<h3>1.8.3 因果性</h3>
+<p><b>定义:</b>任意时刻的输出<b>只依赖当前与过去</b>的输入(不依赖未来),称为因果系统。所有实时物理系统都是因果的——<span class="hl">因果性 = 不预知未来</span>。</p>
+<p><b>判定方法:</b>把输出时刻的表达式逐字检查,看是否出现"未来的 \(x\)"。判例:\(y[n]=x[-n]\) <b>非因果</b>(计算 \(y[-3]=x[3]\) 要用未来值);\(y(t)=x(t)\cos(t+1)\) 因果;\(y(t)=x(t/2)\) <b>非因果</b>(计算 \(y(-1)=x(-1/2)\) 需要 \(t=-1/2&gt;-1\) 这个"未来"值)。</p>
+
+<h3>1.8.4 稳定性(BIBO)</h3>
+<p><b>定义:</b>有界输入必产生有界输出(Bounded Input → Bounded Output)。即:若 \(|x(t)|\le B_x\),必存在有限 \(B_y\) 使 \(|y(t)|\le B_y\)。判例:\(y(t)=e^{x(t)}\) 稳定(\(|x|\le B\) 时 \(|y|\le e^B\));<span class="hl">\(y[n]=n\,x[n]\) 不稳定</span>——取有界输入 \(x[n]=1\),输出 \(n\) 无界。</p>
+
+<h3>1.8.5 时不变性</h3>
+<p><b>定义:</b>输入延迟多少,输出就延迟多少:<span class="hl">若 \(x(t)\to y(t)\),则 \(x(t-t_0)\to y(t-t_0)\)</span>。系统参数不随时间变化。</p>
+<p><b>判定流程:</b>①把输入换成 \(x_1(t)=x(t-t_0)\),一步步算出新输出,记作 \(y_1(t)\);②把原输出中的 \(t\) 全部替换成 \(t-t_0\),记作 \(y(t-t_0)\);③比较两者是否恒等。</p>
+<p>判例:\(y(t)=\sin[x(t)]\) 时不变(参数 \(t\) 没直接出现);\(y(t)=t\,x(t)\) 时变(乘数 \(t\) 随时间变化);<span class="hl">\(y(t)=x(2t)\) 时变</span>——输入 \(x(t-t_0)\) 得输出 \(x(2t-t_0)\),而 \(y(t-t_0)=x(2t-2t_0)\),两者不等。</p>
+
+<h3>1.8.6 线性</h3>
+<p><b>定义:</b>满足叠加性与齐次性。综合成一条:<span class="hl">若 \(x_1\to y_1\)、\(x_2\to y_2\),则 \(a x_1+b x_2 \to a y_1+b y_2\)</span>。</p>
+<p>判例:\(y(t)=t\,x(t)\) 线性(输出是输入的常数倍);\(y(t)=x^2(t)\) 非线性(\((ax)^2\neq ax^2\));<span class="hl">\(y(t)=x(t)+1\) 非线性</span>——虽然只差一个常数 1,但不满足零输入零输出,属于"增量线性系统"(加常数的伪线性)。</p>
+
+<div class="box box-example"><div class="box-title">例题 1.5 全面体检 \(y(t)=x(t-2)\)</div>
+<ol class="steps">
+<li><b>记忆性:</b>输出依赖 \(t-2\) 时刻 → 有记忆。</li>
+<li><b>可逆性:</b>由 \(y\) 得 \(x(t)=y(t+2)\) → 可逆。</li>
+<li><b>因果性:</b>只依赖过去 \(t-2\) → 因果。</li>
+<li><b>稳定性:</b>\(|x|\le B\) 则 \(|y|=|x(t-2)|\le B\) → 稳定。</li>
+<li><b>时不变性:</b>输入 \(x(t-t_0)\) 输出 \(x(t-t_0-2)\);原输出移位 \(y(t-t_0)=x(t-t_0-2)\) → 相等,<b>时不变</b>。</li>
+<li><b>线性:</b>\(a x_1(t-2)+b x_2(t-2)=a y_1+b y_2\) → <b>线性</b>。</li>
+</ol>
+<p>结论:\(y(t)=x(t-2)\) 就是一个"纯延迟器",是<span class="term">线性时不变(LTI)系统</span>的最小原型——第2章会看到,一切 LTI 系统都可以由延迟器"组装"出来。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 5:三个最隐蔽的判断陷阱</div>
+<ul>
+<li><b>陷阱一:</b>看到"输出=输入×(或+)某个含 \(t\) 的量"就急着判时变。\(y(t)=x(t)\cos(\omega_c t)\) 的乘数含 \(t\) → 时变 ✓;但 \(y(t)=x(t)\cos(\omega_c t_0)\)(常数相位)是时不变的——<span class="hl">要看乘数里是 \(t\) 还是常数</span></li>
+<li><b>陷阱二:</b>因果性只看 \(t&gt;0\)。必须检查<b>所有时刻</b>,尤其是负时刻(如 §1.8.3 的 \(y(t)=x(t/2)\))</li>
+<li><b>陷阱三:</b>线性判断时先检验"零输入是否得零输出"——不满足直接判非线性,不用继续验叠加。\(y=x+1\)、\(y=x^2+2\) 都是这样暴露的</li>
+</ul>
+</div>
+
+<h2 class="sec">§1.9 本章公式速查表</h2>
+
+<table>
+<tr><th style="width:26%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">欧拉公式</td><td class="ctr">\(e^{j\theta}=\cos\theta+j\sin\theta\),\(\cos\theta=\dfrac{e^{j\theta}+e^{-j\theta}}{2}\),\(\sin\theta=\dfrac{e^{j\theta}-e^{-j\theta}}{2j}\)</td></tr>
+<tr><td class="ctr">CT 复指数周期</td><td class="ctr">\(e^{j\omega_0 t}\):\(T_0=\dfrac{2\pi}{\omega_0}\)</td></tr>
+<tr><td class="ctr">DT 复指数周期</td><td class="ctr">周期 ⟺ \(\dfrac{\omega_0}{2\pi}=\dfrac{m}{N}\) 有理数,基波周期 \(N=m\cdot\dfrac{2\pi}{\omega_0}\)</td></tr>
+<tr><td class="ctr">奇偶分解</td><td class="ctr">\(\mathrm{Ev}\{x\}=\dfrac{x(t)+x(-t)}{2}\),\(\mathrm{Od}\{x\}=\dfrac{x(t)-x(-t)}{2}\)</td></tr>
+<tr><td class="ctr">阶跃↔冲激</td><td class="ctr">\(u(t)=\int_{-\infty}^{t}\delta(\tau)d\tau\),\(\delta(t)=\dfrac{du(t)}{dt}\);\(u[n]=\sum_{k=-\infty}^{n}\delta[k]\),\(\delta[n]=u[n]-u[n-1]\)</td></tr>
+<tr><td class="ctr">冲激筛选</td><td class="ctr">\(x(t)\delta(t-t_0)=x(t_0)\delta(t-t_0)\);\(\displaystyle\int x(t)\delta(t-t_0)dt=x(t_0)\);\(\delta(at)=\dfrac{1}{|a|}\delta(t)\)</td></tr>
+<tr><td class="ctr">能量 / 功率</td><td class="ctr">\(E_\infty=\int|x(t)|^2dt\),\(P_\infty=\lim_{T\to\infty}\frac{1}{2T}\int_{-T}^{T}|x(t)|^2dt\)(DT 换求和)</td></tr>
+<tr><td class="ctr">线性判据</td><td class="ctr">\(ax_1+bx_2\to ay_1+by_2\)(先查零输入零输出)</td></tr>
+<tr><td class="ctr">时不变判据</td><td class="ctr">\(x(t-t_0)\to y(t-t_0)\)(输入移位算一遍,输出移位算一遍,比较)</td></tr>
+<tr><td class="ctr">稳定判据</td><td class="ctr">BIBO:\(|x|\le B_x \Rightarrow |y|\le B_y\)</td></tr>
+</table>
+
+<h2 class="sec">§1.10 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 8 件事</div>
+<ol>
+<li>看图能区分 CT 与 DT 信号(看自变量,不看曲线断不断)</li>
+<li>给一个波形,能画出 \(x(-t)\)、\(x(t-1)\)、\(x(2t)\)、\(x(-t-1)\)(先移后缩,提出系数)</li>
+<li>会判 DT 复指数的周期性并求 \(N\)(有理数判据)</li>
+<li>会给信号做奇偶分解,并验证"偶部+奇部=原信号"</li>
+<li>会背 \(\delta(t)\) 的两条性质:筛选、尺度</li>
+<li>能写 \(u\) 与 \(\delta\) 的积分/差分关系(CT 与 DT 各一对)</li>
+<li>六大性质的定义各能用一句话说出,各能举一个反例</li>
+<li>见到任意系统方程,能按例题 1.5 的六步流程给出体检结论</li>
+</ol>
+</div>
+
+<h2 class="sec">§1.11 自测题(答案附后)</h2>
+
+<p class="q">判断系统 \(y(t)=x(t)\cos(\omega_c t)\)(通信中的幅度调制模型)的线性、时不变性、因果性与稳定性。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p><b>线性✓:</b>\(a x_1\cos(\omega_c t)+b x_2\cos(\omega_c t)=a y_1+b y_2\)。<b>时变✗:</b>输入 \(x(t-t_0)\) 得 \(x(t-t_0)\cos(\omega_c t)\),而 \(y(t-t_0)=x(t-t_0)\cos(\omega_c(t-t_0))\),不等。<b>因果✓、无记忆✓:</b>只依赖当前输入。<b>稳定✓:</b>\(|x|\le B\) 时 \(|y|\le B\)。</p>
+</div>
+
+<p class="q">求序列 \(x[n]=e^{j\frac{3\pi}{4}n}\) 的基波周期。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\omega_0=\dfrac{3\pi}{4}\),\(\dfrac{\omega_0}{2\pi}=\dfrac{3}{8}\) 为有理数且最简 → 基波周期 \(N=8\)。验证:\(e^{j\frac{3\pi}{4}(n+8)}=e^{j\frac{3\pi}{4}n}e^{j6\pi}=x[n]\) ✓。</p>
+</div>
+
+<p class="q">求 \(x[n]=u[n]\) 的偶部与奇部,并验证两者之和还原 \(u[n]\)。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\mathrm{Ev}\{u[n]\}=\dfrac{1}{2}+\dfrac{1}{2}\delta[n]\);\(\mathrm{Od}\{u[n]\}=\dfrac{1}{2}\big(u[n]-u[-n]\big)\)(\(n&gt;0\) 为 \(1/2\),\(n&lt;0\) 为 \(-1/2\),\(n=0\) 为 0)。相加得:\(n&gt;0\):\(1/2+1/2=1\);\(n&lt;0\):\(1/2-1/2=0\);\(n=0\):\(1+0=1\),即 \(u[n]\) ✓。</p>
+</div>
+
+<p class="q">判断 \(y[n]=x[n]\cos n\) 的六项性质。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>无记忆✓(只依赖 \(n\) 时刻)、因果✓、稳定✓(\(|\cos n|\le1\))、线性✓、可逆✗(当 \(\cos n=0\) 时输出全为 0,信息丢失)、<b>时变✗</b>(\(\cos n\) 随时间 \(n\) 变化,判断方法与第1题相同)。</p>
+</div>
+
+<p class="q">判断 \(y(t)=\displaystyle\int_{-\infty}^{2t}x(\tau)\,d\tau\) 的线性、时不变性与因果性。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p><b>线性✓:</b>积分是线性运算。<b>时变✗:</b>输入 \(x(t-t_0)\) 时输出为 \(\int_{-\infty}^{2t}x(\tau-t_0)d\tau=\int_{-\infty}^{2t-t_0}x(s)ds=y\big(t-\tfrac{t_0}{2}\big)\neq y(t-t_0)\)。<b>非因果✗:</b>取 \(t=1\),积分上限为 2,输出依赖区间 \((1,2]\) 内的<b>未来</b>输入。<b>有记忆✓</b>。</p>
+</div>
+
+<h2 class="sec">§1.12 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,5 分钟建立手感)</div>
+<pre class="code">t = -2:0.01:2;
+u = (t&gt;=0);                    % 阶跃信号:逻辑运算直接生成
+plot(t, u); axis([-2 2 -0.2 1.2]); grid on;
+
+n = -5:5;
+delta = (n==0);                % 单位冲激序列
+stem(n, delta);                % 离散信号用 stem 画"茎"
+
+x = (1 - abs(t)/1) .* (abs(t)&lt;=1);   % 三角脉冲,尺度变换实验素材
+subplot(1,3,1); plot(t,x);
+subplot(1,3,2); plot(t, (1-abs(2*t)) .* (abs(2*t)&lt;=1));   % x(2t) 压缩
+subplot(1,3,3); plot(t, (1-abs(t/2)) .* (abs(t/2)&lt;=1));   % x(t/2) 展宽</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第2章 线性时不变系统</div>
+<p>第1章我们把系统当黑箱"体检";第2章将揭示一个惊人的结论:<span class="hl">只要系统是线性时不变的,它的全部行为完全由"对单位冲激的响应 \(h(t)\)"这一个函数决定</span>——任意输入 \(x\) 的输出都能写成 \(x\) 与 \(h\) 的<span class="term">卷积</span>。届时本章的冲激函数、时移与叠加性质将全部派上用场。学习前请复习:\(\delta\) 的筛选性质、系统的线性与时不变定义。</p>
+</div>

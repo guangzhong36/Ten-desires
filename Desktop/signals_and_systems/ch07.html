@@ -1,0 +1,186 @@
+<title>第7章 采样</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第7章 采样</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第7章 | <b>建议学时:</b>7–9 小时 | <b>难度:</b>★★★☆☆(数字时代的基石)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握<span class="term">冲激串采样</span>的频域图景:采样 = 频谱以 \(\omega_s\) 为间隔<b>周期复制</b></li>
+<li><span class="hl">重点:</span>背出并会用奈奎斯特采样定理:\(\omega_s>2\omega_M\) 时样本无损携带全部信息</li>
+<li>理解<span class="term">混叠</span>的成因(频谱重叠)与危害(不可逆),会算混叠后的频率</li>
+<li>会写重建公式(sinc 内插),理解零阶保持与理想重建的区别</li>
+<li>理解"离散时间系统处理连续时间信号"的完整链路(A/D → 数字滤波 → D/A)与<span class="term">等效频率响应</span></li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>冲激串的频谱(第4章):\(\sum_k\delta(t-kT)\leftrightarrow\dfrac{2\pi}{T}\sum_k\delta(\omega-2\pi k/T)\)</li>
+<li>相乘性质(调制):时域相乘 ⟺ 频域卷积(第4章 §4.3)</li>
+<li>理想低通滤波器(第6章 §6.4)与 rect↔sinc 变换对</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>只记一幅图(1.5小时):</b>图 7-1 的"频谱周期复制"图景。采样定理、混叠、重建全部是这幅图的推论——想通它,本章 70% 完成</li>
+<li><b>会算两类题(2小时):</b>①给信号最高频率,算最小采样率;②给采样率与信号频率,算混叠后的频率(例 7.2)</li>
+<li><b>重建公式(1小时):</b>sinc 内插公式的每一部分对应什么(样本值 × 各自的 sinc × 求和)</li>
+<li><b>工程链路(1.5小时):</b>§7.5 的 A/D→H(e^{jω})→D/A 全链路与等效频率响应公式,这是数字滤波器的理论基础</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch07_map.svg"></div>
+<div class="mindmap-caption">图 7-0 第7章知识导图:采样定理是中心,重建与混叠是它的正反两面,DT 处理 CT 是它的工程应用</div>
+<p>全章核心结论一句话:<span class="hl">只要采样频率高于信号最高频率的两倍,离散样本就完整保留了连续信号的全部信息——连续世界与离散世界由此无缝对接</span>。</p>
+
+<h2 class="sec">§7.1 冲激串采样:频域里的"复印机"</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:采样是"乘法",乘法是频域卷积</div>
+<p>采样 = 用周期冲激串 \(p(t)=\sum\delta(t-nT)\) 去"戳"信号:\(x_p(t)=x(t)p(t)\),只在采样瞬间取到值。由相乘性质,时域相乘对应频域卷积;而冲激串的频谱还是冲激串(间隔 \(\omega_s=2\pi/T\))——所以采样后的频谱就是 \(X(j\omega)\) 的<span class="hl">无穷多个平移副本的叠加</span>,每个副本间隔 \(\omega_s\)。采样在频域的动作,就是"把频谱复印满整个频率轴"。</p>
+</div>
+
+<div class="formula"><span class="fname">冲激串采样的频谱</span>
+\[ X_p(j\omega) = \frac{1}{T}\sum_{k=-\infty}^{+\infty} X\big(j(\omega - k\omega_s)\big), \qquad \omega_s = \frac{2\pi}{T} \]
+</div>
+<p><b>0 基础解读:</b>系数 \(1/T\) 是"复印机缩放"(样本携带的功率被冲激串稀释);副本间隔 \(\omega_s\) 是采样角频率。原频谱 \(X(j\omega)\) 若最高频率为 \(\omega_M\),每个副本就宽 \(2\omega_M\)——副本会不会互相压到,取决于间隔 \(\omega_s\) 与宽度 \(2\omega_M\) 的关系。整个采样定理,就在这一句话里。</p>
+
+<div data-svg="fig_ch07_spec.svg"></div>
+<div class="mindmap-caption">图 7-1 采样后的频谱(虚线框为原频谱副本):(a) \(\omega_s>2\omega_M\):副本互不重叠,用理想低通即可完整取出原频谱;(b) \(\omega_s<2\omega_M\):副本互相"压进"对方,重叠处信息永久破坏——混叠</div>
+
+<h2 class="sec">§7.2 采样定理与混叠</h2>
+
+<div class="box box-keypoint"><div class="box-title">奈奎斯特采样定理(全章核心,必背)</div>
+<p>若带限信号 \(x(t)\) 的最高频率为 \(\omega_M\),则当采样频率满足</p>
+<p style="text-align:center"><b>\(\omega_s > 2\omega_M\)(严格大于)</b></p>
+<p>时,\(x(t)\) 可由其样本 \(x(nT)\) 唯一地、完整地恢复。临界值 \(\omega_s=2\omega_M\) 称为<span class="term">奈奎斯特率</span>,\(\omega_M\) 称为<span class="term">奈奎斯特频率</span>。时域版本:\(T<\pi/\omega_M\)。</p>
+</div>
+
+<div class="box box-example"><div class="box-title">例题 7.1 求最小采样频率</div>
+<p>求 \(x(t)=\cos(100\pi t)+2\cos(300\pi t)\) 的奈奎斯特率。</p>
+<ol class="steps">
+<li>读出各分量频率:\(\omega_1=100\pi\),\(\omega_2=300\pi\)(rad/s)。</li>
+<li>最高频率 \(\omega_M=300\pi\)。</li>
+<li>奈奎斯特率:\(\omega_s=2\omega_M=600\pi\) rad/s,即采样频率须 \(f_s>\dfrac{600\pi}{2\pi}=300\) Hz。</li>
+<li><b>注意:</b>这是临界值,实际采样必须严格更高(工程常用 \(2.2\sim4\) 倍)。</li>
+</ol>
+</div>
+
+<p><b>混叠(aliasing):</b>当 \(\omega_s<2\omega_M\),频谱副本重叠,高频分量"假冒"成低频分量出现,且<span class="hl">无法分辨、无法恢复</span>。频率换算公式:采样后,频率 \(\omega_0\) 会出现在 \(\omega_a=\omega_0-k\omega_s\)(\(k\) 取使 \(\omega_a\in[-\omega_s/2,\omega_s/2]\) 的整数)。</p>
+
+<div class="box box-example"><div class="box-title">例题 7.2 混叠频率计算(必会题)</div>
+<p>以 \(f_s=100\) Hz 采样 \(x(t)=\cos(2\pi\cdot 110\, t)\),求"看到"的频率。</p>
+<ol class="steps">
+<li>信号频率 110 Hz 超过折叠频率 \(f_s/2=50\) Hz,必然混叠;取 \(k=1\):110 − 100 = 10,而 10 ∈ [−50, 50] → 混叠频率 10 Hz。</li>
+<li>即采样结果与 \(\cos(2\pi\cdot 10 t)\) 的采样完全相同——<span class="hl">110 Hz 的信号"伪装"成 10 Hz</span>。验证:\(\cos(2.2\pi n)=\cos(2.2\pi n-2\pi n)=\cos(0.2\pi n)\) ✓。</li>
+</ol>
+</div>
+
+<div data-svg="fig_ch07_alias.svg"></div>
+<div class="mindmap-caption">图 7-2 混叠的时域图景:2 Hz 与 12 Hz 两个正弦在 10 Hz 采样点上取值完全相同——采样后无法区分两者</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 1:采样率"等于"2 倍最高频率就安全</div>
+<p>错,定理要求<span class="hl">严格大于</span>。临界情形:\(x(t)=\sin(2\pi\cdot50t)\) 以恰好 100 Hz 采样,若采样点正好落在正弦的过零点,采到的全是 0——信息完全丢失。工程上必须留余量;同时,任何真实信号都不是严格带限的,所以 A/D 之前必须加<span class="term">抗混叠滤波器</span>(在采样前先"砍掉"高于 \(f_s/2\) 的分量)。</p>
+</div>
+
+<h2 class="sec">§7.3 重建:把样本"还原"成波形</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:每个样本"发"一个 sinc 波</div>
+<p>重建公式的每一项 \(x(nT)\,\mathrm{sinc}\) 都是"以样本点为中心、高度为样本值的钟形脉冲"。sinc 的巧妙之处:在<b>自己</b>的采样点取到样本值,在<b>其他所有</b>采样点恰好为零——互不干扰。把所有样本的 sinc 波叠加起来,恰好穿过所有样本点,中间值自然"过渡"出来。</p>
+</div>
+
+<div class="formula"><span class="fname">理想重建(sinc 内插公式)</span>
+\[ x(t) = \sum_{n=-\infty}^{+\infty} x(nT)\, \frac{\sin\big[\omega_s(t-nT)/2\big]}{\omega_s(t-nT)/2} = \sum_n x(nT)\,\mathrm{sinc}\!\left(\frac{t-nT}{T}\right) \]
+</div>
+<p>其频域实现:让 \(x_p(t)\) 通过<span class="term">理想低通滤波器</span>(增益 \(T\),截止频率 \(\omega_s/2\)),即可把中心副本完整取出。工程上常用<span class="term">零阶保持</span>(D/A 的台阶输出)代替冲激,其频谱在 \(\omega_s/2\) 附近有轻微衰减,需要再级联一个"补偿滤波器"。</p>
+
+<div data-svg="fig_ch07_recon.svg"></div>
+<div class="mindmap-caption">图 7-3 sinc 内插重建:灰色曲线为各样本产生的 sinc 波形,深色曲线为叠加结果,红色圆点为样本值——重建曲线精确穿过所有样本点</div>
+
+<h2>§7.4 欠采样:偶尔的"故意为之"</h2>
+<p>对<b>带通信号</b>(频谱集中在 \([\omega_1,\omega_2]\),不延伸到直流),采样率不必达到 \(2\omega_2\):只要副本不重叠,取 \(\omega_s>2(\omega_2-\omega_1)\) 量级即可。这种<span class="term">带通欠采样</span>在射频接收机中广泛使用——用低频 ADC 数字化高频窄带信号。<b>初学者须知:</b>本节是进阶内容,本科生掌握"存在这种技术"即可。</p>
+
+<h2 class="sec">§7.5 离散时间处理连续时间信号</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:数字世界的完整流水线</div>
+<p>现代信号处理的标准流程:<span class="hl">抗混叠滤波 → A/D 采样 → 数字系统 \(H(e^{j\omega})\) → D/A 重建</span>。前两章学过的 DT 系统理论,通过这条流水线全部落地到连续时间世界:想在模拟世界实现一个"难做的"滤波器,先在数字域轻松设计,再走一遍这条流水线即可。</p>
+</div>
+<div class="formula"><span class="fname">等效连续时间频率响应</span>
+\[ H_{\mathrm{eff}}(j\omega) = \begin{cases} H(e^{j\omega T}), & |\omega| < \omega_s/2 \\ 0, & \text{其他} \end{cases} \]
+</div>
+<p><b>0 基础解读:</b>只要满足采样定理,数字系统 \(H(e^{j\omega})\) 对连续信号的整体效果,等于一个截止于 \(\omega_s/2\) 的等效模拟系统 \(H_{\mathrm{eff}}(j\omega)\)。数字频率 \(\Omega\) 与模拟频率 \(\omega\) 的关系:\(\Omega=\omega T\)——数字频率是"每采样周期的弧度数"。这条公式是数字滤波器设计的理论依据。</p>
+
+<h2 class="sec">§7.6 本章公式速查表</h2>
+<table>
+<tr><th style="width:28%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">采样后频谱</td><td class="ctr">\(X_p(j\omega)=\dfrac{1}{T}\sum_k X(j(\omega-k\omega_s))\)</td></tr>
+<tr><td class="ctr">采样定理</td><td class="ctr">\(\omega_s>2\omega_M\) ⟺ \(T<\pi/\omega_M\)(严格大于)</td></tr>
+<tr><td class="ctr">混叠频率</td><td class="ctr">\(\omega_a=\omega_0-k\omega_s\),取使 \(|\omega_a|\le\omega_s/2\) 的 \(k\)</td></tr>
+<tr><td class="ctr">重建公式</td><td class="ctr">\(x(t)=\sum_n x(nT)\,\mathrm{sinc}\big((t-nT)/T\big)\)</td></tr>
+<tr><td class="ctr">理想重建滤波器</td><td class="ctr">理想低通:增益 \(T\),截止频率 \(\omega_s/2\)</td></tr>
+<tr><td class="ctr">等效频率响应</td><td class="ctr">\(H_{\mathrm{eff}}(j\omega)=H(e^{j\omega T})\),\(|\omega|<\omega_s/2\)</td></tr>
+<tr><td class="ctr">数字-模拟频率映射</td><td class="ctr">\(\Omega=\omega T\)(数字频率 = 模拟频率 × 采样周期)</td></tr>
+</table>
+
+<h2 class="sec">§7.7 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 6 件事</div>
+<ol>
+<li>画出采样后的频谱(原频谱以 \(\omega_s\) 周期复制,幅度乘 \(1/T\))</li>
+<li>给任意带限信号算奈奎斯特率,并强调"严格大于"</li>
+<li>给采样率与信号频率,算出混叠频率(例 7.2 的流程)</li>
+<li>写出 sinc 内插重建公式,说出"理想低通、增益 T、截止 \(\omega_s/2\)"</li>
+<li>画出 A/D→数字系统→D/A 链路,写出等效频率响应公式</li>
+<li>解释抗混叠滤波器为什么必须在采样<b>之前</b></li>
+</ol>
+</div>
+
+<h2 class="sec">§7.8 自测题(答案附后)</h2>
+
+<p class="q">信号 \(x(t)\) 的频谱在 \(|\omega|>500\pi\) 时为零,求奈奎斯特率与允许的最大采样周期。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\omega_M=500\pi\) → 奈奎斯特率 \(\omega_s=1000\pi\) rad/s(即 \(f_s=500\) Hz),最大采样周期 \(T_{\max}=\pi/\omega_M=1/500=2\) ms。实际采样必须满足 \(T<2\) ms。</p>
+</div>
+
+<p class="q">以 \(f_s=1000\) Hz 采样 \(x(t)=\cos(2\pi\cdot 700 t)\),求混叠后看到的频率。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>700 − 1000 = −300,\(|-300|\le500\) → 混叠到 <b>300 Hz</b>。验证:\(\cos(2\pi\cdot700\cdot n/1000)=\cos(1.4\pi n)=\cos(1.4\pi n-2\pi n)=\cos(-0.6\pi n)=\cos(0.6\pi n)=\cos(2\pi\cdot300\cdot n/1000)\) ✓。700 Hz 与 300 Hz 关于折叠频率 500 Hz 镜像对称。</p>
+</div>
+
+<p class="q">写出用样本 \(x(nT)\) 重建 \(x(t)\) 的 sinc 内插公式,并解释为什么在非样本点也能"猜"出正确值。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(x(t)=\sum_n x(nT)\cdot\dfrac{\sin[\pi(t-nT)/T]}{\pi(t-nT)/T}\)。原理:满足采样定理时样本唯一确定信号(频谱不重叠);所有过样本点的连续带限信号只有一个,而 sinc 组合正是它。每个 sinc 在别处样本点为零、在自身样本点取 1,叠加自然插值出中间值——这不是"猜",是唯一的精确解。</p>
+</div>
+
+<p class="q">数字系统 \(H(e^{j\Omega})=\dfrac{1}{1-\frac{1}{2}e^{-j\Omega}}\),采样周期 \(T=10^{-3}\) s,求等效连续时间频率响应 \(H_{\mathrm{eff}}(j\omega)\),并求它在 \(\omega=0\) 与 \(\omega=500\pi\) 处的值。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(H_{\mathrm{eff}}(j\omega)=\dfrac{1}{1-\frac{1}{2}e^{-j\omega T}}\),对 \(|\omega|<\omega_s/2=\pi/T=1000\pi\)。\(\omega=0\):\(H=1/(1-1/2)=2\);\(\omega=500\pi\):\(\Omega=\omega T=0.5\pi\),\(H=\dfrac{1}{1-0.5e^{-j0.5\pi}}=\dfrac{1}{1+0.5j}\),\(|H|=1/\sqrt{1.25}\approx0.89\)。<b>解读:</b>该数字低通滤波器等效于一个模拟低通,截止约在 \(\pi/(2T)\) 附近。</p>
+</div>
+
+<p class="q">为什么采样前要放抗混叠滤波器,而不是采样后再处理混叠?</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>因为<span class="hl">混叠在采样瞬间发生且不可逆</span>:高频分量与低频分量在样本点上完全重合,采样后无法再区分彼此(图 7-2 中两条曲线样本相同)。采样后的任何处理都只能看到"已经混淆"的数据。所以必须先滤波(限制信号带宽)、后采样——这也是 CD 标准中 44.1kHz 采样率配 20kHz 低通滤波器的原因。</p>
+</div>
+
+<h2 class="sec">§7.9 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟亲眼看混叠)</div>
+<pre class="code">fs = 10;  T = 1/fs;
+t = 0:0.001:1;
+x1 = cos(2*pi*2*t);  x2 = cos(2*pi*12*t);   % 2 Hz 与 12 Hz
+n = 0:fs;  ts = n*T;
+plot(t, x1, 'b', t, x2, 'r'); hold on;
+stem(ts, cos(2*pi*2*ts), 'k', 'filled');   % 采样点,两信号完全重合!
+legend('2 Hz', '12 Hz', '样本'); title('混叠演示');
+
+% 重建演示:满足与违反采样定理的对比
+fs_ok = 100;  n_ok = 0:1:200;
+xn = sin(2*pi*5*n_ok/fs_ok);                % 5 Hz 信号,100 Hz 采样
+t_r = 0:0.0005:2;
+xr = xn * sinc((t_r'*fs_ok - (0:length(xn)-1)));  % sinc 内插重建
+plot(t_r, xr, 'b', t_r, sin(2*pi*5*t_r), 'r--');
+legend('重建', '原信号'); title('sinc 内插重建')</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第8章 通信系统</div>
+<p>采样定理回答了"信息如何数字化",第 8 章回答"信息如何传播":用<span class="term">调制</span>把低频信号搬到适合信道传输的高频载波上(AM/DSB/SSB),用<span class="term">复用</span>(FDM/TDM)让多路信号共享信道。本章的相乘性质、理想滤波、冲激串采样将全部登场。学习前复习:频移性质(第4章)、理想低通(第6章)。</p>
+</div>

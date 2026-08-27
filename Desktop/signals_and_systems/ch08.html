@@ -1,0 +1,179 @@
+<title>第8章 通信系统</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第8章 通信系统</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第8章 | <b>建议学时:</b>5–7 小时 | <b>难度:</b>★★☆☆☆(前几章工具的大阅兵)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解调制的动机与原理:频谱搬移 = 时域乘载波</li>
+<li>掌握 DSB-SC 幅度调制与同步解调的完整频域分析(本章主线)</li>
+<li>了解含载波 AM、SSB 的工程动机(检波简单、省带宽)</li>
+<li>理解 FDM 与 TDM 两种复用思想:同一信道,多路共享</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>频移性质(第4章):\(e^{j\omega_c t}x(t)\leftrightarrow X(j(\omega-\omega_c))\);\(\cos\omega_c t\) 的频谱是两根冲激</li>
+<li>相乘性质与理想低通(第4、6章);采样定理(第7章)</li>
+<li>三角恒等式:\(\cos^2\theta=\dfrac{1+\cos2\theta}{2}\)、\(\cos a\cos b=\dfrac{\cos(a+b)+\cos(a-b)}{2}\)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>主链路打通(2.5小时):</b>§8.1–8.2 的"调制→解调"完整频域推演(图 8-1、8-2),这是本章唯一必须独立推导的内容</li>
+<li><b>工程变体速览(1.5小时):</b>§8.3–8.4 的 AM/SSB 只记"为什么存在"(检波简单/省带宽)与关键公式</li>
+<li><b>复用思想(1.5小时):</b>§8.5–8.6 的 FDM/TDM,重点体会"频域切块"与"时域切片"两种共享方式的对偶美</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch08_map.svg"></div>
+<div class="mindmap-caption">图 8-0 第8章知识导图:调制-解调是主线,复用是应用</div>
+<p>全章核心结论一句话:<span class="hl">通信 = 用"乘载波"把低频信号搬到高频信道去旅行,再用"乘载波 + 低通滤波"把它接回家</span>。第4章的频移性质是全部戏法的来源。</p>
+
+<h2 class="sec">§8.1 幅度调制:给信号"装上翅膀"</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:为什么要调制?</div>
+<p>人声的频率只有几百赫兹,而天线要高效辐射电磁波,尺寸须与波长同量级——直接发射 300Hz 的声音需要 250 公里长的天线!另外,低频段信道拥挤且易受干扰。办法:把低频信息"驮"在高频载波 \(\cos\omega_c t\) 上发射。<span class="hl">调制不创造信息,只是给信息换一个适合旅行的"交通工具"</span>。</p>
+</div>
+
+<p><b>抑制载波双边带(DSB-SC)调制:</b>\(y(t)=x(t)\cos\omega_c t\)。取傅里叶变换:</p>
+<div class="formula"><span class="fname">DSB-SC 调制的频谱</span>
+\[ Y(j\omega) = \frac{1}{2}X\big(j(\omega-\omega_c)\big) + \frac{1}{2}X\big(j(\omega+\omega_c)\big) \]
+</div>
+<p><b>0 基础解读:</b>基带频谱被"复印"两份:一份搬到 \(+\omega_c\),一份搬到 \(-\omega_c\),幅度各减半。若基带带宽为 \(\omega_M\),已调信号带宽为 <b>\(2\omega_M\)</b>(双边带名称的由来)。名字"抑制载波"指载波本身不出现(\(x(t)\) 均值为零时频谱里没有载波谱线)。</p>
+
+<div data-svg="fig_ch08_am.svg"></div>
+<div class="mindmap-caption">图 8-1 调制的频域过程:(a) 基带三角谱;(b) 载波在 ±ωc 的两根谱线;(c) 频域卷积后,基带谱整体搬移到 ±ωc 两侧,幅度减半</div>
+
+<div class="box box-example"><div class="box-title">例题 8.1 调制频谱计算</div>
+<p>\(x(t)=\cos(2\pi\cdot10^3 t)\)(1kHz 单音)与载波 \(\cos(2\pi\cdot10^6 t)\)(1MHz)相乘,求已调信号的频谱与带宽。</p>
+<ol class="steps">
+<li>基带谱:两根谱线 \(\pi[\delta(\omega-2000\pi)+\delta(\omega+2000\pi)]\)。</li>
+<li>与载波谱(\(\pm 2\pi\times10^6\) 处的 \(\pi\) 冲激)做频域卷积,得四根谱线。</li>
+<li>结果:\(y(t)=\dfrac{1}{2}\cos(2\pi\cdot999\times10^3 t)+\dfrac{1}{2}\cos(2\pi\cdot1001\times10^3 t)\)——<b>搬出 999kHz 与 1001kHz 两个边频</b>,载波频率 1MHz 处没有分量(被抑制)。</li>
+<li>带宽:1001−999=2kHz,恰为基带带宽的两倍。</li>
+</ol>
+</div>
+
+<h2 class="sec">§8.2 同步解调:把信号"接回家"</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:解调 = 再乘一次 + 洗掉高频</div>
+<p>接收端再乘同一个载波:\(y(t)\cos\omega_c t = x(t)\cos^2\omega_c t = \dfrac{x(t)}{2}+\dfrac{x(t)}{2}\cos2\omega_c t\)。第一项就是原信号的一半,第二项被搬到了 \(2\omega_c\) 附近——用低通滤波器一"洗",高频部分冲走,基带部分留下。<span class="hl">调制是"搬上去",解调是"再搬一次+低通"</span>。</p>
+</div>
+
+<div class="formula"><span class="fname">同步解调链路</span>
+\[ x(t)\cos\omega_c t \xrightarrow{\;\times\cos\omega_c t\;} \frac{x(t)}{2} + \frac{x(t)}{2}\cos 2\omega_c t \xrightarrow{\;\text{低通}\;(\omega_{co}\in[\omega_M,\;2\omega_c-\omega_M])\;} \frac{x(t)}{2} \]
+</div>
+
+<div data-svg="fig_ch08_demod.svg"></div>
+<div class="mindmap-caption">图 8-2 同步解调的频域过程:(a) 已调谱;(b) 再乘载波后,基带谱回到原点(幅度 1/2),另有两份副本跑到 ±2ωc;(c) 低通滤波后恢复基带谱</div>
+
+<div class="box box-example"><div class="box-title">例题 8.2 低通滤波器的截止频率怎么选?</div>
+<p>基带带宽 \(\omega_M=2\pi\times4\) kHz,载波 \(\omega_c=2\pi\times100\) kHz。求解调低通滤波器的合理截止频率。</p>
+<ol class="steps">
+<li>再乘载波后:基带成分在 \(|\omega|<\omega_M\),高频副本在 \(\omega=2\omega_c\pm\omega_M\) 附近。</li>
+<li>低通截止频率须满足:\(\omega_M<\omega_{co}<2\omega_c-\omega_M\)——放行基带、挡住 \(2\omega_c\) 副本。</li>
+<li>代入:\(\omega_{co}\) 取 4kHz 到 196kHz 之间任何值都行,工程上常取 8–10kHz。</li>
+<li><b>前提:</b>\(\omega_c>\omega_M\)(载波高于基带带宽,否则频谱重叠,低通无法分离)。</li>
+</ol>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 1:解调用的载波不必与原载波严格同步</div>
+<p>错。<span class="hl">同步解调的灵魂就在"同步"二字</span>。若本地载波为 \(\cos(\omega_c t+\phi)\),解调输出为 \(\dfrac{x(t)}{2}\cos\phi\)——相位偏差 \(\phi\) 直接衰减信号(\(\phi=90°\) 时输出为零!);若本地频率偏差 \(\Delta\omega\),输出为 \(\dfrac{x(t)}{2}\cos(\Delta\omega\, t)\),信号被一个慢变化的拍频"扭曲"。工程上靠锁相环(PLL)从接收信号中恢复载波。</p>
+</div>
+
+<h2 class="sec">§8.3 含载波的 AM 与包络检波</h2>
+<p>DSB-SC 要求接收端有精确同步的本地载波,电路复杂。解决办法:发射时把载波本身也发过去:</p>
+<div class="formula"><span class="fname">含载波 AM</span>
+\[ y(t) = \big[1 + m\,x(t)\big]\cos\omega_c t, \qquad 0<m\le1 \;(|x(t)|<1) \]
+</div>
+<p>接收端只需最简单的<span class="term">包络检波</span>(二极管+电容,跟随波形轮廓)即可解调——上世纪广播收音机的核心就便宜在这里。代价:载波消耗大量发射功率(信息其实只在边带里)。注意 <span class="hl">\(m>1\) 时"过调制"</span>,包络发生反转,包络检波失效并产生严重失真。</p>
+
+<h2>§8.4 单边带(SSB):带宽省一半</h2>
+<p>DSB 的上下边带互为镜像,信息重复。用<span class="term">理想带通滤波器</span>只保留一个边带(如 \([\omega_c,\omega_c+\omega_M]\)),得到 SSB:<b>带宽 \(\omega_M\),省一半</b>,功率也更集中。代价是发射端需要陡峭的带通滤波(工程上用相移法实现)。记住结论即可:SSB = 频谱利用率优先的选择。</p>
+
+<h2>§8.5 频分复用(FDM):频域"切块"</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:一条公路,多条车道</div>
+<p>广播电台们共享同一片天空:每个电台占一个频段(车道),互不压线。FDM 就是把各路信号搬到<b>不同的载波频率</b>上,再叠加进同一信道;接收端用<span class="hl">带通滤波器"按车道取车"</span>,各自解调。保护带(车道之间的空隙)防止滤波器不理想造成的串扰。</p>
+</div>
+<p>第 \(i\) 路信号 \(x_i(t)\)(带宽 \(\omega_{M,i}\))搬到载波 \(\omega_{c,i}\),载波间距须大于相邻带宽之和;接收端用中心频率 \(\omega_{c,i}\)、带宽匹配的带通滤波器取出该路。<b>典型例子:</b>AM 广播(各电台间隔 9/10kHz)、有线电视、光纤的波分复用(光的 FDM)。</p>
+
+<h2>§8.6 脉冲幅度调制(PAM)与时分复用(TDM)</h2>
+<p><b>PAM:</b>用信号的<b>样本值</b>调制脉冲串的幅度(第7章采样的直接应用)。<b>TDM:</b>各路信号按时间轮转,轮流占用信道——第1路发一个样本、第2路发一个、……轮流循环,接收端同步开关分拣。<span class="hl">FDM 是"频率上分车道",TDM 是"时间上排班次"</span>,两者对偶。TDM 的数字版就是现代电话骨干网与计算机网络的雏形。</p>
+
+<h2 class="sec">§8.7 本章公式速查表</h2>
+<table>
+<tr><th style="width:28%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">DSB-SC 调制</td><td class="ctr">\(y(t)=x(t)\cos\omega_c t\),\(Y=\frac{1}{2}[X(j(\omega-\omega_c))+X(j(\omega+\omega_c))]\)</td></tr>
+<tr><td class="ctr">已调带宽</td><td class="ctr">\(2\omega_M\)(DSB);\(\omega_M\)(SSB)</td></tr>
+<tr><td class="ctr">同步解调</td><td class="ctr">\(\times\cos\omega_c t\to\) 低通(截止 \(\omega_{co}\in(\omega_M,2\omega_c-\omega_M)\))\(\to x(t)/2\)</td></tr>
+<tr><td class="ctr">含载波 AM</td><td class="ctr">\(y=(1+mx)\cos\omega_c t\),\(m\le1\),包络检波</td></tr>
+<tr><td class="ctr">相位偏差后果</td><td class="ctr">输出 \(\dfrac{x(t)}{2}\cos\phi\)(\(\phi=90°\) 时为零)</td></tr>
+<tr><td class="ctr">FDM/TDM</td><td class="ctr">频域切块(不同载波+带通取回)/ 时域切片(轮流占用+同步分拣)</td></tr>
+</table>
+
+<h2 class="sec">§8.8 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 6 件事</div>
+<ol>
+<li>画出 DSB-SC 调制的频域三步图(基带谱 → 载波谱线 → 搬移后的两副本)</li>
+<li>写出已调信号带宽与基带带宽的关系(2 倍),会算单音调制的边频(例 8.1)</li>
+<li>完整推演同步解调:乘载波、得 \(x/2\) 项与 \(2\omega_c\) 项、低通洗掉高频</li>
+<li>会选解调低通截止频率:\(\omega_M<\omega_{co}<2\omega_c-\omega_M\)</li>
+<li>说出同步偏差的后果(\(\cos\phi\) 衰减)与含载波 AM 的动机(包络检波)</li>
+<li>用自己的话解释 FDM 与 TDM 的对偶关系</li>
+</ol>
+</div>
+
+<h2 class="sec">§8.9 自测题(答案附后)</h2>
+
+<p class="q">基带信号 \(x(t)\) 带宽 5kHz,以 \(f_c=100\)kHz 载波做 DSB-SC 调制,求已调信号的频谱占用范围与总带宽。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>频谱占用:95–105kHz 与 −95–−105kHz(实信号频谱共轭对称),总带宽 \(2\times5=10\)kHz。注意:带宽按<b>正频率</b>一侧算 10kHz,若算"双侧跨度"则是 20kHz——工程上报"带宽 10kHz"。</p>
+</div>
+
+<p class="q">接收端本地载波为 \(\cos(\omega_c t+\pi/3)\),同步解调输出是什么?</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\dfrac{x(t)}{2}\cos(\pi/3)=\dfrac{x(t)}{4}\)——相位偏差 60° 使信号衰减一半。\(\phi=90°\) 时输出完全消失;这说明<span class="hl">同步解调器本质上是"相敏检波器"</span>。</p>
+</div>
+
+<p class="q">三路语音信号各占 0–4kHz,用 FDM 复用,载波分别取 100、108、116kHz,若用理想带通滤波解调且不留保护带,求复用信号的总带宽,并画出频谱草图。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>各路上边带(SSB)互不重叠地排列:100–104、108–112、116–120kHz → 总带宽 120−100=20kHz。若用 DSB 则每路 8kHz、总 24kHz 且需 4kHz 间隔。保护带在真实系统中必须留,否则滤波器过渡带造成串扰。</p>
+</div>
+
+<p class="q">为什么 DSB-SC 被称为"抑制载波"?含载波 AM 又把载波加回来,图什么?</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>DSB-SC 频谱中没有载波谱线(\(x\) 无直流时),发射功率全部用于携带信息的边带,功率效率高,但接收端必须自备同步载波。<b>含载波 AM 的权衡</b>:发射端浪费大量功率在载波上(载波不携带信息),换取接收端极简(包络检波,无需同步)——适合"一台发射机、百万台廉价收音机"的广播场景。工程选择永远在两端权衡。</p>
+</div>
+
+<p class="q">TDM 系统中,4 路信号各需 4kHz 带宽,用 PAM 采样时分复用,求最低总采样率与每路的采样间隔。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>每路奈奎斯特率 8kHz,4 路总采样率 32kHz,即每 31.25μs 一个总样本槽;每路样本间隔 125μs(8kHz),4 路轮流占槽。<b>要点:</b>总速率是各路速率之和,TDM 只是把"并列"改成"轮转",信息量不变。</p>
+</div>
+
+<h2 class="sec">§8.10 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟玩一遍调制解调)</div>
+<pre class="code">fs = 1e6;  t = 0:1/fs:0.002;
+x = cos(2*pi*1000*t);               % 1kHz 基带单音
+c = cos(2*pi*100e3*t);              % 100kHz 载波
+y = x .* c;                         % DSB-SC 调制
+X = fftshift(fft(x));  Y = fftshift(fft(y));
+w = linspace(-pi, pi, numel(t)) * fs/(2*pi);
+plot(w/1e3, abs(X)/max(abs(X)), 'b'); hold on;
+plot(w/1e3, abs(Y)/max(abs(Y)), 'r');  % 看频谱搬移:±100kHz 两簇
+xlim([-120 120]); legend('基带谱', '已调谱');
+
+z = y .* c;                         % 同步解调:再乘载波
+[b, a] = butter(6, 10e3/(fs/2));    % 10kHz 低通
+xr = 2 * filter(b, a, z);           % 恢复并补增益
+plot(t*1e3, x, 'b', t*1e3, xr, 'r--');
+legend('原信号', '解调恢复'); title('同步解调验证')</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第9章 拉普拉斯变换</div>
+<p>第4章的傅里叶变换要求信号绝对可积,把不满足条件的信号(如 \(e^{at}u(t)\),\(a>0\))挡在门外。拉普拉斯变换的解法:给信号乘一个衰减因子 \(e^{-\sigma t}\) 再求傅里叶变换——\(j\omega\) 推广为 \(s=\sigma+j\omega\)。<span class="hl">拉氏变换 = 广义傅里叶变换</span>,附带一个叫"收敛域"的重要概念。学习前复习:傅里叶变换定义、部分分式分解、\(H(j\omega)\) 与 LCCDE。</p>
+</div>

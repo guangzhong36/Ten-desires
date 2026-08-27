@@ -1,0 +1,121 @@
+<title>总览:全书学习方法与知识地图</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">总览:全书学习方法与知识地图</h1>
+<div class="chapter-meta"><b>阅读对象:</b>零基础学习者 | <b>建议先读:</b>本册(30 分钟),再进入各章</div>
+
+<div class="box box-goal"><div class="box-title">这套教辅的设计理念</div>
+<p>本教辅为奥本海姆《信号与系统》(第二版)的十一个章节各配一册,每章结构统一,七个模块各司其职:</p>
+<ul>
+<li><b>🎯 学习目标:</b>先知道"要走到哪里",不迷路</li>
+<li><b>🧰 前置知识自查:</b>5 分钟确认基础,缺什么补什么(都是"欠账清单")</li>
+<li><b>🚀 高效学习路线:</b>分阶段的学时分配与先后顺序——先建立直觉,再练计算,最后攻坚概念</li>
+<li><b>知识导图:</b>每章开篇的思维导图,先看森林,再见树木</li>
+<li><b>分节详解:</b>每节按"💡直觉先行 → 定义公式 → 例题精讲 → ⚠️常见误区"推进,像老师讲课一样</li>
+<li><b>📌 最小必会清单 + 自测题:</b>"离开本章前必须做到的事"与带答案的自测,验收学习成果</li>
+<li><b>动手实验:</b>10 分钟 MATLAB/Octave 代码,让公式变成看得见的图形</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">通用高效学习法(贯穿全书)</div>
+<ol>
+<li><b>直觉先行:</b>每学一个新概念,先问"它在回答什么生活问题?"(例:卷积=存钱叠加,傅里叶=配方表,采样=复印机)。有直觉,公式才有抓手</li>
+<li><b>费曼检验:</b>学完一节,合上书向空气讲一遍;讲不下去的地方就是没懂的地方,立刻回看</li>
+<li><b>计算与概念分家:</b>计算类内容(变换、卷积)靠"练三遍";概念类内容(ROC、因果性)靠"讲明白"。两类内容用不同学法</li>
+<li><b>对照学习:</b>本书处处成对:CT↔DT、拉氏↔Z、FDM↔TDM。学第二个时把第一个的笔记摊在旁边,效率翻倍</li>
+<li><b>间隔重复:</b>每章的"最小必会清单"隔 1 天、1 周、1 月各过一遍——考前它就是你的复习提纲</li>
+</ol>
+</div>
+
+<h2 class="sec">全书知识地图</h2>
+<div data-svg="ch00_map.svg"></div>
+<div class="mindmap-caption">图 0-1 全书五大部分:时域基础 → 频域分析 → 工程应用 → 复频域 → 综合。箭头表示"依赖"关系,务必按序学习</div>
+
+<h2 class="sec">全书主线:一条线串起十一个章节</h2>
+<div class="box box-keypoint"><div class="box-title">全书其实只回答一个问题</div>
+<p style="text-align:center;font-size:11pt"><b>"线性时不变系统对任意输入的输出是什么?"</b></p>
+<p>围绕它发展出<b>三代工具</b>,层层升级:</p>
+<ul>
+<li><b>第一代·时域(第1–2章):</b>\(y=x*h\)。答案是卷积,但对复杂信号计算痛苦</li>
+<li><b>第二代·频域(第3–5章):</b>\(Y=X\cdot H\)。把信号拆成复指数,卷积变乘法——核心突破。第6章学会"读谱",第7章打通连续与离散,第8章拿去通信</li>
+<li><b>第三代·复频域(第9–10章):</b>\(Y(s)=X(s)H(s)\)。引入收敛域,连指数发散信号也能分析,并获得稳定性判据。第11章用它设计反馈系统</li>
+</ul>
+<p>记住这条线,你就永远不会"学丢"——每章都能在地图上找到自己的位置。</p>
+</div>
+
+<h2 class="sec">章节依赖关系与两条学习路线</h2>
+<table>
+<tr><th style="width:18%">章节</th><th style="width:44%">一句话核心结论</th><th>直接依赖</th></tr>
+<tr><td class="ctr">第1章 信号与系统</td><td class="ctr">信号是携带信息的函数,系统有六大性质</td><td class="ctr">高中+复数</td></tr>
+<tr><td class="ctr">第2章 LTI 系统</td><td class="ctr">冲激响应 h 完全表征 LTI 系统,输出=卷积</td><td class="ctr">第1章</td></tr>
+<tr><td class="ctr">第3章 傅里叶级数</td><td class="ctr">周期信号=复指数之和,系统响应=频域乘法</td><td class="ctr">第1、2章</td></tr>
+<tr><td class="ctr">第4章 CTFT</td><td class="ctr">非周期信号也有频谱;卷积定理 Y=X·H</td><td class="ctr">第2、3章</td></tr>
+<tr><td class="ctr">第5章 DTFT</td><td class="ctr">离散频谱以 2π 为周期,性质与 CTFT 镜像</td><td class="ctr">第2、4章</td></tr>
+<tr><td class="ctr">第6章 时频特性</td><td class="ctr">幅度定取舍,相位定形状;Bode 图会读会画</td><td class="ctr">第4、5章</td></tr>
+<tr><td class="ctr">第7章 采样</td><td class="ctr">ωs&gt;2ωM 时样本无损;混叠不可逆</td><td class="ctr">第4、6章</td></tr>
+<tr><td class="ctr">第8章 通信系统</td><td class="ctr">调制=频谱搬移,解调=再搬+低通</td><td class="ctr">第4、6章</td></tr>
+<tr><td class="ctr">第9章 拉普拉斯变换</td><td class="ctr">s=σ+jω 广义化;ROC 定信号;稳定⟺含虚轴</td><td class="ctr">第4章</td></tr>
+<tr><td class="ctr">第10章 Z变换</td><td class="ctr">z 平面圆环 ROC;稳定⟺单位圆在 ROC 内</td><td class="ctr">第5、9章</td></tr>
+<tr><td class="ctr">第11章 反馈系统</td><td class="ctr">闭环 Q=G/(1+GH);根轨迹与 Nyquist 判稳</td><td class="ctr">第9章</td></tr>
+</table>
+
+<div class="box box-tip"><div class="box-title">两条学习路线</div>
+<ul>
+<li><b>路线 A·系统学习(推荐,约 80–100 学时):</b>按章节顺序 1→11 完整学习,每章照"高效学习路线"走。适合零基础、要建立完整知识体系者</li>
+<li><b>路线 B·考前突击(约 30–40 学时):</b>第1章(性质)→第2章(卷积)→第4章(CTFT)→第9章(拉氏)→第5章(DTFT)→第10章(Z)→第7章(采样)→第3章(级数)→第6、8、11章(挑重点)。<span class="hl">注意:第3章虽是级数,但思想是第4章的基础,突击时至少读完第3章 §3.1</span></li>
+</ul>
+</div>
+
+<h2 class="sec">CT 与 DT 全对照表(全书最重要的两张网之一)</h2>
+<table>
+<tr><th style="width:20%">概念</th><th>连续时间</th><th>离散时间</th></tr>
+<tr><td class="ctr">基本信号</td><td class="ctr">\(\delta(t)\),\(u(t)\),\(e^{st}\)</td><td class="ctr">\(\delta[n]\),\(u[n]\),\(z^n\)</td></tr>
+<tr><td class="ctr">阶跃↔冲激</td><td class="ctr">\(u=\int\delta\),\(\delta=u'\)</td><td class="ctr">\(u=\sum\delta\),\(\delta[n]=u[n]-u[n-1]\)</td></tr>
+<tr><td class="ctr">周期条件</td><td class="ctr">\(x(t+T_0)=x(t)\),\(T_0=2\pi/\omega_0\)</td><td class="ctr">\(\omega_0/2\pi\) 有理数,\(N=m\cdot2\pi/\omega_0\)</td></tr>
+<tr><td class="ctr">LTI 响应</td><td class="ctr">\(y=x*h=\int x(\tau)h(t-\tau)d\tau\)</td><td class="ctr">\(y=x*h=\sum_k x[k]h[n-k]\)</td></tr>
+<tr><td class="ctr">稳定判据</td><td class="ctr">\(\int|h(t)|dt<\infty\)</td><td class="ctr">\(\sum|h[n]|<\infty\)</td></tr>
+<tr><td class="ctr">特征函数</td><td class="ctr">\(e^{j\omega t}\to H(j\omega)e^{j\omega t}\)</td><td class="ctr">\(e^{j\omega n}\to H(e^{j\omega})e^{j\omega n}\)</td></tr>
+<tr><td class="ctr">频域变换</td><td class="ctr">\(X(j\omega)=\int x(t)e^{-j\omega t}dt\)</td><td class="ctr">\(X(e^{j\omega})=\sum x[n]e^{-j\omega n}\),周期 2π</td></tr>
+<tr><td class="ctr">卷积定理</td><td class="ctr">\(x*y\leftrightarrow XY\)</td><td class="ctr">\(x*y\leftrightarrow XY\)(同!)</td></tr>
+<tr><td class="ctr">复频域变换</td><td class="ctr">拉氏:\(X(s)=\int x(t)e^{-st}dt\),ROC 带</td><td class="ctr">Z:\(X(z)=\sum x[n]z^{-n}\),ROC 圆环</td></tr>
+<tr><td class="ctr">FT 存在条件</td><td class="ctr">ROC 含虚轴</td><td class="ctr">ROC 含单位圆</td></tr>
+<tr><td class="ctr">因果性</td><td class="ctr">ROC 为最右极点之右</td><td class="ctr">ROC 为最外极点之外</td></tr>
+<tr><td class="ctr">系统方程</td><td class="ctr">微分方程 \(H(s)=\dfrac{\sum b_ks^k}{\sum a_ks^k}\)</td><td class="ctr">差分方程 \(H(z)=\dfrac{\sum b_kz^{-k}}{\sum a_kz^{-k}}\)</td></tr>
+</table>
+
+<h2 class="sec">全书核心公式 TOP 20(考前最后一遍看这里)</h2>
+<table>
+<tr><th style="width:8%">#</th><th style="width:44%">公式</th><th>出处与用途</th></tr>
+<tr><td class="ctr">1</td><td class="ctr">\(e^{j\theta}=\cos\theta+j\sin\theta\)</td><td class="ctr">全书万能钥匙</td></tr>
+<tr><td class="ctr">2</td><td class="ctr">\(y[n]=\sum_k x[k]h[n-k]\),\(y(t)=\int x(\tau)h(t-\tau)d\tau\)</td><td class="ctr">第2章 卷积</td></tr>
+<tr><td class="ctr">3</td><td class="ctr">因果 ⟺ \(h=0(t<0)\);稳定 ⟺ \(\sum|h|<\infty\)</td><td class="ctr">第2章 判据</td></tr>
+<tr><td class="ctr">4</td><td class="ctr">\(x(t)=\sum_k a_k e^{jk\omega_0t}\),\(a_k=\frac{1}{T_0}\int_{T_0}x(t)e^{-jk\omega_0t}dt\)</td><td class="ctr">第3章 CTFS</td></tr>
+<tr><td class="ctr">5</td><td class="ctr">\(e^{j\omega t}\to H(j\omega)e^{j\omega t}\),\(b_k=a_kH(jk\omega_0)\)</td><td class="ctr">第3章 滤波</td></tr>
+<tr><td class="ctr">6</td><td class="ctr">\(X(j\omega)=\int x(t)e^{-j\omega t}dt\),\(x(t)=\frac{1}{2\pi}\int X(j\omega)e^{j\omega t}d\omega\)</td><td class="ctr">第4章 CTFT</td></tr>
+<tr><td class="ctr">7</td><td class="ctr">\(\delta(t)\leftrightarrow1\);\(e^{-at}u(t)\leftrightarrow\dfrac{1}{a+j\omega}\);\(\mathrm{rect}(t/2)\leftrightarrow\dfrac{2\sin\omega}{\omega}\)</td><td class="ctr">第4章 必背对</td></tr>
+<tr><td class="ctr">8</td><td class="ctr">\(x(t-t_0)\leftrightarrow e^{-j\omega t_0}X\);\(x(at)\leftrightarrow\frac{1}{|a|}X(j\omega/a)\)</td><td class="ctr">第4章 时移/尺度</td></tr>
+<tr><td class="ctr">9</td><td class="ctr">\(x*y\leftrightarrow XY\)(卷积定理)</td><td class="ctr">第4/5章 核心</td></tr>
+<tr><td class="ctr">10</td><td class="ctr">\(a^n u[n]\leftrightarrow\dfrac{1}{1-ae^{-j\omega}}\)</td><td class="ctr">第5章 必背对</td></tr>
+<tr><td class="ctr">11</td><td class="ctr">\(H(e^{j\omega})=\dfrac{\sum b_ke^{-j\omega k}}{\sum a_ke^{-j\omega k}}\)</td><td class="ctr">第5章 差分方程</td></tr>
+<tr><td class="ctr">12</td><td class="ctr">\(\tau(\omega)=-\dfrac{d\angle H}{d\omega}\);线性相位 ⟺ 纯延迟</td><td class="ctr">第6章 群延迟</td></tr>
+<tr><td class="ctr">13</td><td class="ctr">\(H=\dfrac{\omega_n^2}{(j\omega)^2+2\zeta\omega_n(j\omega)+\omega_n^2}\)</td><td class="ctr">第6章 二阶系统</td></tr>
+<tr><td class="ctr">14</td><td class="ctr">\(\omega_s>2\omega_M\)(采样定理)</td><td class="ctr">第7章 核心</td></tr>
+<tr><td class="ctr">15</td><td class="ctr">\(x(t)=\sum_n x(nT)\,\mathrm{sinc}\big((t-nT)/T\big)\)</td><td class="ctr">第7章 重建</td></tr>
+<tr><td class="ctr">16</td><td class="ctr">\(Y(j\omega)=\frac{1}{2}[X(j(\omega-\omega_c))+X(j(\omega+\omega_c))]\)</td><td class="ctr">第8章 DSB-SC</td></tr>
+<tr><td class="ctr">17</td><td class="ctr">\(X(s)=\int x(t)e^{-st}dt\),ROC 必写;\(e^{-at}u(t)\leftrightarrow\dfrac{1}{s+a}\),\(\mathrm{Re}\{s\}>-a\)</td><td class="ctr">第9章 核心</td></tr>
+<tr><td class="ctr">18</td><td class="ctr">稳定 ⟺ ROC 含 \(j\omega\) 轴(因果:极点全左)</td><td class="ctr">第9章 判据</td></tr>
+<tr><td class="ctr">19</td><td class="ctr">\(a^n u[n]\leftrightarrow\dfrac{1}{1-az^{-1}}\),\(|z|>|a|\);稳定 ⟺ 单位圆在 ROC 内</td><td class="ctr">第10章 核心</td></tr>
+<tr><td class="ctr">20</td><td class="ctr">\(Q(s)=\dfrac{G(s)}{1+G(s)H(s)}\)</td><td class="ctr">第11章 闭环</td></tr>
+</table>
+
+<h2 class="sec">如何使用本教辅(给零基础读者的话)</h2>
+<div class="box box-intuition"><div class="box-title">三句话的使用哲学</div>
+<ul>
+<li><b>先看导图再看正文:</b>每章开篇的知识导图花 5 分钟"读图",建立全景后再进入细节——像旅游先看地图再逛街</li>
+<li><b>直觉框必须读,公式可以晚点懂:</b>每个"💡直觉先行"框都是零障碍入口;如果公式卡住,回到直觉框重读,通常豁然开朗</li>
+<li><b>自测题是"出门证":</b>做完每章自测题(不看答案)才算学完本章;做错了回看对应小节,不要直接看答案</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">建议的每日节奏(以 10 周学完全书为例)</div>
+<p>每天 2 小时:第 1 小时读新内容(照"高效学习路线"走),第 2 小时做例题与自测题 + 在 MATLAB 里跑一遍当天的"动手实验"。每周五复习本周的"最小必会清单",每周日做一道跨章节综合题。坚持 10 周,你将以扎实的底子站在任何信号与系统考试或工程任务面前。</p>
+</div>

@@ -1,0 +1,207 @@
+<title>第5章 离散时间傅里叶变换</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第5章 离散时间傅里叶变换</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第5章 | <b>建议学时:</b>7–9 小时 | <b>难度:</b>★★★☆☆(与第4章结构镜像)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握 DTFT 定义与合成式,理解 <span class="hl">"频谱以 \(2\pi\) 为周期"</span> 这一离散时间世界的根本特征</li>
+<li>会推导 \(a^n u[n]\) 的频谱(与 CT 的 \(e^{-at}u(t)\) 对照记忆)</li>
+<li>会用性质表解题,特别是时移、卷积定理、差分/累加</li>
+<li>会由差分方程求 \(H(e^{j\omega})\),会分析一阶系统的幅度响应(低通/高通判型)</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>DT 复指数的周期折叠:\(e^{j(\omega+2\pi)n}=e^{j\omega n}\),\(\omega=\pi\) 是"最高频率"(第1章 §1.5.2)</li>
+<li>卷积和(第2章 §2.1)、几何级数 \(\sum_{k=0}^{\infty}r^k=\dfrac{1}{1-r}\;(|r|<1)\)</li>
+<li>CTFT 的性质表(第4章 §4.3)——本章性质几乎逐条对应,对照学习最省力</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>对照学习法(2小时):</b>把第 4 章的变换对表与性质表摊在旁边,逐条找出 DT 版本,标出三处差异:①频谱周期 \(2\pi\)(积分区间是一个周期);②微分→差分,积分→累加;③相乘性质中积分限 \(2\pi\)</li>
+<li><b>必会推导(1.5小时):</b>\(a^n u[n]\leftrightarrow\dfrac{1}{1-ae^{-j\omega}}\) 与一阶差分方程的 \(H(e^{j\omega})\)(例 5.1、5.3)</li>
+<li><b>幅度响应手感(1.5小时):</b>例 5.4 的 \(|H(e^{j\omega})|\) 在 \(\omega=0\) 与 \(\omega=\pi\) 两端的取值规律,能一眼判"低通/高通"</li>
+<li><b>刷题(1.5小时):</b>§5.7 自测题 + 用 MATLAB freqz 画图验证</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch05_map.svg"></div>
+<div class="mindmap-caption">图 5-0 第5章知识导图:结构与第4章镜像,核心差异是频谱的周期性</div>
+<p>全章核心结论一句话:<span class="hl">离散时间信号也有连续频谱 \(X(e^{j\omega})\),但它以 \(2\pi\) 为周期;卷积定理依然成立,系统分析依然是频域乘法</span>。</p>
+
+<h2 class="sec">§5.1 定义:离散时间的频谱</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:频谱为什么是周期的?</div>
+<p>回想第 1 章:\(e^{j\omega n}\) 与 \(e^{j(\omega+2\pi)n}\) 是<b>同一个序列</b>(整数点上取值完全相同)。所以"频率"在离散世界是<span class="hl">循环的</span>:把 \(\omega\) 转一圈(\(2\pi\)),又回到起点。于是频谱函数 \(X(e^{j\omega})\) 必然每 \(2\pi\) 重复一次——画频谱只需画一个周期,通常选 \([-\pi,\pi]\) 或 \([0,2\pi]\)。</p>
+</div>
+
+<div class="formula"><span class="fname">离散时间傅里叶变换对</span>
+\[ X(e^{j\omega}) = \sum_{n=-\infty}^{+\infty} x[n]\, e^{-j\omega n}, \qquad x[n] = \frac{1}{2\pi}\int_{2\pi} X(e^{j\omega})\, e^{j\omega n}\, d\omega \]
+</div>
+<p><b>0 基础解读(逐符号):</b>①分析式把 \(x[n]\) 与"试探序列" \(e^{-j\omega n}\) 逐点相乘求和,问"频率 \(\omega\) 的成分有多少";②合成式在<span class="hl">任意长度 \(2\pi\) 的区间</span>上积分(起点随意,常用 \([-\pi,\pi]\));③记号 \(X(e^{j\omega})\) 刻意写成"\(e^{j\omega}\) 的函数",因为频谱随 \(\omega\) 周期变化;④收敛条件:绝对可和 \(\sum|x[n]|<\infty\) 保证级数一致收敛——第 10 章将看到,更一般信号(如 \(a^n u[n]\) 的 \(|a|>1\) 情形)需要引入收敛域概念。</p>
+
+<h2 class="sec">§5.2 常用变换对与推导</h2>
+
+<div class="box box-example"><div class="box-title">例题 5.1 推导 \(a^n u[n]\) 的频谱(必会题)</div>
+<p>求 \(x[n]=a^n u[n]\)(\(|a|<1\))的 DTFT。</p>
+<ol class="steps">
+<li>代入:\(X(e^{j\omega})=\displaystyle\sum_{n=0}^{\infty} a^n e^{-j\omega n}=\sum_{n=0}^{\infty}(ae^{-j\omega})^n\)。</li>
+<li>几何级数(公比 \(|ae^{-j\omega}|=|a|<1\) 收敛):\(X(e^{j\omega})=\dfrac{1}{1-ae^{-j\omega}}\)。</li>
+<li><b>读图(例 5.2 将展开):</b>\(|X|=\dfrac{1}{\sqrt{1+a^2-2a\cos\omega}}\)。当 \(0<a<1\):\(\omega=0\) 处最大 \(\dfrac{1}{1-a}\),\(\omega=\pi\) 处最小 \(\dfrac{1}{1+a}\)——<b>能量集中在低频</b>,是"低通"形状。</li>
+</ol>
+</div>
+
+<div data-svg="fig_ch05_exp.svg"></div>
+<div class="mindmap-caption">图 5-1 \(a^n u[n]\) 与其幅度谱(a=0.5):注意频谱每 \(2\pi\) 重复,峰值在 \(\omega=0,\pm2\pi,\dots\) 处,谷值在 \(\omega=\pm\pi,\pm3\pi,\dots\) 处</div>
+
+<table>
+<tr><th style="width:30%">序列 \(x[n]\)</th><th>频谱 \(X(e^{j\omega})\)</th></tr>
+<tr><td class="ctr">\(\delta[n]\)</td><td class="ctr">\(1\)</td></tr>
+<tr><td class="ctr">\(\delta[n-n_0]\)</td><td class="ctr">\(e^{-j\omega n_0}\)</td></tr>
+<tr><td class="ctr">\(a^n u[n]\),\(|a|<1\)</td><td class="ctr">\(\dfrac{1}{1-ae^{-j\omega}}\)</td></tr>
+<tr><td class="ctr">\(1\)(常数序列)</td><td class="ctr">\(2\pi\sum_k\delta(\omega-2\pi k)\)(周期冲激串)</td></tr>
+<tr><td class="ctr">\(u[n]\)</td><td class="ctr">\(\dfrac{1}{1-e^{-j\omega}}+\pi\sum_k\delta(\omega-2\pi k)\)</td></tr>
+<tr><td class="ctr">\(\cos\omega_0 n\)</td><td class="ctr">\(\pi\sum_k[\delta(\omega-\omega_0-2\pi k)+\delta(\omega+\omega_0-2\pi k)]\)</td></tr>
+<tr><td class="ctr">\(\dfrac{W}{\pi}\,\mathrm{sinc}\!\left(\dfrac{Wn}{\pi}\right)\)</td><td class="ctr">周期为 \(2\pi\) 的矩形窗(理想低通)谱</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 1:把 DT 频谱画成只在 \([-\pi,\pi]\) 有值</div>
+<p>DT 频谱<span class="hl">处处有定义、处处以 \(2\pi\) 为周期</span>。常说"画在 \([-\pi,\pi]\)"只是画一个周期。判断 \(\omega=3\) 与 \(\omega=3-2\pi\) 处的频谱值相等,不是"没定义"。这个周期性的物理来源是采样(第 7 章),数学来源是 \(e^{j\omega n}\) 的折叠。</p>
+</div>
+
+<h2 class="sec">§5.3 性质表(与第4章逐条对照)</h2>
+<table>
+<tr><th style="width:20%">性质</th><th style="width:38%">序列</th><th>频谱</th></tr>
+<tr><td class="ctr">线性</td><td class="ctr">\(ax[n]+by[n]\)</td><td class="ctr">\(aX(e^{j\omega})+bY(e^{j\omega})\)</td></tr>
+<tr><td class="ctr">时移</td><td class="ctr">\(x[n-n_0]\)</td><td class="ctr">\(e^{-j\omega n_0}X(e^{j\omega})\)</td></tr>
+<tr><td class="ctr">频移</td><td class="ctr">\(e^{j\omega_0 n}x[n]\)</td><td class="ctr">\(X(e^{j(\omega-\omega_0)})\)</td></tr>
+<tr><td class="ctr">共轭</td><td class="ctr">\(x^*[n]\)</td><td class="ctr">\(X^*(e^{-j\omega})\)</td></tr>
+<tr><td class="ctr">时间反转</td><td class="ctr">\(x[-n]\)</td><td class="ctr">\(X(e^{-j\omega})\)</td></tr>
+<tr><td class="ctr">时域扩展</td><td class="ctr">\(x_{(k)}[n]\)(插入 \(k-1\) 个零)</td><td class="ctr">\(X(e^{jk\omega})\)(频谱压缩 \(k\) 倍)</td></tr>
+<tr><td class="ctr">差分</td><td class="ctr">\(x[n]-x[n-1]\)</td><td class="ctr">\((1-e^{-j\omega})X(e^{j\omega})\)</td></tr>
+<tr><td class="ctr">累加</td><td class="ctr">\(\sum_{k=-\infty}^{n}x[k]\)</td><td class="ctr">\(\dfrac{X(e^{j\omega})}{1-e^{-j\omega}}+\pi X(e^{j0})\sum_k\delta(\omega-2\pi k)\)</td></tr>
+<tr><td class="ctr"><b>卷积定理★</b></td><td class="ctr">\(x[n]*y[n]\)</td><td class="ctr">\(X(e^{j\omega})Y(e^{j\omega})\)</td></tr>
+<tr><td class="ctr">相乘</td><td class="ctr">\(x[n]y[n]\)</td><td class="ctr">\(\dfrac{1}{2\pi}\int_{2\pi}X(e^{j\theta})Y(e^{j(\omega-\theta)})d\theta\)(周期卷积)</td></tr>
+<tr><td class="ctr">Parseval</td><td class="ctr">\(\sum_n|x[n]|^2\)</td><td class="ctr">\(\dfrac{1}{2\pi}\int_{2\pi}|X(e^{j\omega})|^2d\omega\)</td></tr>
+</table>
+
+<div class="box box-example"><div class="box-title">例题 5.2 用性质秒算两个经典变换</div>
+<p>(a) \(x[n]=\delta[n+1]+\delta[n-1]\);(b) \(x[n]=\left(\dfrac{1}{2}\right)^n\cos\left(\dfrac{\pi n}{4}\right)u[n]\)。</p>
+<ol class="steps">
+<li>(a) 用 \(\delta\leftrightarrow1\) + 时移:\(X(e^{j\omega})=e^{j\omega}+e^{-j\omega}=2\cos\omega\)。<b>心得:</b>两根对称冲激 = 一条余弦谱。</li>
+<li>(b) 用频移性质:\(\cos(\pi n/4)\) 是 \(e^{\pm j\pi n/4}\) 的和,乘序列相当于频谱搬移。</li>
+<li>基序列 \(b^n u[n]\leftrightarrow\dfrac{1}{1-be^{-j\omega}}\)(\(b=1/2\)),频移 \(\pm\pi/4\) 后取半相加。</li>
+<li>\(X(e^{j\omega})=\dfrac{1/2}{1-\frac{1}{2}e^{-j(\omega-\pi/4)}}+\dfrac{1/2}{1-\frac{1}{2}e^{-j(\omega+\pi/4)}}\)。验证:\(\omega=0\) 处两项对称,谱值相等,符合实序列共轭对称。</li>
+</ol>
+</div>
+
+<h2 class="sec">§5.4 差分方程与频率响应</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:差分方程 = 频域有理分式</div>
+<p>对差分方程 \(\sum_k a_k y[n-k]=\sum_k b_k x[n-k]\) 两边取 DTFT,时移变成乘 \(e^{-j\omega k}\),立刻解出 \(H(e^{j\omega})\) 是两个多项式之比——与 CT 的"导数换 \(j\omega\)"完全平行,只是把 \(j\omega\) 换成 \(e^{-j\omega}\)。</p>
+</div>
+
+<div class="formula"><span class="fname">LCCDE → 频率响应(DT)</span>
+\[ H(e^{j\omega}) = \frac{\sum_{k=0}^{M} b_k e^{-j\omega k}}{\sum_{k=0}^{N} a_k e^{-j\omega k}} \]
+</div>
+
+<div class="box box-example"><div class="box-title">例题 5.3 一阶系统 \(y[n]-a\,y[n-1]=x[n]\) 的频率响应(必会题)</div>
+<ol class="steps">
+<li>取 DTFT:\(Y(e^{j\omega})-a e^{-j\omega}Y(e^{j\omega})=X(e^{j\omega})\)。</li>
+<li>解出:\(H(e^{j\omega})=\dfrac{1}{1-ae^{-j\omega}}\)——与 \(a^n u[n]\) 的频谱同形!这正是"\(h[n]=a^n u[n]\)"的验证。</li>
+<li>幅度谱:\(|H|=\dfrac{1}{\sqrt{1+a^2-2a\cos\omega}}\),相位谱:\(\angle H=-\arctan\dfrac{a\sin\omega}{1-a\cos\omega}\)。</li>
+<li><b>判型:</b>\(0<a<1\):\(\omega=0\) 处 \(|H|=1/(1-a)\) 最大 → <b>低通</b>;\(-1<a<0\):最大值在 \(\omega=\pi\) → <b>高通</b>。仅凭系数 \(a\) 的符号即可判型,非常好用。</li>
+</ol>
+</div>
+
+<div data-svg="fig_ch05_ideal.svg"></div>
+<div class="mindmap-caption">图 5-2 理想低通滤波器(离散时间):通带 \(|H|=1\),阻带为 0,频谱每 \(2\pi\) 重复。对应冲激响应是 sinc 序列(无限长、非因果,工程上只能近似)</div>
+
+<h2 class="sec">§5.5 与 CTFT 的对照总结</h2>
+<table>
+<tr><th style="width:26%">对比项</th><th>CTFT(第4章)</th><th>DTFT(本章)</th></tr>
+<tr><td class="ctr">分析式</td><td class="ctr">\(\int x(t)e^{-j\omega t}dt\)</td><td class="ctr">\(\sum_n x[n]e^{-j\omega n}\)</td></tr>
+<tr><td class="ctr">频谱定义域</td><td class="ctr">全实轴 \(\omega\in\mathbb{R}\)</td><td class="ctr">以 \(2\pi\) 为周期的函数</td></tr>
+<tr><td class="ctr">"最高频率"</td><td class="ctr">无上界</td><td class="ctr">\(\omega=\pi\)</td></tr>
+<tr><td class="ctr">微分/积分 ↔</td><td class="ctr">乘 \(j\omega\) / 除 \(j\omega\)</td><td class="ctr">差分乘 \(1-e^{-j\omega}\) / 累加除 \(1-e^{-j\omega}\)</td></tr>
+<tr><td class="ctr">卷积定理</td><td class="ctr">\(X(j\omega)H(j\omega)\)</td><td class="ctr">\(X(e^{j\omega})H(e^{j\omega})\)(同!)</td></tr>
+<tr><td class="ctr">对偶性</td><td class="ctr">时频形态互换</td><td class="ctr">较弱(无尺度连续可换)</td></tr>
+</table>
+
+<h2 class="sec">§5.6 本章公式速查表</h2>
+<table>
+<tr><th style="width:26%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">变换对</td><td class="ctr">\(X(e^{j\omega})=\sum_n x[n]e^{-j\omega n}\),\(x[n]=\dfrac{1}{2\pi}\int_{2\pi}X(e^{j\omega})e^{j\omega n}d\omega\)</td></tr>
+<tr><td class="ctr">必背变换对</td><td class="ctr">\(\delta[n]\leftrightarrow1\);\(\delta[n-n_0]\leftrightarrow e^{-j\omega n_0}\);\(a^n u[n]\leftrightarrow\dfrac{1}{1-ae^{-j\omega}}\)</td></tr>
+<tr><td class="ctr">时移/频移</td><td class="ctr">\(x[n-n_0]\leftrightarrow e^{-j\omega n_0}X\);\(e^{j\omega_0 n}x[n]\leftrightarrow X(e^{j(\omega-\omega_0)})\)</td></tr>
+<tr><td class="ctr">差分/累加</td><td class="ctr">\(x[n]-x[n-1]\leftrightarrow(1-e^{-j\omega})X\);累加除 \(1-e^{-j\omega}\) 另加直流冲激项</td></tr>
+<tr><td class="ctr">卷积定理</td><td class="ctr">\(x[n]*h[n]\leftrightarrow X(e^{j\omega})H(e^{j\omega})\)</td></tr>
+<tr><td class="ctr">差分方程求 H</td><td class="ctr">\(H(e^{j\omega})=\dfrac{\sum b_k e^{-j\omega k}}{\sum a_k e^{-j\omega k}}\)</td></tr>
+<tr><td class="ctr">一阶系统判型</td><td class="ctr">\(H=\dfrac{1}{1-ae^{-j\omega}}\):\(a>0\) 低通,\(a<0\) 高通</td></tr>
+</table>
+
+<h2 class="sec">§5.7 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 6 件事</div>
+<ol>
+<li>写出 DTFT 变换对,并说出合成式积分区间是"任意一个 \(2\pi\) 区间"</li>
+<li>徒手推导 \(a^n u[n]\leftrightarrow1/(1-ae^{-j\omega})\)(几何级数)</li>
+<li>会算 \(\delta[n+1]+\delta[n-1]\leftrightarrow2\cos\omega\) 这类组合题</li>
+<li>由差分方程写出 \(H(e^{j\omega})\),会算 \(|H|\) 在 \(\omega=0,\pi\) 的值并判低通/高通</li>
+<li>理解"频谱周期 \(2\pi\)"并会画周期延拓的幅度谱</li>
+<li>会查性质表:时移、频移、卷积定理、Parseval(与 CT 版本对照记忆)</li>
+</ol>
+</div>
+
+<h2 class="sec">§5.8 自测题(答案附后)</h2>
+
+<p class="q">求 \(x[n]=\left(\dfrac{1}{2}\right)^{|n|}\) 的 DTFT。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(x[n]=(1/2)^n u[n]+(1/2)^{-n}u[-n-1]\)。第一部分 \(\dfrac{1}{1-\frac{1}{2}e^{-j\omega}}\);第二部分用反转性质(把 \((1/2)^n u[n]\) 反转并延迟 1):\(\dfrac{\frac{1}{2}e^{j\omega}}{1-\frac{1}{2}e^{j\omega}}\)。相加:\(X(e^{j\omega})=\dfrac{1-\frac{1}{4}}{(1-\frac{1}{2}e^{-j\omega})(1-\frac{1}{2}e^{j\omega})}=\dfrac{3/4}{5/4-\cos\omega}\)。注意 \(|X|\) 是实偶函数(序列偶对称 → 频谱实)。</p>
+</div>
+
+<p class="q">系统 \(y[n]-0.8y[n-1]=x[n]\),求 \(H(e^{j\omega})\),并求 \(|H|\) 在 \(\omega=0\) 与 \(\omega=\pi\) 的值,判断滤波器类型。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(H(e^{j\omega})=\dfrac{1}{1-0.8e^{-j\omega}}\)。\(\omega=0\):\(|H|=\dfrac{1}{1-0.8}=5\)(放大 5 倍!);\(\omega=\pi\):\(|H|=\dfrac{1}{1+0.8}\approx0.56\)。低频放大、高频削弱 → <b>低通</b>。极点靠近单位圆(\(a=0.8\)),谐振峰尖锐——\(a\) 越接近 1,低频"隆起"越明显。</p>
+</div>
+
+<p class="q">用卷积定理求 \(y[n]=x[n]*h[n]\) 的频谱,其中 \(x[n]=(1/2)^n u[n]\),\(h[n]=(1/3)^n u[n]\),并给出 \(y[n]\) 的表达式。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(Y(e^{j\omega})=\dfrac{1}{(1-\frac{1}{2}e^{-j\omega})(1-\frac{1}{3}e^{-j\omega})}\)。部分分式:\(=\dfrac{3}{1-\frac{1}{2}e^{-j\omega}}-\dfrac{2}{1-\frac{1}{3}e^{-j\omega}}\) → \(y[n]=\left[3\left(\dfrac{1}{2}\right)^n-2\left(\dfrac{1}{3}\right)^n\right]u[n]\)。与 CT 的例题 4.4 流程完全相同,只是 \(j\omega\to e^{-j\omega}\)。</p>
+</div>
+
+<p class="q">序列 \(x[n]=\cos(\pi n/4)\) 的频谱长什么样?(不要求推导,描述形状即可)</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>在 \(\omega=\pm\pi/4\) 处各有一根强度 \(\pi\) 的谱线,并在 \(\omega=\pm\pi/4\pm2\pi k\) 处周期重复。注意:\(\cos(\pi n/4)\) 是周期序列(周期 8,因 \(\omega_0/2\pi=1/8\) 有理),故频谱是离散冲激——与 DTFS 完全一致。这也印证了"周期序列 ↔ 冲激谱"的 DT 版本。</p>
+</div>
+
+<p class="q">Parseval 验证:\(x[n]=(1/2)^n u[n]\) 的能量等于频谱模方的积分平均值。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>时域:\(\sum_{n=0}^{\infty}(1/4)^n=\dfrac{1}{1-1/4}=\dfrac{4}{3}\)。频域:\(\dfrac{1}{2\pi}\int_{-\pi}^{\pi}\dfrac{d\omega}{1+\frac{1}{4}-\cos\omega}=\dfrac{4}{3}\) ✓(可用留数或查积分表,数值积分亦可验证)。<b>工程提示:</b>这类校验在数值仿真中极其常用——时频两域能量相等是检查代码错误的最快手段。</p>
+</div>
+
+<h2 class="sec">§5.9 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟看频谱)</div>
+<pre class="code">[H, w] = freqz([1], [1 -0.5]);       % 一阶系统 H = 1/(1-0.5e^{-jw})
+plot(w/pi, abs(H)); grid on;
+xlabel('\omega / \pi'); ylabel('|H(e^{j\omega})|');
+title('一阶低通系统幅度响应');
+
+[H2, w] = freqz([1], [1 0.5]);       % a = -0.5 的高通版
+hold on; plot(w/pi, abs(H2), 'r--');
+legend('a=0.5 低通', 'a=-0.5 高通');
+
+n = 0:30; x = 0.5.^n;                % 数值验证 DTFT
+w = linspace(-pi, pi, 200);
+X = x * exp(-1j * n' * w);           % 直接按定义求和
+plot(w, abs(X), 'b.'); hold on;
+plot(w, 1./sqrt(1.25 - cos(w)), 'r--');  % 理论值,应重合</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第6章 信号与系统的时域和频域特性</div>
+<p>第 4、5 章给了"频域眼镜",第 6 章教你<b>看懂</b>频谱:幅度谱的形状如何决定滤波品质,相位谱如何造成"群延迟"失真,Bode 图如何把乘除变成加减,时宽-带宽积如何限制"既快又窄"。这是从"会算"到"会看"的一章。学习前复习:\(H(j\omega)\) 的模与辐角(第4章 §4.4)。</p>
+</div>

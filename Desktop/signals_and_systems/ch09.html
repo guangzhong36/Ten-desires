@@ -1,0 +1,213 @@
+<title>第9章 拉普拉斯变换</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第9章 拉普拉斯变换</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第9章 | <b>建议学时:</b>9–11 小时 | <b>难度:</b>★★★★☆(收敛域是最大难点)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解拉普拉斯变换的动机:乘衰减因子 \(e^{-\sigma t}\) 后做傅里叶变换,使更多信号"可分析"</li>
+<li><span class="hl">重点:</span>理解<span class="term">收敛域(ROC)</span>概念,记住"\(X(s)\) + ROC 才完整定义信号"</li>
+<li>掌握常用变换对与性质(线性、时移、s 域平移、卷积、微分)</li>
+<li>会部分分式反变换,并能<span class="hl">根据 ROC 判断每项对应左边还是右边信号</span></li>
+<li>会用系统函数 \(H(s)\) 判断因果性与稳定性(ROC 是否含 \(j\omega\) 轴)</li>
+<li>会解线性常系数微分方程(零状态 + 零输入),了解单边拉氏变换</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>傅里叶变换(第4章):定义、\(e^{-at}u(t)\leftrightarrow1/(a+j\omega)\)、收敛问题</li>
+<li>部分分式分解与留数(微积分);LCCDE(第2章 §2.4)</li>
+<li>复平面常识:\(s=\sigma+j\omega\),\(\mathrm{Re}\{s\}\) 是实轴方向</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>先懂"为什么"(1小时):</b>§9.1 只看动机:\(e^{-at}u(t)\)(a>0)没有傅里叶变换(不收敛),乘 \(e^{-\sigma t}\) 后就有了——拉氏变换是"加了保险的傅里叶变换"</li>
+<li><b>ROC 攻坚(2.5小时):</b>§9.2 三个例子(右半面/左半面/带)必须逐字看懂,配合图 9-1。<span class="hl">ROC 是本章 90% 错误的来源</span>,花多少时间都值</li>
+<li><b>反变换练习(2小时):</b>例 9.3 的"一个 X(s),三个 ROC,三个信号"反复做三遍</li>
+<li><b>系统分析(2小时):</b>§9.5–9.6:因果性/稳定性判据 + LCCDE 求解流程(例 9.4)</li>
+<li><b>性质表对照(1小时):</b>与第4章 FT 性质逐条对照,记住差异(积分无冲激项、ROC 取交集)</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch09_map.svg"></div>
+<div class="mindmap-caption">图 9-0 第9章知识导图:ROC 贯穿全章,零极点图与系统分析都以它为基础</div>
+<p>全章核心结论一句话:<span class="hl">拉普拉斯变换 = 广义傅里叶变换(\(j\omega\to s\));变换式必须连同收敛域一起记忆,系统稳定性由"ROC 是否包含 \(j\omega\) 轴"判定</span>。</p>
+
+<h2 class="sec">§9.1 定义与动机</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:给不听话的信号"打一针镇定剂"</div>
+<p>傅里叶变换要求信号绝对可积,但 \(e^{2t}u(t)\) 这类指数增长信号积分发散。办法:先乘一个指数衰减因子 \(e^{-\sigma t}\) 把它"压下去",再做傅里叶变换。这个"复合操作"就是拉普拉斯变换:<span class="hl">先镇压,再分析</span>。\(j\omega\) 推广为 \(s=\sigma+j\omega\),傅里叶变换成为 \(s\) 平面虚轴上的特例。</p>
+</div>
+
+<div class="formula"><span class="fname">(双边)拉普拉斯变换</span>
+\[ X(s) = \int_{-\infty}^{+\infty} x(t)\, e^{-st}\, dt, \qquad s = \sigma + j\omega \]
+</div>
+<p><b>收敛域(ROC):</b>使积分收敛的全体 \(s\) 的集合。若 ROC 包含 \(j\omega\) 轴(即某个 \(\sigma=0\) 情形),则信号存在傅里叶变换,且 \(X(j\omega)=X(s)\big|_{s=j\omega}\)——在 ROC 内做替换即可。<b>0 基础解读:</b>ROC 就是"\(e^{-\sigma t}\) 要多强才能压住信号"的量化描述:增长越快的信号,需要越大的 \(\sigma\),ROC 越靠右。</p>
+
+<div class="box box-example"><div class="box-title">例题 9.1 推导 \(e^{-at}u(t)\) 的拉氏变换(必会)</div>
+<ol class="steps">
+<li>\(X(s)=\displaystyle\int_0^{\infty} e^{-at}e^{-st}dt=\int_0^{\infty} e^{-(s+a)t}dt\)。</li>
+<li>收敛条件:\(\mathrm{Re}\{s+a\}>0\) ⟺ \(\mathrm{Re}\{s\}>-a\)(否则 \(t\to\infty\) 时被积函数不衰减)。</li>
+<li>积分:\(X(s)=\dfrac{1}{s+a}\),<b>ROC: \(\mathrm{Re}\{s\}>-a\)</b>(右半平面)。</li>
+<li>对照 FT:当 \(-a<0\)(即 \(a>0\))时 ROC 含 \(j\omega\) 轴,\(X(j\omega)=\dfrac{1}{a+j\omega}\) 与第 4 章结果一致 ✓。当 \(a<0\) 时信号无 FT,但仍有拉氏变换——这就是拉氏变换的威力。</li>
+</ol>
+</div>
+
+<h2 class="sec">§9.2 ROC:同样的公式,不同的信号</h2>
+<div class="box box-example"><div class="box-title">例题 9.2 一个 \(X(s)\),三种 ROC,三个信号</div>
+<p>求 \(-e^{-at}u(-t)\) 与 \(e^{-a|t|}\) 的拉氏变换,与例 9.1 对照。</p>
+<ol class="steps">
+<li><b>左边信号</b> \(-e^{-at}u(-t)\):\(X(s)=\dfrac{1}{s+a}\),但收敛条件反转为 \(\mathrm{Re}\{s\}<-a\)(<b>左半平面</b>)。</li>
+<li><b>双边信号</b> \(e^{-a|t|}=e^{-at}u(t)+e^{at}u(-t)\):两个极点 \(\pm a\),ROC 是两者的交集:<b>带</b> \(-a<\mathrm{Re}\{s\}<a\)。</li>
+<li><b>震撼结论:</b>三个完全不同信号的拉氏变换式<span class="hl">一模一样</span>,唯一区别是 ROC!所以必须记住:\(X(s)\) 不写 ROC,等于没说。</li>
+</ol>
+</div>
+
+<div data-svg="fig_ch09_roc.svg"></div>
+<div class="mindmap-caption">图 9-1 相同 \(X(s)=1/(s+a)\) 的三种 ROC(阴影区):(a) 右边信号 → 右半面;(b) 左边信号 → 左半面;(c) 双边信号 → 带状。虚线与 × 表示极点位置</div>
+
+<p><b>ROC 的三条黄金性质:</b></p>
+<ul>
+<li><b>形状:</b>ROC 总是平行于 \(j\omega\) 轴的<span class="hl">带</span>(可以是半平面或全平面)</li>
+<li><b>边界:</b>有理变换的 ROC 边界由极点界定,<span class="hl">ROC 内绝无极点</span></li>
+<li><b>判 FT:</b>ROC 包含 \(j\omega\) 轴 ⟺ 信号存在傅里叶变换</li>
+</ul>
+
+<h2 class="sec">§9.3 零极点图与常用变换对</h2>
+<p>有理变换 \(X(s)=N(s)/D(s)\):分子根为<span class="term">零点</span>(画 ○),分母根为<span class="term">极点</span>(画 ×)。零极点图 + ROC 完全刻画信号。常用变换对:</p>
+<table>
+<tr><th style="width:32%">信号 \(x(t)\)</th><th>\(X(s)\)</th><th style="width:22%">ROC</th></tr>
+<tr><td class="ctr">\(\delta(t)\)</td><td class="ctr">\(1\)</td><td class="ctr">全平面</td></tr>
+<tr><td class="ctr">\(e^{-at}u(t)\)</td><td class="ctr">\(\dfrac{1}{s+a}\)</td><td class="ctr">\(\mathrm{Re}\{s\}>-a\)</td></tr>
+<tr><td class="ctr">\(-e^{-at}u(-t)\)</td><td class="ctr">\(\dfrac{1}{s+a}\)</td><td class="ctr">\(\mathrm{Re}\{s\}<-a\)</td></tr>
+<tr><td class="ctr">\(u(t)\)</td><td class="ctr">\(\dfrac{1}{s}\)</td><td class="ctr">\(\mathrm{Re}\{s\}>0\)</td></tr>
+<tr><td class="ctr">\(t^n e^{-at}u(t)\)</td><td class="ctr">\(\dfrac{n!}{(s+a)^{n+1}}\)</td><td class="ctr">\(\mathrm{Re}\{s\}>-a\)</td></tr>
+<tr><td class="ctr">\(\cos\omega_0 t\,u(t)\)</td><td class="ctr">\(\dfrac{s}{s^2+\omega_0^2}\)</td><td class="ctr">\(\mathrm{Re}\{s\}>0\)</td></tr>
+<tr><td class="ctr">\(\sin\omega_0 t\,u(t)\)</td><td class="ctr">\(\dfrac{\omega_0}{s^2+\omega_0^2}\)</td><td class="ctr">\(\mathrm{Re}\{s\}>0\)</td></tr>
+</table>
+
+<h2 class="sec">§9.4 反变换:部分分式 + ROC 定向</h2>
+
+<div class="box box-example"><div class="box-title">例题 9.3 部分分式反变换(本章最重要流程)</div>
+<p>\(X(s)=\dfrac{1}{(s+1)(s+2)}\),分别求 ROC 为 (a) \(\mathrm{Re}\{s\}>-1\);(b) \(-2<\mathrm{Re}\{s\}<-1\);(c) \(\mathrm{Re}\{s\}<-2\) 时的 \(x(t)\)。</p>
+<ol class="steps">
+<li>分解:\(X(s)=\dfrac{1}{s+1}-\dfrac{1}{s+2}\)。</li>
+<li>(a) ROC 在两个极点右边 → 两项都是<b>右边信号</b>:\(x(t)=(e^{-t}-e^{-2t})u(t)\)。</li>
+<li>(b) ROC 是带:\(s=-1\) 在其右边 → 该项取左边信号;\(s=-2\) 在其左边 → 该项取右边信号:\(x(t)=-e^{-t}u(-t)-e^{-2t}u(t)\)。</li>
+<li>(c) ROC 在两个极点左边 → 都是左边信号:\(x(t)=(-e^{-t}+e^{-2t})u(-t)\)。</li>
+<li><b>心法:</b>极点 <b>在 ROC 右边</b> → 该项是右边信号(\(u(t)\));极点 <b>在 ROC 左边</b> → 左边信号(\(u(-t)\),注意配负号)。</li>
+</ol>
+</div>
+
+<h2 class="sec">§9.5 系统函数与稳定性分析</h2>
+<p><b>系统函数</b> \(H(s)\):系统冲激响应的拉氏变换,满足 \(Y(s)=H(s)X(s)\)。两条核心判据:</p>
+<div class="box box-keypoint"><div class="box-title">必背判据</div>
+<ul>
+<li><b>因果性:</b>系统因果 ⟺ \(H(s)\) 的 ROC 是<span class="hl">某个右半平面</span>(且为最右极点之右)</li>
+<li><b>稳定性:</b>系统稳定 ⟺ ROC <span class="hl">包含 \(j\omega\) 轴</span>。对因果系统:稳定 ⟺ <b>全部极点都在左半平面</b>(\(\mathrm{Re}\{极点\}<0\))</li>
+</ul>
+</div>
+
+<div class="box box-example"><div class="box-title">例题 9.4 由微分方程求 \(H(s)\) 并判断稳定性</div>
+<p>系统 \(y''+3y'+2y=x(t)\),求因果系统的 \(H(s)\),判断稳定性。</p>
+<ol class="steps">
+<li>两边取拉氏变换:\((s^2+3s+2)Y(s)=X(s)\)(初始松弛)。</li>
+<li>\(H(s)=\dfrac{1}{s^2+3s+2}=\dfrac{1}{(s+1)(s+2)}\)。</li>
+<li>因果 → ROC: \(\mathrm{Re}\{s\}>-1\)(最右极点之右),且包含 \(j\omega\) 轴 → <b>稳定</b>。</li>
+<li>验证:反变换 \(h(t)=(e^{-t}-e^{-2t})u(t)\),\(\int_0^\infty|h|dt<\infty\) ✓ 与第 2 章判据一致。</li>
+<li><b>对比:</b>若分母是 \(s^2-s-2=(s+1)(s-2)\),极点 \(s=2\) 在右半平面,因果系统 ROC \(\mathrm{Re}\{s\}>2\) 不含 \(j\omega\) 轴 → <b>不稳定</b>(输出指数发散)。</li>
+</ol>
+</div>
+
+<h2 class="sec">§9.6 拉氏变换性质与单边变换</h2>
+<table>
+<tr><th style="width:22%">性质</th><th style="width:38%">信号</th><th>变换 / 说明</th></tr>
+<tr><td class="ctr">线性</td><td class="ctr">\(ax(t)+by(t)\)</td><td class="ctr">\(aX+bY\),ROC ⊇ 交集</td></tr>
+<tr><td class="ctr">时移</td><td class="ctr">\(x(t-t_0)\)</td><td class="ctr">\(e^{-st_0}X(s)\),ROC 不变</td></tr>
+<tr><td class="ctr">s 域平移</td><td class="ctr">\(e^{s_0 t}x(t)\)</td><td class="ctr">\(X(s-s_0)\),ROC 平移 \(\mathrm{Re}\{s_0\}\)</td></tr>
+<tr><td class="ctr">卷积</td><td class="ctr">\(x(t)*y(t)\)</td><td class="ctr">\(X(s)Y(s)\),ROC ⊇ 交集</td></tr>
+<tr><td class="ctr">时域微分</td><td class="ctr">\(\dfrac{dx}{dt}\)</td><td class="ctr">\(sX(s)\)(双边,初始松弛)</td></tr>
+<tr><td class="ctr">时域积分</td><td class="ctr">\(\int_{-\infty}^{t}x(\tau)d\tau\)</td><td class="ctr">\(\dfrac{X(s)}{s}\),ROC ⊇ ROC∩\(\{\mathrm{Re}\{s\}>0\}\)</td></tr>
+<tr><td class="ctr">初值/终值定理</td><td class="ctr">\(x(0^+)\),\(x(\infty)\)</td><td class="ctr">\(\lim_{s\to\infty}sX(s)\),\(\lim_{s\to0}sX(s)\)(注意适用条件!)</td></tr>
+</table>
+<p><b>单边拉氏变换:</b>积分下限取 \(0^-\)(把 \(t<0\) 的部分丢弃),专为求解<span class="term">带初值条件的微分方程</span>设计:微分性质变为 \(sX(s)-x(0^-)\),初值自动进入方程。用它解零输入+零状态响应非常顺手——电路与经典控制理论的主流工具。</p>
+
+<h2 class="sec">§9.7 本章公式速查表</h2>
+<table>
+<tr><th style="width:24%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">定义</td><td class="ctr">\(X(s)=\int x(t)e^{-st}dt\),ROC = 收敛域</td></tr>
+<tr><td class="ctr">必背变换对</td><td class="ctr">\(\delta\leftrightarrow1\)(全平面);\(e^{-at}u(t)\leftrightarrow\dfrac{1}{s+a},\mathrm{Re}\{s\}>-a\);\(u(t)\leftrightarrow\dfrac{1}{s}\)</td></tr>
+<tr><td class="ctr">ROC 性质</td><td class="ctr">平行 \(j\omega\) 轴的带;无极点;含 \(j\omega\) 轴 ⟺ FT 存在</td></tr>
+<tr><td class="ctr">因果判据</td><td class="ctr">ROC 为最右极点之右的右半平面</td></tr>
+<tr><td class="ctr">稳定判据</td><td class="ctr">ROC 含 \(j\omega\) 轴;因果系统 ⟺ 极点全在左半平面</td></tr>
+<tr><td class="ctr">反变换心法</td><td class="ctr">极点右 → \(u(t)\) 项;极点左 → \(u(-t)\) 项(配负号)</td></tr>
+<tr><td class="ctr">LCCDE → H(s)</td><td class="ctr">\(H(s)=\dfrac{\sum b_k s^k}{\sum a_k s^k}\)("导数换 \(s\)")</td></tr>
+</table>
+
+<h2 class="sec">§9.8 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 7 件事</div>
+<ol>
+<li>推导 \(e^{-at}u(t)\leftrightarrow1/(s+a)\) 及其 ROC(例 9.1 流程)</li>
+<li>写出 \(1/(s+a)\) 的三种 ROC 对应的三个信号(例 9.2)</li>
+<li>说出 ROC 三条黄金性质(带状、无极点、含虚轴⟺FT)</li>
+<li>部分分式反变换时,会按 ROC 判断每项取左/右信号(例 9.3 心法)</li>
+<li>由 \(H(s)\) 判断因果性与稳定性(必背判据)</li>
+<li>由微分方程求 \(H(s)\)("导数换 \(s\)")并判断稳定性(例 9.4)</li>
+<li>记住单边拉氏变换的用途:带初值条件解微分方程</li>
+</ol>
+</div>
+
+<h2 class="sec">§9.9 自测题(答案附后)</h2>
+
+<p class="q">求 \(x(t)=e^{-3t}u(t)+e^{-t}u(t)\) 的拉氏变换与 ROC。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(X(s)=\dfrac{1}{s+3}+\dfrac{1}{s+1}=\dfrac{2s+4}{(s+1)(s+3)}\),ROC = 两者交集:\(\mathrm{Re}\{s\}>-1\)。包含 \(j\omega\) 轴 → 信号存在傅里叶变换。</p>
+</div>
+
+<p class="q">\(X(s)=\dfrac{1}{(s+1)(s+2)}\),ROC 为 \(-2<\mathrm{Re}\{s\}<-1\),求 \(x(t)\) 并判断其是否有傅里叶变换。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>分解 \(\dfrac{1}{s+1}-\dfrac{1}{s+2}\)。ROC 是带:极点 −1 在带右边 → \(-e^{-t}u(-t)\);极点 −2 在带左边 → \(-e^{-2t}u(t)\)。合:\(x(t)=-e^{-t}u(-t)-e^{-2t}u(t)\)。ROC 含 \(j\omega\) 轴(虚轴在带内)→ FT 存在:\(X(j\omega)=\dfrac{1}{(j\omega+1)(j\omega+2)}\)。</p>
+</div>
+
+<p class="q">系统 \(H(s)=\dfrac{s-1}{(s+1)(s+2)}\),若系统因果,判断其稳定性。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>极点 −1、−2 全在左半平面;因果系统 ROC 为 \(\mathrm{Re}\{s\}>-1\),包含 \(j\omega\) 轴 → <b>稳定</b>。注意零点 \(s=1\) 在右半平面<b>不影响稳定性</b>——稳定性只看极点位置(对因果系统)。</p>
+</div>
+
+<p class="q">用拉氏变换解:\(y'(t)+2y(t)=x(t)\),\(x(t)=u(t)\),\(y(0^-)=1\),求 \(y(t)\)。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>单边拉氏:\(sY(s)-y(0^-)+2Y(s)=\dfrac{1}{s}\) → \(Y(s)=\dfrac{1}{s(s+2)}+\dfrac{1}{s+2}=\dfrac{1}{2}\left(\dfrac{1}{s}-\dfrac{1}{s+2}\right)+\dfrac{1}{s+2}=\dfrac{1/2}{s}+\dfrac{1/2}{s+2}\)。反变换:\(y(t)=\dfrac{1}{2}+\dfrac{1}{2}e^{-2t}\),\(t\ge0\)。验证:\(y(0^+)=1\) ✓,稳态 \(1/2\) ✓(直流增益 \(H(0)=1/2\))。</p>
+</div>
+
+<p class="q">为什么说"\(X(s)\) 不写 ROC 等于没说"?举一个具体例子。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>因为同一个 \(1/(s+a)\) 对应无穷多个信号(例 9.2 中的右/左/双边三种)。教材语境下默认"因果"(最右极点之右的 ROC),但考试与工程中必须明确 ROC:反变换、稳定性判断、FT 存在性全部依赖它。约定:凡涉及因果系统,ROC 取最右极点之右。</p>
+</div>
+
+<h2 class="sec">§9.10 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟看零极点)</div>
+<pre class="code">% 零极点图与稳定性判断
+b = [1 -1];  a = [1 3 2];            % H(s) = (s-1)/(s^2+3s+2)
+zplane(b, a);                        % 零极点图(圆圈=零点,叉=极点)
+title('H(s)=(s-1)/((s+1)(s+2)):极点全在左半平面,因果系统稳定');
+
+% 部分分式:residue 自动完成
+[r, p, k] = residue([1], [1 3 2])    % r=[-1;1]? 反变换各对应 e^{p t} 项
+
+% 单边拉氏解微分方程 y'+2y=u(t), y(0)=1
+t = 0:0.01:5;
+y_an = 0.5 + 0.5*exp(-2*t);          % 理论解
+sys = tf([1],[1 2]);                 % 系统 1/(s+2)
+y_sim = lsim(sys, ones(size(t)), t, 1) + 0; % 数值仿真
+plot(t, y_an, 'r', t, step(sys,t), 'b--'); grid on;
+legend('理论', '仿真');</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第10章 Z变换</div>
+<p>第 9 章把 CT 的"频率域"推广成 s 平面,第 10 章对离散时间做同样的事:\(e^{j\omega}\) 推广为 \(z=re^{j\omega}\),得到 Z 变换。同样的剧本:ROC、零极点图、部分分式、系统函数、稳定性判据(单位圆代替虚轴)——<span class="hl">对照第 9 章学习,效率翻倍</span>。学习前复习:DTFT(第5章)、几何级数、差分方程(第2章)。</p>
+</div>

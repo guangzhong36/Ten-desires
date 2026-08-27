@@ -1,0 +1,202 @@
+<title>第6章 信号与系统的时域和频域特性</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第6章 信号与系统的时域和频域特性</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第6章 | <b>建议学时:</b>6–8 小时 | <b>难度:</b>★★★☆☆(从"会算"到"会看")</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>会用幅度谱与相位谱"读懂"一个系统:增益多大、相移多少、是否失真</li>
+<li>理解<span class="term">线性相位</span>的含义(纯延迟、无波形畸变)与<span class="term">群延迟</span> \(\tau(\omega)=-\dfrac{d\angle H}{d\omega}\)</li>
+<li>掌握 Bode 图的画法(对数幅度 + 直线近似),会找转折频率</li>
+<li>会分析一阶/二阶系统的时域与频域特征(时间常数、谐振峰、Q 值)</li>
+<li>理解"理想滤波器不可实现"与 Butterworth 近似,知道时宽-带宽的折衷</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>\(H(j\omega)\) 的模与辐角:\(|H|=\sqrt{\mathrm{Re}^2+\mathrm{Im}^2}\),\(\angle H=\arctan(\mathrm{Im}/\mathrm{Re})\)</li>
+<li>一阶系统 \(h(t)=e^{-t/\tau}u(t)/\tau\) 与 \(H(j\omega)=1/(1+j\omega\tau)\)(第4章)</li>
+<li>对数运算:\(20\log_{10}2\approx6\) dB,\(20\log_{10}10=20\) dB</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>群延迟先搞懂(1.5小时):</b>§6.1 的两个例子(纯延迟 vs 一阶低通)动手算一遍,体会"相位随频率怎么变"决定"波形是否走样"</li>
+<li><b>Bode 图练手(2小时):</b>§6.2,亲手画一阶低通的直线近似:0dB 水平线 + −20dB/十倍频斜线,交于转折频率。记住转折点处真实曲线低 3dB</li>
+<li><b>一阶/二阶系统(2小时):</b>§6.3 背结论:一阶看时间常数 \(\tau\);二阶看阻尼比 \(\zeta\)(\(\zeta<0.707\) 出现谐振峰)</li>
+<li><b>滤波器与折衷(1小时):</b>§6.4–6.5 建立"理想不可得、折衷是常态"的工程观念</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch06_map.svg"></div>
+<div class="mindmap-caption">图 6-0 第6章知识导图:一条主线是"频谱形状 ↔ 系统行为"的互相翻译</div>
+<p>全章核心结论一句话:<span class="hl">幅度谱决定"哪些频率被放行",相位谱决定"各频率被延迟多久";两者共同决定输出波形是否忠实于输入</span>。</p>
+
+<h2 class="sec">§6.1 幅度响应与相位响应:系统的两张"脸"</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:音箱的"三频均衡"</div>
+<p>调音台上的低音/中音/高音旋钮,就是直接操作 \(|H(j\omega)|\):低频旋钮调大,低音成分被放大。相位则更隐蔽:如果不同频率的声音被延迟的时间<b>不一样</b>,一个鼓点就会"散架"成先后到达的各频率残响——这就是相位失真。<span class="hl">幅度失真=音量不对,相位失真=节奏乱套</span>。</p>
+</div>
+
+<p>设 \(H(j\omega)=|H(j\omega)|e^{j\angle H(j\omega)}\)。对输入 \(x(t)=A\cos(\omega_0 t)\):</p>
+<div class="formula"><span class="fname">正弦稳态响应</span>
+\[ y(t) = A\,|H(j\omega_0)|\,\cos\big(\omega_0 t + \angle H(j\omega_0)\big) \]
+</div>
+<p>幅度被乘 \(|H|\),相位被平移 \(\angle H\)。<b>线性相位 = 纯延迟:</b>若 \(\angle H(j\omega)=-\omega t_0\)(相位正比于频率),则每个频率分量都恰好被延迟 \(t_0\) 秒:</p>
+<div class="formula"><span class="fname">线性相位 ⟺ 无失真延迟</span>
+\[ \angle H(j\omega) = -\omega t_0 \;\Longrightarrow\; H(j\omega)=|H(j\omega)|e^{-j\omega t_0} \;\Longrightarrow\; y(t)=|H|\,x(t-t_0) \]
+</div>
+<p><b>群延迟</b>度量"相位随频率的变化率",刻画各频率分量经历的延迟差异:</p>
+<div class="formula"><span class="fname">群延迟</span>
+\[ \tau(\omega) = -\frac{d}{d\omega}\angle H(j\omega) \]
+</div>
+<p><b>0 基础解读:</b>群延迟恒定 ⟺ 线性相位;群延迟随频率变化,宽带信号就会畸变。</p>
+
+<div class="box box-example"><div class="box-title">例题 6.1 计算一阶低通的幅度、相位与群延迟</div>
+<p>\(H(j\omega)=\dfrac{1}{1+j\omega\tau}\),求 \(|H|\)、\(\angle H\)、\(\tau(\omega)\),并说明何时近似"无失真"。</p>
+<ol class="steps">
+<li>幅度:\(|H|=\dfrac{1}{\sqrt{1+(\omega\tau)^2}}\),相位:\(\angle H=-\arctan(\omega\tau)\)。</li>
+<li>群延迟:\(\tau_g(\omega)=-\dfrac{d}{d\omega}\left[-\arctan(\omega\tau)\right]=\dfrac{\tau}{1+(\omega\tau)^2}\)。</li>
+<li><b>读结论:</b>低频段相位近似直线,群延迟约等于常数 \(\tau\),波形基本不失真;高频段群延迟迅速减小,各频率延迟不一 → 高频成分走样。工程上,信号带宽远小于转折频率 \(1/\tau\) 时即可视为无失真系统。</li>
+</ol>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 1:相位谱不重要,只看幅度谱</div>
+<p>错。<span class="hl">幅度谱决定频率的取舍,相位谱决定波形的形状</span>。两个系统可以有完全相同的 \(|H(j\omega)|\),却因相位不同产生截然不同的输出:线性相位系统输出的是"输入的原样延迟版",而非线性相位系统输出的波形会严重畸变(如阶跃响应出现过冲、振铃)。通信与音频系统对相位失真的敏感度往往不亚于幅度。</p>
+</div>
+
+<h2 class="sec">§6.2 对数幅度与 Bode 图</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:把"乘除"变成"加减"</div>
+<p>两个系统级联,频率响应相乘:\(H=H_1H_2\),幅度也相乘,画图很不直观。取对数后:\(20\log_{10}|H|=20\log_{10}|H_1|+20\log_{10}|H_2|\)——<span class="hl">级联的对数幅度图就是把各自的图加起来</span>。这就是 Bode 图的全部动机。单位"分贝"(dB):增益 1→0dB,10→20dB,100→40dB,0.5→约−6dB。</p>
+</div>
+
+<p><b>Bode 图画法:</b>横轴为频率的对数刻度,纵轴为 \(20\log_{10}|H|\)(dB)。对一阶低通 \(|H|=1/\sqrt{1+(\omega\tau)^2}\):</p>
+<ul>
+<li>低频段 \(\omega\tau\ll1\):\(|H|\approx1\) → 0dB 水平线</li>
+<li>高频段 \(\omega\tau\gg1\):\(|H|\approx1/(\omega\tau)\) → 斜率为 <b>−20dB/十倍频</b> 的直线</li>
+<li>两条直线交于<span class="term">转折频率</span> \(\omega=1/\tau\)。在该点,真实曲线位于交点下方 <b>3dB</b> 处(\(|H|=1/\sqrt2\))</li>
+</ul>
+
+<div data-svg="fig_ch06_bode.svg"></div>
+<div class="mindmap-caption">图 6-1 一阶低通(\(\tau=1\))的 Bode 图:实线为真实曲线,虚线为直线近似。(a) 幅度:转折频率 \(\omega=1\) 处真实值 −3dB;(b) 相位:在转折频率处为 −45°,两侧渐近于 0° 与 −90°</div>
+
+<div class="box box-keypoint"><div class="box-title">必背:Bode 图速记卡</div>
+<ul>
+<li>一阶因子 \(1/(1+j\omega\tau)\):转折频率 \(1/\tau\),高频斜率 −20dB/十倍频,最大相移 −90°</li>
+<li>\(n\) 个相同一阶因子级联:斜率 −20n dB/十倍频,最大相移 −90°·n</li>
+<li>二阶系统在谐振峰附近真实曲线可能<b>上凸</b>超过 0dB,直线近似失效</li>
+</ul>
+</div>
+
+<h2 class="sec">§6.3 一阶与二阶系统的时频特征</h2>
+<p><b>一阶系统</b> \(H(j\omega)=\dfrac{1}{1+j\omega\tau}\):时域由<span class="term">时间常数</span> \(\tau\) 决定(阶跃响应以 \(1-e^{-t/\tau}\) 逼近终值);频域由转折频率 \(1/\tau\) 决定。<b>时频联立:</b>\(\tau\) 越小,响应越快,带宽越宽。</p>
+<p><b>二阶系统</b>(标准型):</p>
+<div class="formula"><span class="fname">二阶系统标准型</span>
+\[ H(j\omega) = \frac{\omega_n^2}{(j\omega)^2 + 2\zeta\omega_n(j\omega) + \omega_n^2} \]
+</div>
+<p>参数语义:<span class="term">自然频率</span> \(\omega_n\)(无阻尼振荡频率)、<span class="term">阻尼比</span> \(\zeta\)。\(\zeta<1/\sqrt{2}\approx0.707\) 时幅度谱在 \(\omega_r=\omega_n\sqrt{1-2\zeta^2}\) 处出现<span class="term">谐振峰</span>,峰值随 \(\zeta\) 减小而升高;时域阶跃响应出现过冲与振铃。\(\zeta\) 越小,系统越"脆"(振荡剧烈),但带宽越接近 \(\omega_n\)——时频折衷的又一实例。</p>
+
+<div class="box box-example"><div class="box-title">例题 6.2 读谐振参数</div>
+<p>某二阶系统幅度谱峰值出现在 \(\omega=3\),峰值为 2,求 \(\zeta\) 与 \(\omega_n\)(近似)。</p>
+<ol class="steps">
+<li>峰值处 \(\omega_r=\omega_n\sqrt{1-2\zeta^2}\approx\omega_n\)(\(\zeta\) 较小时)→ \(\omega_n\approx3\)。</li>
+<li>谐振峰值近似 \(M_r\approx\dfrac{1}{2\zeta\sqrt{1-\zeta^2}}\)。由 \(M_r=2\) 解:\(\zeta\approx0.26\)。</li>
+<li>验证:\(\omega_r=3\sqrt{1-2(0.26)^2}\approx2.8\),与 3 相差约 7%,近似合理。</li>
+<li><b>读结论:</b>该系统的阶跃响应会有约 40% 过冲、明显振铃——仅凭频谱峰值就预判了时域行为。</li>
+</ol>
+</div>
+
+<h2 class="sec">§6.4 理想滤波器与 Butterworth 近似</h2>
+<p><b>理想低通:</b>\(|H|=1\;(|\omega|<\omega_c)\),其余为 0,相位线性。其冲激响应 \(h(t)=\dfrac{\sin\omega_c t}{\pi t}\)——它在 \(t<0\) 就非零:<span class="hl">理想滤波器非因果,物理上不可实现</span>。工程上用可实现的近似逼近它:</p>
+<div class="formula"><span class="fname">Butterworth 低通滤波器</span>
+\[ |H(j\omega)| = \frac{1}{\sqrt{1+(\omega/\omega_c)^{2n}}} \]
+</div>
+<div data-svg="fig_ch06_butter.svg"></div>
+<div class="mindmap-caption">图 6-2 Butterworth 幅度响应:所有阶数在 \(\omega=\omega_c\) 处都精确等于 \(1/\sqrt2\)(−3dB);n 越大,过渡带越陡,高频衰减越快(斜率 −20n dB/十倍频)</div>
+<p><b>0 基础解读:</b>\(n\) 是"逼近的力度":\(n\) 越大,通带越平、阻带衰减越陡,但需要的器件越多、相位失真越严重。选 \(n\) 就是"性能-成本-相位"的三方折衷——这是滤波器设计的核心问题。</p>
+
+<h2>§6.5 时域与频域的折衷:时宽-带宽积</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:天下没有"又窄又慢"的脉冲</div>
+<p>回顾 rect↔sinc:时域脉冲越窄,频谱主瓣越宽。一般规律:\(\Delta t\cdot\Delta\omega \ge \) 某常数——<span class="hl">时宽与带宽不能同时任意小</span>。这是信号处理版的"海森堡不确定性":想要精确知道"何时发生",就要放弃精确知道"是什么频率"。</p>
+</div>
+<p><b>工程含义:</b>①高速传输需要宽脉冲(否则带宽超限);②测距雷达要短脉冲(时域分辨),测速雷达要长脉冲(频域分辨),二者不可兼得,只能折衷;③任何"瞬时、精确到某个频率"的测量在物理上都受此约束。这一原理在量子力学中对应海森堡不确定性,数学同源。</p>
+
+<h2 class="sec">§6.6 本章公式速查表</h2>
+<table>
+<tr><th style="width:26%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">正弦稳态响应</td><td class="ctr">\(A\cos\omega_0t\to A|H(j\omega_0)|\cos(\omega_0t+\angle H(j\omega_0))\)</td></tr>
+<tr><td class="ctr">线性相位</td><td class="ctr">\(\angle H=-\omega t_0\) ⟺ 输出 \(=x(t-t_0)\)(无失真延迟)</td></tr>
+<tr><td class="ctr">群延迟</td><td class="ctr">\(\tau(\omega)=-\dfrac{d\angle H}{d\omega}\)</td></tr>
+<tr><td class="ctr">一阶低通</td><td class="ctr">\(H=\dfrac{1}{1+j\omega\tau}\):转折频率 \(1/\tau\),高频 −20dB/dec,相移 0→−90°</td></tr>
+<tr><td class="ctr">一阶群延迟</td><td class="ctr">\(\tau_g=\dfrac{\tau}{1+(\omega\tau)^2}\)</td></tr>
+<tr><td class="ctr">二阶标准型</td><td class="ctr">\(H=\dfrac{\omega_n^2}{(j\omega)^2+2\zeta\omega_n(j\omega)+\omega_n^2}\);\(\zeta<0.707\) 有谐振峰</td></tr>
+<tr><td class="ctr">Butterworth</td><td class="ctr">\(|H|=\dfrac{1}{\sqrt{1+(\omega/\omega_c)^{2n}}}\),\(\omega_c\) 处恒为 −3dB</td></tr>
+<tr><td class="ctr">时宽-带宽积</td><td class="ctr">\(\Delta t\cdot\Delta\omega\) 有下界(rect 时 = \(2\pi\) 量级)</td></tr>
+</table>
+
+<h2 class="sec">§6.7 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 6 件事</div>
+<ol>
+<li>给定 \(H(j\omega)\),能写出正弦稳态响应的幅度缩放与相位平移</li>
+<li>会判断相位是否线性,会算群延迟,能解释"群延迟变化 → 波形畸变"</li>
+<li>会画一阶系统的 Bode 图直线近似(0dB 线 + −20dB/dec 线,交点即转折频率)</li>
+<li>能说出二阶系统 \(\omega_n\)、\(\zeta\) 的物理含义与谐振峰出现条件</li>
+<li>能解释理想滤波器为何不可实现,Butterworth 的 \(n\) 代表什么</li>
+<li>能举出一个时宽-带宽折衷的工程实例</li>
+</ol>
+</div>
+
+<h2 class="sec">§6.8 自测题(答案附后)</h2>
+
+<p class="q">系统 \(H(j\omega)=\dfrac{10}{10+j\omega}\),求转折频率、3dB 带宽,并画出 Bode 幅度图直线近似。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>改写为标准型:\(H=\dfrac{1}{1+j\omega/10}\),转折频率 \(\omega=10\)(rad/s),3dB 带宽即 10 rad/s。直线近似:低频 0dB 水平线(\(\omega<10\)),高频斜线 −20dB/dec,从 \((\omega=10,0\mathrm{dB})\) 出发;真实曲线在 \(\omega=10\) 处为 −3dB。</p>
+</div>
+
+<p class="q">求 \(H(j\omega)=\dfrac{1}{1+j\omega/100}\) 的群延迟 \(\tau_g(\omega)\),并求 \(\omega=0\) 与 \(\omega=100\) 处的值。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\angle H=-\arctan(\omega/100)\),\(\tau_g=\dfrac{d\arctan(\omega/100)}{d\omega}=\dfrac{1/100}{1+(\omega/100)^2}=\dfrac{100}{100^2+\omega^2}\times100=\dfrac{10000}{10000+\omega^2}\times\dfrac{1}{100}\cdot100\)…直接套例 6.1 公式(\(\tau=1/100\)):\(\tau_g=\dfrac{0.01}{1+(\omega/100)^2}\)。\(\omega=0\):10ms;\(\omega=100\):5ms。<b>解读:</b>高频分量的延迟只有低频的一半——宽带信号过此系统会被"拉开"。</p>
+</div>
+
+<p class="q">把增益换算为 dB:\(|H|=100\)、\(|H|=0.5\)、\(|H|=\sqrt{2}\)、\(|H|=0.01\)。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(20\log_{10}100=40\)dB;\(20\log_{10}0.5=-6.02\)dB;\(20\log_{10}\sqrt2=3.01\)dB;\(20\log_{10}0.01=-40\)dB。速记:3dB≈×√2(半功率点),6dB≈×2,20dB≈×10,40dB≈×100。</p>
+</div>
+
+<p class="q">二阶系统 \(\omega_n=4\),\(\zeta=0.2\),估计谐振峰频率与峰值。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\omega_r=\omega_n\sqrt{1-2\zeta^2}=4\sqrt{1-0.08}\approx3.84\);\(M_r=\dfrac{1}{2\zeta\sqrt{1-\zeta^2}}=\dfrac{1}{0.4\sqrt{0.96}}\approx2.55\)(约 8dB 隆起)。时域阶跃响应将出现强烈振铃。</p>
+</div>
+
+<p class="q">为什么"理想低通滤波器"永远只能近似?Butterworth 滤波器如何在理想与可实现之间折衷?</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>理想低通的冲激响应 \(\sin(\omega_c t)/(\pi t)\) 在 \(t<0\) 非零,<b>非因果</b>——输出需要"未来"的输入,任何实时物理系统都做不到。Butterworth 的折衷:①通带内尽量平坦(在 \(\omega=0\) 附近 2n−1 阶导数都为零);②\(\omega=\omega_c\) 处固定 −3dB;③以 \(n\) 阶控制过渡带陡度,用"更大的 n(更多器件、更坏相位)"换取"更接近理想"。</p>
+</div>
+
+<h2 class="sec">§6.9 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟画 Bode)</div>
+<pre class="code">tau = 0.01;  w = logspace(-1, 5, 200);
+H = 1 ./ (1 + 1j*w*tau);
+subplot(2,1,1);
+semilogx(w, 20*log10(abs(H))); grid on;
+ylabel('dB'); title('一阶低通 Bode 图(手工直线近似练习)');
+subplot(2,1,2);
+semilogx(w, angle(H)*180/pi); grid on;
+xlabel('\omega (rad/s)'); ylabel('度');
+
+for zeta = [0.1 0.3 0.5 0.7 1]           % 二阶系统:看谐振峰随阻尼变化
+    H2 = 16 ./ ((1j*w).^2 + 2*zeta*4*(1j*w) + 16);
+    figure(1); hold on;
+    semilogx(w, 20*log10(abs(H2)));
+end
+legend('\zeta=0.1','0.3','0.5','0.7','1'); grid on;</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第7章 采样</div>
+<p>前六章分别建立了连续时间与离散时间两套理论,第 7 章将用<span class="term">采样定理</span>把它们焊在一起:在什么条件下,离散样本能够<b>无损</b>携带连续信号的全部信息?何时会"混叠"失真?如何从样本重建连续波形?这是数字信号处理世界的地基。学习前复习:冲激串的频谱(第4章)、相乘性质(调制)、rect↔sinc。</p>
+</div>

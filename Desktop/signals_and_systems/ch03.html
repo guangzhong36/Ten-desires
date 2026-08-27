@@ -1,0 +1,235 @@
+<title>第3章 周期信号的傅里叶级数表示</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第3章 周期信号的傅里叶级数表示</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第3章 | <b>建议学时:</b>7–9 小时 | <b>难度:</b>★★★☆☆(全书思想转折点)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解本章的<span class="hl">灵魂思想</span>:复指数是 LTI 系统的特征函数——系统对它的响应只是"乘一个复数"</li>
+<li>会把周期信号展开为傅里叶级数(指数形式),会求系数 \(a_k\)</li>
+<li>看懂 Gibbs 现象与收敛条件,知道"工程上为什么要有限项近似"</li>
+<li>掌握实信号系数的共轭对称性,以及偶/奇/半波对称带来的化简</li>
+<li>会用傅里叶级数计算 LTI 系统的输出(频域乘法),理解"滤波"</li>
+<li>了解 DTFS 与 CTFS 的关键区别:系数只有 \(N\) 个、且本身周期为 \(N\)</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>欧拉公式与 \(\cos\)、\(\sin\) 的复指数表示(第1章 §1.5)</li>
+<li>周期信号与基波周期(第1章 §1.3);奇偶分解(第1章 §1.4)</li>
+<li>卷积与冲激响应 \(h\)(第2章)——本章将看到"频域里做乘法"如何替代"时域里做卷积"</li>
+<li>定积分计算与简单的分部积分</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>先想通 §3.1(1.5小时):</b>特征函数思想是本章的"世界观"。花时间理解 \(e^{j\omega t}\to H(j\omega)e^{j\omega t}\) 意味着什么——想通之后,后面的公式都是它的自然推论</li>
+<li><b>练系数计算(2小时):</b>§3.2 的方波例题(例 3.1)是唯一必须手算一遍的题,因为它练的是"在一个周期内分段积分"的通用套路;其余信号套同一流程</li>
+<li><b>背性质表(1.5小时):</b>§3.3 的性质表 + §3.4 对称性速查(偶→cos、奇→sin、半波→奇次)。<span class="hl">会查表就能秒杀大多数作业题</span></li>
+<li><b>滤波应用题(1小时):</b>§3.5 例 3.4,体会"频域乘法"的威力</li>
+<li><b>DTFS 扫一遍(1小时):</b>§3.6 只看它与 CTFS 的三处不同,不背公式细节</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch03_map.svg"></div>
+<div class="mindmap-caption">图 3-0 第3章知识导图:特征函数思想是根,CTFS/DTFS 是两翼,滤波是应用</div>
+<p>全章核心结论一句话:<span class="hl">周期信号 = 一列离散频率的复指数之和;LTI 系统对这些复指数"各乘各的系数",于是求响应从卷积变成乘法</span>。从本章起,你将同时拥有时域(卷积)与频域(乘法)两副眼镜。</p>
+
+<h2 class="sec">§3.1 预备:LTI 系统对复指数输入的响应</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:什么是"特征函数"?</div>
+<p>在线性代数中,矩阵作用于特征向量只改变其长度:\(Av=\lambda v\)。这里完全类似:<span class="term">特征函数</span>是"经过系统后形状不变、只被乘一个复数"的信号。复指数 \(e^{st}\)(离散:\(z^n\))正是 LTI 系统的特征函数——正弦波进 LTI 系统,出来的仍是<b>同一频率</b>的正弦波,只是幅度变了、相位挪了。<span class="hl">系统不可能凭空造出新频率</span>,这就是线性与时不变的深层含义。</p>
+</div>
+
+<p><b>验证(连续时间):</b>设输入 \(x(t)=e^{st}\),输出:</p>
+<div class="formula"><span class="fname">特征函数关系</span>
+\[ y(t) = \int h(\tau)\, e^{s(t-\tau)} d\tau = e^{st} \underbrace{\int h(\tau)\, e^{-s\tau} d\tau}_{H(s)} = H(s)\, e^{st} \]
+</div>
+<p>\(H(s)\) 称为系统的<span class="term">系统函数</span>(第9章主角);当 \(s=j\omega\)(纯虚数,对应正弦)时,\(H(j\omega)\) 就是<span class="term">频率响应</span>:</p>
+<div class="formula"><span class="fname">频率响应</span>
+\[ H(j\omega) = \int_{-\infty}^{+\infty} h(\tau)\, e^{-j\omega\tau}\, d\tau, \qquad e^{j\omega t} \xrightarrow{\;\text{LTI}\;} H(j\omega)\, e^{j\omega t} \]
+</div>
+<p>离散时间完全平行:\(z^n \to H(z)z^n\),其中 \(H(z)=\sum_k h[k]z^{-k}\);令 \(z=e^{j\omega}\) 得 \(H(e^{j\omega})=\sum_k h[k]e^{-j\omega k}\)。<b>0 基础解读:</b>\(H(j\omega)\) 是个复数,可写成 \(H(j\omega)=|H(j\omega)|e^{j\angle H(j\omega)}\):模 \(|H|\) 是系统对频率 \(\omega\) 的<span class="term">增益</span>,辐角 \(\angle H\) 是<span class="term">相移</span>。</p>
+
+<div class="box box-keypoint"><div class="box-title">本章思想主线(务必记牢)</div>
+<p>① 周期信号可拆成复指数之和:\(x(t)=\sum_k a_k e^{jk\omega_0 t}\);② 系统对每一项只乘一个数:\(e^{jk\omega_0 t}\to H(jk\omega_0)e^{jk\omega_0 t}\);③ 线性叠加得输出:\(y(t)=\sum_k a_k H(jk\omega_0) e^{jk\omega_0 t}\)。<span class="hl">即输出的傅里叶系数 \(b_k = a_k \cdot H(jk\omega_0)\)——频域乘法</span>。三步走,贯穿本章。</p>
+</div>
+
+<h2 class="sec">§3.2 连续时间周期信号的傅里叶级数(CTFS)</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:把周期信号"拆成"一组匀速旋转的指针</div>
+<p>\(e^{jk\omega_0 t}\) 是转速为 \(k\omega_0\) 的旋转指针:\(k=0\) 是不动的直流分量,\(k=\pm1\) 是基波(每秒转 \(\omega_0\) 弧度),\(k=\pm2\) 是二次谐波……傅里叶级数说:<span class="hl">任何周期信号都是一组转速成整数倍的旋转指针的叠加</span>,系数 \(a_k\) 告诉你第 \(k\) 根指针有多长、初始指向哪。方波、锯齿波看似与正弦无关,其实都是正弦的"合奏"。</p>
+</div>
+
+<p><b>指数形式定义:</b>基波周期为 \(T_0\)(基波频率 \(\omega_0=2\pi/T_0\))的周期信号:</p>
+<div class="formula"><span class="fname">连续时间傅里叶级数(合成式 + 分析式)</span>
+\[ x(t) = \sum_{k=-\infty}^{+\infty} a_k\, e^{jk\omega_0 t}, \qquad a_k = \frac{1}{T_0}\int_{T_0} x(t)\, e^{-jk\omega_0 t}\, dt \]
+</div>
+<p><b>0 基础解读:</b>第二式(分析式)把信号"拆开":与 \(e^{-jk\omega_0 t}\) 相乘再积分,相当于问"\(x(t)\) 里含有多少转速为 \(k\omega_0\) 的分量"。\(\int_{T_0}\) 表示<span class="hl">在任意一个完整周期上积分</span>(起点随意,结果相同)。\(a_0\) 就是信号的直流分量(平均值)。</p>
+
+<div class="box box-example"><div class="box-title">例题 3.1 周期方波的傅里叶级数(必会题)</div>
+<p>设 \(x(t)\) 为周期 \(T_0=4\) 的方波:\(|t|<1\) 时取 1,\(1<|t|<2\) 时取 0,求 \(a_k\)。</p>
+<ol class="steps">
+<li>基波频率 \(\omega_0=2\pi/4=\pi/2\)。选积分区间 \([-2,2]\)。</li>
+<li>被积函数只在 \(|t|<1\) 非零:\(a_k=\dfrac{1}{4}\displaystyle\int_{-1}^{1} e^{-jk\frac{\pi}{2}t}\,dt\)。</li>
+<li>积分:\(=\dfrac{1}{4}\cdot\dfrac{e^{-jk\frac{\pi}{2}t}}{-jk\pi/2}\Big|_{-1}^{1}=\dfrac{1}{4}\cdot\dfrac{2\sin(k\pi/2)}{k\pi/2}=\dfrac{\sin(k\pi/2)}{k\pi}\),\(k\neq0\)。</li>
+<li>\(k=0\) 单独算(直流):\(a_0=\dfrac{1}{4}\int_{-1}^{1}dt=\dfrac{1}{2}\)。</li>
+<li>归纳:\(a_k=\dfrac{\sin(k\pi/2)}{k\pi}\;(k\neq0)\),即 \(a_1=1/\pi\),\(a_2=0\),\(a_3=-1/(3\pi)\),\(a_4=0\),\(a_5=1/(5\pi)\),……<b>偶次谐波全为零</b>(后面 §3.4 会解释这是"半波对称"的功劳)。</li>
+</ol>
+</div>
+
+<h3 class="sec">3.2.1 收敛条件与 Gibbs 现象</h3>
+<p>周期信号满足 <span class="term">Dirichlet 条件</span>(①任一周期绝对可积;②任一周期内有限个极值;③有限个间断点)时,傅里叶级数收敛:连续点处收敛于信号值,间断点处收敛于两侧值的平均。</p>
+<div data-svg="fig_ch03_gibbs.svg"></div>
+<div class="mindmap-caption">图 3-1 Gibbs 现象:方波的部分和近似(N 为保留的最高次谐波)。N 增大时波形越来越像方波,但跳变处始终有约 9% 的过冲尖峰——尖峰不会随 N→∞ 消失,只是变窄</div>
+<p><b>0 基础解读:</b>Gibbs 现象是"数学的脾气":用连续光滑的正弦波去拼一个跳变,跳变处永远拼不完美,总会鼓起一个约 9% 的"包"。工程含义:用有限项近似方波时,<span class="hl">跳变附近的过冲是傅里叶级数的固有属性</span>,不是计算错误;若要消除,需要用其他方法(如加窗,进阶内容)。</p>
+
+<h2 class="sec">§3.3 CTFS 的性质</h2>
+<p>设 \(x(t)\leftrightarrow a_k\)(双向箭头表示"傅里叶级数对"),以下性质与第 1 章的自变量变换一一呼应:</p>
+<table>
+<tr><th style="width:22%">性质</th><th style="width:40%">信号</th><th>系数</th></tr>
+<tr><td class="ctr">线性</td><td class="ctr">\(Ax(t)+By(t)\)</td><td class="ctr">\(Aa_k+Bb_k\)</td></tr>
+<tr><td class="ctr">时移</td><td class="ctr">\(x(t-t_0)\)</td><td class="ctr">\(e^{-jk\omega_0 t_0}a_k\)(幅度不变,相位挪)</td></tr>
+<tr><td class="ctr">时间反转</td><td class="ctr">\(x(-t)\)</td><td class="ctr">\(a_{-k}\)</td></tr>
+<tr><td class="ctr">尺度变换</td><td class="ctr">\(x(\alpha t)\)(周期变 \(T_0/\alpha\))</td><td class="ctr">系数不变,基频变 \(\alpha\omega_0\)</td></tr>
+<tr><td class="ctr">相乘</td><td class="ctr">\(x(t)y(t)\)</td><td class="ctr">\(a_k*b_k=\sum_l a_l b_{k-l}\)(系数做离散卷积!)</td></tr>
+<tr><td class="ctr">共轭对称</td><td class="ctr">\(x(t)\) 为实信号</td><td class="ctr">\(a_k=a_{-k}^*\)(幅度偶对称,相位奇对称)</td></tr>
+<tr><td class="ctr">Parseval 定理</td><td class="ctr">\(\dfrac{1}{T_0}\int_{T_0}|x(t)|^2dt\)</td><td class="ctr">\(=\sum_k |a_k|^2\)(时域平均功率=频域系数功率和)</td></tr>
+</table>
+<p><b>0 基础解读(挑三条最重要的):</b>①<b>时移</b>:波形挪一挪,每个系数的幅度不变,只多乘一个单位模的相位因子——"换挡不换速";②<b>相乘</b>:时域相乘对应频域卷积,这是第 4 章卷积性质与第 8 章调制的伏笔;③<b>Parseval</b>:能量(功率)在时域算与在频域算结果相同,它是"守恒律",也是检查计算的利器。</p>
+
+<h2 class="sec">§3.4 对称性:让计算量减半再减半</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:对称的波形,频谱也对称</div>
+<p>偶信号由"纯余弦"构成(余弦是偶函数),奇信号由"纯正弦"构成(正弦是奇函数)。波形若上下对称(半波对称),则只有奇次谐波。这三条规律把大量积分直接判为 0,是考试与工程中最重要的"省力法则"。</p>
+</div>
+<table>
+<tr><th style="width:24%">信号对称性</th><th>系数特点</th></tr>
+<tr><td class="ctr">偶信号 \(x(t)=x(-t)\)</td><td class="ctr">\(a_k\) 全为<b>实数</b>:级数只有余弦项 \(x(t)=a_0+2\sum_{k\ge1} a_k\cos(k\omega_0 t)\)</td></tr>
+<tr><td class="ctr">奇信号 \(x(t)=-x(-t)\)</td><td class="ctr">\(a_k\) 全为<b>纯虚数</b>:级数只有正弦项,\(a_0=0\)</td></tr>
+<tr><td class="ctr">半波对称 \(x(t)=-x(t+T_0/2)\)</td><td class="ctr">偶次谐波为零:\(a_k=0\;(k\) 为偶数\()\)</td></tr>
+</table>
+
+<div class="box box-example"><div class="box-title">例题 3.2 三角形式的换算</div>
+<p>已知 \(a_1=\dfrac{3}{2}-\dfrac{j}{2}\),\(a_{-1}=\dfrac{3}{2}+\dfrac{j}{2}\)(其余为零),写出 \(x(t)\) 的余弦形式。</p>
+<ol class="steps">
+<li>实信号系数共轭对称 ✓。合成:\(x(t)=a_1 e^{j\omega_0 t}+a_{-1}e^{-j\omega_0 t}\)。</li>
+<li>利用 \(\cos\theta=\dfrac{e^{j\theta}+e^{-j\theta}}{2}\),\(\sin\theta=\dfrac{e^{j\theta}-e^{-j\theta}}{2j}\) 化简。</li>
+<li>\(x(t)=3\cos\omega_0 t+\sin\omega_0 t\)。对照第1章公式:\(c_k=2\,\mathrm{Re}\{a_k\}=3\),\(d_k=-2\,\mathrm{Im}\{a_k\}=1\) ✓。</li>
+</ol>
+</div>
+
+<h2 class="sec">§3.5 傅里叶级数与 LTI 系统:滤波</h2>
+<p>回到 §3.1 的三步走。输入周期信号 \(x(t)=\sum_k a_k e^{jk\omega_0 t}\),输出:</p>
+<div class="formula"><span class="fname">周期输入下 LTI 系统的输出</span>
+\[ y(t) = \sum_{k=-\infty}^{+\infty} a_k\, H(jk\omega_0)\, e^{jk\omega_0 t} \quad\Longrightarrow\quad b_k = a_k\, H(jk\omega_0) \]
+</div>
+<p><b>0 基础解读:</b>系统对每个谐波 \(k\omega_0\) 的增益是 \(|H(jk\omega_0)|\)、相移是 \(\angle H(jk\omega_0)\)。若 \(|H(jk\omega_0)|\) 对某些 \(k\) 大、对另一些 \(k\) 小,输出里相应谐波就被"放大/削弱"——这就是<span class="term">滤波</span>。<span class="hl">滤波器 = 按频率修改配方</span>。</p>
+
+<div class="box box-example"><div class="box-title">例题 3.3 低通滤波改变方波</div>
+<p>例题 3.1 的方波通过理想低通滤波器 \(H(j\omega)\):\(|\omega|<3\omega_0\) 时增益 1,其余为 0(相移为 0)。求输出。</p>
+<ol class="steps">
+<li>方波系数:\(a_0=1/2\),\(a_{\pm1}=\pm1/\pi\),\(a_{\pm3}=\mp1/(3\pi)\),\(a_{\pm5}=\pm1/(5\pi)\),……</li>
+<li>滤波器只放行 \(|k\omega_0|<3\omega_0\) 即 \(k=-2,-1,0,1,2\) 的谐波。</li>
+<li>输出:\(y(t)=\dfrac{1}{2}+\dfrac{1}{\pi}(e^{j\omega_0 t}-e^{-j\omega_0 t})=\dfrac{1}{2}+\dfrac{2}{\pi}\cos\omega_0 t\)(只有直流 + 基波,偶次本来就是零)。</li>
+<li>对照图 3-1 中 \(N=1\) 的曲线——低通滤波输出正是那个"圆润"的波形。</li>
+</ol>
+</div>
+
+<h2 class="sec">§3.6 离散时间傅里叶级数(DTFS)</h2>
+<p>周期为 \(N\) 的序列 \(x[n]\)(基频 \(2\pi/N\))也有傅里叶级数,但与 CT 有<b>三处根本不同</b>:</p>
+<div class="formula"><span class="fname">离散时间傅里叶级数(DTFS)</span>
+\[ x[n] = \sum_{k=\langle N\rangle} a_k\, e^{jk\frac{2\pi}{N}n}, \qquad a_k = \frac{1}{N}\sum_{n=\langle N\rangle} x[n]\, e^{-jk\frac{2\pi}{N}n} \]
+</div>
+<ul>
+<li><b>不同点 1:系数只有 \(N\) 个。</b>因为 \(e^{j(k+N)\frac{2\pi}{N}n}=e^{jk\frac{2\pi}{N}n}\)——相差 \(N\) 的谐波是同一个序列(第 1 章的周期折叠),所以级数只有 \(N\) 项,求和记号 \(\langle N\rangle\) 表示"任意连续 \(N\) 项"</li>
+<li><b>不同点 2:系数 \(a_k\) 本身以 \(N\) 为周期。</b>\(a_{k+N}=a_k\),画频谱只需画 \(N\) 个</li>
+<li><b>不同点 3:有限和,无收敛问题。</b>没有 Gibbs 现象,级数在每一点都精确成立</li>
+</ul>
+
+<div class="box box-example"><div class="box-title">例题 3.4 直接读出 DTFS 系数(书例 3.9)</div>
+<p>设 \(x[n]=1+\sin\left(\dfrac{2\pi n}{N}\right)+3\cos\left(\dfrac{2\pi n}{N}\right)+\cos\left(\dfrac{4\pi n}{N}+\dfrac{\pi}{2}\right)\),求系数 \(a_k\)。</p>
+<ol class="steps">
+<li>全部化归复指数:\(\sin\theta=\dfrac{e^{j\theta}-e^{-j\theta}}{2j}\),\(\cos\theta=\dfrac{e^{j\theta}+e^{-j\theta}}{2}\),且 \(\cos(\theta+\pi/2)=-\sin\theta\)。</li>
+<li>\(x[n]=1+\left(\dfrac{3}{2}-\dfrac{j}{2}\right)e^{j\frac{2\pi}{N}n}+\left(\dfrac{3}{2}+\dfrac{j}{2}\right)e^{-j\frac{2\pi}{N}n}+\dfrac{j}{2}e^{j\frac{4\pi}{N}n}-\dfrac{j}{2}e^{-j\frac{4\pi}{N}n}\)。</li>
+<li>读出:\(a_0=1\),\(a_1=\dfrac{3}{2}-\dfrac{j}{2}\),\(a_{-1}=\dfrac{3}{2}+\dfrac{j}{2}\),\(a_2=\dfrac{j}{2}\),\(a_{-2}=-\dfrac{j}{2}\),其余为 0。</li>
+<li>验证共轭对称:\(a_1=a_{-1}^*\) ✓,\(a_2=a_{-2}^*\) ✓(实信号)。</li>
+</ol>
+</div>
+
+<h2 class="sec">§3.7 本章公式速查表</h2>
+<table>
+<tr><th style="width:26%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">特征函数关系</td><td class="ctr">\(e^{j\omega t}\to H(j\omega)e^{j\omega t}\);\(e^{j\omega n}\to H(e^{j\omega})e^{j\omega n}\)</td></tr>
+<tr><td class="ctr">CTFS 对</td><td class="ctr">\(x(t)=\sum_k a_k e^{jk\omega_0 t}\),\(a_k=\dfrac{1}{T_0}\int_{T_0}x(t)e^{-jk\omega_0 t}dt\)</td></tr>
+<tr><td class="ctr">DTFS 对</td><td class="ctr">\(x[n]=\sum_{k=\langle N\rangle}a_k e^{jk\frac{2\pi}{N}n}\),\(a_k=\dfrac{1}{N}\sum_{n=\langle N\rangle}x[n]e^{-jk\frac{2\pi}{N}n}\)</td></tr>
+<tr><td class="ctr">方波系数</td><td class="ctr">\(a_0=\dfrac{2T_1}{T_0}\),\(a_k=\dfrac{\sin(k\omega_0 T_1)}{k\pi}\;(k\neq0)\)</td></tr>
+<tr><td class="ctr">时移</td><td class="ctr">\(x(t-t_0)\leftrightarrow e^{-jk\omega_0 t_0}a_k\)</td></tr>
+<tr><td class="ctr">对称性</td><td class="ctr">偶→\(a_k\) 实;奇→\(a_k\) 纯虚;半波对称→偶次谐波为零</td></tr>
+<tr><td class="ctr">Parseval</td><td class="ctr">\(\dfrac{1}{T_0}\int_{T_0}|x(t)|^2dt=\sum_k|a_k|^2\)(DT:\(\dfrac{1}{N}\sum_{\langle N\rangle}|x[n]|^2=\sum_{\langle N\rangle}|a_k|^2\))</td></tr>
+<tr><td class="ctr">周期输入输出</td><td class="ctr">\(b_k=a_kH(jk\omega_0)\)(频域逐点相乘)</td></tr>
+</table>
+
+<h2 class="sec">§3.8 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 7 件事</div>
+<ol>
+<li>能写出特征函数关系 \(e^{j\omega t}\to H(j\omega)e^{j\omega t}\) 并用它解释"为什么 LTI 系统不产生新频率"</li>
+<li>会求任意简单周期信号(方波、脉冲串、\(\cos\)、\(\sin\))的 \(a_k\),包括 \(a_0\) 的单独处理</li>
+<li>知道 \(\int_{T_0}\) 的区间起点随意,但<span class="hl">长度必须恰好一个周期</span></li>
+<li>会说 Gibbs 现象:跳变处约 9% 过冲,增大 N 不消失</li>
+<li>实信号 \(a_k=a_{-k}^*\) 脱口而出;偶/奇/半波对称各对应什么系数特征</li>
+<li>会做"读系数"题(例题 3.4)与"频域乘法求输出"题(例题 3.3)</li>
+<li>DTFS 三不同:系数 N 个、系数周期 N、级数处处精确</li>
+</ol>
+</div>
+
+<h2 class="sec">§3.9 自测题(答案附后)</h2>
+
+<p class="q">求 \(x(t)=\cos\omega_0 t\) 的傅里叶级数系数 \(a_k\)。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\cos\omega_0 t=\dfrac{1}{2}e^{j\omega_0 t}+\dfrac{1}{2}e^{-j\omega_0 t}\) → \(a_1=a_{-1}=\dfrac{1}{2}\),其余为 0。<b>心得:</b>余弦 = 两根反向旋转的指针,各占一半长度——这是全书最常用的一个"变换对"。</p>
+</div>
+
+<p class="q">例题 3.1 的方波中,\(a_2\)、\(a_4\) 为什么为零?若把方波右移 \(1/2\)(半个脉冲宽度),系数如何变化?</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>偶次谐波为零是因为信号满足<b>半波对称</b> \(x(t+2)=-x(t)\)。右移 \(1/2\) 后按性质:\(a_k'=e^{-jk\omega_0/2}a_k=e^{-jk\pi/4}\cdot\dfrac{\sin(k\pi/2)}{k\pi}\)——幅度完全不变,每个谐波只是相位转动了 \(k\pi/4\)。<b>波形挪动不改变频谱形状,只改相位</b>。</p>
+</div>
+
+<p class="q">用 Parseval 定理验证:\(x(t)=\cos\omega_0 t\) 的平均功率等于系数模方和。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>时域:\(\dfrac{1}{T_0}\int_{T_0}\cos^2\omega_0 t\,dt=\dfrac{1}{2}\)。频域:\(\sum_k|a_k|^2=\dfrac{1}{4}+\dfrac{1}{4}=\dfrac{1}{2}\) ✓。正弦波的平均功率是幅度的平方之半,Parseval 说这个功率平均分给正负频率两根指针。</p>
+</div>
+
+<p class="q">求 \(x[n]=\cos\left(\dfrac{2\pi n}{5}\right)\) 的 DTFS 系数(周期 N=5)。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(\cos(2\pi n/5)=\dfrac{1}{2}e^{j\frac{2\pi}{5}n}+\dfrac{1}{2}e^{-j\frac{2\pi}{5}n}\),而 \(e^{-j\frac{2\pi}{5}n}=e^{j\frac{8\pi}{5}n}=e^{j4\frac{2\pi}{5}n}\)。所以 \(a_1=a_4=\dfrac{1}{2}\),其余为 0。注意系数按 \(k=0,1,2,3,4\) 排列时,负频率"折叠"到 \(k=N-1\) 处——这是 DT 频谱与 CT 频谱画法上的重要差别。</p>
+</div>
+
+<p class="q">周期信号 \(x(t)=\cos t+\cos 3t\) 通过 LTI 系统,已知 \(H(j1)=2\),\(H(j3)=0\),\(H(j\omega)=H(-j\omega)\) 为实。求输出。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>逐次谐波乘增益:基波 \(\cos t\to 2\cos t\)(幅度翻倍、相位不变);三次谐波被 \(H(j3)=0\) 完全滤除 → \(y(t)=2\cos t\)。这就是"滤波"的最小完整例子。</p>
+</div>
+
+<h2 class="sec">§3.10 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟看见 Gibbs)</div>
+<pre class="code">t = linspace(-pi, pi, 1000);
+sq = (abs(t) < pi/2);                      % 目标方波
+y = 0.5*ones(size(t));
+for k = 1:2:1                                 % 只加基波
+    y = y + 2*sin(k*pi/2)/(k*pi) * cos(k*t);
+end
+plot(t, sq, 'k', t, y, 'r', 'LineWidth', 1.5);
+ylim([-0.3 1.3]); legend('方波','N=1');
+for k = 3:2:19                               % 逐次加高次谐波
+    y = y + 2*sin(k*pi/2)/(k*pi) * cos(k*t);
+end
+figure; plot(t, sq, 'k', t, y, 'r', 'LineWidth', 1.5);
+ylim([-0.3 1.3]); legend('方波','N=19');      % 观察跳变处 9% 过冲</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第4章 连续时间傅里叶变换</div>
+<p>傅里叶级数只能处理<b>周期</b>信号。第 4 章将把周期推向无穷(\(T_0\to\infty\)):离散的系数 \(a_k\) 连成连续的频谱函数 \(X(j\omega)\),任何能量信号都能做频谱分析。<span class="hl">第 3 章的性质表将原封不动地搬过去</span>,再加一条最重要的新性质——卷积定理(时域卷积 ⟺ 频域相乘)。学习前请把 §3.3 的性质表背熟。</p>
+</div>

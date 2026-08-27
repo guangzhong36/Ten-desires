@@ -1,0 +1,246 @@
+<title>第4章 连续时间傅里叶变换</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第4章 连续时间傅里叶变换</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第4章 | <b>建议学时:</b>10–12 小时 | <b>难度:</b>★★★★☆(全书最重要的一章)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>从傅里叶级数"长"出傅里叶变换:理解 \(T_0\to\infty\) 时离散谱如何变成连续谱</li>
+<li>掌握傅里叶变换对的定义,会求基本信号的频谱(矩形脉冲、指数脉冲、冲激、常数、正弦)</li>
+<li><span class="hl">重点:</span>吃透卷积定理 \(y(t)=x(t)*h(t)\leftrightarrow Y(j\omega)=X(j\omega)H(j\omega)\)——它让 LTI 系统分析从积分变为乘法</li>
+<li>会用性质表(时移、频移、微分、尺度……)解题,会查"变换对+性质"组合出结果</li>
+<li>理解对偶性:时域与频域互为镜像(\(\delta\leftrightarrow 1\)、rect↔sinc 成对出现)</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>傅里叶级数定义与性质(第3章 §3.3 性质表)——本章性质表是它的"连续化",背过就事半功倍</li>
+<li>卷积积分(第2章 §2.2)——卷积定理的时域那一半</li>
+<li>极限的感觉:\(\int_{-\infty}^{\infty}\dfrac{\sin x}{x}dx=\pi\)、洛必达法则等微积分基本功</li>
+<li>\(\delta\) 的筛选性质(第1章 §1.6)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>抓住一条主线(1小时):</b>§4.1 的极限推导只看"图 4-1"式的直觉:周期拉长 → 谱线加密 → 极限成连续曲线。数学细节可跳过</li>
+<li><b>背熟 5 个变换对(1.5小时):</b>\(\delta\leftrightarrow1\)、\(1\leftrightarrow2\pi\delta\)、\(e^{-at}u(t)\leftrightarrow1/(a+j\omega)\)、rect↔sinc、\(\cos\leftrightarrow\) 两根谱线。考试题 90% 由它们组合而来</li>
+<li><b>性质查表训练(3小时):</b>每学一条性质,立即用它重算一遍已知变换对(如"时移+\(\delta\)"得 \(e^{-j\omega t_0}\))。性质是"乐高",变换对是"积木块"</li>
+<li><b>卷积定理攻坚(2小时):</b>§4.4 例 4.4 必须独立推完——它是全书使用频率最高的一个解题流程</li>
+<li><b>对偶性欣赏(0.5小时):</b>§4.5,理解即可,不强求熟练</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch04_map.svg"></div>
+<div class="mindmap-caption">图 4-0 第4章知识导图:定义是根,变换对与性质是两大工具箱,卷积定理与对偶性是两颗明珠</div>
+<p>全章核心结论一句话:<span class="hl">非周期能量信号也有"频谱" \(X(j\omega)\),它是傅里叶级数系数在周期趋于无穷时的连续化;时域卷积等价于频域相乘</span>。</p>
+
+<h2 class="sec">§4.1 定义:从级数到变换</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:把"周期"推到无穷</div>
+<p>第 3 章:周期 \(T_0\) 的信号有离散谱线 \(a_k\),间隔 \(\omega_0=2\pi/T_0\)。现在设想周期越来越长:\(T_0\to\infty\) 时,谱线间隔 \(\omega_0\to0\),谱线密成一片,离散的 \(a_k\) 就"连"成一条连续曲线 \(X(j\omega)\)。<span class="hl">傅里叶变换 = 周期信号傅里叶级数的极限</span>。所以两者不是两套东西,而是一个思想的两个阶段。</p>
+</div>
+
+<div class="formula"><span class="fname">连续时间傅里叶变换对(分析式 + 合成式)</span>
+\[ X(j\omega) = \int_{-\infty}^{+\infty} x(t)\, e^{-j\omega t}\, dt, \qquad x(t) = \frac{1}{2\pi}\int_{-\infty}^{+\infty} X(j\omega)\, e^{j\omega t}\, d\omega \]
+</div>
+<p><b>0 基础解读(逐符号):</b>①\(X(j\omega)\) 是 \(\omega\) 的复函数,称为<span class="term">频谱</span>:\(|X(j\omega)|\) 是幅度谱,\(\angle X(j\omega)\) 是相位谱;②分析式问"频率 \(\omega\) 的成分有多少"——把 \(x(t)\) 与 \(e^{-j\omega t}\) 相乘积分,与级数系数公式同构;③合成式说"每个频率的复指数按 \(X(j\omega)\) 加权叠加还原信号",系数 \(1/2\pi\) 来自"谱线密度"。记号 \(x(t)\leftrightarrow X(j\omega)\) 表示变换对。</p>
+
+<p><b>收敛:</b>能量信号(平方可积)一定存在傅里叶变换,且在连续点处合成式收敛于信号。但<span class="hl">周期信号、常数信号也有"傅里叶变换"——只是频谱里含有冲激</span>。例如:</p>
+<div class="formula"><span class="fname">谱线 = 频域冲激</span>
+\[ \cos\omega_0 t \leftrightarrow \pi\,\delta(\omega-\omega_0) + \pi\,\delta(\omega+\omega_0) \]
+</div>
+<p>这给出了统一图景:时域正弦 ↔ 频域两根冲激;时域周期信号 ↔ 频域等间隔冲激串(把第 3 章的离散谱"升级"为冲激串)。</p>
+
+<h2 class="sec">§4.2 五个必背变换对</h2>
+
+<div class="box box-example"><div class="box-title">例题 4.1 矩形脉冲的频谱(推导型必会题)</div>
+<p>求 \(x(t)=\begin{cases}1,&|t|<1\\0,&|t|>1\end{cases}\) 的傅里叶变换。</p>
+<ol class="steps">
+<li>代入定义:\(X(j\omega)=\displaystyle\int_{-1}^{1} e^{-j\omega t}dt\)。</li>
+<li>积分:\(=\dfrac{e^{-j\omega t}}{-j\omega}\Big|_{-1}^{1}=\dfrac{e^{-j\omega}-e^{j\omega}}{-j\omega}\)。</li>
+<li>用欧拉公式 \(\sin\theta=\dfrac{e^{j\theta}-e^{-j\theta}}{2j}\):\(X(j\omega)=\dfrac{2\sin\omega}{\omega}\)。</li>
+<li><b>读图:</b>频谱是 sinc 形曲线,主瓣宽 \(2\pi\),旁瓣以 \(1/|\omega|\) 衰减。<b>口诀:时域越窄,频域越宽</b>(宽度 \(2T_1\) 的矩形谱为 \(2T_1\mathrm{sinc}(T_1\omega)\) 形)。</li>
+</ol>
+</div>
+
+<div data-svg="fig_ch04_rect.svg"></div>
+<div class="mindmap-caption">图 4-1 矩形脉冲及其频谱:时域的"方"对应频域的"起伏衰减",主瓣宽度与脉冲宽度成反比</div>
+
+<div class="box box-example"><div class="box-title">例题 4.2 单边指数脉冲的频谱(推导型必会题)</div>
+<p>求 \(x(t)=e^{-at}u(t)\;(a>0)\) 的傅里叶变换。</p>
+<ol class="steps">
+<li>\(X(j\omega)=\displaystyle\int_0^{\infty} e^{-at}e^{-j\omega t}dt=\int_0^{\infty} e^{-(a+j\omega)t}dt\)。</li>
+<li>\(=\dfrac{1}{-(a+j\omega)}e^{-(a+j\omega)t}\Big|_0^{\infty}=\dfrac{1}{a+j\omega}\)(\(a>0\) 保证 \(t\to\infty\) 时衰减为 0)。</li>
+<li><b>读图:</b>幅度谱 \(|X(j\omega)|=\dfrac{1}{\sqrt{a^2+\omega^2}}\) 是"洛伦兹"钟形,相位谱 \(\angle X=-\arctan(\omega/a)\)。<b>要点:</b>极点 \(s=-a\)(第9章术语)决定了频谱衰减快慢。</li>
+</ol>
+</div>
+
+<div data-svg="fig_ch04_exp.svg"></div>
+<div class="mindmap-caption">图 4-2 指数脉冲及其幅度谱:时域衰减越快(a 越大),频谱越"胖"(越平坦)</div>
+
+<table>
+<tr><th style="width:30%">信号 \(x(t)\)</th><th>频谱 \(X(j\omega)\)</th></tr>
+<tr><td class="ctr">\(\delta(t)\)</td><td class="ctr">\(1\)</td></tr>
+<tr><td class="ctr">\(1\)(常数)</td><td class="ctr">\(2\pi\,\delta(\omega)\)</td></tr>
+<tr><td class="ctr">\(e^{-at}u(t)\)</td><td class="ctr">\(\dfrac{1}{a+j\omega}\)</td></tr>
+<tr><td class="ctr">\(\mathrm{rect}(t/2)\)(宽 2 矩形)</td><td class="ctr">\(2\,\mathrm{sinc}(\omega)=\dfrac{2\sin\omega}{\omega}\)</td></tr>
+<tr><td class="ctr">\(\cos\omega_0 t\)</td><td class="ctr">\(\pi[\delta(\omega-\omega_0)+\delta(\omega+\omega_0)]\)</td></tr>
+<tr><td class="ctr">\(\sin\omega_0 t\)</td><td class="ctr">\(\dfrac{\pi}{j}[\delta(\omega-\omega_0)-\delta(\omega+\omega_0)]\)</td></tr>
+<tr><td class="ctr">冲激串 \(\sum_k\delta(t-kT)\)</td><td class="ctr">\(\dfrac{2\pi}{T}\sum_k\delta\left(\omega-\dfrac{2\pi k}{T}\right)\)(时域冲激串↔频域冲激串)</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 1:认为常数信号、正弦信号"没有傅里叶变换"</div>
+<p>它们不是能量信号,但<span class="hl">在广义函数意义下变换存在</span>,频谱由冲激构成。判断一个信号能否用本章方法分析,正确标准是看它的变换式是否含 \(\delta\)——含 \(\delta\) 完全合法。反过来,凡是频谱里出现 \(\delta\),对应时域一定有"永续"成分(直流、周期分量)。</p>
+</div>
+
+<h2 class="sec">§4.3 性质表:傅里叶变换的"乐高手册"</h2>
+<p>设 \(x(t)\leftrightarrow X(j\omega)\)、\(y(t)\leftrightarrow Y(j\omega)\),以下性质请逐条过一遍:</p>
+<table>
+<tr><th style="width:20%">性质</th><th style="width:38%">时域</th><th>频域</th></tr>
+<tr><td class="ctr">线性</td><td class="ctr">\(ax(t)+by(t)\)</td><td class="ctr">\(aX(j\omega)+bY(j\omega)\)</td></tr>
+<tr><td class="ctr">时移</td><td class="ctr">\(x(t-t_0)\)</td><td class="ctr">\(e^{-j\omega t_0}X(j\omega)\)</td></tr>
+<tr><td class="ctr">频移(调制)</td><td class="ctr">\(e^{j\omega_0 t}x(t)\)</td><td class="ctr">\(X(j(\omega-\omega_0))\)</td></tr>
+<tr><td class="ctr">共轭</td><td class="ctr">\(x^*(t)\)</td><td class="ctr">\(X^*(-j\omega)\)</td></tr>
+<tr><td class="ctr">时间反转</td><td class="ctr">\(x(-t)\)</td><td class="ctr">\(X(-j\omega)\)</td></tr>
+<tr><td class="ctr">尺度</td><td class="ctr">\(x(at)\)</td><td class="ctr">\(\dfrac{1}{|a|}X\!\left(j\dfrac{\omega}{a}\right)\)</td></tr>
+<tr><td class="ctr">时域微分</td><td class="ctr">\(\dfrac{dx(t)}{dt}\)</td><td class="ctr">\(j\omega\,X(j\omega)\)</td></tr>
+<tr><td class="ctr">时域积分</td><td class="ctr">\(\int_{-\infty}^{t}x(\tau)d\tau\)</td><td class="ctr">\(\dfrac{1}{j\omega}X(j\omega)+\pi X(0)\delta(\omega)\)</td></tr>
+<tr><td class="ctr"><b>卷积定理★</b></td><td class="ctr">\(x(t)*y(t)\)</td><td class="ctr">\(X(j\omega)Y(j\omega)\)</td></tr>
+<tr><td class="ctr"><b>相乘(调制)★</b></td><td class="ctr">\(x(t)y(t)\)</td><td class="ctr">\(\dfrac{1}{2\pi}X(j\omega)*Y(j\omega)\)</td></tr>
+<tr><td class="ctr">Parseval</td><td class="ctr">\(\int|x(t)|^2dt\)</td><td class="ctr">\(\dfrac{1}{2\pi}\int|X(j\omega)|^2d\omega\)</td></tr>
+<tr><td class="ctr"><b>对偶★</b></td><td class="ctr">若 \(x(t)\leftrightarrow X(j\omega)\)</td><td class="ctr">则 \(X(jt)\leftrightarrow 2\pi\,x(-j\omega)\)</td></tr>
+</table>
+
+<p><b>0 基础解读(挑四条):</b>①<b>微分</b>:求导 = 频域乘 \(j\omega\)——微分器是"高通"的,高频分量被放大;②<b>积分</b>:多出的 \(\pi X(0)\delta(\omega)\) 项是直流"余额",漏掉它必错;③<b>卷积定理</b>:第 2 章费大力气做的卷积,频域里只是一次乘法;④<b>相乘定理</b>:时域相乘 = 频域卷积(第 8 章调制的全部理论基础)。</p>
+
+<div class="box box-example"><div class="box-title">例题 4.3 用性质秒算:\(x(t)=e^{-2(t-3)}u(t-3)\) 的频谱</div>
+<ol class="steps">
+<li>认出它是 \(e^{-2t}u(t)\) 的<b>时移</b>版本:\(x(t)=x_0(t-3)\),其中 \(x_0(t)=e^{-2t}u(t)\)。</li>
+<li>已知变换对 \(e^{-2t}u(t)\leftrightarrow\dfrac{1}{2+j\omega}\)。</li>
+<li>用时移性质乘 \(e^{-j\omega t_0}=e^{-j3\omega}\):\(X(j\omega)=\dfrac{e^{-j3\omega}}{2+j\omega}\)。</li>
+</ol>
+<p><b>方法论:</b>先认出"母信号",再按"变换对+性质"组合,30 秒出答案——这就是查表法的力量。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">常见误区 2:尺度变换忘记绝对值、积分漏掉直流项</div>
+<p>\(x(at)\leftrightarrow\dfrac{1}{|a|}X(j\omega/a)\) 的分母是 \(|a|\),\(a<0\) 时丢绝对值必错(可同时看作"反转+压缩"验证)。积分性质中 \(\pi X(0)\delta(\omega)\) 只在 \(X(0)\neq0\) 时出现,但漏掉它,输出信号就丢了直流——<span class="hl">用 Parseval 或时域直接验算是发现此类错误的最好手段</span>。</p>
+</div>
+
+<h2 class="sec">§4.4 卷积定理与 LTI 系统分析</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:滤波 = 频谱相乘</div>
+<p>第 2 章:\(y(t)=x(t)*h(t)\)。第 4 章:\(Y(j\omega)=X(j\omega)H(j\omega)\)。<span class="hl">系统对每个频率的输入分量独立地乘上该频率的增益</span>——"滤波器"三个字在此获得数学定义:若 \(|H(j\omega)|\) 只在低频大,就是低通滤波器。设计系统 = 设计 \(H(j\omega)\) 的形状。</p>
+</div>
+
+<div class="formula"><span class="fname">卷积定理(LTI 系统的频域方程)</span>
+\[ y(t)=x(t)*h(t) \;\xleftrightarrow{\;\mathcal{F}\;}\; Y(j\omega) = X(j\omega)\,H(j\omega) \]
+</div>
+
+<div class="box box-example"><div class="box-title">例题 4.4 频域法求系统输出(全书最高频解题流程)</div>
+<p>\(x(t)=e^{-2t}u(t)\) 通过系统 \(h(t)=e^{-t}u(t)\),求输出 \(y(t)\)。</p>
+<ol class="steps">
+<li>查表:\(X(j\omega)=\dfrac{1}{2+j\omega}\),\(H(j\omega)=\dfrac{1}{1+j\omega}\)。</li>
+<li>频域相乘:\(Y(j\omega)=\dfrac{1}{(2+j\omega)(1+j\omega)}\)。</li>
+<li><b>部分分式分解:</b>\(\dfrac{1}{(s+2)(s+1)}=\dfrac{A}{s+1}+\dfrac{B}{s+2}\),解得 \(A=1,\;B=-1\)。</li>
+<li>逐项反变换(查表):\(Y(j\omega)=\dfrac{1}{1+j\omega}-\dfrac{1}{2+j\omega}\;\leftrightarrow\;y(t)=\left(e^{-t}-e^{-2t}\right)u(t)\)。</li>
+</ol>
+<p><b>对比:</b>时域直接卷积要做指数积分与分段讨论,频域只需"查表-相乘-部分分式-查表"。这就是第 9 章拉普拉斯变换"系统函数"方法的雏形。</p>
+</div>
+
+<p><b>由线性常系数微分方程求频率响应:</b>对 \(a_2y''+a_1y'+a_0y=b_1x'+b_0x\) 两边取傅里叶变换,微分变为乘 \(j\omega\):</p>
+<div class="formula"><span class="fname">LCCDE → 频率响应</span>
+\[ H(j\omega)=\frac{Y(j\omega)}{X(j\omega)}=\frac{b_1(j\omega)+b_0}{a_2(j\omega)^2+a_1(j\omega)+a_0} \]
+</div>
+<p><b>0 基础解读:</b>这就是"把微分方程里的导数换成 \(j\omega\)"的口诀——拉氏变换时把 \(j\omega\) 换成 \(s\) 即可(第 9 章)。物理上,\(H(j\omega)\) 是输入 \(e^{j\omega t}\) 时的"稳态增益"。</p>
+
+<h2 class="sec">§4.5 对偶性:时频两界的镜像</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:时域与频域是"对偶"的两面镜子</div>
+<p>观察两组变换对:\(\delta(t)\leftrightarrow1\) 与 \(1\leftrightarrow2\pi\delta(\omega)\);矩形↔sinc 与 sinc↔矩形。规律:<span class="hl">时域里的形状,换个身份就是频域里的形状</span>(差一个 \(2\pi\) 与正负号)。这就是对偶性——它把变换对表的使用价值翻倍。</p>
+</div>
+<div class="formula"><span class="fname">对偶性</span>
+\[ x(t) \leftrightarrow X(j\omega) \quad\Longrightarrow\quad X(jt) \leftrightarrow 2\pi\, x(-j\omega) \]
+</div>
+
+<div class="box box-example"><div class="box-title">例题 4.5 用对偶性求 \(\dfrac{\sin t}{t}\) 的频谱</div>
+<ol class="steps">
+<li>已知:宽 2 的矩形脉冲 \(\mathrm{rect}(t/2)\leftrightarrow 2\,\dfrac{\sin\omega}{\omega}\)。</li>
+<li>用对偶性:把频域的 \(2\sin\omega/\omega\) 当作时域函数 \(2\sin t/t\),则其频谱为 \(2\pi\cdot\mathrm{rect}(-\omega/2)=2\pi\,\mathrm{rect}(\omega/2)\)。</li>
+<li>即:\(\dfrac{\sin t}{t}\leftrightarrow\pi\,\mathrm{rect}(\omega/2)\)——sinc 脉冲的频谱是个矩形。理想低通滤波器的冲激响应就是 sinc 函数,根源在此。</li>
+</ol>
+</div>
+
+<h2 class="sec">§4.6 本章公式速查表</h2>
+<table>
+<tr><th style="width:24%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">变换对</td><td class="ctr">\(X(j\omega)=\int x(t)e^{-j\omega t}dt\),\(x(t)=\dfrac{1}{2\pi}\int X(j\omega)e^{j\omega t}d\omega\)</td></tr>
+<tr><td class="ctr">必背 5 对</td><td class="ctr">\(\delta\leftrightarrow1\);\(1\leftrightarrow2\pi\delta\);\(e^{-at}u(t)\leftrightarrow\dfrac{1}{a+j\omega}\);\(\mathrm{rect}(t/2)\leftrightarrow\dfrac{2\sin\omega}{\omega}\);\(\cos\omega_0t\leftrightarrow\pi[\delta(\omega-\omega_0)+\delta(\omega+\omega_0)]\)</td></tr>
+<tr><td class="ctr">时移/频移</td><td class="ctr">\(x(t-t_0)\leftrightarrow e^{-j\omega t_0}X\);\(e^{j\omega_0t}x(t)\leftrightarrow X(j(\omega-\omega_0))\)</td></tr>
+<tr><td class="ctr">尺度</td><td class="ctr">\(x(at)\leftrightarrow\dfrac{1}{|a|}X(j\omega/a)\)</td></tr>
+<tr><td class="ctr">微分/积分</td><td class="ctr">\(x'\leftrightarrow j\omega X\);\(\int_{-\infty}^{t}x\leftrightarrow\dfrac{X}{j\omega}+\pi X(0)\delta(\omega)\)</td></tr>
+<tr><td class="ctr">卷积/相乘</td><td class="ctr">\(x*y\leftrightarrow XY\);\(x\,y\leftrightarrow\dfrac{1}{2\pi}X*Y\)</td></tr>
+<tr><td class="ctr">Parseval</td><td class="ctr">\(\int|x(t)|^2dt=\dfrac{1}{2\pi}\int|X(j\omega)|^2d\omega\)</td></tr>
+<tr><td class="ctr">对偶</td><td class="ctr">\(X(jt)\leftrightarrow2\pi x(-j\omega)\)</td></tr>
+</table>
+
+<h2 class="sec">§4.7 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 7 件事</div>
+<ol>
+<li>写出傅里叶变换对的定义,并解释它"从级数极限而来"</li>
+<li>徒手推导 rect 与 \(e^{-at}u(t)\) 的频谱(例 4.1、4.2 的积分流程)</li>
+<li>五个必背变换对脱口而出,含正弦与冲激串</li>
+<li>性质表会查会用:时移、频移、尺度、微分(例 4.3 的 30 秒解题)</li>
+<li>卷积定理的完整流程:查表 → 相乘 → 部分分式 → 反变换(例 4.4)</li>
+<li>由微分方程写出 \(H(j\omega)\)("导数换 \(j\omega\)")</li>
+<li>会用对偶性从已知变换对"镜像"出新变换对(例 4.5)</li>
+</ol>
+</div>
+
+<h2 class="sec">§4.8 自测题(答案附后)</h2>
+
+<p class="q">求 \(x(t)=\delta(t-3)\) 与 \(x(t)=e^{-j2t}u(t)\) 的傅里叶变换。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>①\(\delta(t)\leftrightarrow1\),时移得 \(\delta(t-3)\leftrightarrow e^{-j3\omega}\)。<b>要点:</b>时移只改相位不改幅度,\(|e^{-j3\omega}|=1\)。②\(e^{-at}u(t)\leftrightarrow1/(a+j\omega)\) 中取 \(a\to0\) 即 \(u(t)\leftrightarrow\dfrac{1}{j\omega}+\pi\delta(\omega)\);再用<b>频移</b>性质(频移 \(\omega_0=-2\) 相当于时域乘 \(e^{-j2t}\)):\(e^{-j2t}u(t)\leftrightarrow\dfrac{1}{j(\omega+2)}+\pi\delta(\omega+2)\)。</p>
+</div>
+
+<p class="q">求 \(x(t)=\mathrm{rect}(t/4)\)(宽 4 矩形)的频谱,并说明它与宽 2 矩形的谱的关系。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>尺度性质:\(\mathrm{rect}(t/4)=\mathrm{rect}\left(\dfrac{t/2}{2}\right)\),即宽 2 矩形压缩一半。\(\mathrm{rect}(t/2)\leftrightarrow\dfrac{2\sin\omega}{\omega}\),故 \(X(j\omega)=\dfrac{1}{1/2}\cdot\dfrac{2\sin(\omega/0.5)}{\omega/0.5}=\dfrac{4\sin 2\omega}{2\omega}=2\,\mathrm{sinc}\left(\dfrac{\omega}{\pi}\right)\cdot\pi\)…直接算更稳:\(\int_{-2}^{2}e^{-j\omega t}dt=\dfrac{4\sin 2\omega}{2\omega}=\dfrac{2\sin2\omega}{\omega}\)。结论一致:<b>时域宽一倍,频谱窄一半</b>,主瓣宽度从 \(2\pi\) 变 \(\pi\)。</p>
+</div>
+
+<p class="q">用卷积定理求宽 2 矩形脉冲自卷积(三角脉冲)的频谱。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(x(t)=\mathrm{rect}(t/2)\),\(X(j\omega)=\dfrac{2\sin\omega}{\omega}\)。自卷积 \(x*x\leftrightarrow X\cdot X=\left(\dfrac{2\sin\omega}{\omega}\right)^2\)。对照第 2 章:三角脉冲宽度 4、峰值 2。频谱是 sinc 的平方——旁瓣衰减更快(\(1/\omega^2\)),三角波比矩形"平滑",频谱也更集中。</p>
+</div>
+
+<p class="q">某 LTI 系统 \(h(t)=e^{-t}u(t)\),求其对输入 \(x(t)=\cos t\) 的稳态输出。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(H(j\omega)=\dfrac{1}{1+j\omega}\)。在 \(\omega=1\) 处:\(H(j1)=\dfrac{1}{1+j}=\dfrac{1}{\sqrt{2}}e^{-j\pi/4}\)。余弦输入经 LTI 系统:\(y(t)=|H(j1)|\cos(t+\angle H(j1))=\dfrac{1}{\sqrt{2}}\cos\!\left(t-\dfrac{\pi}{4}\right)\)。<b>要点:</b>正弦稳态响应只看频率点上的 \(H\),幅度缩放、相位平移——第 3 章特征函数思想的直接应用。</p>
+</div>
+
+<p class="q">已知 \(y''+3y'+2y=x\) 描述某 LTI 系统,求 \(H(j\omega)\),并判断它是什么类型的滤波器。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>导数换 \(j\omega\):\(H(j\omega)=\dfrac{1}{(j\omega)^2+3j\omega+2}=\dfrac{1}{(j\omega+1)(j\omega+2)}\)。低频(\(\omega\to0\)):\(H\to1/2\),高频(\(\omega\to\infty\)):\(|H|\sim1/\omega^2\to0\) → <b>低通滤波器</b>。阶数 2(分母最高次幂),衰减速率 40dB/dec,第 6 章将正式学习这些概念。</p>
+</div>
+
+<h2 class="sec">§4.9 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟看见频谱)</div>
+<pre class="code">t = linspace(-5, 5, 2001);  dt = t(2)-t(1);
+x = (abs(t) <= 1);                    % 矩形脉冲
+X = fftshift(fft(x)) * dt;            % 数值傅里叶变换(注意 dt)
+w = linspace(-pi, pi, numel(t)) / dt; % 对应频率轴
+plot(w, real(X)); xlim([-20 20]);
+hold on;
+plot(w, 2*sin(w)./w, 'r--');          % 理论值 2sinω/ω,应重合
+legend('数值FFT', '理论');
+x = exp(-t) .* (t >= 0);              % 指数脉冲,再验证一次
+X = fftshift(fft(x)) * dt;
+plot(w, abs(X), 'b'); plot(w, 1./sqrt(1+w.^2), 'r--');
+title('数值与理论频谱对比')</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第5章 离散时间傅里叶变换</div>
+<p>把本章的思想搬到离散时间:DTFT \(X(e^{j\omega})=\sum_n x[n]e^{-j\omega n}\)。<span class="hl">最大区别:频谱以 \(2\pi\) 为周期</span>(第 1 章的频率折叠在频域里的体现)。性质表几乎原样平移过去,卷积定理依然成立。学习前复习:DT 复指数的周期性(§1.3.2)、卷积和(§2.1)。</p>
+</div>

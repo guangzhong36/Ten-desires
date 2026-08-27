@@ -1,0 +1,191 @@
+<title>第10章 Z变换</title>
+<div class="kicker">OPPENHEIM · SIGNALS AND SYSTEMS · 全程教辅</div>
+<h1 class="chapter-title">第10章 Z变换</h1>
+<div class="chapter-meta"><b>对应教材:</b>奥本海姆《信号与系统》(第二版) 第10章 | <b>建议学时:</b>8–10 小时 | <b>难度:</b>★★★★☆(与第9章对照学习可减半)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解 Z 变换的定义与收敛域(ROC 是<span class="term">圆环</span>,不是拉氏的带)</li>
+<li>掌握 \(a^n u[n]\) 的 Z 变换推导,以及与 \(-a^n u[-n-1]\) 的"同式不同 ROC"</li>
+<li>会部分分式反变换,能按 ROC 判断各项对应右边/左边序列</li>
+<li>会用系统函数 \(H(z)\) 判断因果性(圆外)与稳定性(<span class="hl">单位圆在 ROC 内</span>)</li>
+<li>会用<span class="term">几何法</span>从零极点图"目测"频率响应的起伏(谐振峰、谷)</li>
+</ul>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<ul>
+<li>DTFT(第5章):\(a^n u[n]\leftrightarrow1/(1-ae^{-j\omega})\),\(|a|<1\) 才收敛</li>
+<li>拉普拉斯变换的 ROC 思想(第9章)——本章是它的离散镜像,<span class="hl">学得越熟,本章越快</span></li>
+<li>几何级数、部分分式(以 \(z^{-1}\) 为变量!)</li>
+</ul>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章高效学习路线</div>
+<ol>
+<li><b>对照法开局(2小时):</b>把第 9 章的笔记放旁边,逐条翻译:\(s\) 平面→\(z\) 平面;带→圆环;虚轴→单位圆;\(e^{-at}u(t)\to a^n u[n]\)。翻译完,本章框架已懂一半</li>
+<li><b>ROC 三例(1.5小时):</b>例 10.1–10.2 的推导(圆外/圆内),配合图 10-1 默画三遍</li>
+<li><b>反变换(2小时):</b>例 10.3 部分分式——注意把 \(X(z)\) 整理成 \(z^{-1}\) 的有理式再分解</li>
+<li><b>系统分析与几何法(2小时):</b>例 10.4 稳定性判断;例 10.5 用零极点距离解释 \(|H(e^{j\omega})|\) 起伏,这是本章最优雅的洞察</li>
+</ol>
+</div>
+
+<h2 class="sec">本章知识导图</h2>
+<div data-svg="ch10_map.svg"></div>
+<div class="mindmap-caption">图 10-0 第10章知识导图:与第9章完全对偶——把"带"换成"圆环"、"虚轴"换成"单位圆",就是本章</div>
+<p>全章核心结论一句话:<span class="hl">Z 变换是 DTFT 的广义化(\(e^{j\omega}\to z\));因果系统看"圆外",稳定系统看"单位圆",零极点图可以目测频率响应</span>。</p>
+
+<h2 class="sec">§10.1 定义与收敛域</h2>
+
+<div class="box box-intuition"><div class="box-title">直觉先行:\(z\) 是"复旋转 + 缩放"的旋钮</div>
+<p>DTFT 用 \(e^{j\omega n}\) 分解序列——只有单位模的复指数。若序列增长(如 \(2^n u[n]\)),单位模的试探信号"压不住"它,求和发散。Z 变换把试探信号换成 \(z^n=(re^{j\omega})^n=r^n e^{j\omega n}\):多出一个旋钮 \(r\) 控制"缩放"。<span class="hl">选对 \(|z|\) 的范围(ROC),就能分析任何指数增长信号</span>。这正是拉氏变换"乘衰减因子"的离散版本。</p>
+</div>
+
+<div class="formula"><span class="fname">(双边)Z 变换</span>
+\[ X(z) = \sum_{n=-\infty}^{+\infty} x[n]\, z^{-n}, \qquad z = r\, e^{j\omega} \]
+</div>
+<p><b>0 基础解读:</b>①ROC 是使求和收敛的 \(z\) 的集合,形状是<span class="hl">圆环</span>(只与 \(|z|\) 有关,与幅角无关);②ROC 含单位圆(|z|=1)时,序列存在 DTFT,且 \(X(e^{j\omega})=X(z)\big|_{z=e^{j\omega}}\);③与拉氏变换的对应:虚轴 \(j\omega\) ↔ 单位圆,右半平面 ↔ 单位圆外,左半平面 ↔ 单位圆内。</p>
+
+<div class="box box-example"><div class="box-title">例题 10.1 推导 \(a^n u[n]\) 的 Z 变换(必会)</div>
+<ol class="steps">
+<li>\(X(z)=\displaystyle\sum_{n=0}^{\infty} a^n z^{-n}=\sum_{n=0}^{\infty}(az^{-1})^n\)。</li>
+<li>几何级数收敛条件:\(|az^{-1}|<1\) ⟺ <b>\(|z|>|a|\)</b>(单位圆外)。</li>
+<li>求和:\(X(z)=\dfrac{1}{1-az^{-1}}=\dfrac{z}{z-a}\),<b>ROC: \(|z|>|a|\)</b>。</li>
+<li>对照 DTFT:\(|a|<1\) 时 ROC 含单位圆,\(X(e^{j\omega})=\dfrac{1}{1-ae^{-j\omega}}\) 与第 5 章一致 ✓;\(|a|>1\) 时无 DTFT 但有 Z 变换。</li>
+</ol>
+</div>
+
+<div class="box box-example"><div class="box-title">例题 10.2 同样的式子,不同的序列</div>
+<p>求 \(-a^n u[-n-1]\)(左边序列)的 Z 变换。</p>
+<ol class="steps">
+<li>\(X(z)=-\displaystyle\sum_{n=-\infty}^{-1} a^n z^{-n}=-\sum_{m=1}^{\infty} a^{-m}z^{m}\)(令 \(m=-n\))。</li>
+<li>收敛条件:\(|a^{-1}z|<1\) ⟺ <b>\(|z|<|a|\)</b>(圆内)。</li>
+<li>结果:\(X(z)=\dfrac{1}{1-az^{-1}}\)——<span class="hl">与例 10.1 的变换式完全相同</span>,只是 ROC 相反!</li>
+<li><b>心法(与第9章同款):</b>圆外 ROC → 右边序列;圆内 ROC → 左边序列;圆环 → 双边序列。写 Z 变换必须带 ROC。</li>
+</ol>
+</div>
+
+<div data-svg="fig_ch10_roc.svg"></div>
+<div class="mindmap-caption">图 10-1 相同 \(X(z)=1/(1-az^{-1})\)(极点 \(z=a=0.5\))的三种 ROC:(a) 圆外 → 右边序列;(b) 圆内 → 左边序列;(c) 圆环(两极点之间)→ 双边序列 \(a^{|n|}\)。虚线圆为极点位置,浅灰大圆为单位圆</div>
+
+<h2 class="sec">§10.2 反变换:部分分式 + ROC 定向</h2>
+
+<div class="box box-example"><div class="box-title">例题 10.3 部分分式反变换(最重要流程)</div>
+<p>\(X(z)=\dfrac{1}{(1-\frac{1}{2}z^{-1})(1-\frac{1}{3}z^{-1})}\),ROC: \(|z|>\dfrac{1}{2}\),求 \(x[n]\)。</p>
+<ol class="steps">
+<li>以 \(z^{-1}\) 为变量做部分分式:\(X(z)=\dfrac{A}{1-\frac{1}{2}z^{-1}}+\dfrac{B}{1-\frac{1}{3}z^{-1}}\),解得 \(A=3,\;B=-2\)。</li>
+<li>ROC \(|z|>1/2\) 在两个极点之外 → 两项都是<b>右边序列</b>。</li>
+<li>查表反变换:\(x[n]=\left[3\left(\dfrac{1}{2}\right)^n-2\left(\dfrac{1}{3}\right)^n\right]u[n]\)。</li>
+<li><b>心法:</b>极点 <b>在 ROC 内</b> → 该项对应右边序列;极点 <b>在 ROC 外</b> → 左边序列(配负号、\(u[-n-1]\))。与第 9 章"极点在 ROC 右/左"同构,只是"内/外"替代"左/右"。</li>
+</ol>
+</div>
+
+<h2 class="sec">§10.3 系统函数与稳定性</h2>
+<p><b>系统函数</b> \(H(z)\):冲激响应的 Z 变换,\(Y(z)=H(z)X(z)\)。两条核心判据(对照第9章):</p>
+<div class="box box-keypoint"><div class="box-title">必背判据</div>
+<ul>
+<li><b>因果性:</b>系统因果 ⟺ \(H(z)\) 的 ROC 是<span class="hl">某个圆外区域</span>(最外极点之外)</li>
+<li><b>稳定性:</b>系统稳定 ⟺ ROC <span class="hl">包含单位圆</span>。对因果系统:稳定 ⟺ <b>全部极点在单位圆内</b>(\(|z_i|<1\))</li>
+</ul>
+</div>
+
+<div class="box box-example"><div class="box-title">例题 10.4 差分方程求 \(H(z)\) 与稳定性</div>
+<p>系统 \(y[n]-a\,y[n-1]=x[n]\),求因果系统的 \(H(z)\),讨论稳定性。</p>
+<ol class="steps">
+<li>取 Z 变换:\(Y(z)-az^{-1}Y(z)=X(z)\) → \(H(z)=\dfrac{1}{1-az^{-1}}=\dfrac{z}{z-a}\)。</li>
+<li>极点 \(z=a\)。因果 → ROC: \(|z|>|a|\)。</li>
+<li>稳定 ⟺ 单位圆在 ROC 内 ⟺ <b>\(|a|<1\)</b>。</li>
+<li>物理图景:\(h[n]=a^n u[n]\);\(|a|<1\) 时响应逐拍衰减(稳定),\(|a|\ge1\) 时发散(不稳定)——与第 2 章"绝对可和"判据完全一致 ✓。</li>
+</ol>
+</div>
+
+<h2 class="sec">§10.4 几何法:从零极点图目测频率响应</h2>
+<div class="box box-intuition"><div class="box-title">直觉先行:频率响应是"距离之比"</div>
+<p>把 \(H(z)=\dfrac{(z-c_1)(z-c_2)\cdots}{(z-d_1)(z-d_2)\cdots}\) 代入 \(z=e^{j\omega}\) 逐项取模:\(|H(e^{j\omega})|=\dfrac{|e^{j\omega}-c_1|\cdot|e^{j\omega}-c_2|\cdots}{|e^{j\omega}-d_1|\cdot|e^{j\omega}-d_2|\cdots}\)——每一项都是<span class="hl">单位圆上的点 \(e^{j\omega}\) 到零点/极点的距离</span>!幅度谱 = 零点距离之积 ÷ 极点距离之积:单位圆上的点靠近极点时距离小、\(|H|\) 大(峰);靠近零点时 \(|H|\) 小(谷)。</p>
+</div>
+
+<div data-svg="fig_ch10_geo.svg"></div>
+<div class="mindmap-caption">图 10-2 几何法读 \(|H(e^{j\omega})|=1/|e^{j\omega}-a|\):单位圆上距极点最近的 \(\omega=0\) 处幅度最大;随 \(\omega\) 增大距离变长、幅度下降——低通形状"一眼可见"</div>
+
+<div class="box box-example"><div class="box-title">例题 10.5 用几何法解释一阶系统幅度谱</div>
+<p>\(H(z)=\dfrac{1}{1-az^{-1}}\),\(0<a<1\)。用几何法说明其低通特性。</p>
+<ol class="steps">
+<li>极点 \(z=a\) 位于单位圆内正实轴上。</li>
+<li>\(|H(e^{j\omega})|=1/|e^{j\omega}-a|\):\(\omega=0\) 时单位圆上点 (1,0) 距极点最近 → \(|H|=1/(1-a)\) <b>最大</b>。</li>
+<li>\(\omega=\pi\) 时点 (−1,0) 距极点最远 → \(|H|=1/(1+a)\) <b>最小</b>。</li>
+<li>故幅度随频率升高单调下降 → <b>低通</b>;且 \(a\to1\) 时极点贴住单位圆,峰值 \(1/(1-a)\to\infty\),"谐振"愈尖锐——这就是第 5、6 章数值结论的几何本质。</li>
+</ol>
+</div>
+
+<h2 class="sec">§10.5 本章公式速查表</h2>
+<table>
+<tr><th style="width:24%">名称</th><th>公式 / 结论</th></tr>
+<tr><td class="ctr">定义</td><td class="ctr">\(X(z)=\sum_n x[n]z^{-n}\),ROC 为圆环</td></tr>
+<tr><td class="ctr">必背变换对</td><td class="ctr">\(\delta[n]\leftrightarrow1\);\(a^n u[n]\leftrightarrow\dfrac{1}{1-az^{-1}},\;|z|>|a|\);\(-a^n u[-n-1]\leftrightarrow\dfrac{1}{1-az^{-1}},\;|z|<|a|\);\(u[n]\leftrightarrow\dfrac{1}{1-z^{-1}}\)</td></tr>
+<tr><td class="ctr">ROC 判型</td><td class="ctr">圆外→右边序列;圆内→左边序列;圆环→双边序列</td></tr>
+<tr><td class="ctr">因果判据</td><td class="ctr">ROC 为最外极点之外的圆外区域</td></tr>
+<tr><td class="ctr">稳定判据</td><td class="ctr">ROC 含单位圆;因果系统 ⟺ 极点全在单位圆内</td></tr>
+<tr><td class="ctr">差分方程 → H(z)</td><td class="ctr">\(H(z)=\dfrac{\sum b_k z^{-k}}{\sum a_k z^{-k}}\)</td></tr>
+<tr><td class="ctr">几何法</td><td class="ctr">\(|H(e^{j\omega})|=\) 零点距离积 / 极点距离积;靠近极点→峰,靠近零点→谷</td></tr>
+</table>
+
+<h2 class="sec">§10.6 本章小结:最小必会清单</h2>
+<div class="box box-summary"><div class="box-title">离开本章前,请确认能做到这 7 件事</div>
+<ol>
+<li>推导 \(a^n u[n]\leftrightarrow1/(1-az^{-1})\) 及 ROC \(|z|>|a|\)(几何级数)</li>
+<li>写出同式的左边序列版本与 ROC \(|z|<|a|\)(例 10.2)</li>
+<li>部分分式反变换时,按"极点在 ROC 内/外"给每项定向(例 10.3 心法)</li>
+<li>由 \(H(z)\) 判断因果(圆外)与稳定(单位圆在 ROC 内;因果时极点全在单位圆内)</li>
+<li>由差分方程求 \(H(z)\),会求极点并讨论稳定性(例 10.4)</li>
+<li>用几何法解释 \(|H(e^{j\omega})|\) 的峰谷(距离之比,例 10.5)</li>
+<li>熟练完成与拉氏变换的对照翻译(带↔圆环、虚轴↔单位圆、右半面↔圆外)</li>
+</ol>
+</div>
+
+<h2 class="sec">§10.7 自测题(答案附后)</h2>
+
+<p class="q">求 \(x[n]=\left(\dfrac{1}{2}\right)^n u[n]+\left(\dfrac{1}{3}\right)^n u[n]\) 的 Z 变换与 ROC。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(X(z)=\dfrac{1}{1-\frac{1}{2}z^{-1}}+\dfrac{1}{1-\frac{1}{3}z^{-1}}\),ROC = 交集:\(|z|>\dfrac{1}{2}\)。含单位圆 → DTFT 存在(\(|a|<1\))。</p>
+</div>
+
+<p class="q">\(X(z)=\dfrac{1}{1-\frac{1}{2}z^{-1}}\),ROC 为 \(|z|<\dfrac{1}{2}\),求 \(x[n]\),并判断其是否有 DTFT。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>圆内 ROC → 左边序列:\(x[n]=-\left(\dfrac{1}{2}\right)^n u[-n-1]\)。ROC 不含单位圆 → <b>无 DTFT</b>(序列在负方向指数增长)。</p>
+</div>
+
+<p class="q">系统 \(H(z)=\dfrac{1}{1-2z^{-1}}\),若系统因果,判断稳定性。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>极点 \(z=2\),在单位圆<b>外</b>。因果系统 ROC \(|z|>2\) 不含单位圆 → <b>不稳定</b>(\(h[n]=2^n u[n]\) 发散)。<b>延伸:</b>若取反因果 ROC \(|z|<2\),则含单位圆、系统稳定——同一差分方程,因果性与稳定性不可兼得,这正是 ROC 选择的物理含义。</p>
+</div>
+
+<p class="q">差分方程 \(y[n]-\dfrac{1}{2}y[n-1]=x[n]+\dfrac{1}{3}x[n-1]\),求因果系统的 \(H(z)\),写出零极点。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>\(H(z)=\dfrac{1+\frac{1}{3}z^{-1}}{1-\frac{1}{2}z^{-1}}=\dfrac{z+\frac{1}{3}}{z-\frac{1}{2}}\)。零点 \(z=-1/3\),极点 \(z=1/2\)(单位圆内)→ 因果系统稳定。注意零点在单位圆内负实轴上,\(\omega=\pi\) 处距离最小 → 高频被"挖坑",这是一阶低通上加高阻的雏形。</p>
+</div>
+
+<p class="q">用几何法说明:\(H(z)=\dfrac{1}{1+az^{-1}}\)(\(0<a<1\),极点 \(z=-a\))是高通系统。</p>
+<div class="box box-answer"><div class="box-title">答案与解析</div>
+<p>极点位于单位圆内<b>负</b>实轴。\(\omega=\pi\) 处单位圆上点 (−1,0) 距极点最近 → \(|H|=1/(1-a)\) 最大;\(\omega=0\) 处点 (1,0) 最远 → \(|H|=1/(1+a)\) 最小。幅度随频率升高而增大 → <b>高通</b>。仅凭极点位置的正负号就判定了滤波器类型——几何法之美。</p>
+</div>
+
+<h2 class="sec">§10.8 动手实验与下章预告</h2>
+
+<div class="box box-tip"><div class="box-title">动手实验(MATLAB / Octave,10 分钟玩零极点)</div>
+<pre class="code">b = [1];  a = [1 -0.8];              % H(z) = 1/(1-0.8z^{-1})
+zplane(b, a);                        % 极点 z=0.8,在单位圆内 → 稳定
+[H, w] = freqz(b, a);
+plot(w/pi, 20*log10(abs(H))); grid on;
+xlabel('\omega/\pi'); ylabel('dB');  % 验证:ω=0 处 20log10(5)=14dB
+
+b2 = [1];  a2 = [1 -2];              % 极点 z=2,单位圆外
+zplane(b2, a2);                      % 因果系统不稳定
+y = filter(b2, a2, [1 zeros(1,20)]); % 冲激响应 2^n,发散!
+
+% 几何法验证:ω=0 处 |H|=1/|1-0.8|=5
+abs(H(1))                            % 应为 5</pre>
+</div>
+
+<div class="box box-tip"><div class="box-title">下章预告:第11章 线性反馈系统</div>
+<p>最后一章把全书工具汇聚到一个工程结构上:<span class="term">反馈</span>。闭环系统的稳定性如何判定(根轨迹、Nyquist 判据)?反馈如何让系统更稳定、更精确、抗干扰?学完它,你将能用"信号与系统"的语言讨论控制系统设计的核心问题。学习前复习:系统函数 \(H(s)\)(第9章)、稳定性判据、框图互联(第1章 §1.7)。</p>
+</div>
