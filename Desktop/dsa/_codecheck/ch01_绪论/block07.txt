@@ -1,0 +1,17 @@
+// 记忆化:算过的 F(k) 存进数组,下次直接取
+// 每个 F(k) 只算一次,调用次数从指数级降到 O(n)
+#include <vector>
+using namespace std;
+
+long long fibMemo(int n, vector<long long>& memo) {
+    if (memo[n] != -1) return memo[n];    // 已经算过:直接返回(查表)
+    if (n <= 1) return n;                 // 基准情形
+    memo[n] = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);
+    return memo[n];                       // 记住结果,避免重复劳动
+}
+
+long long fibMemoWrapper(int n) {
+    vector<long long> memo(n + 1, -1);    // 全部初始化为"未算过"
+    return fibMemo(n, memo);
+}
+// fibMemoWrapper(90) 立刻返回

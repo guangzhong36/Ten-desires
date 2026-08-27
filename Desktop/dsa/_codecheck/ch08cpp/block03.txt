@@ -1,0 +1,16 @@
+// rank[root] = 树高的上界(只在根上有效),初始 0
+vector<int> parent, rank_;
+
+int find(int x) {
+    while (parent[x] != x) x = parent[x];
+    return x;
+}
+
+void unionByRank(int a, int b) {
+    int ra = find(a), rb = find(b);
+    if (ra == rb) return;
+    if (rank_[ra] < rank_[rb]) swap(ra, rb);   // 浅树挂到深树
+    parent[rb] = ra;
+    if (rank_[ra] == rank_[rb])                // 两棵同秩树合并
+        ++rank_[ra];                           // 新树秩 +1
+}

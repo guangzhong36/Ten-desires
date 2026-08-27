@@ -1,0 +1,10 @@
+# 双散列:冲突时以第二个散列函数的值做步长
+def hash_str2(s, M):           # 第二散列:常用 M2 - (h mod M2),M2 为素数
+    return M - 1 - (hash_str(s, M) % (M - 1))   # 值域 1..M-1,步长不为 0
+
+pos = hash_str(s, M)           # 主散列:决定初始位置
+step = hash_str2(s, M)         # 第二散列:决定步长,注意不能为 0
+while table[pos] is not None and table[pos] != s:
+    pos = (pos + step) % M     # 每次前进 step 格,而不是 1 格
+if table[pos] is None:
+    table[pos] = s

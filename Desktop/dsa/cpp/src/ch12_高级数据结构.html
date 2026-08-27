@@ -1,0 +1,751 @@
+<title>第12章 高级数据结构</title>
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第12章 高级数据结构</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★★★ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解红黑树五条性质与插入修正,知道 <code>std::map</code>/<code>set</code> 底层就是红黑树</li>
+<li>掌握 Treap 与跳表的随机化平衡思想,能完整实现插入/删除/查找</li>
+<li>掌握 k-d 树最近邻剪枝查询,理解配对堆摊还 <i>O</i>(1) 合并</li>
+<li>学会 map vs unordered_map 选型,并实现 10<sup>4</sup> 级跳表字典与 <code>std::map</code> 实测对比</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>前 11 章最大的缺口是"平衡":BST 在有序输入下退化成链表,AVL 实现繁琐。本章五个结构给出三种哲学:<span class="hl">红黑树用确定不变式强制平衡;Treap 与跳表把平衡交给随机性(期望 <i>O</i>(log <i>n</i>));配对堆靠摊还分析兜底</span>。</p>
+<p>在 C 里做"有序字典"很痛苦:手写 AVL/红黑树要几百行,一个修正分支写错就悄悄失衡;C++ 的答案是一行 <code>std::map</code>——内部就是红黑树。</p>
+<p>跳表与 Treap 的价值在"实现简单":代码量接近链表,却拿到期望 <i>O</i>(log <i>n</i>)——用"概率上几乎不可能坏"换"写起来几乎不可能错"。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>概率期望直觉(几何分布)、对数运算、摊还分析概念(第11章)。</p>
+<p><b>C 语言前置:</b><code>struct</code> 与指针、链表结点增删(第3章)、函数指针、<code>malloc</code>/<code>free</code> 对照 <code>new</code>/<code>delete</code>。</p>
+<p><b>依赖的前面章节:</b>第4章树(BST、旋转、AVL)、第5章散列、第6章堆、第11章摊还分析。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(2 小时):</b>读 §12.1–§12.4,背下修正口诀,手写 Treap、跳表与 k-d 树</li>
+<li><b>第二阶段(1 小时):</b>读 §12.5–§12.6,理解配对堆与选型决策表</li>
+<li><b>第三阶段(实验,1 小时):</b>完成章末实验:跳表字典的实现与对比</li>
+<li><b>验收标准:</b>能随口说出"红黑树高度 <i>O</i>(log <i>n</i>)""跳表期望 <i>O</i>(log <i>n</i>)"</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§12.1 红黑树:五条性质与插入修正</li>
+<li>§12.2 Treap:随机优先级的树堆</li>
+<li>§12.3 跳表:多层链表的概率平衡</li>
+<li>§12.4 k-d 树:多维空间切分与最近邻</li>
+<li>§12.5 配对堆:摊还 <i>O</i>(1) 合并的实用堆</li>
+<li>§12.6 标准库选型指南</li>
+<li>§12.7 全书总结:十二章知识地图</li>
+</ul></div>
+
+<h2>§12.1 红黑树:五条性质与插入修正</h2>
+
+<h3>12.1.1 五条性质与"黑高"</h3>
+<p><span class="term">红黑树</span>是一棵二叉查找树,每个结点带红/黑一色,满足五条性质:① 结点非红即黑;② 根是黑色;③ 叶结点(NIL)是黑色;④ 红结点的子结点都是黑色——<span class="hl">"红结点不能有红孩子"</span>;⑤ 从任一结点到其所有后代叶的路径上,黑色结点数相同,这个数叫<span class="term">黑高</span>。</p>
+<p>关键保证:设黑高 <i>h</i><sub>b</sub>,最短路径(全黑)长 <i>h</i><sub>b</sub>,性质4 又禁红红相邻,最长路径至多 2<i>h</i><sub>b</sub>——<span class="hl">最长 ≤ 最短的 2 倍,树高 <i>O</i>(log <i>n</i>),三操作最坏 <i>O</i>(log <i>n</i>)</span>。这就是"弱平衡":不追求 AVL 的高度差 ≤ 1。</p>
+
+<h3>12.1.2 插入修正:变色与旋转</h3>
+<p>插入先染<b>红</b>——红结点不影响性质5(黑高不变),只可能破坏性质4(红父红子)。修正只看叔叔颜色:<span class="hl">叔叔红 → 变色;叔叔黑 → 旋转</span>。</p>
+
+<div class="code-title">示例 12-1 插入修正:叔叔为黑 → 旋转 + 变色</div>
+<pre class="code">红黑树插入修正之二:叔叔为黑(或空),旋转 + 变色(LL 型为例)
+           黑 10(爷爷)                      黑 5(子树新根)
+          /       \      对爷爷右旋        /       \
+       红 5(父)   黑 15   -----------→   红 3     红 10
+       /                                           \
+    红 3 ← 新插入                                   黑 15
+   (直线型:父左子左)     旋后变色:5 染黑、10 染红
+                         黑高与性质4 同时恢复,修正结束</pre>
+
+<p>叔叔为红时,父、叔变黑,爷爷变红,冲突上移一层继续检查;爷爷若是根最后染黑。叔叔为黑时按 AVL 的四种形态旋转:<b>LL/RR 直线一次旋转,LR/RL 之字形两次旋转</b>(先转父再转爷爷);旋转后被提上来的结点染黑、爷爷染红。</p>
+
+<div class="box box-keypoint"><div class="box-title">重点:插入易、删除难</div>
+<p>插入只处理"红父红子"一处冲突,沿路径上移 <i>O</i>(log <i>n</i>) 层;删除要把黑高"挖掉"一层,处理"双黑"问题——<span class="hl">红黑树"实现极复杂、接口极简单",删除从不手写,因此适合内建在标准库</span>。</p>
+</div>
+
+<h3>12.1.3 与 2-3-4 树的关系</h3>
+<p>一句话:<span class="term">红黑树是 2-3-4 树的二叉表示</span>——把 2-3-4 树一个结点内的 2~3 个键"压扁"成红黑交替的二叉链。</p>
+
+<h3>12.1.4 C++ 视角:STL 的 map/set 就是红黑树</h3>
+<p><span class="hl"><code>std::map</code>/<code>std::set</code> 底层就是红黑树</span>,于是 map 有三个赠品:① 中序遍历即按键升序;② 插入/删除其他元素<b>不使既有迭代器失效</b>;③ <code>lower_bound</code>/<code>upper_bound</code> <i>O</i>(log <i>n</i>) 定位区间。</p>
+
+<table class="cmp">
+<tr><th>C 的手写有序查找表</th><th>C++ 的标准库</th></tr>
+<tr><td>手写 AVL/红黑树:数百行,修正分支众多</td><td><code>std::map</code>/<code>std::set</code>:一行声明即用</td></tr>
+<tr><td>有序遍历要自己写中序递归</td><td>范围 <code>for</code> 直接按键序输出</td></tr>
+<tr><td>范围查询手写"第一个 &gt;= x 的结点"</td><td><code>lower_bound</code>/<code>upper_bound</code> 现成</td></tr>
+<tr><td>忘记 <code>free</code> 整棵树即泄漏</td><td>析构自动释放全部结点</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:性质4 的方向与口诀记反</div>
+<p>性质4 是"红结点的孩子必须黑",<b>反过来"黑结点的孩子必须红"是错的</b>——黑结点孩子颜色任意。高频错误还有口诀记反:叔叔红时去旋转,树永远修不好。</p>
+</div>
+
+<h2>§12.2 Treap:随机优先级的树堆</h2>
+
+<h3>12.2.1 思想:BST + 堆序</h3>
+<p>BST 退化的根源是"输入顺序决定树形"。Treap 换一条路:<span class="term">Treap</span>(tree+heap)让每个结点携带一个<b>随机优先级</b>,并额外要求优先级满足<b>堆序</b>(小顶堆:父 ≤ 子)。键决定"在哪里",优先级决定"谁当根"——优先级随机,树形就随机,期望高度 <i>O</i>(log <i>n</i>)。<span class="hl">把平衡从"旋转纠错"换成"随机决定",实现从几百行降到几十行</span>。</p>
+
+<h3>12.2.2 插入与旋转</h3>
+<p>插入:先按 BST 规则插到叶位置,再沿路径向上旋转,直到父的优先级 ≤ 子——与二叉堆"上滤"异曲同工。删除同理:把目标旋转着推下去,变叶子再摘除。</p>
+
+<div class="code-title">示例 12-5 Treap 完整实现(第一段:结构、旋转、插入)</div>
+<pre class="code">// Treap:键满足 BST 序,随机优先级满足小顶堆序
+#include &lt;iostream&gt;
+#include &lt;random&gt;
+using namespace std;
+
+struct Node {
+    int key, pri;
+    Node* left = nullptr;
+    Node* right = nullptr;
+    Node(int k, int p) : key(k), pri(p) {}
+};
+
+Node* rotateRight(Node* t) {    // 右旋:提升左孩子
+    Node* x = t-&gt;left;
+    t-&gt;left = x-&gt;right;
+    x-&gt;right = t;
+    return x;
+}
+Node* rotateLeft(Node* t) {     // 左旋:提升右孩子
+    Node* x = t-&gt;right;
+    t-&gt;right = x-&gt;left;
+    x-&gt;left = t;
+    return x;
+}
+Node* insert(Node* t, int key, int pri) {
+    if (!t) return new Node(key, pri);
+    if (key &lt; t-&gt;key) {
+        t-&gt;left = insert(t-&gt;left, key, pri);
+        if (t-&gt;left-&gt;pri &lt; t-&gt;pri) t = rotateRight(t);  // 堆序上滤
+    } else if (key &gt; t-&gt;key) {
+        t-&gt;right = insert(t-&gt;right, key, pri);
+        if (t-&gt;right-&gt;pri &lt; t-&gt;pri) t = rotateLeft(t);
+    }
+    return t;
+}</pre>
+
+<div class="code-title">示例 12-6 Treap 完整实现(第二段:删除与查找)</div>
+<pre class="code">Node* erase(Node* t, int key) {
+    if (!t) return nullptr;
+    if (key &lt; t-&gt;key) t-&gt;left = erase(t-&gt;left, key);
+    else if (key &gt; t-&gt;key) t-&gt;right = erase(t-&gt;right, key);
+    else if (!t-&gt;left) { Node* r = t-&gt;right; delete t; return r; }
+    else if (!t-&gt;right) { Node* l = t-&gt;left; delete t; return l; }
+    else if (t-&gt;left-&gt;pri &lt; t-&gt;right-&gt;pri) {
+        Node* x = rotateRight(t);
+        x-&gt;right = erase(t, key);
+        return x;
+    } else {
+        Node* x = rotateLeft(t);
+        x-&gt;left = erase(t, key);
+        return x;
+    }
+    return t;
+}
+
+bool find(Node* t, int key) {
+    while (t &amp;&amp; t-&gt;key != key)
+        t = key &lt; t-&gt;key ? t-&gt;left : t-&gt;right;
+    return t != nullptr;
+}</pre>
+
+<h3>12.2.3 期望 O(log n) 的直觉与缺陷</h3>
+<p>直觉:根是整棵树优先级最小的结点,优先级随机,所以"根是第 <i>k</i> 小的键"的概率均匀为 1/<i>n</i>,左右子树递归同构——<span class="hl">与快排"随机枢轴"的分析同构:Treap 就是快排的树形版本</span>。最坏情形(优先级恰好按键单调)概率 1/<i>n</i>!,现实不会出现。优先级相等时须约定比较方向,否则可能破坏 BST 序。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:堆序方向与旋转方向配错</div>
+<p>本例用小顶堆(父 ≤ 子),口诀"左小右旋、右小左旋";若定义成大顶堆,所有比较都要取反。实现后用有序序列插入再中序遍历:输出必须升序,且每个结点优先级 ≤ 子结点。</p>
+</div>
+
+<h2>§12.3 跳表:多层链表的概率平衡</h2>
+
+<h3>12.3.1 多层链表与几何分布</h3>
+<p>有序链表查找 <i>O</i>(<i>n</i>),因为每步只能走一个结点。跳表(skip list)的思路:<span class="hl">多建几层链表,上层是下层的"快速通道"</span>。每个新结点先进入最底层,再以概率 1/2 晋升,再以概率 1/2 继续……层数 <i>k</i> 满足<span class="term">几何分布</span>:P(层 ≥ <i>k</i>) = 2<sup>−(k−1)</sup>,每层结点数期望 <i>n</i>/2<sup>k−1</sup>。查找从最高层出发,每层右移到"下一个更大"结点前再下降,共 <i>O</i>(log <i>n</i>) 层。</p>
+
+<h3>12.3.2 三操作:查找、插入、删除</h3>
+<p>三操作共享同一"下探"骨架:从最高层向右试探,把每层"最后一个 &lt; key 的结点"记进 <code>update</code> 数组。<b>查找</b>:下探后看 <code>update[0]-&gt;next[0]</code> 是否为 key。<b>插入</b>:随机层数 <code>lvl</code>,若高于当前最高层先补 <code>update</code> 头指针,再逐层链入。<b>删除</b>:下探后若第 0 层后继即目标,逐层跳过并 <code>delete</code>,最后回收空高层。</p>
+
+<div class="code-title">示例 12-7 跳表完整实现(第一段:结构、查找、插入)</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+struct Node {
+    int key;
+    vector&lt;Node*&gt; next;        // next[i]:第 i 层的后继
+    Node(int k, int lvl) : key(k), next(lvl + 1, nullptr) {}
+};
+
+class SkipList {
+    Node* head_;               // 头结点:全部层的起点
+    int level_ = 0;
+    mt19937 rng_{12345};       // 固定种子
+public:
+    SkipList(int maxLvl = 16) : head_(new Node(0, maxLvl)) {}
+    ~SkipList() {
+        Node* p = head_-&gt;next[0];
+        while (p) { Node* t = p; p = p-&gt;next[0]; delete t; }
+        delete head_;
+    }
+    int randomLevel() {        // 几何分布:每层以 1/2 概率继续
+        int lvl = 1;
+        while ((rng_() &amp; 1) &amp;&amp; lvl &lt; int(head_-&gt;next.size()) - 1) ++lvl;
+        return lvl;
+    }
+    bool find(int key) const {
+        Node* cur = head_;
+        for (int i = level_; i &gt;= 0; --i)
+            while (cur-&gt;next[i] &amp;&amp; cur-&gt;next[i]-&gt;key &lt; key)
+                cur = cur-&gt;next[i];
+        Node* x = cur-&gt;next[0];
+        return x != nullptr &amp;&amp; x-&gt;key == key;
+    }
+    void insert(int key) {
+        if (find(key)) return;
+        vector&lt;Node*&gt; update(head_-&gt;next.size());
+        Node* cur = head_;
+        for (int i = level_; i &gt;= 0; --i) {
+            while (cur-&gt;next[i] &amp;&amp; cur-&gt;next[i]-&gt;key &lt; key)
+                cur = cur-&gt;next[i];
+            update[i] = cur;
+        }
+        int lvl = randomLevel();
+        if (lvl &gt; level_) {
+            for (int i = level_ + 1; i &lt;= lvl; ++i) update[i] = head_;
+            level_ = lvl;
+        }
+        Node* x = new Node(key, lvl);
+        for (int i = 0; i &lt;= lvl; ++i) {
+            x-&gt;next[i] = update[i]-&gt;next[i];
+            update[i]-&gt;next[i] = x;
+        }
+    }</pre>
+
+<div class="code-title">示例 12-8 跳表完整实现(第二段:删除与按序遍历)</div>
+<pre class="code">    bool erase(int key) {
+        vector&lt;Node*&gt; update(head_-&gt;next.size());
+        Node* cur = head_;
+        for (int i = level_; i &gt;= 0; --i) {
+            while (cur-&gt;next[i] &amp;&amp; cur-&gt;next[i]-&gt;key &lt; key)
+                cur = cur-&gt;next[i];
+            update[i] = cur;
+        }
+        Node* x = cur-&gt;next[0];
+        if (!x || x-&gt;key != key) return false;
+        for (int i = 0; i &lt;= level_; ++i) {
+            if (update[i]-&gt;next[i] != x) break;
+            update[i]-&gt;next[i] = x-&gt;next[i];
+        }
+        delete x;
+        while (level_ &gt; 0 &amp;&amp; head_-&gt;next[level_] == nullptr)
+            --level_;
+        return true;
+    }
+    vector&lt;int&gt; keys() const {
+        vector&lt;int&gt; v;
+        for (Node* p = head_-&gt;next[0]; p; p = p-&gt;next[0]) v.push_back(p-&gt;key);
+        return v;
+    }
+    size_t size() const { return keys().size(); }
+};</pre>
+
+<h3>12.3.3 与平衡树对比:期望 vs 确定</h3>
+<table>
+<tr><th>对比项</th><th>跳表</th><th>红黑树 / AVL</th></tr>
+<tr><td>平衡机制 / 实现难度</td><td>随机层数,≈ 链表级,几十行</td><td>旋转 + 不变式,高,数百行</td></tr>
+<tr><td>高度</td><td>期望 <i>O</i>(log <i>n</i>),最坏 <i>O</i>(<i>n</i>)</td><td>最坏保证 <i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>每结点内存</td><td>平均约 2 个指针</td><td>2 个指针 + 颜色位</td></tr>
+<tr><td>工程使用</td><td>Redis 有序集合 zset、LevelDB</td><td>std::map/set、Java TreeMap</td></tr>
+</table>
+
+
+<table class="cmp">
+<tr><th>C 的手写多级链表</th><th>C++ 的跳表类</th></tr>
+<tr><td>每层一个 <code>Node* next[k]</code> 数组要手写分配</td><td><code>vector&lt;Node*&gt; next</code> 自动管理层指针</td></tr>
+<tr><td>释放多层结点容易重复 free 或泄漏</td><td>析构沿第 0 层逐个 delete,RAII 兜底</td></tr>
+<tr><td>随机层数用 <code>rand()</code>,可移植性差</td><td><code>mt19937</code> 质量与可复现性都有保证</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:随机层数用错了分布</div>
+<p>层数必须<b>几何分布</b>(每层 1/2 概率继续)。三个常见错误:① 固定层数让高层退化成线性扫描 <i>O</i>(<i>n</i>);② 删除后不回收空高层;③ 用 <code>time()</code> 做种子,同一秒插入的结点层数高度相关。调试:逐层打印链表,验证"第 0 层完整、高层稀疏"。</p>
+</div>
+
+<h2>§12.4 k-d 树:多维空间切分与最近邻</h2>
+
+<h3>12.4.1 交替维度切分建树</h3>
+<p><span class="term">k-d 树</span>递归地选一个维度取<b>中位数</b>作切分点,左子树为小于切分点的点集,右子树反之;下一层换另一个维度。对二维点,第 0 层按 <i>x</i> 切、第 1 层按 <i>y</i> 切、第 2 层再按 <i>x</i>……<span class="hl">维度交替,保证每个区域在两个方向都被"削"过</span>,树高 <i>O</i>(log <i>n</i>)。</p>
+
+<div class="code-title">示例 12-9 k-d 树:交替维度建树(二维)</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+struct Point { double x, y; };
+
+struct KdNode {
+    Point p;
+    int dim;                     // 切分维度:0 按 x,1 按 y
+    KdNode* left = nullptr;
+    KdNode* right = nullptr;
+    KdNode(const Point&amp; pt, int d) : p(pt), dim(d) {}
+};
+
+// nth_element:O(n) 选出中位数并原地分区
+KdNode* build(vector&lt;Point&gt;&amp; pts, int lo, int hi, int depth) {
+    if (lo &gt; hi) return nullptr;
+    int dim = depth % 2;
+    int mid = (lo + hi) / 2;
+    nth_element(pts.begin() + lo, pts.begin() + mid, pts.begin() + hi + 1,
+                [dim](const Point&amp; a, const Point&amp; b) {
+                    return dim == 0 ? a.x &lt; b.x : a.y &lt; b.y;
+                });
+    KdNode* node = new KdNode(pts[mid], dim);
+    node-&gt;left  = build(pts, lo, mid - 1, depth + 1);
+    node-&gt;right = build(pts, mid + 1, hi, depth + 1);
+    return node;
+}</pre>
+
+<h3>12.4.2 最近邻查询与剪枝</h3>
+<p>给定查询点 <i>q</i>,找点集中距离最近者。先沿树下探到 <i>q</i> 所在区域,得到"当前最佳距离" <i>d</i><sub>best</sub>;回溯时——<span class="hl">若 <i>q</i> 到分割线的距离 ≥ <i>d</i><sub>best</sub>,另一侧任何点都不可能更近,整棵子树剪掉</span>。</p>
+
+<div class="code-title">示例 12-10 k-d 树:最近邻查询(带剪枝)</div>
+<pre class="code">double dist2(const Point&amp; a, const Point&amp; b) {
+    double dx = a.x - b.x, dy = a.y - b.y;
+    return dx * dx + dy * dy;
+}
+
+void nearest(KdNode* node, const Point&amp; q, Point&amp; best, double&amp; bestD) {
+    if (!node) return;
+    double d = dist2(node-&gt;p, q);
+    if (d &lt; bestD) { bestD = d; best = node-&gt;p; }
+
+    int dim = node-&gt;dim;
+    double cut = dim == 0 ? node-&gt;p.x : node-&gt;p.y;
+    double qc  = dim == 0 ? q.x : q.y;
+    KdNode* near = (qc &lt; cut) ? node-&gt;left : node-&gt;right;
+    KdNode* far  = (qc &lt; cut) ? node-&gt;right : node-&gt;left;
+    nearest(near, q, best, bestD);
+
+    double dCut = (qc - cut) * (qc - cut);
+    if (dCut &lt; bestD)
+        nearest(far, q, best, bestD);
+}</pre>
+
+<div class="box box-tip"><div class="box-title">记号说明:距离平方省去开根号</div>
+<p>最近邻只需比较大小,<code>dist2</code> 返回距离平方即可,省掉每步一次 <code>sqrt</code>;剪枝条件用平方比较数学等价。</p>
+</div>
+
+<h3>12.4.3 应用与退化警告</h3>
+<p>k-d 树是"多维点集查询"的默认答案:游戏引擎的"最近敌人"查询替代逐对检测的 <i>O</i>(<i>n</i><sup>2</sup>),光线追踪与 k-NN 分类也建立在"空间切分 + 剪枝"上。数据挤在一条直线上时剪枝失效,查询最坏 <i>O</i>(<i>n</i>);生产级替代是 R 树或网格索引。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:剪枝条件漏写或写反</div>
+<p>最近邻两种经典错误:① 漏掉 <code>if (dCut &lt; bestD)</code> 直接递归两侧——正确但退化成全树搜索 <i>O</i>(<i>n</i>);② 比较方向反了——可能跳过真正更近的点。调试:拿 5 点小数据集逐结点打印"近侧/远侧/是否剪枝"核对。</p>
+</div>
+
+<h2>§12.5 配对堆:摊还 <i>O</i>(1) 合并的实用堆</h2>
+
+<h3>12.5.1 配对堆是什么</h3>
+<p>第6章的二叉堆支持 insert 与 deleteMin,但<b>合并两个堆</b>要 <i>O</i>(<i>n</i>)。左式堆 merge 是 <i>O</i>(log <i>n</i>) 但实现复杂;<span class="term">配对堆</span>(pairing heap)走实用路线:<span class="hl">merge 只比两个根的键,把小根挂到大根的孩子链表里,摊还 <i>O</i>(1);deleteMin 把根的孩子两两配对合并,摊还 <i>O</i>(log <i>n</i>)</span>。</p>
+
+<div class="code-title">示例 12-11 配对堆:merge、insert、deleteMin</div>
+<pre class="code">// 配对堆:孩子用"左孩子 + 右兄弟"链表表示,根最小
+struct PHNode {
+    int val;
+    PHNode* child = nullptr;     // 第一个孩子,next 为兄弟链
+    PHNode* next  = nullptr;
+    PHNode(int v) : val(v) {}
+};
+
+PHNode* merge(PHNode* a, PHNode* b) {        // 摊还 O(1)
+    if (!a) return b;
+    if (!b) return a;
+    if (a-&gt;val &gt; b-&gt;val) swap(a, b);         // 键小的做根
+    b-&gt;next = a-&gt;child;
+    a-&gt;child = b;
+    return a;
+}
+
+PHNode* mergePairs(PHNode* first) {          // 两趟合并
+    if (!first || !first-&gt;next) return first;
+    PHNode* a = first;
+    PHNode* b = first-&gt;next;
+    PHNode* rest = b-&gt;next;
+    return merge(merge(a, b), mergePairs(rest));
+}
+
+PHNode* deleteMin(PHNode* root) {
+    PHNode* children = root-&gt;child;
+    delete root;
+    return mergePairs(children);
+}
+
+// insert = merge(现堆, 单结点堆),摊还 O(1)</pre>
+
+<h3>12.5.2 三堆选择的一句话</h3>
+<p><span class="hl">只做优先队列(不合并):二叉堆;需要合并且代码量敏感:配对堆;需要最坏保证的合并:左式堆</span>。代价是摊还而非最坏:单次 deleteMin 可能偶发 <i>O</i>(<i>n</i>),长时间平均 <i>O</i>(log <i>n</i>)。</p>
+
+<h2>§12.6 标准库选型指南</h2>
+
+<h3>12.6.1 map/set vs unordered_map/set:决策表</h3>
+<p><code>map</code>/<code>set</code> 底层红黑树,<code>unordered_map</code>/<code>unordered_set</code> 底层散列表(第5章)。选哪个:</p>
+<table>
+<tr><th>需求</th><th>map / set(红黑树)</th><th>unordered_map / set(散列)</th></tr>
+<tr><td>按键升序遍历</td><td>支持(中序遍历)</td><td>不支持(顺序随机)</td></tr>
+<tr><td>范围查询 [lo, hi]</td><td>支持(lower_bound/upper_bound)</td><td>不支持</td></tr>
+<tr><td>平均查找速度</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(1),常数更小</td></tr>
+<tr><td>最坏查找</td><td><i>O</i>(log <i>n</i>) 有保证</td><td><i>O</i>(<i>n</i>)(散列冲突)</td></tr>
+<tr><td>迭代器失效</td><td>插入不失效,删除只失效被删者</td><td>再散列(rehash)时全部失效</td></tr>
+</table>
+
+<h3>12.6.2 自定义比较器与自定义哈希</h3>
+<p>键是自定义结构时,map 需要"严格弱序"(等价的键互比为假),unordered_map 需要哈希与判等:</p>
+
+<div class="code-title">示例 12-12 自定义比较器与自定义哈希</div>
+<pre class="code">#include &lt;map&gt;
+#include &lt;unordered_map&gt;
+#include &lt;string&gt;
+using namespace std;
+
+struct Person { string name; int age; };
+
+struct ByAge {                               // 自定义比较器:按年龄排序
+    bool operator()(const Person&amp; a, const Person&amp; b) const {
+        return a.age &lt; b.age;                // 严格弱序:age 相同视为等价
+    }
+};
+map&lt;Person, int, ByAge&gt; ageRank;
+
+struct PersonHash {                          // 自定义哈希:让 Person 可散列
+    size_t operator()(const Person&amp; p) const {
+        return hash&lt;string&gt;()(p.name) ^ (hash&lt;int&gt;()(p.age) &lt;&lt; 1);
+    }
+};
+unordered_map&lt;Person, int, PersonHash&gt; phone;</pre>
+
+<table class="cmp">
+<tr><th>C 的做法</th><th>C++ 的做法</th></tr>
+<tr><td><code>qsort(a, n, sz, cmp)</code> 传函数指针,比较逻辑与容器分离</td><td><code>map&lt;K, V, ByAge&gt;</code> 传类型(函数对象/lambda),随容器封装</td></tr>
+<tr><td>手写散列表,冲突处理自己维护</td><td><code>unordered_map&lt;K, V, Hash&gt;</code> 只需提供哈希类型</td></tr>
+<tr><td>比较器写错静默产生错误排序</td><td>严格弱序违规是未定义行为,用断言检查等价性</td></tr>
+</table>
+
+<h3>12.6.3 手写 vs 标准库:有序字典并排</h3>
+<p>把 §12.3 的跳表包一层,接口与 <code>std::map</code> 对齐——第3章 ADT 的威力:</p>
+
+<div class="code-title">示例 12-13 手写跳表字典 vs std::map,接口并排</div>
+<pre class="code">// ---- 手写版:SkipList 包成有序字典 ----
+class SkipDict {
+    SkipList sl_;
+public:
+    void insert(int k) { sl_.insert(k); }
+    bool find(int k)   { return sl_.find(k); }
+    bool erase(int k)  { return sl_.erase(k); }
+    vector&lt;int&gt; keys() { return sl_.keys(); }
+};
+SkipDict dict;
+dict.insert(5); dict.insert(3);
+vector&lt;int&gt; ord = dict.keys();               // [3, 5]
+
+// ---- 标准库版:同一套接口,红黑树 ----
+map&lt;int, string&gt; m;
+m[5] = "five"; m[3] = "three"; m[8] = "eight";
+for (auto&amp; [k, v] : m) { /* 按序遍历 */ }
+auto it = m.lower_bound(4);</pre>
+
+<h3>12.6.4 工程选型建议</h3>
+<ul>
+<li>一次性有序输出:vector + <code>sort</code></li>
+<li>持续插入 + 需要有序:map(手写红黑树永远不是选项)</li>
+<li>只查不遍历:unordered_map;冲突多时换更均匀的哈希</li>
+<li>Python 同学没有 map:list+bisect、dict+sorted、sortedcontainers(见 Python 版 §12.6)</li>
+</ul>
+
+<h2>§12.7 全书总结:十二章知识地图</h2>
+
+<h3>12.7.1 十二章知识地图</h3>
+<div class="toc-map"><ul>
+<li>第1章 绪论:递归与数学 → 第2章 算法分析:<i>O</i>/<i>Ω</i>/<i>Θ</i></li>
+<li>第3章 表栈队列:数组与链表 → 第4章 树:BST、AVL、遍历</li>
+<li>第5章 散列:冲突处理 → 第6章 堆:二叉堆、上滤下滤</li>
+<li>第7章 排序:八大排序 → 第8章 不相交集:union/find</li>
+<li>第9章 图:最短路与 MST → 第10章 算法设计:贪心、分治、DP</li>
+<li>第11章 摊还分析:三方法 → 第12章 高级结构:平衡与期望</li>
+</ul></div>
+
+<h3>12.7.2 "遇到问题选什么结构"终极决策表</h3>
+<table>
+<tr><th>需求场景</th><th>推荐结构</th><th>理由</th></tr>
+<tr><td>只做等值查找/去重</td><td>散列(unordered_map / dict)</td><td>平均 <i>O</i>(1),常数最小</td></tr>
+<tr><td>需要按键有序遍历</td><td>红黑树(map)或跳表</td><td>中序/底层链即有序序列</td></tr>
+<tr><td>范围查询 [lo, hi]</td><td>map 的 lower_bound / 有序数组二分</td><td><i>O</i>(log <i>n</i>) 定位 + <i>O</i>(k) 输出</td></tr>
+<tr><td>优先队列(含合并)</td><td>二叉堆 / 配对堆</td><td><i>O</i>(log <i>n</i>) / 合并摊还 <i>O</i>(1)</td></tr>
+<tr><td>多维点集最近邻</td><td>k-d 树</td><td>平均 <i>O</i>(log <i>n</i>) 剪枝查询</td></tr>
+</table>
+
+<h3>12.7.3 下一步学习方向</h3>
+<p>学完十二章,你已具备"手写任何基础结构 + 正确选型"的能力。三个方向任选:① <b>算法竞赛</b>——跳表与 Treap 常作为平衡树的快速替代;② <b>系统设计</b>——缓存用散列、排行榜用跳表、范围索引用 B+ 树;③ <b>数据库索引</b>——B+ 树是红黑树的"磁盘亲戚"。最后记住:<span class="hl">数据结构没有银弹,选型的本质是拿时间复杂度、实现复杂度与最坏保证做三角权衡</span>。</p>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>查找 / 插入 / 删除</td><td>红黑树(map/set 底层)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>有序遍历全部元素</td><td>红黑树中序遍历</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>前驱 / 后继</td><td>红黑树迭代器 ++/--</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>Treap</td><td>期望 <i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)(优先级恰好有序)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>跳表</td><td>期望 <i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)(全部同层)</td></tr>
+<tr><td>建树</td><td>k-d 树(nth_element 切分)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>最近邻查询</td><td>k-d 树</td><td>平均 <i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)(数据退化)</td></tr>
+<tr><td>合并两个堆</td><td>配对堆</td><td>摊还 <i>O</i>(1)</td><td>摊还 <i>O</i>(1)</td></tr>
+<tr><td>插入(单结点)</td><td>配对堆</td><td>摊还 <i>O</i>(1)</td><td>摊还 <i>O</i>(1)</td></tr>
+<tr><td>deleteMin</td><td>配对堆</td><td>摊还 <i>O</i>(log <i>n</i>)</td><td>摊还 <i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>查找</td><td>map / set</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>查找</td><td>unordered_map / unordered_set</td><td>平均 <i>O</i>(1)</td><td><i>O</i>(<i>n</i>)(散列冲突)</td></tr>
+<tr><td>范围查询 [lo, hi]</td><td>map 的 lower_bound/upper_bound</td><td><i>O</i>(log <i>n</i>) + <i>O</i>(<i>k</i>)</td><td>同左(<i>k</i> 为输出个数)</td></tr>
+<tr><td>二分查找</td><td>有序数组 + std::binary_search</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>插入到有序数组</td><td>vector + insert</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能默写红黑树五条性质,并解释"性质4+性质5 → 高度 <i>O</i>(log <i>n</i>)"</li>
+<li>能画出插入修正两个分支(叔叔红变色、叔叔黑旋转)与四种旋转形态</li>
+<li>能说出"红黑树是 2-3-4 树的二叉表示"</li>
+<li>能独立实现 Treap 与跳表的插入/删除/查找,说出期望为何 <i>O</i>(log <i>n</i>)</li>
+<li>能说出跳表与红黑树的取舍(期望 vs 确定、实现难度、内存、并发)</li>
+<li>能独立实现 k-d 树交替维度建树与最近邻剪枝查询</li>
+<li>能说出配对堆合并摊还 <i>O</i>(1)、deleteMin 摊还 <i>O</i>(log <i>n</i>),一句话对比三堆</li>
+<li>能背出 map vs unordered_map 决策表,写出自定义比较器(严格弱序)与自定义哈希</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 为什么性质4 与性质5 一起能保证红黑树高度 <i>O</i>(log <i>n</i>)?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>性质5 说所有路径黑高相同,设黑高 <i>h</i><sub>b</sub>;性质4 禁红红相邻,最长路径至多 2<i>h</i><sub>b</sub>,最短路径长 <i>h</i><sub>b</sub>——最长 ≤ 2 × 最短。而黑高 <i>h</i><sub>b</sub> 的树至少 2<sup><i>h</i><sub>b</sub></sup>−1 个内部结点,故树高 ≤ 2 log<sub>2</sub>(<i>n</i>+1) = <i>O</i>(log <i>n</i>)。</p>
+</div>
+
+<div class="q">2. Treap 的期望高度为什么是 <i>O</i>(log <i>n</i>)?最坏情形是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>优先级随机,根是"优先级最小结点"的概率均匀为 1/<i>n</i>,左右子树递归同构——与快排随机枢轴同构。最坏是优先级恰好按键单调,高度 <i>O</i>(<i>n</i>),概率 1/<i>n</i>!。</p>
+</div>
+
+<div class="q">3. 跳表查找从第几层开始?层数为什么用几何分布而不是固定层数?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>从当前最高层开始逐层下降。几何分布(每层 1/2 概率晋升)使每层期望结点数 <i>n</i>/2<sup>k</sup>,查找每层只走常数步,期望 <i>O</i>(log <i>n</i>)。固定层数则退化成线性扫描。</p>
+</div>
+
+<div class="q">4. k-d 树最近邻查询的剪枝条件是什么?漏写会怎样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>回溯时,若查询点到分割线的距离平方 ≥ 当前最佳距离平方,另一侧不可能更近,整棵子树剪掉;只有严格小于才进入。漏写则退化成全树搜索 <i>O</i>(<i>n</i>);方向写反则可能漏掉更近的点。</p>
+</div>
+
+<div class="q">5. 向 map 与 unordered_map 各插入一个元素,既有迭代器分别会怎样?工程含义?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>map(红黑树)插入只改指针不搬内存,除被删除者外所有迭代器保持有效;unordered_map 插入可能触发再散列,<b>全部</b>迭代器失效。"遍历中插入"或"缓存迭代器"必须优先 map——§3.3 迭代器失效思想再现。</p>
+</div>
+
+<h2>章末实验题:跳表字典的实现与对比</h2>
+<div class="box box-example lab"><div class="box-title">实验 12:跳表字典的实现与对比</div>
+<p><b>实验目标:</b>实现完整跳表,封装成有序字典,与 <code>std::map</code> 对照验证正确性并实测 10<sup>4</sup> 级随机键耗时。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现跳表的查找/插入/删除与随机层数(知识点:§12.3 三操作与几何分布)</li>
+<li>任务 2:封装成有序字典接口 insert/find/erase/keys(知识点:§12.3 底层链有序 + 第3章 ADT)</li>
+<li>任务 3:用 <code>std::map</code> 做同一组随机操作,验证输出一致(知识点:§12.6 标准库对照)</li>
+<li>任务 4:对 10<sup>4</sup> 级随机键分别计时插入与查找(知识点:§12.3 期望复杂度 + 第2章计时)</li>
+<li>任务 5:删除全部元素,验证跳表为空(知识点:§12.3 删除与空层回收)</li>
+</ul>
+<p><b>实验环境:</b>C++17。编译:<code>g++ -std=c++17 -O2 lab12.cpp -o lab12</code>;运行 <code>lab12</code>。</p></div>
+<ol class="steps">
+<li>按示例 12-7/12-8 实现 SkipList,升/降/乱序三组输入冒烟测试,遍历必须升序</li>
+<li>任务 3 用同一种子生成随机操作序列,插入前先 find 去重;任务 4 洗牌生成 10<sup>4</sup> 个不重复键,结果累加输出防死代码消除</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,约 140 行,分四段)</div>
+<pre class="code">// lab12.cpp —— 跳表字典的实现与对比(第一段:任务1 跳表核心)
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;random&gt;
+#include &lt;map&gt;
+#include &lt;algorithm&gt;
+#include &lt;chrono&gt;
+using namespace std;
+using Clock = chrono::steady_clock;
+
+struct Node {
+    int key;
+    vector&lt;Node*&gt; next;
+    Node(int k, int lvl) : key(k), next(lvl + 1, nullptr) {}
+};
+
+class SkipList {                     // 任务 1:三操作 + 随机层数
+    Node* head_;
+    int level_ = 0;
+    mt19937 rng_{12345};             // 固定种子:可复现
+public:
+    SkipList(int maxLvl = 16) : head_(new Node(0, maxLvl)) {}
+    ~SkipList() {
+        Node* p = head_-&gt;next[0];
+        while (p) { Node* t = p; p = p-&gt;next[0]; delete t; }
+        delete head_;
+    }
+    int randomLevel() {              // 几何分布:每层 1/2 概率晋升
+        int lvl = 1;
+        while ((rng_() &amp; 1) &amp;&amp; lvl &lt; int(head_-&gt;next.size()) - 1) ++lvl;
+        return lvl;
+    }
+    bool find(int key) const {
+        Node* cur = head_;
+        for (int i = level_; i &gt;= 0; --i)
+            while (cur-&gt;next[i] &amp;&amp; cur-&gt;next[i]-&gt;key &lt; key)
+                cur = cur-&gt;next[i];
+        Node* x = cur-&gt;next[0];
+        return x != nullptr &amp;&amp; x-&gt;key == key;
+    }
+    void insert(int key) {
+        if (find(key)) return;       // 字典语义:键唯一
+        vector&lt;Node*&gt; update(head_-&gt;next.size());
+        Node* cur = head_;
+        for (int i = level_; i &gt;= 0; --i) {
+            while (cur-&gt;next[i] &amp;&amp; cur-&gt;next[i]-&gt;key &lt; key)
+                cur = cur-&gt;next[i];
+            update[i] = cur;
+        }
+        int lvl = randomLevel();
+        if (lvl &gt; level_) {
+            for (int i = level_ + 1; i &lt;= lvl; ++i) update[i] = head_;
+            level_ = lvl;
+        }
+        Node* x = new Node(key, lvl);
+        for (int i = 0; i &lt;= lvl; ++i) {
+            x-&gt;next[i] = update[i]-&gt;next[i];
+            update[i]-&gt;next[i] = x;
+        }
+    }</pre>
+
+<div class="code-title">lab12.cpp(第二段:删除、遍历 + 任务2 字典封装)</div>
+<pre class="code">    bool erase(int key) {
+        vector&lt;Node*&gt; update(head_-&gt;next.size());
+        Node* cur = head_;
+        for (int i = level_; i &gt;= 0; --i) {
+            while (cur-&gt;next[i] &amp;&amp; cur-&gt;next[i]-&gt;key &lt; key)
+                cur = cur-&gt;next[i];
+            update[i] = cur;
+        }
+        Node* x = cur-&gt;next[0];
+        if (!x || x-&gt;key != key) return false;
+        for (int i = 0; i &lt;= level_; ++i) {
+            if (update[i]-&gt;next[i] != x) break;
+            update[i]-&gt;next[i] = x-&gt;next[i];
+        }
+        delete x;
+        while (level_ &gt; 0 &amp;&amp; head_-&gt;next[level_] == nullptr) --level_;
+        return true;
+    }
+    vector&lt;int&gt; keys() const {
+        vector&lt;int&gt; v;
+        for (Node* p = head_-&gt;next[0]; p; p = p-&gt;next[0]) v.push_back(p-&gt;key);
+        return v;
+    }
+    size_t size() const { return keys().size(); }
+};
+
+class SkipDict {                 // 任务 2:有序字典接口
+    SkipList sl_;
+public:
+    void insert(int k)  { sl_.insert(k); }
+    bool find(int k)    { return sl_.find(k); }
+    bool erase(int k)   { return sl_.erase(k); }
+    vector&lt;int&gt; keys()  { return sl_.keys(); }
+    size_t size() const { return sl_.size(); }
+};</pre>
+
+<div class="code-title">lab12.cpp(第三段:任务3 一致性对照)</div>
+<pre class="code">int main() {
+    // 任务 3:与 std::map 对照,输出必须一致
+    cout &lt;&lt; "== 任务3:跳表字典 vs std::map 一致性 ==" &lt;&lt; endl;
+    SkipDict dict;
+    map&lt;int, int&gt; m;
+    mt19937 rng(12345);
+    uniform_int_distribution&lt;int&gt; dist(0, 99999);
+    for (int i = 0; i &lt; 20000; ++i) {
+        int k = dist(rng);
+        int op = i % 4;                 // 0/1 插,2 删,3 查
+        if (op &lt;= 1) {
+            if (!m.count(k)) dict.insert(k);
+            m[k] = k;
+        } else if (op == 2) {
+            dict.erase(k);
+            m.erase(k);
+        } else {
+            bool a = dict.find(k), b = m.count(k) &gt; 0;
+            if (a != b) { cout &lt;&lt; "不一致! key=" &lt;&lt; k &lt;&lt; endl; return 1; }
+        }
+    }
+    vector&lt;int&gt; dk = dict.keys(), mk;
+    for (auto&amp; p : m) mk.push_back(p.first);
+    cout &lt;&lt; "20000 次随机操作后:跳表 size=" &lt;&lt; dict.size()
+         &lt;&lt; ",map size=" &lt;&lt; m.size() &lt;&lt; endl;
+    cout &lt;&lt; "跳表前 10 键: ";
+    for (int i = 0; i &lt; 10; ++i) cout &lt;&lt; dk[i] &lt;&lt; ' ';
+    cout &lt;&lt; "\n按序遍历顺序一致: " &lt;&lt; (dk == mk ? "是" : "否") &lt;&lt; endl;</pre>
+
+<div class="code-title">lab12.cpp(第四段:任务4 计时 + 任务5 删除全部)</div>
+<pre class="code">    // 任务 4:10^4 随机键计时对比
+    const int N = 10000;
+    vector&lt;int&gt; ks(N);
+    for (int i = 0; i &lt; N; ++i) ks[i] = i;
+    shuffle(ks.begin(), ks.end(), rng);
+    SkipDict s2;
+    auto t0 = Clock::now();
+    for (int k : ks) s2.insert(k);
+    double slIns = chrono::duration&lt;double, milli&gt;(Clock::now() - t0).count();
+    map&lt;int, int&gt; m2;
+    t0 = Clock::now();
+    for (int k : ks) m2[k] = k;
+    double mIns = chrono::duration&lt;double, milli&gt;(Clock::now() - t0).count();
+    long long hits = 0;
+    t0 = Clock::now();
+    for (int k : ks) hits += s2.find(k);
+    double slFind = chrono::duration&lt;double, milli&gt;(Clock::now() - t0).count();
+    t0 = Clock::now();
+    for (int k : ks) hits += m2.count(k);
+    double mFind = chrono::duration&lt;double, milli&gt;(Clock::now() - t0).count();
+    cout &lt;&lt; "\n== 任务4:10^4 随机键计时 ==" &lt;&lt; endl;
+    cout &lt;&lt; "插入 " &lt;&lt; N &lt;&lt; " 键:跳表 " &lt;&lt; slIns &lt;&lt; " ms,map " &lt;&lt; mIns &lt;&lt; " ms" &lt;&lt; endl;
+    cout &lt;&lt; "查找 " &lt;&lt; N &lt;&lt; " 键:跳表 " &lt;&lt; slFind &lt;&lt; " ms,map " &lt;&lt; mFind &lt;&lt; " ms" &lt;&lt; endl;
+    cout &lt;&lt; "(命中数 " &lt;&lt; hits &lt;&lt; ",防止死代码消除)" &lt;&lt; endl;
+
+    // 任务 5:删除全部元素
+    for (int k : ks) s2.erase(k);
+    cout &lt;&lt; "\n== 任务5:删除全部后 ==" &lt;&lt; endl;
+    cout &lt;&lt; "跳表 size=" &lt;&lt; s2.size() &lt;&lt; ",为空=" &lt;&lt; (s2.size() == 0 ? "是" : "否")
+         &lt;&lt; ",find(0)=" &lt;&lt; s2.find(0) &lt;&lt; endl;
+    return 0;
+}</pre>
+<p>示例输出(真实运行,机器不同数值不同,量级关系一致):</p>
+<pre class="code">== 任务3:跳表字典 vs std::map 一致性 ==
+20000 次随机操作后:跳表 size=9293,map size=9293
+跳表前 10 键: 5 22 38 58 68 78 95 96 101 127
+按序遍历顺序一致: 是
+
+== 任务4:10^4 随机键计时 ==
+插入 10000 键:跳表 3.1292 ms,map 1.2555 ms
+查找 10000 键:跳表 1.188 ms,map 0.6599 ms
+(命中数 20000,防止死代码消除)
+
+== 任务5:删除全部后 ==
+跳表 size=0,为空=是,find(0)=0</pre>
+<p><b>设计说明:</b>① <code>update</code> 数组统一"下探路径",插入/删除共享骨架;② 插入前先 <code>find</code> 去重,与 map 键唯一语义对齐;③ 任务3 用同一随机操作序列同时驱动两者,任何一次查找不一致立即退出;④ 同一份键序列计时,两者同为 <i>O</i>(log <i>n</i>),map 常数更小;删除后回收空高层,size=0 验证删除路径正确。</p>
+</div>
+
+<hr class="thin">
+<p class="small">全书十二章到此结束:第1–2章打下递归与复杂度地基,第3–9章建起线性结构、树、散列、堆、排序、图的工具箱,第10–11章学会设计范式与摊还分析,本章补上最后一块拼图——平衡与概率。数据结构是算法工程师的母语,愿你在竞赛、系统设计或工程实践中带着这十二章的判断力走得更远。</p>

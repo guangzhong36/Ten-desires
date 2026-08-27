@@ -1,0 +1,46 @@
+# ---------- 任务 2/3:随机迷宫生成 ----------
+def gen_maze(w, h, seed=2024):
+    uf = UnionFind(w * h)
+    right = [[True] * w for _ in range(h)]   # 右墙
+    down = [[True] * w for _ in range(h)]    # 下墙
+    walls = []
+    for r in range(h):
+        for c in range(w):
+            if c + 1 < w:
+                walls.append((r, c, r, c + 1))   # 右墙,连接 (r,c) 与 (r,c+1)
+            if r + 1 < h:
+                walls.append((r, c, r + 1, c))   # 下墙,连接 (r,c) 与 (r+1,c)
+    random.seed(seed)
+    random.shuffle(walls)
+    record = []                             # 任务 3:连通分量变化采样
+    key = [len(walls) // 4, len(walls) // 2, len(walls) * 3 // 4]
+    ki = 0
+    for idx, (r1, c1, r2, c2) in enumerate(walls, 1):
+        if uf.union(r1 * w + c1, r2 * w + c2):   # 两端不连通才拆墙
+            if c1 == c2:
+                down[r1][c1] = False
+            else:
+                right[r1][c1] = False
+        if ki < 3 and idx >= key[ki]:
+            record.append((idx, uf.count))
+            ki += 1
+    record.append((len(walls), uf.count))   # 结束时必为 1
+    return right, down, record
+
+def render(w, h, right, down):
+    """把迷宫画成 ASCII:每格 2 字符宽,"+" 是柱子,"--" 是横墙,"|" 是竖墙。"""
+    lines = ["+" + "--+" * w]               # 顶部横线(永不拆)
+    for r in range(h):
+        row = "|"                           # 最左竖墙(永不拆)
+        for c in range(w):
+            row += "  " + ("|" if right[r][c] else " ")
+        lines.append(row)
+        if r == h - 1:
+            lines.append("+" + "--+" * w)   # 底部横线(永不拆)
+        else:
+            line = "+"
+            for c in range(w):
+                line += "--" if down[r][c] else "  "
+                line += "+"
+            lines.append(line)
+    return "\n".join(lines)

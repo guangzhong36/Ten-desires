@@ -1,0 +1,50 @@
+# ---------- 任务 1:快速排序(§7.5,三数中值 + 小区间插入) ----------
+def median3(a, left, right):
+    center = (left + right) // 2
+    if lt(a[center], a[left]):
+        a[left], a[center] = a[center], a[left]
+    if lt(a[right], a[left]):
+        a[left], a[right] = a[right], a[left]
+    if lt(a[right], a[center]):
+        a[center], a[right] = a[right], a[center]
+    a[center], a[right - 1] = a[right - 1], a[center]  # 枢轴藏到 right-1
+    return a[right - 1]
+
+
+def quick_sort(a, left=0, right=None):
+    if right is None:
+        right = len(a) - 1
+    if left + CUTOFF <= right:
+        pivot = median3(a, left, right)
+        i, j = left, right - 1
+        while True:
+            i += 1
+            while lt(a[i], pivot):           # 哨兵 a[left]<=pivot 保证能停
+                i += 1
+            j -= 1
+            while lt(pivot, a[j]):           # a[right-1]==pivot 保证能停
+                j -= 1
+            if i < j:
+                a[i], a[j] = a[j], a[i]
+            else:
+                break
+        a[i], a[right - 1] = a[right - 1], a[i]      # 枢轴归位
+        quick_sort(a, left, i - 1)
+        quick_sort(a, i + 1, right)
+    else:
+        insertion_sort(a, left, right)       # 小区间优化(§7.1 预告)
+
+
+# ---------- 任务 2:三种数据分布 ----------
+def make_data(n, kind):
+    if kind == "随机":
+        a = list(range(n))
+        random.shuffle(a)
+    elif kind == "近有序":
+        a = list(range(n))
+        for _ in range(20):                  # 固定 20 次随机交换:逆序对 O(n)
+            x, y = random.randrange(n), random.randrange(n)
+            a[x], a[y] = a[y], a[x]
+    else:                                    # 逆序
+        a = list(range(n, 0, -1))
+    return a

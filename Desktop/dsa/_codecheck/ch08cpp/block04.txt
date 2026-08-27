@@ -1,0 +1,19 @@
+// 递归版:返回根,回溯时把沿途结点挂到根
+int findRec(int x) {
+    if (parent[x] != x)
+        parent[x] = findRec(parent[x]);  // 先递归到根,再逐层挂
+    return parent[x];
+}
+
+// 迭代版(两趟):先找根,再沿原路压缩
+int findIter(int x) {
+    int root = x;
+    while (parent[root] != root)
+        root = parent[root];             // 第一趟:上溯找根
+    while (parent[x] != x) {             // 第二趟:沿途结点挂到根
+        int nxt = parent[x];
+        parent[x] = root;
+        x = nxt;
+    }
+    return root;
+}

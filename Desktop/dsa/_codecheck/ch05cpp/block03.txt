@@ -1,0 +1,8 @@
+// C++ 版:用 std::string 与范围 for,逻辑与 C 完全对应
+int hashStr(const string& s, int M) {
+    unsigned long long h = 0;        // 64 位累加,几乎不可能溢出
+    for (char c : s)                 // 逐个字符取码,累乘累加
+        h = h * 37 + (unsigned char)c;
+    return int(h % M);               // 最后取一次模,结果在 [0, M-1]
+}
+// 用法示例:hashStr("hello", 101) 返回 0..100 之间的整数

@@ -1,0 +1,752 @@
+<title>第4章 树</title>
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第4章 树</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握树的核心术语:<span class="term">根</span>、<span class="term">父结点</span>、<span class="term">子结点</span>、<span class="term">兄弟</span>、<span class="term">叶</span>、<span class="term">深度</span>、<span class="term">高度</span>、<span class="term">路径</span></li>
+<li>完成从 C 的 <code>first_child</code>+<code>next_sibling</code> 到 C++ <code>vector</code> 子结点容器的迁移</li>
+<li>掌握<span class="term">前序/中序/后序/层序遍历</span>:递归版、队列版、显式栈版都能写出</li>
+<li>能用栈从后缀表达式构建<span class="term">表达式树</span>并用中序恢复中缀,与第3章闭环</li>
+<li>能完整实现<span class="term">BST</span> 的 contains/findMin/insert/remove 与 AVL 四种旋转,并用 <code>unique_ptr</code> 管理内存</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>树是"有分支的链表":链表只能排成一条线,树允许一个结点有多个后继,信息分层组织。家族谱、文件目录、语法树都是树。第3章解决"一串数据",本章解决"有层次关系的数据"。</p>
+<p>C 里一般树靠双指针 firstChild + nextSibling 串起任意多个子结点,通用但笨拙。C++ 复用第3章的 <code>vector</code>:<span class="hl">子结点放进容器,遍历就是一句范围 for</span>,销毁交给 RAII。</p>
+<p>本章终点是查找:二分查找 <i>O</i>(log <i>n</i>),但有序数组插入要搬移元素。BST 把查找、插入、删除同时做到平均 <i>O</i>(log <i>n</i>);AVL 再把"平均"升级为"保证"。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>树高递归式:<code>height(空) = 0</code>,<code>height(v) = 1 + max(height(v.left), height(v.right))</code>;对数直觉(每次减半 → log <i>n</i>)。</p>
+<p><b>C 语言前置:</b><code>struct</code> 与指针、<code>malloc</code>/<code>free</code>、递归、<code>-&gt;</code> 访问成员。</p>
+<p><b>依赖的前面章节:</b>第1章递归(遍历、高度、销毁)、第3章栈与队列(层序用队列,建表达式树用栈;中缀转后缀是 §4.3 的输入)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>阶段1(1 小时):</b>§4.1–§4.2 建立术语,上机核对四种遍历输出</li>
+<li><b>阶段2(1 小时):</b>§4.3 表达式树,与中缀转后缀接成闭环</li>
+<li><b>阶段3(1.5 小时):</b>§4.4 手写 BST,默写删除三情形</li>
+<li><b>阶段4(1 小时):</b>§4.5 画图验证 AVL 旋转,通读 §4.6–§4.7</li>
+<li><b>阶段5(实验 1 小时):</b>完成章末实验,复习删除三情形与旋转判定</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§4.1 树的概念:术语与一般树的实现(根/父/子/兄弟/叶/深度/高度/路径、first_child+next_sibling → vector、一般树 vs 二叉树)</li>
+<li>§4.2 二叉树与四种遍历(递归三序、层序用队列、显式栈模拟递归、高度/结点数/叶数)</li>
+<li>§4.3 表达式树(后缀构建、中序恢复中缀)</li>
+<li>§4.4 二叉查找树 BST(查找/插入/删除、删除三情形、手写 vs set)</li>
+<li>§4.5 AVL 树(平衡因子、LL/RR/LR/RL 旋转、插入后重平衡)</li>
+<li>§4.6 伸展树与 B 树(摊还与局部性、磁盘 IO 与浅而宽)</li>
+<li>§4.7 工程与实践(unique_ptr 内存、std::set/map 对照、调试)</li>
+</ul></div>
+
+<h2>§4.1 树的概念:术语与一般树的实现</h2>
+
+<h3>4.1.1 术语:根、父结点、子结点、兄弟、叶、深度、高度、路径</h3>
+<p>树的递归定义:树是结点的集合——要么是空集,要么由一个<span class="term">根</span>结点加上若干棵互不相交的<span class="term">子树</span>构成,每棵子树本身也是树。这决定了本章算法的递归写法。</p>
+<div class="code-title">图 4-1 一般树的术语</div>
+<pre class="code">树的递归定义:树 = 根 + 互不相交的子树。
+            树根(root)               ← 唯一没有父结点的结点
+          /        \
+    父结点A          父结点B          ← A、B 互为兄弟
+    /      \              \
+子结点C    子结点D      子结点E      ← C、D 的父结点都是 A
+  /                  /
+叶F                叶G              ← 叶:没有子结点的结点</pre>
+<p><span class="term">深度</span>从根往下数(根 0),<span class="term">高度</span>从叶往上数(叶 0),树高 = 根的高度;<span class="term">路径</span>长度 = 边数。<span class="hl">n 个结点的树有 n−1 条边</span>。方向相反,勿混淆。</p>
+
+<div class="box box-tip"><div class="box-title">记号说明(树高递归式,全书沿用)</div>
+<p><code>height(空) = 0</code>,<code>height(v) = 1 + max(height(v.left), height(v.right))</code>——它同时是定义、递推式和代码,§4.2 的求高函数就是逐字翻译。</p>
+</div>
+
+<h3>4.1.2 一般树的实现:从 first_child+next_sibling 到 vector 子结点容器</h3>
+<p>C 靠 <code>firstChild</code>+<code>nextSibling</code> 表达任意多的子结点;C++ 用 <code>vector</code> 保存——第3章 vector 思想在树上的延续:</p>
+<table class="cmp">
+<tr><th>C 的写法(first_child + next_sibling)</th><th>C++ 的写法(vector 子结点容器)</th></tr>
+<tr><td><code>struct TreeNode { int val; struct TreeNode *firstChild, *nextSibling; };</code></td><td><code>struct TreeNode { int val; vector&lt;TreeNode*&gt; children; };</code></td></tr>
+<tr><td>遍历子结点:沿 nextSibling 链 while 循环</td><td>遍历子结点:范围 for 一句</td></tr>
+<tr><td>访问第 k 个子结点要数 k 次指针</td><td><code>children[k]</code> 直接下标访问</td></tr>
+<tr><td>插入子结点自己维护链接顺序</td><td><code>children.push_back(c)</code> 一行</td></tr>
+<tr><td>忘记 free 子树 = 泄漏</td><td>容器自动析构(结点对象仍需管理,见 §4.7)</td></tr>
+</table>
+
+<div class="code-title">示例 4-1 一般树结点:vector 子结点容器</div>
+<pre class="code">struct TreeNode {
+    int val;
+    vector&lt;TreeNode*&gt; children;         // 子结点容器
+    explicit TreeNode(int v) : val(v) {}
+};
+
+// 对照 C 的 nextSibling 链,范围 for 一句遍历
+void printChildren(TreeNode* n) {
+    for (TreeNode* c : n-&gt;children)
+        cout &lt;&lt; c-&gt;val &lt;&lt; ' ';
+}</pre>
+
+<h3>4.1.3 一般树 vs 二叉树</h3>
+<p><span class="term">二叉树</span>是"每个结点至多两个子结点,且区分左右"的树——只有一个子结点也要说清在左在右。<span class="hl">BST、表达式树、堆(第6章)都依赖"左/右"语义</span>。一般树与二叉树可互相转换:"长子变左子、兄弟变右子"正是 C 的 first_child+next_sibling。</p>
+
+<h2>§4.2 二叉树与四种遍历</h2>
+
+<h3>4.2.1 二叉树的定义与递归三序遍历</h3>
+<p>二叉树要么为空,要么由根 + 左子树 + 右子树构成——直接翻译成结点类:</p>
+<div class="code-title">示例 4-2 二叉树结点与前/中/后序递归遍历</div>
+<pre class="code">struct BTNode {
+    int val;
+    BTNode* left;
+    BTNode* right;
+    BTNode(int v, BTNode* l = nullptr, BTNode* r = nullptr)
+        : val(v), left(l), right(r) {}
+};
+void preorder(BTNode* n) {         // 前序:根 → 左 → 右
+    if (n == nullptr) return;
+    cout &lt;&lt; n-&gt;val &lt;&lt; ' ';
+    preorder(n-&gt;left);
+    preorder(n-&gt;right);
+}
+void inorder(BTNode* n) {          // 中序:左 → 根 → 右
+    if (n == nullptr) return;
+    inorder(n-&gt;left);
+    cout &lt;&lt; n-&gt;val &lt;&lt; ' ';
+    inorder(n-&gt;right);
+}
+void postorder(BTNode* n) {        // 后序:左 → 右 → 根
+    if (n == nullptr) return;
+    postorder(n-&gt;left);
+    postorder(n-&gt;right);
+    cout &lt;&lt; n-&gt;val &lt;&lt; ' ';
+}</pre>
+<p>三个函数唯一区别是 <code>cout</code> 在两次递归调用的前、中、后——遍历的全部秘密。</p>
+
+<div class="box box-example"><div class="box-title">例题 4-1 手走一棵二叉树的三种遍历</div>
+<pre class="code">一棵 BST 形状的二叉树(内部结点 7/3/9,叶 1/6/11):
+
+                7
+              /   \
+             3     9
+            / \     \
+           1   5    11
+                 \
+                  6</pre>
+<p>前序:7 3 1 5 6 9 11;中序:1 3 5 6 7 9 11;后序:1 6 5 3 11 9 7。自查:中序恰好升序,因为它是 BST(§4.4)。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:把"访问"与"递归调用"的顺序搞混</div>
+<p>打印语句在两次递归之间的位置决定遍历类型——三序唯一的区别就是这行 <code>cout</code> 放哪。先用最小树手推一遍再对照。</p>
+</div>
+
+<h3>4.2.2 层序遍历(用队列,呼应第3章)</h3>
+<p><span class="term">层序遍历</span>按"从上到下、每层从左到右"访问。递归天然深入、做不到逐层横推,必须用第3章的队列:根先入队,出队访问后左右子结点再入队。</p>
+<div class="code-title">示例 4-3 层序遍历:std::queue</div>
+<pre class="code">#include &lt;queue&gt;
+void levelOrder(BTNode* root) {          // 层序:先进先出
+    queue&lt;BTNode*&gt; q;
+    q.push(root);
+    while (!q.empty()) {
+        BTNode* n = q.front();
+        q.pop();
+        if (n == nullptr) continue;
+        cout &lt;&lt; n-&gt;val &lt;&lt; ' ';
+        q.push(n-&gt;left);
+        q.push(n-&gt;right);
+    }
+}</pre>
+
+<h3>4.2.3 显式栈模拟递归(C++ 完整版)</h3>
+<p>任何递归都能改写成"显式栈 + 循环"(第3章)。系统栈压"返回地址 + 局部变量",显式栈压"待处理的结点",不受栈深度限制:</p>
+<div class="code-title">示例 4-4 迭代中序遍历:显式栈</div>
+<pre class="code">void inorderIter(BTNode* root) {     // 显式栈模拟递归中序
+    stack&lt;BTNode*&gt; st;
+    BTNode* cur = root;
+    while (cur != nullptr || !st.empty()) {
+        while (cur != nullptr) {     // 1. 沿左链一路压栈
+            st.push(cur);
+            cur = cur-&gt;left;
+        }
+        cur = st.top();              // 2. 出栈
+        st.pop();
+        cout &lt;&lt; cur-&gt;val &lt;&lt; ' ';     // 3. 访问发生在出栈时
+        cur = cur-&gt;right;            // 4. 转向右子树
+    }
+}</pre>
+<p>递归中序也是"先到最左、打印、再进右子树"——迭代版只是自己压栈。</p>
+
+<h3>4.2.4 遍历应用:求高度、结点数、叶数</h3>
+<p>三个经典问题都是"后序思想":先递归算完左右子树,再组合出答案。基准情形都是 <code>n == nullptr</code> 返回 0,空树基准让"单个叶结点"自然成立;<span class="hl">写树递归先问:空结点返回什么?</span></p>
+<div class="code-title">示例 4-5 树高、结点数、叶数</div>
+<pre class="code">int height(BTNode* n) {                     // 空树高度为 0
+    if (n == nullptr) return 0;
+    return 1 + max(height(n-&gt;left), height(n-&gt;right));
+}
+int countNodes(BTNode* n) {                 // 结点数
+    if (n == nullptr) return 0;
+    return 1 + countNodes(n-&gt;left) + countNodes(n-&gt;right);
+}
+int countLeaves(BTNode* n) {                // 叶:左右都为空
+    if (n == nullptr) return 0;
+    if (n-&gt;left == nullptr &amp;&amp; n-&gt;right == nullptr) return 1;
+    return countLeaves(n-&gt;left) + countLeaves(n-&gt;right);
+}</pre>
+
+<h2>§4.3 表达式树</h2>
+
+<h3>4.3.1 表达式树的结构</h3>
+<p><span class="term">表达式树</span>是编译器处理算术表达式的内部表示:<span class="hl">叶结点是操作数,内部结点是运算符</span>,左右子树就是两个操作数——后缀式 <code>6 5 2 3 + * +</code> 对应:</p>
+<div class="code-title">图 4-2 后缀式 6 5 2 3 + * + 的表达式树</div>
+<pre class="code">表达式树:叶是操作数,内部是运算符。
+
+            +                 ← 根:最后出现的运算符
+          /   \
+         6     *              ← 中序恢复:(6 + (5 * (2 + 3)))
+             /   \
+            5     +
+                /   \
+               2     3        ← 叶:操作数</pre>
+
+<h3>4.3.2 由后缀表达式构建(用栈,衔接第3章)</h3>
+<p>构建与第3章后缀求值几乎同构:遇数字建叶结点入栈;遇运算符弹出两棵子树——<b>先弹的是右操作数</b>——合并压回。区别只在栈里存数值还是树结点:</p>
+<div class="code-title">示例 4-6 由后缀表达式构建表达式树</div>
+<pre class="code">struct ExprNode {                       // 表达式树结点
+    string data;                        // 数字或运算符
+    ExprNode* left;
+    ExprNode* right;
+    ExprNode(const string&amp; d, ExprNode* l = nullptr, ExprNode* r = nullptr)
+        : data(d), left(l), right(r) {}
+};
+ExprNode* buildExprTree(const vector&lt;string&gt;&amp; post) {
+    stack&lt;ExprNode*&gt; st;
+    for (const string&amp; t : post) {
+        if (isdigit(t[0]))
+            st.push(new ExprNode(t));   // 数字:建叶结点入栈
+        else {
+            ExprNode* r = st.top(); st.pop();  // 先弹的是右操作数
+            ExprNode* l = st.top(); st.pop();
+            st.push(new ExprNode(t, l, r));    // 合并成父结点压回
+        }
+    }
+    return st.top();                    // 栈顶即根
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:左右子树接反</div>
+<p>弹出时<b>先弹的是右操作数</b>。把 <code>r</code> 接成左子树,<code>6 5 -</code> 就会算成 5−6。写完用 <code>printInfix</code> 核对带减号的结果。</p>
+</div>
+
+<h3>4.3.3 中序遍历恢复中缀表达式</h3>
+<p>三序遍历与三种表达式记法一一对应:前序 = 前缀式,中序 = 中缀式,后序 = 后缀式。中序遍历表达式树输出的正是人读的中缀;为优先级自洽,给每个运算符子树加括号:</p>
+<div class="code-title">示例 4-7 中序恢复中缀(带括号)</div>
+<pre class="code">void printInfix(ExprNode* n) {          // 中序恢复中缀
+    if (n == nullptr) return;
+    bool isOp = !isdigit(n-&gt;data[0]);
+    if (isOp) cout &lt;&lt; '(';              // 运算符子树加括号
+    printInfix(n-&gt;left);
+    cout &lt;&lt; n-&gt;data;
+    printInfix(n-&gt;right);
+    if (isOp) cout &lt;&lt; ')';
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:三序遍历 × 三种表达式 = 一个闭环</div>
+<p>第3章"中缀转后缀"把 <code>(1+2)*3</code> 变 <code>12+3*</code>;本章"后缀建树 + 中序恢复"把它变回 <code>((1+2)*3)</code>。<span class="hl">三种记法、三种遍历是同一信息的三副面孔</span>。</p>
+</div>
+
+<h2>§4.4 二叉查找树(BST)</h2>
+
+<h3>4.4.1 BST 性质与 contains/findMin/findMax</h3>
+<p><span class="term">二叉查找树(BST)</span>性质:<span class="hl">每个结点的左子树所有值都小于它,右子树所有值都大于它</span>。推论:中序遍历输出严格升序。查找 = 比较后走左或右,一路下行丢掉一半子树——二分查找的树形版,插入删除不用搬移元素:</p>
+<div class="code-title">示例 4-8 BST:contains/findMin/findMax</div>
+<pre class="code">class BST {
+    struct Node {
+        int val;
+        Node* left;
+        Node* right;
+        Node(int v, Node* l = nullptr, Node* r = nullptr)
+            : val(v), left(l), right(r) {}
+    };
+    Node* root_ = nullptr;
+public:
+    bool contains(int x) const {         // 查找:沿一条路径下行
+        Node* n = root_;
+        while (n) {
+            if (x == n-&gt;val) return true;
+            n = (x &lt; n-&gt;val) ? n-&gt;left : n-&gt;right;
+        }
+        return false;
+    }
+    int findMin() const {                // 最小:一路向左
+        Node* n = root_;
+        while (n-&gt;left) n = n-&gt;left;
+        return n-&gt;val;
+    }
+    int findMax() const {                // 最大:一路向右
+        Node* n = root_;
+        while (n-&gt;right) n = n-&gt;right;
+        return n-&gt;val;
+    }
+};</pre>
+
+<h3>4.4.2 插入 insert</h3>
+<p>C 的做法是"遍历到空位,改父结点指针";C++ 更稳的是<b>递归返回"新根"</b>:指针修改收拢在 <code>return</code> 里,父结点用返回值接住:</p>
+<div class="code-title">示例 4-9 BST 插入:递归返回新根</div>
+<pre class="code">    void insert(int x) { root_ = insert(root_, x); }
+private:
+    static Node* insert(Node* n, int x) {
+        if (n == nullptr) return new Node(x);   // 空位:建新结点
+        if (x &lt; n-&gt;val)      n-&gt;left  = insert(n-&gt;left, x);
+        else if (x &gt; n-&gt;val) n-&gt;right = insert(n-&gt;right, x);
+        return n;                               // 相等:忽略(不允许重复)
+    }</pre>
+
+<h3>4.4.3 删除 remove:三种情形</h3>
+<p>删除三情形:① <b>叶</b>:直接删;② <b>单子</b>:让唯一子结点顶替;③ <b>双子</b>:<span class="hl">用右子树的最小结点顶替被删结点,再删掉它</span>——它大于左子树全部、小于右子树其余,且无左子树:</p>
+<div class="code-title">示例 4-10 BST 删除:三种情形</div>
+<pre class="code">    static Node* findMinNode(Node* n) {      // 子树中的最小结点
+        while (n-&gt;left != nullptr) n = n-&gt;left;
+        return n;
+    }
+    static Node* remove(Node* n, int x) {
+        if (n == nullptr) return nullptr;
+        if (x &lt; n-&gt;val)      n-&gt;left  = remove(n-&gt;left, x);
+        else if (x &gt; n-&gt;val) n-&gt;right = remove(n-&gt;right, x);
+        else {                                // 找到 x
+            if (n-&gt;left == nullptr)  return n-&gt;right;  // 情形1+2a
+            if (n-&gt;right == nullptr) return n-&gt;left;   // 情形2b
+            Node* m = findMinNode(n-&gt;right);          // 情形3:双子
+            n-&gt;val = m-&gt;val;                         // 复制数据顶替
+            n-&gt;right = remove(n-&gt;right, m-&gt;val);     // 删掉最小结点
+        }
+        return n;
+    }</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:双子删除的两处经典翻车</div>
+<p>① <b>漏接右子树:</b>只写 <code>n-&gt;val = m-&gt;val</code> 就 <code>return n</code>,<code>m</code> 还挂在右子树里——重复且泄漏,必须再递归删除 <code>m</code>。② <b>删错目标:</b>写成 <code>n-&gt;right = remove(n-&gt;right, x)</code> 必扑空。<span class="hl">先复制,再用 m 删右子树</span>。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:删除后悬垂指针</div>
+<p>调用方若写 <code>Node* p = root_; root_ = remove(root_, x); p-&gt;val = ...;</code>——<code>p</code> 可能已被删除,访问即未定义行为。<span class="hl">删除/修改容器后,旧指针一律视为失效</span>。</p>
+</div>
+
+<h3>4.4.4 复杂度直觉与"手写 vs 标准库"</h3>
+<p>BST 每个操作沿一条路径下行,路径长度 = 树高。随机插入时树高约 1.39 log<sub>2</sub> <i>n</i>,操作平均 <i>O</i>(log <i>n</i>);数据<b>恰好有序</b>插入时树退化成链,查找变线性扫描。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 5:把"平均"当"保证"(退化链)</div>
+<p>给 BST 喂升序序列,它长成一条只有右孩子的链,查 1 要 O(n)。这不是理论病:自增主键、日志时间戳等"按序到达"的数据都会触发。解法:① 打乱插入顺序;② 用自平衡结构——AVL(§4.5)、红黑树(<code>std::set</code> 底层,第12章)——把树高<span class="hl">保证</span>在 <i>O</i>(log <i>n</i>)。</p>
+</div>
+
+<p>工程上需要"有序集合"时直接用标准库,手写 BST 只为理解原理:</p>
+<div class="code-title">示例 4-11 手写 BST 查找 vs std::set(并排)</div>
+<pre class="code">// 手写 BST:平均 O(log n),最坏 O(n)
+BST myTree;
+myTree.insert(15); myTree.insert(6); myTree.insert(18);
+bool a = myTree.contains(6);             // true
+
+// 标准库:std::set 是红黑树(自平衡 BST),同样有序
+set&lt;int&gt; st = {15, 6, 18};
+bool b = st.count(6);                    // true,O(log n) 且有保证
+auto it = st.find(6);                    // 找不到时等于 st.end()</pre>
+<table class="cmp">
+<tr><th>C 的手写查找树</th><th>C++ 的标准库 set/map</th></tr>
+<tr><td>手写 Node 结构 + 递归插入/删除,还要管内存</td><td><code>set&lt;int&gt; / map&lt;K,V&gt;</code> 直接使用,自动管理内存</td></tr>
+<tr><td>有序插入退化成链,最坏 O(n)</td><td>红黑树保证 O(log n),旋转细节全封装</td></tr>
+<tr><td>重复键约定要自己定</td><td><code>count()</code> 返回 0/1,语义明确</td></tr>
+</table>
+
+<h2>§4.5 AVL 树</h2>
+
+<h3>4.5.1 平衡因子与失衡类型</h3>
+<p><span class="term">AVL 树</span>是第一种自平衡 BST:<span class="hl">每个结点的左右子树高度差至多 1</span>。<span class="term">平衡因子</span> bf(v) = height(v.left) − height(v.right),合法值只有 −1、0、+1;插入可能把某祖先推到 ±2,用<b>旋转</b>扳回,四种,看失衡结点的哪个孩子更高:</p>
+<div class="code-title">图 4-3 失衡判定:四种类型</div>
+<pre class="code">bf(v) = height(v.left) - height(v.right),合法取值只有 -1/0/1。
+
+            k2                 ← bf = +2,失衡!
+          /   \
+        k1     Z
+        / \
+      A   k3                   ← k1 的右子树更高 → LR 型
+         /  \
+        B    C
+
+LL:bf=+2 且左重;RR:bf=-2 且右重;LR:bf=+2 且右重;RL:bf=-2 且左重。</pre>
+<p>记忆法:LL 是"左左",失衡结点和高孩子都在左,一次右旋;LR 是"左右",先下后上。</p>
+
+<h3>4.5.2 四种旋转的实现</h3>
+<div class="code-title">示例 4-12 AVL 四种旋转</div>
+<pre class="code">int h(Node* n) { return n ? n-&gt;height : 0; }
+
+// LL:右旋——左孩子提为根
+Node* rotateWithLeftChild(Node* k2) {
+    Node* k1 = k2-&gt;left;
+    k2-&gt;left = k1-&gt;right;
+    k1-&gt;right = k2;
+    k2-&gt;height = 1 + max(h(k2-&gt;left), h(k2-&gt;right));
+    k1-&gt;height = 1 + max(h(k1-&gt;left), h(k1-&gt;right));
+    return k1;
+}
+// RR:左旋,镜像对称
+Node* rotateWithRightChild(Node* k1) {
+    Node* k2 = k1-&gt;right;
+    k1-&gt;right = k2-&gt;left;
+    k2-&gt;left = k1;
+    k1-&gt;height = 1 + max(h(k1-&gt;left), h(k1-&gt;right));
+    k2-&gt;height = 1 + max(h(k2-&gt;left), h(k2-&gt;right));
+    return k2;
+}
+// LR:先左旋左孩子,再右旋自己
+Node* doubleRotateLeftRight(Node* k3) {
+    k3-&gt;left = rotateWithRightChild(k3-&gt;left);
+    return rotateWithLeftChild(k3);
+}
+// RL:先右旋右孩子,再左旋自己
+Node* doubleRotateRightLeft(Node* k1) {
+    k1-&gt;right = rotateWithLeftChild(k1-&gt;right);
+    return rotateWithRightChild(k1);
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:旋转的口诀</div>
+<p>单旋转(LL/RR)是"把高孩子提上来当根,自己让位,多余的一支过继"——只改三个指针,<i>O</i>(1);双旋转(LR/RL)是"先捋直再旋转"。<b>旋转不破坏 BST 的大小序</b>——中序遍历结果不变。</p>
+</div>
+
+<h3>4.5.3 插入后的重平衡与复杂度对照</h3>
+<p>AVL 插入 = BST 插入 + 沿路径回溯:每层更新高度、检查平衡因子。<span class="hl">插入只改变一条路径,第一个失衡点旋转一次即恢复平衡</span>:</p>
+<div class="code-title">示例 4-13 AVL 插入:更新高度 + 失衡判定</div>
+<pre class="code">Node* insert(Node* n, int x) {
+    if (n == nullptr) return new Node(x);
+    if (x &lt; n-&gt;val)      n-&gt;left  = insert(n-&gt;left, x);
+    else if (x &gt; n-&gt;val) n-&gt;right = insert(n-&gt;right, x);
+    n-&gt;height = 1 + max(h(n-&gt;left), h(n-&gt;right)); // 更新高度
+    int bf = h(n-&gt;left) - h(n-&gt;right);            // 平衡因子
+    if (bf &gt; 1) {                  // 左子树高:LL 或 LR
+        if (x &lt; n-&gt;left-&gt;val) return rotateWithLeftChild(n);    // LL
+        return doubleRotateLeftRight(n);                        // LR
+    }
+    if (bf &lt; -1) {                 // 右子树高:RR 或 RL
+        if (x &gt; n-&gt;right-&gt;val) return rotateWithRightChild(n);  // RR
+        return doubleRotateRightLeft(n);                        // RL
+    }
+    return n;                      // 本结点仍平衡
+}</pre>
+<p>判定 LL/LR:看 x 落在失衡结点左孩子的哪一侧,<code>x &lt; n-&gt;left-&gt;val</code> 是 LL,否则 LR。</p>
+
+<p><b>例题 4-2(手走旋转):</b>空树依次插入 3、2、1:结点 3 的 bf=2 且落在左孩子 2 的左子树 → LL,右旋:2 提为根,3 变其右孩子;再插 4、5,结点 3 的 bf=−2 → RR。最终:根 2,左 1,右 4(左 3 右 5)。</p>
+
+<table class="cmp">
+<tr><th>朴素 BST</th><th>AVL 树</th></tr>
+<tr><td>查找/插入/删除平均 <i>O</i>(log <i>n</i>)</td><td>查找/插入/删除<b>保证</b> <i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>有序输入退化成链,最坏 <i>O</i>(<i>n</i>)</td><td>任意输入序列,树高 ≤ 1.44 log<sub>2</sub> <i>n</i></td></tr>
+<tr><td>实现简单,无额外空间</td><td>每个结点多存一个高度(或平衡因子)</td></tr>
+<tr><td>插入/删除后不检查平衡</td><td>插入/删除后沿路径旋转,常数更大</td></tr>
+</table>
+
+<h2>§4.6 伸展树与 B 树</h2>
+
+<h3>4.6.1 伸展树:摊还与访问局部性</h3>
+<p><span class="term">伸展树(splay tree)</span>的动机是<span class="hl">访问局部性:刚被访问的数据往往很快再次被访问</span>(缓存、词频查询、符号表)。AVL 用平衡因子保证每次 O(log n),代价是代码复杂;伸展树不要平衡因子,只约定:每次访问后把该结点"伸展"到根。</p>
+<p>结论(证明在第11章摊还分析):单次最坏 O(n),连续 m 次操作总代价 O(m log n),<span class="hl">摊还 O(log n)</span>;反复访问的结点总停在根附近,但单次最坏延迟无法保证。</p>
+
+<h3>4.6.2 B 树:磁盘 IO 与"浅而宽"</h3>
+<p><span class="term">B 树</span>的动机是磁盘:磁盘随机读约 10 ms,内存访问是纳秒级,差约 10 万倍,数据库索引里<span class="hl">决定性能的不是比较次数,而是下潜层数(= IO 次数)</span>。BST 树高约 log<sub>2</sub> n,10<sup>7</sup> 条记录约 23 层;B 树是"M 路分支",树高降到 log<sub>M</sub> <i>n</i>,取 M=1000 只需 3 层——<span class="hl">"浅而宽"把 IO 从 20 多压到 3</span>。</p>
+<p>结论:B 树查找/插入/删除都是 O(log<sub>M</sub> <i>n</i>);分裂/合并细节不展开,工程上按"一个结点装满一个磁盘块"定 M。SQLite 的 B+ 树等索引都是它的工业后代。</p>
+
+<h2>§4.7 工程与实践</h2>
+
+<h3>4.7.1 用 unique_ptr 建树,告别手动 delete</h3>
+<p>裸指针树有<b>泄漏</b>、<b>双删</b>、<b>深树爆栈</b>三个问题。<code>unique_ptr</code> 一次解决:结点"拥有"子树,结点销毁时子树自动递归销毁:</p>
+<div class="code-title">示例 4-14 unique_ptr 树:析构自动递归</div>
+<pre class="code">#include &lt;memory&gt;
+struct BSTNode {
+    int val;
+    unique_ptr&lt;BSTNode&gt; left, right;   // 结点拥有子树
+    explicit BSTNode(int v) : val(v) {}
+};
+unique_ptr&lt;BSTNode&gt; insert(unique_ptr&lt;BSTNode&gt; n, int x) {
+    if (!n) return make_unique&lt;BSTNode&gt;(x);    // 空位:构造新结点
+    if (x &lt; n-&gt;val)      n-&gt;left  = insert(move(n-&gt;left), x);
+    else if (x &gt; n-&gt;val) n-&gt;right = insert(move(n-&gt;right), x);
+    return n;
+}
+// 根离开作用域:unique_ptr 依次销毁左右子树,递归自动完成</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 6:裸指针递归析构的坑</div>
+<p>手写 <code>~BST() { delete root_; }</code> 时析构是递归的:退化链递归 n 层直接撞栈上限;共享结点会 double free。用 <code>unique_ptr</code> 后:① 深树销毁仍可能爆栈,可改显式栈迭代销毁(§4.2.3);② 禁止拷贝,共享树换 <code>shared_ptr</code>。<span class="hl">先想清楚"谁拥有这个结点",再决定用什么指针</span>。</p>
+</div>
+
+<table class="cmp">
+<tr><th>C 的 malloc/free 树</th><th>C++ 的 unique_ptr 树</th></tr>
+<tr><td><code>node = malloc(...)</code>,用完 <code>free</code>,漏一次就泄漏</td><td><code>make_unique&lt;Node&gt;(...)</code>,离开作用域自动释放</td></tr>
+<tr><td>销毁整树要手写递归 delete,深树爆栈、共享双删</td><td>析构自动递归;禁止拷贝从类型上排除双删</td></tr>
+<tr><td>释放后指针仍存在,悬垂未定义行为</td><td>释放后 <code>unique_ptr</code> 自动置空,<code>!p</code> 判空安全</td></tr>
+</table>
+
+<h3>4.7.2 标准库对照:std::set/map 是红黑树</h3>
+<p>工程上"有序集合/有序映射"直接用标准库:<code>std::set</code>、<code>std::map</code> 底层都是<span class="term">红黑树</span>——比 AVL 更宽松的自平衡 BST(旋转更少),操作保证 <i>O</i>(log <i>n</i>),迭代器按序输出。第12章细讲,先建立"<span class="hl">set/map = 自平衡 BST,要字典序或范围查询就选它</span>"的直觉。</p>
+<div class="code-title">示例 4-15 std::map 做词频统计</div>
+<pre class="code">#include &lt;map&gt;
+map&lt;string, int&gt; freq;                    // 红黑树:key 有序,O(log n)
+for (const string&amp; w : words)
+    ++freq[w];                            // 不存在时自动初始化为 0
+for (const auto&amp; p : freq)                // 遍历 = 中序 = 字典序
+    cout &lt;&lt; p.first &lt;&lt; ": " &lt;&lt; p.second &lt;&lt; '\n';
+int cnt = freq["the"];                    // 查找 O(log n)
+freq.erase("dog");                        // 删除 O(log n)</pre>
+
+<h3>4.7.3 调试技巧:打印树与验证性质</h3>
+<ul>
+<li><b>打印整棵树:</b>写带缩进的递归打印,比逐结点断点高效</li>
+<li><b>中序必升序:</b>BST 的<span class="hl">中序遍历必须严格升序</span>——最便宜的全局检查</li>
+<li><b>验证 AVL:</b>插入后断言全部结点 |bf| ≤ 1 并打印树高</li>
+</ul>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>查找</td><td>BST</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>插入</td><td>BST</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>删除</td><td>BST</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>查找最小 / 最大</td><td>BST</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>AVL 树</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>前/中/后序遍历</td><td>二叉树</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>层序遍历</td><td>二叉树</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>求高度 / 结点数 / 叶数</td><td>二叉树(后序递归)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>构建表达式树</td><td>后缀式 + 栈</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>恢复中缀表达式</td><td>表达式树中序</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>伸展树</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)(单次)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>B 树</td><td><i>O</i>(log<sub>M</sub> <i>n</i>)</td><td><i>O</i>(log<sub>M</sub> <i>n</i>)</td></tr>
+<tr><td>查找</td><td>有序数组(二分)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>插入(有序数组中)</td><td>动态数组</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按值查找</td><td>无序数组/链表</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>set/map 红黑树</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能说出树的核心术语,解释深度与高度的数法</li>
+<li>能默写 vector 子结点表示,对照 first_child+next_sibling</li>
+<li>能写出前/中/后序遍历递归版,说清打印位置的作用</li>
+<li>能写出层序遍历(队列版),解释为什么递归做不到层序</li>
+<li>能写出求高度/结点数/叶数的递归函数,说明空树基准</li>
+<li>能用栈从后缀构建表达式树(先弹右操作数),再中序恢复中缀</li>
+<li>能默写 BST 的 contains/findMin/insert/remove,说清删除三情形</li>
+<li>能用 unique_ptr 建树;能说出 std::set/map 底层是红黑树</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 一棵有 n 个结点的一般树有几条边?树的深度与高度有什么区别?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>n−1 条:除根外每个结点都有一个父结点。深度从根往下(根 0),高度从叶往上(叶 0);树高 = 根的高度。</p>
+</div>
+
+<div class="q">2. 对例题 4-1 的树,写出四种遍历输出。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>前序:7 3 1 5 6 9 11;中序:1 3 5 6 7 9 11;后序:1 6 5 3 11 9 7;层序:7 3 9 1 5 11 6。后序 11 在 9 前:右子树先于根。</p>
+</div>
+
+<div class="q">3. 后缀式 <code>6 5 2 - 3 * +</code> 的表达式树,中序恢复(带括号)是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>构建:6、5、2 入栈;- 弹 2、5 得 (5−2);3 入栈;* 得 (5−2)*3;+ 得 6+((5−2)*3)。先弹的是右操作数,故是 5−2 而非 2−5。</p>
+</div>
+
+<div class="q">4. BST 删除双子结点时,为什么取右子树最小结点顶替?取左子树最大结点可以吗?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>右子树最小结点 m 大于左子树全部、小于右子树其余,顶替后性质不变;且 m 没有左子树,删除退化为单子/叶情形。取左子树最大结点也可行。</p>
+</div>
+
+<div class="q">5. 空树依次插入 5、3、7、2、4、6、8、1,哪一步触发旋转?什么类型?旋转后树根是谁?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>插入 1 后结点 5 的 bf=+2,1 在 5 的左孩子 3 的左子树 → LL,右旋:3 提为根,5 变其右孩子。旋转后:根 3,左 2(左 1 右 4),右 7(左 6 右 8)。</p>
+</div>
+
+<h2>章末实验题:单词频次统计器(BST 实现)</h2>
+<div class="box box-example lab"><div class="box-title">实验 4:单词频次统计器(BST 实现)</div>
+<p><b>实验目标:</b>用自写 BST 实现命令行单词频次统计器:统计词频、查找、删除,并报告树高与平衡性。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:读入多行英文文本,把连续字母序列切分为单词并统一转小写(§4.1 树结构、字符串遍历)</li>
+<li>任务 2:用自写 BST 统计词频——结点存"单词 + 频次",已存在的单词频次 +1(§4.4 insert)</li>
+<li>任务 3:中序遍历按字典序输出词频表(§4.2 中序遍历)</li>
+<li>任务 4:查找指定单词频次;删除某单词后重新遍历,验证查找结果为 0(§4.4 contains/remove 三情形)</li>
+<li>任务 5(加分):平衡检查并报告树高(§4.5 平衡因子、§4.2 求高度)</li>
+</ul>
+<p><b>实验环境:</b>C++17。编译运行:<code>g++ -std=c++17 lab4.cpp -o lab4 &amp;&amp; ./lab4</code>。</p></div>
+<ol class="steps">
+<li>先实现结点结构与 insert/find,验证频次正确后再补中序遍历——增量开发</li>
+<li>删除用示例 4-10 的三情形骨架;双子先复制右子树最小结点,再删除它(见误区 3)</li>
+<li>结点内存用 <code>unique_ptr</code>(示例 4-14),类里就不需要析构函数</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,分三段)</div>
+<pre class="code">// lab4.cpp —— 单词频次统计器(BST 实现)(第一段:结点与核心操作)
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;memory&gt;
+#include &lt;cctype&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+struct BSTNode {                      // 单词 + 频次 + 左右子树
+    string word;
+    int count;
+    unique_ptr&lt;BSTNode&gt; left, right;
+    explicit BSTNode(const string&amp; w) : word(w), count(1) {}
+};
+
+class WordBST {
+public:
+    void insert(const string&amp; w) { root_ = insert(move(root_), w); }
+    int find(const string&amp; w) const {          // 查找频次,不存在返回 0
+        BSTNode* n = root_.get();
+        while (n) {
+            if (w == n-&gt;word) return n-&gt;count;
+            n = (w &lt; n-&gt;word) ? n-&gt;left.get() : n-&gt;right.get();
+        }
+        return 0;
+    }
+    void remove(const string&amp; w) { root_ = remove(move(root_), w); }
+    BSTNode* root() const { return root_.get(); }   // 供第二段辅助函数
+private:
+    unique_ptr&lt;BSTNode&gt; root_;
+    static unique_ptr&lt;BSTNode&gt; insert(unique_ptr&lt;BSTNode&gt; n, const string&amp; w) {
+        if (!n) return make_unique&lt;BSTNode&gt;(w);  // 空位:新建结点
+        if (w &lt; n-&gt;word)      n-&gt;left  = insert(move(n-&gt;left), w);
+        else if (w &gt; n-&gt;word) n-&gt;right = insert(move(n-&gt;right), w);
+        else                  ++n-&gt;count;        // 已存在:频次 +1
+        return n;
+    }
+    static BSTNode* findMin(BSTNode* n) {        // 右子树最小结点
+        while (n-&gt;left) n = n-&gt;left.get();
+        return n;
+    }
+    static unique_ptr&lt;BSTNode&gt; removeMin(unique_ptr&lt;BSTNode&gt; n) {
+        if (!n-&gt;left) return move(n-&gt;right);
+        n-&gt;left = removeMin(move(n-&gt;left));
+        return n;
+    }
+    static unique_ptr&lt;BSTNode&gt; remove(unique_ptr&lt;BSTNode&gt; n, const string&amp; w) {
+        if (!n) return nullptr;                   // 单词不存在,忽略
+        if (w &lt; n-&gt;word)      n-&gt;left  = remove(move(n-&gt;left), w);
+        else if (w &gt; n-&gt;word) n-&gt;right = remove(move(n-&gt;right), w);
+        else {                                    // 找到目标结点
+            if (!n-&gt;left)  return move(n-&gt;right); // 叶或只有右子树
+            if (!n-&gt;right) return move(n-&gt;left);  // 只有左子树
+            BSTNode* m = findMin(n-&gt;right.get()); // 双子:取右子树最小
+            n-&gt;word  = m-&gt;word;                   // 复制数据顶替
+            n-&gt;count = m-&gt;count;
+            n-&gt;right = removeMin(move(n-&gt;right));
+        }
+        return n;
+    }
+};</pre>
+
+<div class="code-title">lab4.cpp(第二段:中序、树高与平衡辅助函数)</div>
+<pre class="code">// (第二段:中序遍历、树高与平衡检查——辅助函数,配合 tree.root())
+#include &lt;utility&gt;
+void inorder(BSTNode* n) {            // 中序 = 字典序
+    if (!n) return;
+    inorder(n-&gt;left.get());
+    cout &lt;&lt; n-&gt;word &lt;&lt; '\t' &lt;&lt; n-&gt;count &lt;&lt; '\n';
+    inorder(n-&gt;right.get());
+}
+int height(BSTNode* n) {              // 空树高度为 0
+    if (!n) return 0;
+    return 1 + max(height(n-&gt;left.get()), height(n-&gt;right.get()));
+}
+pair&lt;int, bool&gt; check(BSTNode* n) {   // 返回(高度, 是否平衡)
+    if (!n) return {0, true};
+    auto [hl, bl] = check(n-&gt;left.get());
+    auto [hr, br] = check(n-&gt;right.get());
+    return {1 + max(hl, hr), bl &amp;&amp; br &amp;&amp; abs(hl - hr) &lt;= 1};
+}</pre>
+
+<div class="code-title">lab4.cpp(第三段:主程序)</div>
+<pre class="code">int main() {
+    cout &lt;&lt; "单词频次统计器(BST 实现)——输入英文文本,空行结束:\n";
+    string line, text;
+    while (getline(cin, line)) {
+        if (line.empty()) break;
+        text += line + '\n';
+    }
+
+    WordBST tree;
+    string word;                                  // 任务 1:分词转小写
+    for (char c : text) {
+        if (isalpha((unsigned char)c))
+            word += (char)tolower((unsigned char)c);
+        else if (!word.empty()) {
+            tree.insert(word);                    // 任务 2:插入统计
+            word.clear();
+        }
+    }
+    if (!word.empty()) tree.insert(word);
+
+    cout &lt;&lt; "\n--- 任务 3:中序遍历输出词频表(字典序)---\n";
+    inorder(tree.root());
+
+    cout &lt;&lt; "\n--- 任务 4:查找频次 ---\n";
+    for (const string&amp; w : {"the", "dog", "hello"})
+        cout &lt;&lt; "查找 '" &lt;&lt; w &lt;&lt; "': 频次 = " &lt;&lt; tree.find(w) &lt;&lt; '\n';
+
+    cout &lt;&lt; "\n删除 'dog' 后重新遍历:\n";
+    tree.remove("dog");
+    cout &lt;&lt; "删除后 'dog' 频次 = " &lt;&lt; tree.find("dog") &lt;&lt; "(应为 0)\n";
+    inorder(tree.root());
+
+    cout &lt;&lt; "\n--- 任务 5(加分):树高与平衡检查 ---\n";
+    cout &lt;&lt; "树高 = " &lt;&lt; height(tree.root())
+         &lt;&lt; ", 是否平衡 = " &lt;&lt; (check(tree.root()).second ? "是" : "否") &lt;&lt; '\n';
+    return 0;
+}</pre>
+<p>示例输入输出(输入文本:The quick brown fox jumps over the lazy dog and the dog barks at the cat while the cat sleeps on the warm mat):</p>
+<pre class="code">单词频次统计器(BST 实现)——输入英文文本,空行结束:
+
+--- 任务 3:中序遍历输出词频表(字典序)---
+and	1
+at	1
+barks	1
+brown	1
+cat	2
+dog	2
+fox	1
+jumps	1
+lazy	1
+mat	1
+on	1
+over	1
+quick	1
+sleeps	1
+the	6
+warm	1
+while	1
+
+--- 任务 4:查找频次 ---
+查找 'the': 频次 = 6
+查找 'dog': 频次 = 2
+查找 'hello': 频次 = 0
+
+删除 'dog' 后重新遍历:
+删除后 'dog' 频次 = 0(应为 0)
+and	1
+at	1
+barks	1
+brown	1
+cat	2
+fox	1
+jumps	1
+lazy	1
+mat	1
+on	1
+over	1
+quick	1
+sleeps	1
+the	6
+warm	1
+while	1
+
+--- 任务 5(加分):树高与平衡检查 ---
+树高 = 9, 是否平衡 = 否</pre>
+<p><b>设计说明:</b>① 任务覆盖本章主线:分词(§4.1)、插入/删除三情形(§4.4)、中序遍历(§4.2)、平衡检查(§4.5),串成可运行流水线;② 结点用 <code>unique_ptr</code> 持有子树,类无需析构函数,双子删除 <code>return move(n-&gt;left)</code> 即释放孤儿结点(§4.7);③ 平衡检查是"返回(高度,是否平衡)"的自底向上函数,一次递归算两件事;实测树高 9,AVL 可压到约 6。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第5章 散列——把查找从 <i>O</i>(log <i>n</i>) 进一步加速到平均 <i>O</i>(1);散列表的分离链接法将使用第3章的链表作为桶,而"何时用 BST、何时用散列"的选型判断将贯穿第5章与后续工程实践。</p>

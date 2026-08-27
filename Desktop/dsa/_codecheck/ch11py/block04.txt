@@ -1,0 +1,33 @@
+# 手写倍增与内置 list 并排:打印扩容拐点(元素数 → 字节数)
+import sys
+
+class MyList:                       # 手写倍增动态数组
+    def __init__(self):
+        self._buf = [None] * 1
+        self._size = 0
+        self._cap = 1
+    def push_back(self, x):
+        if self._size == self._cap:     # 容量已满:倍增
+            new_buf = [None] * (self._cap * 2)
+            for i in range(self._size):
+                new_buf[i] = self._buf[i]
+            self._buf = new_buf
+            self._cap *= 2
+            print(f"{self._size}→{self._cap}", end="  ")  # 打印拐点
+        self._buf[self._size] = x
+        self._size += 1
+
+print("手写倍增:", end=" ")
+v = MyList()
+for i in range(200):
+    v.push_back(i)
+
+print("\n内置 list:", end=" ")
+a, last = [], sys.getsizeof([])
+for i in range(1, 201):
+    a.append(i)
+    cur = sys.getsizeof(a)
+    if cur != last:                 # 内存变化 = 一次扩容拐点
+        print(f"{len(a)}→{cur}B", end="  ")
+        last = cur
+print()

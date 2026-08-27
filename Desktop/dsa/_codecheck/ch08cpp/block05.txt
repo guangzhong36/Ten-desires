@@ -1,0 +1,23 @@
+// 格子编号 id = r*w+c;right/down 记录每格右墙与下墙
+void genMaze(int w, int h) {
+    int n = w * h;
+    UnionFind uf(n);                     // 完整优化版并查集
+    vector<vector<bool>> right(h, vector<bool>(w, true));  // 右墙
+    vector<vector<bool>> down(h, vector<bool>(w, true));   // 下墙
+    vector<pair<int, int>> walls;        // 候选墙:存两端格子编号
+    auto id = [w](int r, int c) { return r * w + c; };
+    for (int r = 0; r < h; ++r)
+        for (int c = 0; c < w; ++c) {
+            if (c + 1 < w) walls.push_back({id(r, c), id(r, c + 1)});  // 右墙
+            if (r + 1 < h) walls.push_back({id(r, c), id(r + 1, c)});  // 下墙
+        }
+    shuffle(walls.begin(), walls.end(), rng);    // 随机顺序拆墙
+    int cnt = n;                          // 连通分量个数
+    for (auto [a, b] : walls) {
+        if (uf.unite(a, b)) {             // 两端不连通才拆
+            --cnt;                        // 每拆一面墙,分量减一
+            // ... 对应墙置 false(见实验完整代码)
+        }
+        if (cnt == 1) break;              // 全连通即停
+    }
+}

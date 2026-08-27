@@ -1,0 +1,15 @@
+// 标准库版:unordered_map 一行完成"不存在则插入"
+#include <unordered_map>
+int main() {
+    string text = "the cat and the dog and the cat";
+    unordered_map<string, int> cnt;
+    for (char c : text) {                       // 切词与手写版一致
+        if (isalnum((unsigned char)c)) cur += (char)tolower((unsigned char)c);
+        else if (!cur.empty()) { ++cnt[cur]; cur.clear(); }
+    }
+    if (!cur.empty()) ++cnt[cur];
+    cout << "the: " << cnt["the"] << "\n";      // 3
+    cout << "cat: " << cnt["cat"] << "\n";      // 2
+    cout << "不同单词: " << cnt.size() << "\n"; // 4
+    return 0;
+}

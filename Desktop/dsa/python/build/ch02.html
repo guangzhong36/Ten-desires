@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第2章 算法分析</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · DATA STRUCTURES</div>
+<h1 class="chapter-title">第2章 算法分析</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解为什么"程序能跑"远远不够——<span class="term">复杂度</span>决定程序在数据变大时能不能跑完</li>
+<li>掌握 <i>O</i>、<i>Ω</i>、<i>Θ</i>、<i>o</i> 四种记号的准确定义与直觉,能说出它们的区别</li>
+<li>能背诵增长阶排序:常数 &lt; 对数 &lt; 线性 &lt; 线性对数 &lt; 平方 &lt; 立方 &lt; 指数</li>
+<li>会计算顺序/循环/递归代码的运行时间,能把循环翻译成求和记号 Σ</li>
+<li>亲手实现<b>最大子序列和</b>问题的四种算法,体会 <i>O</i>(<i>n</i><sup>3</sup>) 到 <i>O</i>(<i>n</i>) 的天壤之别</li>
+<li>能说明二分查找、快速幂、欧几里得算法为什么都是 <i>O</i>(log <i>n</i>)</li>
+<li>学完能独立用 <code>time.perf_counter</code>(C 中对应 <code>clock()</code>)实测验证自己的复杂度分析</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Python:本章主题如何迁移</div>
+<p>本章是全书唯一"几乎不写新数据结构"的一章,但它是<b>全书的通用语言</b>:第 3 章起,每章都以"这个操作 <i>O</i>(多少)"作为结论。算法分析的直觉一句话:<span class="hl">复杂度是数据规模变大时,运行时间的增长方式</span>——不是秒数,不是毫秒,而是"规模翻倍,时间大约乘以几"。</p>
+<p>在 C 里,你也许用过 <code>clock()</code> 计时:包含 <code>time.h</code>,前后各取一次,除以 <code>CLOCKS_PER_SEC</code>。Python 的 <code>time.perf_counter()</code> 思想相同但更省事:单调时钟、纳秒级分辨率、一行调用,不受系统修改时间的影响。本章全部计时实验都用它。</p>
+<p>Python 还有一个 C 没有的独特优势:<span class="hl">整数任意精度,永不溢出</span>。做 §2.7 的实测实验时,你可以放心把数组元素取得很大、把 n 推到 10<sup>7</sup>,而 C/C++ 的 <code>int</code> 在累加中可能悄悄溢出变负数。代价是 Python 每条语句都是解释执行、每个整数都是堆上对象——同样 <i>O</i>(<i>n</i>) 的循环,Python 通常比 C++ 慢 30–100 倍。但请记住本章的核心结论:<b>增长阶是语言无关的</b>,Python 的 <i>O</i>(<i>n</i> log <i>n</i>) 在大数据上照样碾压 C++ 的 <i>O</i>(<i>n</i><sup>2</sup>)。</p>
+<p>本章路线:先建立记号体系(§2.1–§2.3),再学计算规则(§2.4),然后在一个真实问题上亲手把 <i>O</i>(<i>n</i><sup>3</sup>) 一路优化到 <i>O</i>(<i>n</i>)(§2.5),最后用计时实验验证理论(§2.6–§2.7)。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>指数与对数的基本性质(第1章)、求和记号 Σ、递归四法则与递推式入门(第1章)。</p>
+<p><b>C 语言前置:</b>单层/嵌套 <code>for</code> 循环、函数定义与调用、数组下标遍历;<code>clock()</code> 计时(可选,会更好)。</p>
+<p><b>依赖的前面章节:</b>第1章绪论(递归思想、log 与指数的运算性质)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1 小时):</b>读 §2.1–§2.3,背下增长阶排序与常见函数值表</li>
+<li><b>第二阶段(1.5 小时):</b>读 §2.4–§2.5,亲手推导最大子序列和四种算法的复杂度,并在 REPL 里运行验证输出正确</li>
+<li><b>第三阶段(1.5 小时):</b>读 §2.6–§2.7,运行计时程序,观察"n 翻倍、时间乘几"与理论预测是否吻合</li>
+<li><b>第四阶段(实验,1 小时):</b>完成章末实验:四种算法的增长阶实测报告</li>
+<li><b>验收标准:</b>能随口说出"二分查找 <i>O</i>(log <i>n</i>)""快排平均 <i>O</i>(<i>n</i> log <i>n</i>)"并解释理由</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§2.1 为什么要分析算法:从"能跑"到"跑得完"(规模、计时工具、C 的 clock() 与 perf_counter 对照)</li>
+<li>§2.2 大 <i>O</i>、<i>Ω</i>、<i>Θ</i>、小 <i>o</i>:定义、直觉、常见误用</li>
+<li>§2.3 增长阶排序与常见函数:七个等级、数值表</li>
+<li>§2.4 运行时间计算规则:顺序/循环/递归、求和记号</li>
+<li>§2.5 最大子序列和:四种算法,<i>O</i>(<i>n</i><sup>3</sup>) → <i>O</i>(<i>n</i>) 的递进</li>
+<li>§2.6 对数级复杂度的三种来源:二分查找、快速幂、欧几里得算法</li>
+<li>§2.7 实测验证:计时方法、n 翻倍实验、常数因子的意义</li>
+</ul></div>
+
+<h2>§2.1 为什么要分析算法</h2>
+
+<h3>2.1.1 规模决定生死</h3>
+<p>同一个问题,算法不同,命运不同。假设处理一个元素耗时 1 微秒,那么:</p>
+<table>
+<tr><th>问题规模 n</th><th><i>O</i>(<i>n</i> log <i>n</i>)</th><th><i>O</i>(<i>n</i><sup>2</sup>)</th><th><i>O</i>(<i>n</i><sup>3</sup>)</th><th><i>O</i>(2<sup><i>n</i></sup>)</th></tr>
+<tr><td>10<sup>3</sup></td><td>≈0.01 秒</td><td>1 秒</td><td>16.7 分钟</td><td>约 10<sup>286</sup> 年</td></tr>
+<tr><td>10<sup>4</sup></td><td>≈0.13 秒</td><td>100 秒</td><td>11.6 天</td><td>超出宇宙年龄</td></tr>
+<tr><td>10<sup>5</sup></td><td>≈1.7 秒</td><td>2.8 小时</td><td>31.7 年</td><td>—</td></tr>
+<tr><td>10<sup>6</sup></td><td>≈20 秒</td><td>11.6 天</td><td>3.2 万年</td><td>—</td></tr>
+</table>
+<p>结论:<span class="hl">指数算法在任何现实规模上都不存在;平方算法在十万级数据上就要等几小时</span>。这就是为什么必须先学会"估计算法代价"——否则优化方向可能完全错误(去优化一个 <i>O</i>(<i>n</i>) 的循环,却对 <i>O</i>(<i>n</i><sup>2</sup>) 的嵌套循环视而不见)。</p>
+
+<h3>2.1.2 从 C 的 clock() 到 Python 的 perf_counter</h3>
+<p>C 的计时套路你也许写过:</p>
+<table class="cmp">
+<tr><th>C 的写法</th><th>Python 的写法</th></tr>
+<tr><td><code>#include &lt;time.h&gt;</code></td><td><code>import time</code></td></tr>
+<tr><td><code>clock_t t0 = clock();</code></td><td><code>t0 = time.perf_counter()</code></td></tr>
+<tr><td><code>double s = (double)(clock()-t0)/CLOCKS_PER_SEC;</code></td><td><code>elapsed = time.perf_counter() - t0</code></td></tr>
+<tr><td>精度毫秒级,测 CPU 时间</td><td>纳秒级分辨率,测墙上时间,单调不受系统改时间影响</td></tr>
+</table>
+
+<div class="code-title">示例 2-1 Python 计时框架(本章所有实验都用它)</div>
+<pre class="code">import time
+
+t0 = time.perf_counter()
+# ---- 被测代码 ----
+s = 0
+for i in range(1_000_000):
+    s += i
+# ----------------
+elapsed = time.perf_counter() - t0
+print(f"耗时: {elapsed * 1000:.3f} ms, 结果 = {s}")</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:计时不是分析的全部</div>
+<p>计时是<span class="term">验证</span>分析的工具,不是分析本身。同一程序换个机器、换个负载,时间可能差几倍——但"n 翻倍、时间约乘 4"这个<b>比值规律</b>几乎不变。复杂度分析研究的正是这个机器无关的规律。</p>
+</div>
+
+<h2>§2.2 大 <i>O</i>、<i>Ω</i>、<i>Θ</i>、小 <i>o</i></h2>
+
+<h3>2.2.1 大 <i>O</i>:上界</h3>
+<p>定义(实用版):<span class="term">T(n) = O(f(n))</span> 表示存在常数 <i>c</i> 与 <i>n</i><sub>0</sub>,使得对所有 <i>n</i> ≥ <i>n</i><sub>0</sub>,都有 <code>T(n) ≤ c·f(n)</code>。直白地说:<span class="hl">当 n 足够大时,T(n) 的增长速度不超过 f(n) 的某个常数倍</span>。例如 <code>T(n) = 3n² + 10n + 7</code>,取 <i>c</i> = 4、<i>n</i><sub>0</sub> 足够大即可证明 <i>T</i>(<i>n</i>) = <i>O</i>(<i>n</i><sup>2</sup>)——因为 10n + 7 相对 3n² 微不足道。</p>
+<p>所以大 <i>O</i> 会"吞掉"低阶项与常数:<i>O</i>(3<i>n</i><sup>2</sup>+10<i>n</i>+7) = <i>O</i>(<i>n</i><sup>2</sup>),<i>O</i>(2<i>n</i>) = <i>O</i>(<i>n</i>)。这也是它的局限:两个同为 <i>O</i>(<i>n</i>) 的算法可能实际相差 10 倍。</p>
+
+<h3>2.2.2 <i>Ω</i> 与 <i>Θ</i>:下界与紧界</h3>
+<p><span class="term"><i>Ω</i>(f(n))</span> 是对偶记号:<code>T(n) ≥ c·f(n)</code> 对所有足够大的 n 成立,表示"增长不低于 f(n)"。而 <span class="term"><i>Θ</i>(f(n))</span> 表示"恰好同阶":既 <i>O</i>(f(n)) 又 <i>Ω</i>(f(n))。工程上最常用的是大 <i>O</i>(上界保证"最坏不会更差")与 <i>Θ</i>(精确刻画);当说"这个算法是 <i>Θ</i>(<i>n</i> log <i>n</i>)"时,意思是上下界都压紧了。</p>
+
+<h3>2.2.3 小 <i>o</i> 与三种常见误用</h3>
+<p>小 <i>o</i>(f(n)) 表示"增长速度严格低于 f(n)"(大 O 允许相等,小 o 不允许):<i>n</i> = <i>o</i>(<i>n</i><sup>2</sup>) 成立,但 <i>n</i> ≠ <i>o</i>(<i>n</i>)。它常用于比较两个上界谁更"松"。</p>
+
+<div class="box box-tip"><div class="box-title">记号说明(本章约定,全书沿用)</div>
+<p>正文中的 <i>O</i>(<i>n</i>) 读作"大 O n";<i>n</i><sup>2</sup> 表示 n 的平方;log<sub>2</sub> <i>n</i> 表示以 2 为底的对数,不写底数时 log <i>n</i> 默认以 2 为底(常数倍差异被大 O 吞掉,所以底数不重要,但推导过程要写清楚);ln 表示自然对数。求和写成 Σ<sub>i=1</sub><sup>n</sup> i = n(n+1)/2。代码里一律使用语言语法(<code>%</code>、<code>&gt;&gt;</code>、<code>pow</code>),不使用数学记号。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:把常数当成增长阶</div>
+<p>写 <i>O</i>(2<i>n</i>)、<i>O</i>(100<i>n</i> log <i>n</i>)、<i>O</i>(<i>n</i>+100) 都是错误的:大 O 定义明确吞掉常数,应写 <i>O</i>(<i>n</i>)、<i>O</i>(<i>n</i> log <i>n</i>)、<i>O</i>(<i>n</i>)。"常数不重要"仅在<b>分析增长阶</b>时成立;实际工程选型时,两个 <i>O</i>(<i>n</i>) 算法的常数差距可能决定生死。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:混淆最坏情形与记号本身</div>
+<p>"快排是 <i>O</i>(<i>n</i><sup>2</sup>) 的"——这句话必须补全:<span class="hl">快排最坏情形是 <i>O</i>(<i>n</i><sup>2</sup>),平均情形是 <i>O</i>(<i>n</i> log <i>n</i>)</span>。大 O 描述的是某个约定情形(最坏/平均/最好)下的增长阶,不是算法本身的属性。今后每章的复杂度速查表都会区分"平均"与"最坏"两列。</p>
+</div>
+
+<h2>§2.3 增长阶排序与常见函数</h2>
+
+<h3>2.3.1 七个等级</h3>
+<ul>
+<li><i>O</i>(1) 常数:按下标访问列表元素、dict 查找(平均)</li>
+<li><i>O</i>(log <i>n</i>) 对数:二分查找——n 翻倍只多一步</li>
+<li><i>O</i>(<i>n</i>) 线性:一趟遍历、线性搜索</li>
+<li><i>O</i>(<i>n</i> log <i>n</i>) 线性对数:归并排序、快排(平均)、堆排序</li>
+<li><i>O</i>(<i>n</i><sup>2</sup>) 平方:二重循环、插入/冒泡排序、朴素矩阵乘法</li>
+<li><i>O</i>(<i>n</i><sup>3</sup>) 立方:三重循环、Floyd 全源最短路</li>
+<li><i>O</i>(2<sup><i>n</i></sup>) 指数:穷举、朴素递归斐波那契——现实规模下不可用</li>
+</ul>
+
+<h3>2.3.2 数值表:让直觉落地</h3>
+<table>
+<tr><th>f(n)</th><th>n=10</th><th>n=100</th><th>n=10<sup>3</sup></th><th>n=10<sup>4</sup></th><th>n=10<sup>5</sup></th><th>n=10<sup>6</sup></th></tr>
+<tr><td>log<sub>2</sub> <i>n</i></td><td>3.3</td><td>6.6</td><td>10</td><td>13</td><td>17</td><td>20</td></tr>
+<tr><td><i>n</i></td><td>10</td><td>100</td><td>10<sup>3</sup></td><td>10<sup>4</sup></td><td>10<sup>5</sup></td><td>10<sup>6</sup></td></tr>
+<tr><td><i>n</i> log<sub>2</sub> <i>n</i></td><td>33</td><td>664</td><td>10<sup>4</sup></td><td>1.3×10<sup>5</sup></td><td>1.7×10<sup>6</sup></td><td>2×10<sup>7</sup></td></tr>
+<tr><td><i>n</i><sup>2</sup></td><td>100</td><td>10<sup>4</sup></td><td>10<sup>6</sup></td><td>10<sup>8</sup></td><td>10<sup>10</sup></td><td>10<sup>12</sup></td></tr>
+<tr><td><i>n</i><sup>3</sup></td><td>10<sup>3</sup></td><td>10<sup>6</sup></td><td>10<sup>9</sup></td><td>10<sup>12</sup></td><td>10<sup>15</sup></td><td>10<sup>18</sup></td></tr>
+<tr><td>2<sup><i>n</i></sup></td><td>1024</td><td>约 10<sup>30</sup></td><td>约 10<sup>301</sup></td><td>约 10<sup>3010</sup></td><td>约 10<sup>30103</sup></td><td>约 10<sup>301030</sup></td></tr>
+</table>
+<p>读这张表的要领:从 n=10<sup>3</sup> 到 10<sup>6</sup>,规模扩大 1000 倍——<i>n</i> 增长 1000 倍,<i>n</i><sup>2</sup> 增长 100 万倍,2<sup><i>n</i></sup> 则直接冲出宇宙。同时注意 log<sub>2</sub> <i>n</i> 一行:规模增长 1000 倍,它只从 10 长到 20。<span class="hl">对数函数是"几乎不增长"的函数,凡是对数级的算法都值得信赖</span>。Python 的大整数能精确算出这张表里 2<sup>100</sup> 的每一位数字——不妨在 REPL 里亲自验证一下。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:把 2<sup>n</sup> 与 n² 混为一谈</div>
+<p>2<sup><i>n</i></sup> 与 <i>n</i><sup>2</sup> 只差一个"位置",命运完全不同:<i>n</i> = 64 时,<i>n</i><sup>2</sup> = 4096,而 2<sup><i>n</i></sup> ≈ 1.8×10<sup>19</sup>。判断口诀:<span class="hl">底数是 n 的多项式,指数是 n 的才是指数级</span>。1.1<sup><i>n</i></sup> 也是指数级(底数略大于 1 仍是灾难),<i>n</i><sup>100</sup> 再大也只是多项式。</p>
+</div>
+
+<h2>§2.4 运行时间计算规则</h2>
+
+<h3>2.4.1 三条基本规则</h3>
+<ul>
+<li><b>顺序相加:</b>两个语句依次执行,总时间取两者之和,大 O 取最大者:<i>O</i>(<i>n</i>) + <i>O</i>(<i>n</i><sup>2</sup>) = <i>O</i>(<i>n</i><sup>2</sup>)</li>
+<li><b>嵌套相乘:</b>循环体内嵌套循环,总时间相乘</li>
+<li><b>分支取最大:</b>if/else 取两个分支中较慢的一个</li>
+</ul>
+
+<h3>2.4.2 循环与求和记号</h3>
+<p>循环本质上是一个求和:第 <i>i</i> 次迭代的工作量 w(i),总工作量 = Σ<sub>i</sub> w(i)。例:</p>
+
+<div class="code-title">示例 2-2 嵌套循环的求和推导</div>
+<pre class="code"># 推导:内层循环执行 n - i 次
+# 总次数 = Σ_{i=0}^{n-1} (n - i) = n + (n-1) + ... + 1 = n(n+1)/2
+# 所以是 O(n^2),而不是"感觉上的 n^2/2"——常数 1/2 被大 O 吞掉
+# 对照:C 的写法 for (i = 0; i &lt; n; i++) 完全一致,结论不变
+cnt = 0
+for i in range(n):
+    for j in range(i, n):
+        cnt += 1</pre>
+
+<p>三个最常用的求和公式(本章及全书反复使用):</p>
+<ul>
+<li>Σ<sub>i=1</sub><sup>n</sup> i = n(n+1)/2(算术级数,<i>O</i>(<i>n</i><sup>2</sup>))</li>
+<li>Σ<sub>i=0</sub><sup>n</sup> 2<sup>i</sup> = 2<sup>n+1</sup> − 1(几何级数,<i>O</i>(2<sup><i>n</i></sup>))</li>
+<li>Σ<sub>i=1</sub><sup>n</sup> 1/i ≈ ln <i>n</i>(调和级数,<i>O</i>(log <i>n</i>))</li>
+</ul>
+
+<h3>2.4.3 递归:递推式入门</h3>
+<p>递归代码的复杂度由<span class="term">递推式</span>描述:<code>T(n) = 2T(n/2) + n</code> 表示"把规模 n 的问题分成两个 n/2 的子问题,再花 O(n) 合并"。逐层展开:第 1 层代价 n,第 2 层 2·(n/2) = n,第 3 层 4·(n/4) = n……共 log<sub>2</sub> <i>n</i> 层,每层 n,总计 <i>O</i>(<i>n</i> log <i>n</i>)。§2.5 的算法三正是这个递推式,§2.6 的三个对数算法则是 <code>T(n) = T(n/2) + O(1)</code> 的特例——每层只进一个分支,共 log<sub>2</sub> <i>n</i> 层,每层常数代价。</p>
+
+<div class="box box-keypoint"><div class="box-title">重点:两种最经典的递推式</div>
+<p><code>T(n) = T(n/2) + O(1)</code> → <i>O</i>(log <i>n</i>)(二分查找);<code>T(n) = 2T(n/2) + O(n)</code> → <i>O</i>(<i>n</i> log <i>n</i>)(归并/分治)。全书的对数与线性对数复杂度,九成来自这两个式子。</p>
+</div>
+
+<h2>§2.5 最大子序列和:四种算法的递进</h2>
+
+<h3>2.5.1 问题描述</h3>
+<p>给定整数序列 a<sub>1</sub>, a<sub>2</sub>, …, a<sub>n</sub>(可含负数),求其<b>连续子序列的最大和</b>;全为负数时约定答案为 0(空子序列)。例如 [−2, 11, −4, 13, −5, −2] 的最大子序列是 [11, −4, 13],和为 20。这是 Weiss 教材的经典例题:同一个问题,四种算法,复杂度相差 100 万倍。</p>
+
+<h3>2.5.2 算法一:O(n³) 暴力枚举</h3>
+<p>最直接的思路:枚举所有起点 i 与终点 j,再累加 a[i..j]。双重循环枚举起终点,内层再用 <code>sum()</code> 花 O(n) 求和,总代价 Σ Σ (j−i+1) ≈ <i>n</i><sup>3</sup>/6,即 <i>O</i>(<i>n</i><sup>3</sup>)。</p>
+
+<div class="code-title">示例 2-3 算法一:枚举 + sum(),<i>O</i>(<i>n</i><sup>3</sup>)</div>
+<pre class="code">def max_sub_sum1(a):
+    n = len(a)
+    max_sum = 0
+    for i in range(n):                # 起点
+        for j in range(i, n):         # 终点
+            this_sum = sum(a[i:j+1])  # 切片求和,本身就是 O(j-i+1)
+            if this_sum &gt; max_sum:
+                max_sum = this_sum
+    return max_sum</pre>
+
+<h3>2.5.3 算法二:O(n²) 复用中间和</h3>
+<p>观察:固定起点 i,当终点从 j 推进到 j+1 时,新和 = 旧和 + a[j+1],不需要重算整个区间。去掉切片求和,复杂度降到 Σ Σ 1 = <i>n</i>(<i>n</i>+1)/2 = <i>O</i>(<i>n</i><sup>2</sup>)。</p>
+
+<div class="code-title">示例 2-4 算法二:增量更新,<i>O</i>(<i>n</i><sup>2</sup>)</div>
+<pre class="code">def max_sub_sum2(a):
+    max_sum = 0
+    for i in range(len(a)):
+        this_sum = 0
+        for j in range(i, len(a)):
+            this_sum += a[j]      # 增量更新,不再重算
+            if this_sum &gt; max_sum:
+                max_sum = this_sum
+    return max_sum</pre>
+
+<h3>2.5.4 算法三:O(n log n) 分治</h3>
+<p>分治三步:把数组分成左右两半,递归求左半最大和与右半最大和,再求<span class="term">跨中界的最大和</span>(从中界向左延伸的最大后缀和 + 向右延伸的最大前缀和),三者取最大。递推式正是 <code>T(n) = 2T(n/2) + O(n)</code> → <i>O</i>(<i>n</i> log <i>n</i>)。递归深度只有 log<sub>2</sub> <i>n</i>,即使 n = 10<sup>6</sup> 也不到 20 层,Python 默认 1000 层的递归上限完全够用。</p>
+
+<div class="code-title">示例 2-5 算法三:分治,<i>O</i>(<i>n</i> log <i>n</i>)</div>
+<pre class="code">def max_sum_rec(a, left, right):
+    if left == right:                 # 基准情形:单个元素
+        return max(a[left], 0)
+
+    center = (left + right) // 2
+    max_left = max_sum_rec(a, left, center)         # 左半
+    max_right = max_sum_rec(a, center + 1, right)   # 右半
+
+    max_left_border = left_border = 0    # 跨中界:向左延伸
+    for i in range(center, left - 1, -1):
+        left_border += a[i]
+        max_left_border = max(max_left_border, left_border)
+    max_right_border = right_border = 0  # 向右延伸
+    for i in range(center + 1, right + 1):
+        right_border += a[i]
+        max_right_border = max(max_right_border, right_border)
+
+    return max(max_left, max_right,
+               max_left_border + max_right_border)
+
+def max_sub_sum3(a):
+    return max_sum_rec(a, 0, len(a) - 1)</pre>
+
+<h3>2.5.5 算法四:O(n) 在线算法</h3>
+<p>关键观察:<span class="hl">和为负的前缀不可能是最优解的起点</span>——负前缀只会拖累后面。于是扫描一遍:累加当前和 this_sum,一旦 this_sum 变成负数就清零重来;途中记录最大值。</p>
+
+<div class="code-title">示例 2-6 算法四:在线算法,<i>O</i>(<i>n</i>)</div>
+<pre class="code">def max_sub_sum4(a):
+    max_sum = this_sum = 0
+    for x in a:
+        this_sum += x
+        if this_sum &gt; max_sum:
+            max_sum = this_sum
+        elif this_sum &lt; 0:
+            this_sum = 0       # 负前缀弃之,从下一个元素重新开始
+    return max_sum</pre>
+
+<div class="box box-example"><div class="box-title">例题 2-1 手工走一遍算法四</div>
+<p>输入 [−2, 11, −4, 13, −5, −2]:this_sum 依次为 −2→0(清零)、11、7、20、15、13;max_sum 记录峰值为 20。答案 20,与算法一一致。<b>注意:</b>清零动作丢弃的是"负前缀"而不是负数本身——a[i] 单独为负但前缀仍正时不会清零。</p>
+</div>
+
+<div class="box box-keypoint"><div class="box-title">重点:四种算法同题对照</div>
+<table class="tight">
+<tr><th>算法</th><th>思想</th><th>复杂度</th><th>n=10<sup>6</sup> 时(1 微秒/步)</th></tr>
+<tr><td>一</td><td>暴力枚举</td><td><i>O</i>(<i>n</i><sup>3</sup>)</td><td>约 317 年</td></tr>
+<tr><td>二</td><td>增量更新</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td>约 11.6 天</td></tr>
+<tr><td>三</td><td>分治</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td>约 20 秒</td></tr>
+<tr><td>四</td><td>在线扫描</td><td><i>O</i>(<i>n</i>)</td><td>约 1 秒</td></tr>
+</table>
+</div>
+
+<h2>§2.6 对数级复杂度的三种来源</h2>
+
+<h3>2.6.1 二分查找</h3>
+<p>在有序数组中查找 x:每次把候选区间减半。区间长度 n → n/2 → n/4 → … → 1,共 log<sub>2</sub> <i>n</i> 步,即递推式 <code>T(n) = T(n/2) + O(1)</code>。</p>
+
+<div class="code-title">示例 2-7 二分查找,<i>O</i>(log <i>n</i>)</div>
+<pre class="code"># 在升序列表 a 中查找 x,返回下标;找不到返回 -1
+def binary_search(a, x):
+    low, high = 0, len(a) - 1
+    while low &lt;= high:
+        mid = (low + high) // 2
+        if a[mid] &lt; x:
+            low = mid + 1
+        elif a[mid] &gt; x:
+            high = mid - 1
+        else:
+            return mid
+    return -1</pre>
+
+<div class="code-title">示例 2-8 标准库写法:bisect 一行搞定</div>
+<pre class="code">import bisect
+a = [1, 3, 5, 7, 9]
+i = bisect.bisect_left(a, 5)    # 返回 2:第一个 &gt;= 5 的位置
+j = bisect.bisect_left(a, 6)    # 返回 3:6 应插在 7 之前
+bisect.insort_left(a, 6)        # 保持有序地插入:1 3 5 6 7 9
+k = bisect.bisect_right(a, 5)   # 返回 3:第一个 &gt; 5 的位置
+n = bisect.bisect_right(a, 5) - i   # 等于 5 的元素个数:1
+print(i, j, k, n, a)            # 2 3 3 1 [1, 3, 5, 6, 7, 9]</pre>
+
+<table class="cmp">
+<tr><th>C 的手写二分查找</th><th>Python 的标准库</th></tr>
+<tr><td><code>int bin(int a[], int n, int x)</code> 手写约 12 行</td><td><code>bisect_left</code> / <code>bisect_right</code> / <code>insort</code></td></tr>
+<tr><td>边界条件(<code>&lt;=</code> 还是 <code>&lt;</code>)极易写错成死循环</td><td>边界由标准库保证,写错直接抛异常暴露</td></tr>
+<tr><td>数组要单独传长度 n</td><td><code>bisect.bisect_left(a, x)</code> 一行,列表自含长度</td></tr>
+</table>
+<p><b>手写 vs 标准库:</b>学习时手写一遍理解"减半"骨架;工程中直接用 <code>bisect</code>——它用 C 实现,而且避免了边界条件(<code>&lt;=&gt;</code> 写错一个就死循环)的错误。同一思想,C++ 标准库对应 <code>std::binary_search</code> 与 <code>std::lower_bound</code>。</p>
+
+<h3>2.6.2 快速幂</h3>
+<p>计算 a<sup>n</sup> mod m:朴素做法乘 n 次是 <i>O</i>(<i>n</i>);利用 a<sup>n</sup> = (a<sup>2</sup>)<sup>n/2</sup> 每次把指数减半,<i>O</i>(log <i>n</i>)。这是 C 里你可能用循环写过的算法,与二分查找共享"减半"骨架。</p>
+
+<div class="code-title">示例 2-9 快速幂,<i>O</i>(log <i>n</i>)</div>
+<pre class="code">MOD = 10**9 + 7
+
+def pow_mod(a, n):
+    """计算 (a^n) % MOD,n &gt;= 0。"""
+    result = 1
+    while n &gt; 0:
+        if n &amp; 1:                 # 当前二进制位为 1 则乘入
+            result = result * a % MOD
+        a = a * a % MOD           # a 平方:对应指数减半
+        n &gt;&gt;= 1                   # n 右移一位 = n//2
+    return result
+
+# Python 内置 pow 三参数版直接就是快速幂:
+print(pow_mod(2, 10), pow(2, 10, MOD))  # 1024 1024</pre>
+
+<h3>2.6.3 欧几里得算法</h3>
+<p>求最大公因数 gcd(a, b):迭代执行 <code>(a, b) → (b, a % b)</code> 直到 b = 0。结论:每两步至少把较小的数减半(证明略),所以迭代次数 <i>O</i>(log <i>n</i>)。</p>
+
+<div class="code-title">示例 2-10 欧几里得算法,<i>O</i>(log <i>n</i>)</div>
+<pre class="code">def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b      # 元组打包/解包,C 里要写三行
+    return a
+
+import math
+print(gcd(48, 36), math.gcd(48, 36))   # 12 12,标准库同样有现成的
+print(gcd(1234567, 891011))            # 大数同样两步减半,依旧很快</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:log 从哪来?</div>
+<p>三个算法的共同骨架:<span class="hl">每一步把"问题规模"至少减半</span>。二分查找减半区间,快速幂减半指数,欧几里得每两步减半数。凡是见到"减半""倍增"字样的算法,先猜 <i>O</i>(log <i>n</i>) 再验证,十有八九正确。</p>
+</div>
+
+<h2>§2.7 实测验证:让理论落地</h2>
+
+<h3>2.7.1 计时方法要点</h3>
+<ul>
+<li>n 要足够大:太小则计时噪声淹没规律(§2.7.2 用 n ≥ 1000)</li>
+<li>重复取平均或取中位数,避免一次性的调度抖动</li>
+<li>关闭不必要的后台程序,尽量独占 CPU</li>
+<li><b>警惕 Python 特有偏差:</b>内置函数(如 <code>sum</code>、<code>min</code>)是 C 实现的,比手写循环快一个数量级——比较"算法"时必须让双方使用同样风格的代码,否则比的是实现语言而非算法</li>
+</ul>
+
+<table class="cmp">
+<tr><th>C 的计时要点</th><th>Python 的计时要点</th></tr>
+<tr><td><code>clock()</code> 测 CPU 时间,受调度影响</td><td><code>perf_counter()</code> 测墙上时间,单调不回拨</td></tr>
+<tr><td>除以 <code>CLOCKS_PER_SEC</code> 得到秒,容易忘记</td><td>返回值就是秒(浮点),直接相减</td></tr>
+<tr><td>手动 <code>volatile</code> 防优化,易漏</td><td>解释器不做死代码消除,但结果同样要输出</td></tr>
+</table>
+
+<h3>2.7.2 n 翻倍实验(Python 实测参考值)</h3>
+<p>对随机数组运行四种算法,每次 n 翻倍,观察时间比值:</p>
+<table>
+<tr><th>n</th><th>算法一</th><th>算法二</th><th>算法三</th><th>算法四</th></tr>
+<tr><td>1000</td><td>24 ms</td><td>21 ms</td><td>1.6 ms</td><td>0.06 ms</td></tr>
+<tr><td>2000</td><td>186 ms</td><td>84 ms</td><td>3.4 ms</td><td>0.12 ms</td></tr>
+<tr><td>4000</td><td>≈1.5 s(推算)</td><td>336 ms</td><td>7.2 ms</td><td>0.24 ms</td></tr>
+<tr><td>8000</td><td>≈12 s(推算)</td><td>1.35 s</td><td>15 ms</td><td>0.48 ms</td></tr>
+</table>
+<p>读出规律:n 翻倍,算法一时间 ×8(吻合 <i>n</i><sup>3</sup>),算法二 ×4(吻合 <i>n</i><sup>2</sup>),算法三、四约 ×2(吻合 <i>n</i> log <i>n</i> 与 <i>n</i>)。<span class="hl">比值比绝对值可靠</span>——你的机器数值不同,但比值规律必然一致。与 C++ 版对比:绝对时间慢 30–100 倍,<b>但比值规律完全相同</b>——增长阶是语言无关的。</p>
+
+<div class="box box-tip"><div class="box-title">工程建议:常数因子的真实意义</div>
+<p>大 O 相同不代表同样快:同为 <i>O</i>(<i>n</i> log <i>n</i>),快排的常数通常只有堆排的一半;同为 <i>O</i>(<i>n</i>),遍历 <code>list</code> 比遍历手写链表快数倍(缓存友好,第3章细讲)。在 Python 里这条原则加倍重要:<code>sum(a[i:j+1])</code> 是 C 实现的,写起来只有一行,但它是 <i>O</i>(j−i+1)——常数小救不了复杂度差。工程选型时:先用大 O 淘汰指数/高次算法,再用常数因子与实测在候选者中择优。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:小规模下拿 O 记号赌博</div>
+<p>n = 20 时,<i>O</i>(<i>n</i><sup>2</sup>) 的插入排序往往比 <i>O</i>(<i>n</i> log <i>n</i>) 的快排更快——常数小。大 O 的结论只在"n 足够大"时成立(定义里的 <i>n</i><sub>0</sub> 正是为此)。工程上排序库普遍采用"大区间快排 + 小区间插入排序"的混合策略(第7章),就是这条原则的产物。</p>
+</div>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作 / 算法</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>按值查找</td><td>无序列表</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>二分查找</td><td>有序列表</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>求 a<sup>n</sup></td><td>朴素连乘</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>求 a<sup>n</sup></td><td>快速幂 / 内置 pow(三参数)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>最大公因数</td><td>欧几里得算法 / math.gcd</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>最大子序列和</td><td>算法一(暴力)</td><td><i>O</i>(<i>n</i><sup>3</sup>)</td><td><i>O</i>(<i>n</i><sup>3</sup>)</td></tr>
+<tr><td>最大子序列和</td><td>算法二(增量)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>最大子序列和</td><td>算法三(分治)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>最大子序列和</td><td>算法四(在线)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>循环计数</td><td>单层循环</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>循环计数</td><td>双重循环</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>递归</td><td>T(n) = T(n/2) + O(1)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>递归</td><td>T(n) = 2T(n/2) + O(n)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>增长阶</td><td>常数 / 对数 / 线性 / 线性对数 / 平方 / 立方 / 指数</td><td colspan="2">见 §2.3.1 排序</td></tr>
+<tr><td>增长阶排序</td><td>常数 &lt; log <i>n</i> &lt; <i>n</i> &lt; <i>n</i> log <i>n</i> &lt; <i>n</i><sup>2</sup> &lt; <i>n</i><sup>3</sup> &lt; 2<sup><i>n</i></sup></td><td colspan="2">全书唯一需要背诵的排序</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能独立说出大 <i>O</i>、<i>Ω</i>、<i>Θ</i>、小 <i>o</i> 的定义与区别,并各举一例</li>
+<li>能背诵增长阶排序,并给每个等级配一个真实算法例子</li>
+<li>能独立推导单层循环、嵌套循环、if/else 的复杂度</li>
+<li>能独立写出四种最大子序列和算法,并说出各自复杂度与推导</li>
+<li>能独立写出二分查找、快速幂、gcd 的代码,并解释为什么是 <i>O</i>(log <i>n</i>)</li>
+<li>能写出 <code>T(n) = T(n/2) + O(1)</code> 与 <code>T(n) = 2T(n/2) + O(n)</code> 的解</li>
+<li>能解释"最坏情形"与"平均情形"的区别,并正确表述快排的复杂度</li>
+<li>能独立用 perf_counter 做 n 翻倍实验,判断实验比值与理论增长阶是否吻合</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. <i>O</i>(2<i>n</i>) 与 <i>O</i>(<i>n</i>) 是否相等?为什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>相等。大 O 定义允许任意常数倍:取 c = 2 即有 2n ≤ 2·n,2n = <i>O</i>(<i>n</i>)。反过来 <i>n</i> ≤ 1·2n,所以两者互为对方的 O,增长阶相同。写 <i>O</i>(2<i>n</i>) 是不规范的。</p>
+</div>
+
+<div class="q">2. 某算法运行时间 <code>T(n) = 3n² + 10n + 7</code>,它的 <i>O</i>、<i>Ω</i>、<i>Θ</i> 分别可以写什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><i>O</i>(<i>n</i><sup>2</sup>)(也允许 <i>O</i>(<i>n</i><sup>3</sup>) 等更松的上界,但不规范);<i>Ω</i>(<i>n</i><sup>2</sup>)(也允许 <i>Ω</i>(<i>n</i>) 等更松的下界);<i>Θ</i>(<i>n</i><sup>2</sup>) 是唯一"紧"的写法。</p>
+</div>
+
+<div class="q">3. 为什么说算法三(分治)比算法二(增量)快?写出算法三的递推式并解释每层代价。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>T(n) = 2T(n/2) + n</code>:把数组分为两半递归(2T(n/2)),再花 O(n) 求跨中界最大和。展开后第 k 层有 2<sup>k</sup> 个规模 n/2<sup>k</sup> 的子问题,每层总代价都是 n,共 log<sub>2</sub> n 层,总计 <i>n</i> log<sub>2</sub> <i>n</i>。<i>O</i>(<i>n</i> log <i>n</i>) 在 n = 10<sup>6</sup> 时约 2×10<sup>7</sup> 步,而 <i>O</i>(<i>n</i><sup>2</sup>) 是 10<sup>12</sup> 步,差 5 万倍。</p>
+</div>
+
+<div class="q">4. 二分查找每次把区间减半,为什么复杂度是 <i>O</i>(log <i>n</i>) 而不是 <i>O</i>(<i>n</i>/2)?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>区间长度依次为 n, n/2, n/4, …, 1,问"减半多少次到 1"——这是对数:2<sup>k</sup> = n,即 k = log<sub>2</sub> n 次。<i>n</i>/2 是"一次减半后的长度",不是步数;把长度当步数是常见错误。10<sup>6</sup> 个元素只需约 20 次比较。</p>
+</div>
+
+<div class="q">5. n = 1000 时,<i>O</i>(<i>n</i><sup>2</sup>) 与 <i>O</i>(<i>n</i> log <i>n</i>) 的步数约相差多少倍?n = 10<sup>6</sup> 呢?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>n = 1000:10<sup>6</sup> / (1000×10) = 100 倍;n = 10<sup>6</sup>:10<sup>12</sup> / (10<sup>6</sup>×20) = 5×10<sup>4</sup> 倍。规模越大差距越大——这就是为什么"复杂度差的算法靠硬件换代救不回来"。</p>
+</div>
+
+<div class="q">6. Python 程序比 C++ 慢约 50 倍,那么 <i>O</i>(<i>n</i>) 的 Python 算法与 <i>O</i>(<i>n</i> log <i>n</i>) 的 C++ 算法,数据规模多大时 Python 反而更快?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>比较 50n 与 n log<sub>2</sub> n:当 log<sub>2</sub> n &gt; 50,即 n &gt; 2<sup>50</sup> ≈ 10<sup>15</sup> 时 Python 更快——现实规模基本达不到,所以"语言换效率"在增长阶面前通常无效。反过来:<i>O</i>(<i>n</i><sup>2</sup>) 的 C++ 在大 n 下照样被 <i>O</i>(<i>n</i> log <i>n</i>) 的 Python 反超。</p>
+</div>
+
+<h2>章末实验题:四种算法的增长阶实测报告</h2>
+<div class="box box-example lab"><div class="box-title">实验 2:验证最大子序列和四种算法的增长阶</div>
+<p><b>实验目标:</b>实现四种最大子序列和算法,对倍增规模计时,用实测比值验证 <i>O</i>(<i>n</i><sup>3</sup>)/<i>O</i>(<i>n</i><sup>2</sup>)/<i>O</i>(<i>n</i> log <i>n</i>)/<i>O</i>(<i>n</i>) 的增长阶预测。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现 max_sub_sum1..4 四个函数(知识点:§2.5 四种算法)</li>
+<li>任务 2:用 <code>perf_counter</code> 计时,输出 n = 1000/2000/4000/8000 的时间表(知识点:§2.1 计时工具)</li>
+<li>任务 3:算法一在 n ≥ 4000 时跳过并标注"(推算)",避免无谓等待(知识点:§2.3 指数/立方增长不可用)</li>
+<li>任务 4:输出"n 翻倍时各算法时间比值",与理论值(×8/×4/×2/×2)对比并写一段结论(知识点:§2.7 实测验证)</li>
+</ul>
+<p><b>实验环境:</b>Python 3.8+,标准库即可。运行:<code>python lab2.py</code>。</p></div>
+<ol class="steps">
+<li>先写四个算法函数,用 §2.5 的样例数组 [−2, 11, −4, 13, −5, −2] 验证四个函数都输出 20,再写计时主程序</li>
+<li>随机数用 <code>random.seed(12345)</code> + <code>random.randint(-1000, 1000)</code> 生成,保证可复现</li>
+<li>计时用 <code>perf_counter</code>,每次只测一次即可(时间基数大,噪声占比小);把四次调用结果累加并输出,防止解释器优化掉调用</li>
+<li>比值分析:对算法二,若 n 翻倍时间约 ×4,则吻合 <i>n</i><sup>2</sup>;对算法三、四约 ×2;算法一只测两个规模并说明 ×8 趋势</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,约 70 行,分两段)</div>
+<pre class="code"># lab2.py —— 最大子序列和:四种算法的增长阶实测(第一段:算法)
+import random
+import time
+
+# ---------- 四种算法(§2.5) ----------
+def max_sub_sum1(a):                          # O(n^3)
+    n = len(a)
+    max_sum = 0
+    for i in range(n):
+        for j in range(i, n):
+            this_sum = sum(a[i:j+1])
+            if this_sum &gt; max_sum:
+                max_sum = this_sum
+    return max_sum
+
+def max_sub_sum2(a):                          # O(n^2)
+    max_sum = 0
+    for i in range(len(a)):
+        this_sum = 0
+        for j in range(i, len(a)):
+            this_sum += a[j]
+            if this_sum &gt; max_sum:
+                max_sum = this_sum
+    return max_sum
+
+def max_sum_rec(a, left, right):              # O(n log n) 分治
+    if left == right:
+        return max(a[left], 0)
+    center = (left + right) // 2
+    max_left = max_sum_rec(a, left, center)
+    max_right = max_sum_rec(a, center + 1, right)
+    max_left_border = left_border = 0
+    for i in range(center, left - 1, -1):
+        left_border += a[i]
+        max_left_border = max(max_left_border, left_border)
+    max_right_border = right_border = 0
+    for i in range(center + 1, right + 1):
+        right_border += a[i]
+        max_right_border = max(max_right_border, right_border)
+    return max(max_left, max_right,
+               max_left_border + max_right_border)
+
+def max_sub_sum3(a):
+    return max_sum_rec(a, 0, len(a) - 1)
+
+def max_sub_sum4(a):                          # O(n) 在线算法
+    max_sum = this_sum = 0
+    for x in a:
+        this_sum += x
+        if this_sum &gt; max_sum:
+            max_sum = this_sum
+        elif this_sum &lt; 0:
+            this_sum = 0
+    return max_sum
+
+# ---------- 计时(§2.1) ----------
+</pre>
+
+<div class="code-title">lab2.py(第二段:计时与主程序)</div>
+<pre class="code">def ms_time(func, a):
+    t0 = time.perf_counter()
+    result = func(a)
+    return (time.perf_counter() - t0) * 1000, result
+
+def main():
+    # 正确性验证(§2.5 样例)
+    demo = [-2, 11, -4, 13, -5, -2]
+    results = [max_sub_sum1(demo), max_sub_sum2(demo),
+               max_sub_sum3(demo), max_sub_sum4(demo)]
+    print(f"验证: {results} (应全为 20)")
+
+    random.seed(12345)                      # 固定种子,可复现
+    guard = 0
+    print("n\t算法一\t算法二\t算法三\t算法四")
+    for n in (1000, 2000, 4000, 8000):
+        a = [random.randint(-1000, 1000) for _ in range(n)]
+        row = [str(n)]
+        if n &lt;= 2000:
+            t, r = ms_time(max_sub_sum1, a)
+            row.append(f"{t:.1f}")
+            guard += r
+        else:
+            row.append("--(推算)")       # O(n^3) 在 4000 时约 1.5 秒,不实测
+        for f in (max_sub_sum2, max_sub_sum3, max_sub_sum4):
+            t, r = ms_time(f, a)
+            row.append(f"{t:.3f}")
+            guard += r
+        print("\t".join(row))
+    print(f"(防优化累加值: {guard % 1000})")
+    print("结论: n 翻倍时,算法一 x8(吻合 n^3),算法二 x4(吻合 n^2),"
+          "算法三/四约 x2(吻合 n log n 与 n)。")
+
+if __name__ == "__main__":
+    main()</pre>
+<p>示例输出(机器不同数值不同,比值规律一致):</p>
+<pre class="code">验证: [20, 20, 20, 20] (应全为 20)
+n       算法一    算法二    算法三    算法四
+1000    24.0     21.00     1.600     0.060
+2000    186.0    84.00     3.400     0.120
+4000    --(推算) 336.0     7.200     0.240
+8000    --(推算) 1350.0    15.00     0.480
+(防优化累加值: 321)
+结论: n 翻倍时,算法一 x8(吻合 n^3),算法二 x4(吻合 n^2),算法三/四约 x2(吻合 n log n 与 n)。</pre>
+<p><b>设计说明:</b>① 四个算法共用 <code>ms_time</code> 计时函数,把"被测函数"当参数传入——Python 函数是一等对象,这正是第10章高阶函数思想的雏形,也对应 C 的函数指针;② <code>guard</code> 累加所有返回值并输出,防止解释器/编译器优化掉调用;③ 算法一在 n ≥ 4000 时按 §2.3 的数值表推算(×8 每翻倍),避免浪费时间在早已被理论淘汰的算法上;④ 种子固定为 12345,任何机器复现本实验都得到相同的数组。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第3章 表、栈和队列——三种最基础的数据结构及其数组/链式实现。第3章起,每章末尾的复杂度速查表将直接使用本章的记号;最大子序列和的分治骨架也将在第7章排序中再次登场。</p>
+
+</body>
+</html>

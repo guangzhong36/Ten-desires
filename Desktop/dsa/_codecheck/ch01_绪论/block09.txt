@@ -1,0 +1,12 @@
+// 递归求和:逻辑完全正确,但 n = 1000000 时崩溃
+#include <iostream>
+using namespace std;
+long long sumRec(int n) {
+    if (n == 0) return 0;             // 基准情形
+    return n + sumRec(n - 1);         // 需要 n 层栈帧同时存活
+}
+int main() {
+    // 深度 100 万 × 每帧几十字节 > 默认栈约 8MB
+    cout << sumRec(1000000) << endl;  // 段错误:栈空间耗尽,进程崩溃
+    return 0;
+}

@@ -1,0 +1,17 @@
+    // 任务 5(加分):比较/移动次数统计
+    g_count = true;
+    vector<int> a = makeData(1000, RANDOM, rng), b;
+    g_cmp = 0; g_move = 0; b = a; insertionSort(b, 0, int(b.size()) - 1);
+    cout << "\n任务 5(n=1000 随机):插入 比较=" << g_cmp
+         << " 移动=" << g_move << "\n";
+    g_cmp = 0; g_move = 0; b = a; mergeSort(b);
+    cout << "                归并 比较=" << g_cmp << " 移动=" << g_move << "\n";
+    g_cmp = 0; g_move = 0; b = a; quickSort(b);
+    cout << "                快排 比较=" << g_cmp << " 交换=" << g_move << "\n";
+    g_count = false;
+
+    cout << "\n结论:实测比值与理论吻合——插入 n 翻倍约 ×4,归并/快排约 ×2;"
+            "逆序上插入退化最明显,近有序上插入接近 O(n),快排三数中值使逆序不再退化。\n";
+    cout << "(防优化累加值: " << guard << ")\n";
+    return 0;
+}

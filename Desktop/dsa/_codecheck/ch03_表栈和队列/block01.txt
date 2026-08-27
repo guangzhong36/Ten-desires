@@ -1,0 +1,22 @@
+// 手写动态数组:容量不足时倍增(2 倍)拷贝
+class MyVector {
+    int* data_ = nullptr;    // 元素存储
+    size_t size_ = 0;        // 元素个数(长度)
+    size_t cap_ = 0;         // 已分配容量
+public:
+    ~MyVector() { delete[] data_; }        // RAII:自动释放
+    void push_back(int x) {
+        if (size_ == cap_) {               // 满了:倍增
+            size_t newCap = cap_ == 0 ? 1 : cap_ * 2;
+            int* p = new int[newCap];
+            for (size_t i = 0; i < size_; ++i) p[i] = data_[i];
+            delete[] data_;
+            data_ = p;
+            cap_ = newCap;
+        }
+        data_[size_++] = x;
+    }
+    int& operator[](size_t i) { return data_[i]; }   // 按下标访问
+    size_t size() const { return size_; }
+    size_t capacity() const { return cap_; }
+};

@@ -1,0 +1,10 @@
+# 平方探测:第 i 次冲突后尝试 pos + i^2
+pos = hash_str(s, M)
+i = 0
+while table[pos] is not None and table[pos] != s:
+    i += 1
+    pos = (pos + i * i) % M    # 探测序列:pos+1, pos+4, pos+9, ...
+if table[pos] is None:
+    table[pos] = s
+# 定理(教材 5.4 节):表大小为素数且装填因子 λ < 1/2 时,
+# 平方探测总能找到空单元,且最多探测一半的表长

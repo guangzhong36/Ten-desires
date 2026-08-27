@@ -1,0 +1,17 @@
+# sz[root] = 根所在树的结点数(只在根上有效)
+parent = list(range(8))
+sz = [1] * 8                   # 初始每棵树 1 个结点
+
+def find(x):                   # 朴素 find 不变
+    while parent[x] != x:
+        x = parent[x]
+    return x
+
+def union_by_size(a, b):
+    ra, rb = find(a), find(b)
+    if ra == rb:
+        return                 # 已在同一集合
+    if sz[ra] < sz[rb]:        # 小树并入大树
+        ra, rb = rb, ra
+    parent[rb] = ra            # rb 不再是根,它的 sz 作废
+    sz[ra] += sz[rb]

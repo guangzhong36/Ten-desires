@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第5章 散列</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · DATA STRUCTURES</div>
+<h1 class="chapter-title">第5章 散列</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础(已读完第 1–4 章)</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解散列为什么能把查找从 <i>O</i>(log <i>n</i>) 压到平均 <i>O</i>(1):散列函数把键映射为数组下标,理想情况下一步直达。</li>
+<li>掌握整数取模与字符串 37 倍多项式两种散列函数,能说出"为什么表大小必须是素数、为什么要最后才取模"。</li>
+<li>掌握分离链接法与开放定址法(线性探测、平方探测、双散列)的实现,理解装填因子 λ 与惰性删除。</li>
+<li>掌握再散列的动机与实现,能说出摊还代价 <i>O</i>(1);了解可扩散列的基本思想。</li>
+<li>深入理解 dict:内建散列表,可哈希要求、插入顺序、推导式与 Counter 等常用写法。</li>
+<li>能独立实现词频统计程序(手写散列表 + dict 两条路线),用实验数据理解装填因子的影响。</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Python:本章主题如何迁移</div>
+<p>数组按下标访问是 <i>O</i>(1) 的,前提是下标是 0、1、2、… 这样的连续整数。可现实里的键往往不连续:学号是 2023001、2023050,订单号是一串字母数字。散列的想法很简单:写一个函数把"任意的键"翻译成"一个合理的下标",然后直接进数组。这个函数就叫<code>散列函数</code>。</p>
+<p>C 语言里你要自己写这个函数,并处理两个麻烦:负数取模会得到负下标(必须 <code>if (h &lt; 0) h += M</code>),字符串散列时 int 容易溢出。Python 里这两个麻烦都不存在:取模向下取整、余数恒非负,整数任意精度不会溢出——但"散列思想"本身一字不少,本章的实验仍然要手写一张表。</p>
+<p>更重要的差异是:Python 的 dict 就是一张工程级的散列表,你每天都在用而浑然不觉。本章的主线是"先手写,再用库":§5.2 用 list of list 拼出分离链接散列表(桶就是链表,是 C 语言"结构体 + 指针"的 Python 化);§5.6 对照着讲 dict 的底层机制——可哈希、扩容、插入序;§5.7 的单词统计证明手写版与 dict 输出完全一致。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>模运算(取余)。重点:Python 的 <code>%</code> 是向下取整除法,结果与 C 不同(见 §5.1.2 误区)。另一条是素数:只能被 1 和自身整除的正整数。</p>
+<p><b>C 语言前置:</b>指针遍历字符串、struct 与链表节点、malloc/free。本章的 C 对照表会反复出现这三样,帮你看清 Python 省掉了什么。</p>
+<p><b>依赖的前面章节:</b>第 3 章链表与 vector——分离链接法的桶就是链表;再散列"翻倍扩容再重插"与 Python list 扩容、dict 扩容同构。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段:</b>读 §5.1–§5.2,吃透散列函数与分离链接法;手算教材 5.2 节小例子,对照示例 5-3 抄一遍代码。</li>
+<li><b>第二阶段:</b>读 §5.3–§5.5,理解三个探测方案的"聚集"问题与平方探测定理;读 §5.6 时在解释器里逐个敲 dict 示例。</li>
+<li><b>第三阶段:</b>完成章末实验,手写表与 dict 双路线统计词频,用计时数据看 λ 对性能的影响。</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§5.1 基本想法与散列函数<ul>
+<li>5.1.1 基本想法:查找的第三件武器</li>
+<li>5.1.2 整数键:取模散列与素数表大小</li>
+<li>5.1.3 字符串键:37 倍多项式散列</li>
+<li>5.1.4 装填因子 λ</li>
+</ul></li>
+<li>§5.2 分离链接法<ul>
+<li>5.2.1 桶就是一条链表</li>
+<li>5.2.2 完整实现:查找、插入与删除</li>
+<li>5.2.3 复杂度:平均 O(1) 从哪来</li>
+</ul></li>
+<li>§5.3 开放定址法<ul>
+<li>5.3.1 线性探测与一次聚集</li>
+<li>5.3.2 平方探测</li>
+<li>5.3.3 双散列</li>
+<li>5.3.4 三种方案对比与惰性删除</li>
+</ul></li>
+<li>§5.4 再散列<ul>
+<li>5.4.1 什么时候需要再散列</li>
+<li>5.4.2 实现:翻倍、取素数、重插</li>
+<li>5.4.3 摊还代价</li>
+</ul></li>
+<li>§5.5 可扩散列(选读)</li>
+<li>§5.6 标准库中的散列结构<ul>
+<li>5.6.1 dict:Python 内建的散列表</li>
+<li>5.6.2 可哈希:什么对象能当键</li>
+<li>5.6.3 常用写法:推导、defaultdict 与 Counter</li>
+</ul></li>
+<li>§5.7 手写与标准库并排:单词统计</li>
+</ul></div>
+
+<h2>§5.1 基本想法与散列函数</h2>
+
+<h3>5.1.1 基本想法:查找的第三件武器</h3>
+<p>你学过两种查找:顺序扫描(链表,<i>O</i>(<i>n</i>))和二叉查找树(平均 <i>O</i>(log <i>n</i>))。散列是第三条路:把每个键换算成数组下标,查找就是一次数组访问,平均 <i>O</i>(1)。</p>
+<p>表大小为 <i>M</i>,散列函数 <code>hash(x)</code> 把键 <i>x</i> 映射到 0 到 <i>M</i>-1。插入:<code>table[hash(x)] = x</code>;查找:查 <code>table[hash(x)]</code> 里有没有 <i>x</i>。难点在于散列函数"多对一":不同键可能映射到同一下标,这叫<code>冲突</code>。散列的学问 = 好的散列函数(冲突少)+ 好的冲突解决策略。</p>
+<p>记住<span class="hl">散列三要素</span>:散列函数(键 → 下标)+ 冲突解决策略(§5.2 分离链接 / §5.3 开放定址)+ 表大小 M(尽量取素数)。任何一环做差,性能都会从"平均 O(1)"掉回"最坏 O(n)"。</p>
+
+<h3>5.1.2 整数键:取模散列与素数表大小</h3>
+<p>键是整数时最常用的散列函数是取模:<code>hash(x) = x % M</code>,开销只有一次除法。关键是表大小 <i>M</i> 的选择:若 <i>M</i> 是合数而键恰好都带某个公因子,就会全挤进少数几个桶。比如 M = 10,键 42、32、52、72 的个位全是 2,<code>x % 10</code> 全部等于 2——四键同桶,九桶全空;取素数 M = 11 则余数 9、10、8、6,四散而开。键的分布未知时,素数表是唯一稳妥的选择。</p>
+<div class="box box-pitfall"><div class="box-title">误区:Python 的 % 与 C 不同——向下取整</div>
+<p>C 的 <code>-5 % 7</code> 等于 -5,Python 的 <code>-5 % 7</code> 等于 2(向下取整,余数恒非负)。对散列来说这是好事:下标天然合法,C 里那行 <code>if (h &lt; 0) h += M</code> 在 Python 里永远用不上。但移植 C 代码时务必警惕——同样的表达式,两种语言给出不同结果:</p>
+<pre class="code"># Python 的 % 与 C 不同:向下取整,余数恒为非负
+x = -5
+M = 7
+h = x % M                     # 结果是 2,不是 -5!
+print(h)                      # 输出 2,天然适合当数组下标
+# 因此 C 里那行 if (h &lt; 0) h += M 在 Python 里永远用不上
+# 但移植 C 代码时要警惕:两种语言对负数取模语义不同
+# 若 C 代码里散列值出现负数,先怀疑取模语义再查逻辑
+</pre>
+<p>另一个顺带的好处:Python 整数任意精度,散列累加永远不会溢出——C 里 int 溢出导致的"散列值乱跳"问题,在 Python 里不存在。</p></div>
+<table class="cmp">
+<tr><th>C 的写法</th><th>Python 的写法</th></tr>
+<tr><td><code>int h = x % M;</code> 负数得到负下标,要手动 <code>if (h &lt; 0) h += M;</code></td><td><code>h = x % M</code> 向下取整,结果恒非负,坑直接消失</td></tr>
+<tr><td>char* 循环累加 <code>h = h*37 + *s</code>,int 可能溢出</td><td><code>h * 37 + ord(c)</code>,整数任意精度,无溢出</td></tr>
+</table>
+
+<h3>5.1.3 字符串键:37 倍多项式散列</h3>
+<p>字符串是最常见的键(单词、文件名、URL)。教材采用 37 倍多项式法,把字符串按霍纳法则逐位乘加,每步 <code>h = h * 37 + c</code>。先给 C 回顾版,再给 Python 写法:</p>
+<div class="code-title">示例 5-1 C 回顾:字符串散列(37 倍多项式,霍纳法则)</div>
+<pre class="code">/* C 回顾:字符串散列 */
+int hashStrC(char* s, int M) {
+    unsigned int h = 0;              /* unsigned 累加,防止溢出成负数 */
+    while (*s != '\0') {
+        h = h * 37 + (unsigned char)*s;  /* 每步乘 37 再加当前字符 */
+        ++s;
+    }
+    return (int)(h % M);             /* 最后才取模,结果落在 [0, M-1] */
+}
+</pre>
+<div class="code-title">示例 5-2 Python 版:同样的逻辑,更短的代码</div>
+<pre class="code"># Python 版:整数任意精度,不会溢出;逻辑与 C 完全对应
+def hash_str(s: str, M: int) -> int:
+    h = 0
+    for c in s:                # 逐个字符取码,累乘累加
+        h = h * 37 + ord(c)    # 每一步都乘 37 再加当前字符
+    return h % M               # 最后取一次模,结果在 [0, M-1]
+
+# 调用示例:h = hash_str("hello", 17) → 0 到 16 之间的整数
+</pre>
+<p>两个版本除类型与遍历方式外一字不差;"最后取一次模"几个字不是风格,是正确性——见下面的误区。</p>
+<div class="box box-pitfall"><div class="box-title">误区:逐字符取模会悄悄毁掉散列</div>
+<p>有人图省事,把取模写进循环:</p>
+<pre class="code"># 错误示范:把取模写进循环,乘法被取模"吃掉"
+for c in s:
+    h = (h * 37 + ord(c)) % M      # 错误!
+# 当 M = 37 时,(h*37+c)%37 = c%37,
+# 散列退化成只看最后一个字符;
+# 当 M = 36 时,37 ≡ 1 (mod 36),
+# "abc" 与 "cba" 算出同一个散列值,
+# 字符串变成了"字符和"。
+</pre>
+<p>两种退化同源:<span class="hl">取模发生在乘法之前,丢掉了进位</span>。正确写法永远是先累加、最后取一次模(示例 5-2)。</p></div>
+
+<h3>5.1.4 装填因子 λ</h3>
+<p>装填因子 λ = 元素个数 <i>N</i> / 表大小 <i>M</i>,衡量表"满"的程度:λ 越大冲突越多,查找越慢;λ 越小空位越多,浪费越大。分离链接的经验阈值 λ ≈ 0.75(再大就该扩容,见 §5.4);开放定址更苛刻,平方探测要求 λ &lt; 1/2。</p>
+<div class="box box-tip"><div class="box-title">记号说明:λ 的两种记法</div>
+<p>正文用希腊字母 λ;代码里命名为 <code>load_factor</code>(或 <code>loadFactor()</code>),实现为 <code>N / M</code> 的浮点除法,两者是同一个量。</p></div>
+
+<h2>§5.2 分离链接法</h2>
+
+<h3>5.2.1 桶就是一条链表</h3>
+<p>分离链接法(separate chaining)的思路最直观:每个下标放一条链表(教材图 5-1)。插入:算桶号挂到链表;查找:算桶号,链内线性扫描;删除:算桶号,链中摘除。<i>M</i> 决定链表条数,λ = <i>N</i>/<i>M</i> 就是平均链长。Python 里"链表"用 list 代替,桶数组就是 list of list。</p>
+<table class="cmp">
+<tr><th>C 的写法</th><th>Python 的写法</th></tr>
+<tr><td><code>struct Node { char* key; Node* next; };</code> 手写链表头插法,自己 malloc/free 每个节点</td><td>桶 = list,桶数组 = list of list,一行 <code>[[] for _ in range(M)]</code></td></tr>
+<tr><td>散列后用 strcmp 逐个比较</td><td>桶内元素直接 <code>==</code> 比较</td></tr>
+<tr><td>手动 free 所有节点</td><td>交给垃圾回收,无释放概念</td></tr>
+</table>
+
+<h3>5.2.2 完整实现:查找、插入与删除</h3>
+<p>下面是分离链接散列表的完整 Python 实现。<code>next_prime(M)</code> 返回不小于 <i>M</i> 的最小素数(实现见章末实验),构造函数用它定素数表大小。</p>
+<div class="code-title">示例 5-3 分离链接散列表:find / insert / remove</div>
+<pre class="code"># 分离链接散列表:桶数组是 list of list,一个桶就是一条链表
+class HashTable:
+    def __init__(self, M):
+        self.buckets = [[] for _ in range(next_prime(M))]
+        self.size = 0
+
+    def _hash(self, s):
+        h = 0
+        for c in s:
+            h = h * 37 + ord(c)
+        return h % len(self.buckets)
+
+    def find(self, s):
+        for x in self.buckets[self._hash(s)]:
+            if x == s:
+                return True
+        return False
+
+    def insert(self, s):
+        if self.find(s):
+            return
+        self.buckets[self._hash(s)].append(s)
+        self.size += 1
+
+    def remove(self, s):
+        b = self.buckets[self._hash(s)]
+        for i, x in enumerate(b):
+            if x == s:
+                b.pop(i)
+                self.size -= 1
+                return
+
+    @property
+    def load_factor(self):
+        return self.size / len(self.buckets)
+</pre>
+<p>三个操作同一套路:先 <code>_hash(s)</code> 定桶,再只动那一条链——散列把"全表扫描"降为"单桶扫描",单桶平均只有 λ 个元素。insert 先查重再 append;remove 定位后 <code>pop(i)</code> 摘除。与 C 的差异在桶上:Python 的 list 自带增删,免去全部指针操作。</p>
+
+<h3>5.2.3 复杂度:平均 O(1) 从哪来</h3>
+<p>一次 find 的代价 = 散列 O(键长 L)+ 单桶扫描 O(平均链长)= O(1 + λ)。λ 控制在 0.75 左右时,常数 1 + λ 很小,于是散列表查找<span class="hl">平均 O(1)</span>;插入、删除同理。</p>
+<p>牢记散列表的复杂度画像:查找/插入/删除平均 O(1)、最坏 O(n)。最坏情况是所有键散列到同一桶,链表退化成一条长链——散列函数均匀且表大小是素数时几乎不会发生,但你必须能说出它为什么是 O(n)。代价是牺牲顺序性:无法按键有序遍历、没有前驱后继;要顺序时回到第 4 章的二叉查找树。</p>
+
+<h2>§5.3 开放定址法</h2>
+<p>分离链接需要额外指针,浪费空间。开放定址法(open addressing)让所有元素都住进表本身:冲突时按某种规则在表中找下一个空位。规则不同,衍生出三种方案。</p>
+
+<h3>5.3.1 线性探测与一次聚集</h3>
+<p>线性探测:冲突时逐个向后试 <code>pos = (pos + 1) % M</code>,直到空位或绕回。它有个著名毛病——<code>一次聚集</code>:连续被占的单元越滚越长,新键插进去又让它更长,形成"雪球"。</p>
+<div class="code-title">示例 5-4 线性探测插入</div>
+<pre class="code"># 开放定址:线性探测插入(空单元用 None 标记)
+pos = hash_str(s, M)
+while table[pos] is not None and table[pos] != s:
+    pos = (pos + 1) % M        # 冲突就向后挪一格,越界绕回 0
+if table[pos] is None:
+    table[pos] = s             # 找到空位,插入
+else:
+    pass                       # 键已存在,什么也不做
+</pre>
+<p>手算一遍:M = 7,按序插入 7、15、8、1(h(x) = x mod 7):7→0;15→1;8→1 冲突试 2,空,落位;1→1 冲突试 2 仍冲突,试 3,落位。最终下标 0–3 依次是 7、15、8、1:<span class="hl">一次聚集</span>——三键挤成一团,后面的键要从 1 一路试到 4。</p>
+
+<h3>5.3.2 平方探测</h3>
+<p>平方探测把步长改成平方:第 <i>i</i> 次冲突后尝试 <code>pos + i²</code>,探测序列从一开始就跳开,避免连续占用。</p>
+<div class="code-title">示例 5-5 平方探测插入</div>
+<pre class="code"># 平方探测:第 i 次冲突后尝试 pos + i^2
+pos = hash_str(s, M)
+i = 0
+while table[pos] is not None and table[pos] != s:
+    i += 1
+    pos = (pos + i * i) % M    # 探测序列:pos+1, pos+4, pos+9, ...
+if table[pos] is None:
+    table[pos] = s
+# 定理(教材 5.4 节):表大小为素数且装填因子 λ &lt; 1/2 时,
+# 平方探测总能找到空单元,且最多探测一半的表长
+</pre>
+<p>教材定理:表大小是素数且 λ &lt; 1/2 时,平方探测总能在最多一半的表长内找到空单元(证明要点:前半段探测位置互不相同)。工程含义:λ 必须死守在半表以下,因此要更早再散列。它消灭了一次聚集,但留下"二次聚集":同位置的键探测序列完全相同。</p>
+
+<h3>5.3.3 双散列</h3>
+<p>双散列连二次聚集也消灭:步长由第二个散列函数算出,每个键拥有专属探测节奏。常见选择:步长 = <code>M2 - (h(x) mod M2)</code>,M2 取比 M 小的素数。</p>
+<div class="code-title">示例 5-6 双散列插入</div>
+<pre class="code"># 双散列:冲突时以第二个散列函数的值做步长
+def hash_str2(s, M):           # 第二散列:常用 M2 - (h mod M2),M2 为素数
+    return M - 1 - (hash_str(s, M) % (M - 1))   # 值域 1..M-1,步长不为 0
+
+pos = hash_str(s, M)           # 主散列:决定初始位置
+step = hash_str2(s, M)         # 第二散列:决定步长,注意不能为 0
+while table[pos] is not None and table[pos] != s:
+    pos = (pos + step) % M     # 每次前进 step 格,而不是 1 格
+if table[pos] is None:
+    table[pos] = s
+</pre>
+
+<h3>5.3.4 三种方案对比与惰性删除</h3>
+<table>
+<tr><th>方案</th><th>探测序列</th><th>代价</th></tr>
+<tr><td>线性探测</td><td>顺次 +1</td><td>一次聚集,λ 高时退化严重;实现最简单</td></tr>
+<tr><td>平方探测</td><td>+1, +4, +9, …</td><td>无一次聚集,有二次聚集;需素数表且 λ &lt; 1/2</td></tr>
+<tr><td>双散列</td><td>步长由第二个散列决定</td><td>无聚集,但要多算一次散列函数</td></tr>
+</table>
+<div class="box box-pitfall"><div class="box-title">误区:开放定址表不能物理删除</div>
+<p>线性探测里删掉一个元素若直接置空,会把探测链拦腰截断:后续依赖它"借道"的元素从此再也找不到。教材做法是<span class="hl">惰性删除</span>:标记 deleted,查找跳过、插入复用、定期再散列清标记。注意 deleted 单元不算"已占用",装填因子计算要把它们排除。</p></div>
+
+<h2>§5.4 再散列</h2>
+
+<h3>5.4.1 什么时候需要再散列</h3>
+<p>装填因子涨过阈值后冲突率陡增,平均链长(或探测次数)失控。唯一的办法是<span class="hl">再散列</span>:表扩容(通常翻倍取素数),旧元素用新表大小重新散列。插入时检查 λ,超阈值触发。工程阈值:分离链接约 0.75,开放定址约 0.5。</p>
+
+<h3>5.4.2 实现:翻倍、取素数、重插</h3>
+<div class="code-title">示例 5-7 再散列:给分离链接表扩容</div>
+<pre class="code"># 再散列:装填因子超过阈值就把表翻倍并重新插入全部元素
+def rehash(self):
+    if self.load_factor &lt; 0.75:
+        return                          # λ 未超标则不做
+    old_buckets = self.buckets          # 先备份旧桶
+    new_m = next_prime(len(old_buckets) * 2)   # 新表大小:翻倍后取素数
+    self.buckets = [[] for _ in range(new_m)]
+    self.size = 0
+    for b in old_buckets:               # 重新插入每个旧元素
+        for x in b:
+            self.insert(x)              # 会用新表大小重算散列
+# 单次再散列 O(n),摊到每次插入上仍是 O(1)——摊还分析见 §11
+</pre>
+<p>最后是"重新插入"而非"搬过去":桶号 = hash(x) mod 新表大小,每个元素都得重算——"再散列"之名由此而来。</p>
+
+<h3>5.4.3 摊还代价</h3>
+<p>单次再散列 O(n),但把账摊到 n 次插入上:每次扩容后空间翻倍,平均下来<span class="hl">每次插入摊还 O(1)</span>。这与第 3 章 Python list 扩容的摊还分析同构,区别是散列表翻倍后元素必须重插(不能拷贝)。</p>
+<div class="box box-tip"><div class="box-title">实现建议:dict 的扩容不需要你操心</div>
+<p>CPython 的 dict 在装填因子超过 2/3 时自动扩容(resize),并自动把旧键值对重新散列——这正是教材讲的再散列,只是你感知不到。手写表时要自己写 rehash(示例 5-7);用 dict 时记得:插入 10 万条记录前可用 <code>d = {}</code> 直接建,CPython 内部会平滑扩容,无需预分配。</p></div>
+
+<h2>§5.5 可扩散列(选读)</h2>
+
+<h3>5.5.1 散列与磁盘的冲突</h3>
+<p>前面所有方案都假设表在内存。数据量大到必须存磁盘时,一次磁盘 I/O 是内存访问的几十万倍,而散列函数均匀分布意味着每次查找都可能访问不同页,随机 I/O 会让性能崩溃。可扩散列(extendible hashing)专治"键太多,一页装不下"。</p>
+
+<h3>5.5.2 目录、页与局部分裂</h3>
+<p>可扩散列分两层:内存里的<span class="hl">目录</span>(directory,大小为 2<sup>d</sup> 的数组)和一组磁盘<span class="hl">页</span>(page,一页容纳若干键)。查找:取散列值的前 d 位定位目录项,读目录项指向的页。插入时若页满就分裂:满页一分为二,目录规模翻倍(d 加一)。只有满的那一页被拆,其它页原封不动,这叫<span class="hl">局部分裂</span>——表随数据增长逐页扩张,而非整体重建。</p>
+<p>对照再散列:整表翻倍、全部重插(摊还 O(1));可扩散列只分裂满页 + 目录翻倍,其它页不动,且只有一页 I/O。代价:目录占内存,可能有两页指向同一目录区段(浪费)。数据库与文件系统的索引设计正是这一思想的生产级版本。</p>
+
+<h2>§5.6 标准库中的散列结构</h2>
+
+<h3>5.6.1 dict:Python 内建的散列表</h3>
+<p>dict 就是一张工程级的散列表:键不可变可哈希、查找平均 O(1)、自动扩容(§5.4)。两个 Python 特有的行为要说清楚:<span class="hl">3.7+ 保证按插入顺序遍历</span>(与 C++ unordered_map 的无序相反);<code>d[k]</code> 在键不存在时抛 KeyError(与 C++ operator[] 自动插入恰好相反)。</p>
+<div class="code-title">示例 5-8 dict 基本用法:对单词计数</div>
+<pre class="code"># dict:Python 内建的散列表,键值对即用即走
+cnt = {}                     # 空字典
+for w in words:
+    cnt[w] = cnt.get(w, 0) + 1      # get:取不到返回默认值 0
+
+# 三种"查"的姿势
+if w in cnt:                 # 只想知道在不在:in 成员判断
+    n = cnt[w]               # 直接下标:键不存在会 KeyError!
+n = cnt.get(w, 0)            # get:不存在返回默认值,不抛异常
+
+# 遍历:3.7+ 按插入顺序
+for k, v in cnt.items():
+    print(k, v)
+</pre>
+<div class="box box-pitfall"><div class="box-title">误区:可变对象不能做键</div>
+<p>dict 要求键可哈希,而可哈希的前提是"不可变":list、dict、set 可变,不能当键;<code>d[[1, 2]] = "x"</code> 直接抛 <code>TypeError: unhashable type: 'list'</code>。tuple 只要内部元素都不可变就可哈希:<code>d[(1, 2)]</code> 合法。若你真需要"列表键",把 list 转成 tuple 再用——这是 Python 里最常见的散列坑之一。</p></div>
+
+<h3>5.6.2 可哈希:什么对象能当键</h3>
+<p>"可哈希"就是"有散列函数"的 Python 说法。内置类型里,整数、浮点、字符串、tuple 可哈希;list、dict、set 不可哈希。自定义类的实例默认可哈希(按对象地址散列,与 <code>==</code> 一致),这是 Python 的省心之处——不需要像 C++ 那样写函数对象:</p>
+<div class="code-title">示例 5-9 可哈希规则与一行建表</div>
+<pre class="code"># 可哈希:不可变对象才能当键,list 不行,tuple 可以
+d = {}
+d["name"] = "Ada"           # str 可哈希
+d[(1, 2)] = "point"         # tuple 可哈希
+# d[[1, 2]] = "x"           # TypeError: unhashable type: 'list'
+
+# 一行建表:字典推导式
+freq = {w: words.count(w) for w in set(words)}
+
+# 更高效的默认值工厂
+from collections import defaultdict, Counter
+cnt = defaultdict(int)      # 访问不存在的键自动给 0
+cnt["hello"] += 1
+top3 = Counter(words).most_common(3)   # 词频排序,取前 3
+</pre>
+
+<h3>5.6.3 常用写法:推导、defaultdict 与 Counter</h3>
+<p>词频统计是 dict 最经典的应用,工程上有三种递进写法:<code>get + 1</code>(示例 5-8)、<code>defaultdict(int)</code>(少一行判断)、<code>Counter(words)</code>(一行全部完成,还带 most_common 排序)。选型建议:</p>
+<table>
+<tr><th>需求</th><th>写法</th><th>原因</th></tr>
+<tr><td>普通查值、计数</td><td>dict + get</td><td>无额外依赖,语义直白</td></tr>
+<tr><td>频繁"取不到就设默认"</td><td>defaultdict</td><td>省掉显式判断</td></tr>
+<tr><td>计数 + 频率排序</td><td>Counter</td><td>most_common 一行搞定</td></tr>
+<tr><td>需要按键有序遍历</td><td>sorted(d)</td><td>无内建有序字典,排序后遍历</td></tr>
+</table>
+<p>注意 dict 与 C 的关系:你写的 <code>dict</code> 字面量,底层就是一张散列表;理解本章的 λ、再散列,就是理解 dict 在"满"的时候做了什么。</p>
+
+<h2>§5.7 手写与标准库并排:单词统计</h2>
+
+<h3>5.7.1 需求:统计文章词频</h3>
+<p>统计一篇文章里每个单词的出现次数("the 出现 1800 次"之类)。这是散列表的教科书级应用,也是章末实验的前身。同一需求,两条路线各写一遍,并排对比。</p>
+
+<h3>5.7.2 手写版实现</h3>
+<div class="code-title">示例 5-10 手写版:桶里放 (单词, 次数) 元组</div>
+<pre class="code"># 手写版:桶里放 (单词, 次数) 元组,统计每个单词的出现次数
+class WordCounter:
+    def __init__(self, m):
+        self.buckets = [[] for _ in range(next_prime(m))]
+        self.distinct = 0
+
+    def add(self, w):
+        b = self.buckets[self._hash(w)]
+        for i, (key, cnt) in enumerate(b):
+            if key == w:
+                b[i] = (key, cnt + 1)   # 已存在:计数 +1
+                return
+        b.append((w, 1))                # 新词:插到桶尾
+        self.distinct += 1
+
+    def count(self, w):
+        for key, cnt in self.buckets[self._hash(w)]:
+            if key == w:
+                return cnt
+        return 0
+
+    def _hash(self, s):
+        h = 0
+        for c in s:
+            h = h * 37 + ord(c)
+        return h % len(self.buckets)
+
+
+def split_words(text):
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def main():
+    text = "the cat and the dog and the cat"
+    wc = WordCounter(16)                # 表大小 16 → 素数 17
+    for w in split_words(text):
+        wc.add(w)
+    print("the:", wc.count("the"))      # 3
+    print("cat:", wc.count("cat"))      # 2
+    print("不同单词:", wc.distinct)       # 4
+
+
+if __name__ == "__main__":
+    main()
+</pre>
+
+<h3>5.7.3 标准库版实现</h3>
+<div class="code-title">示例 5-11 标准库版:同一需求,代码量减到 1/5</div>
+<pre class="code"># 标准库版:Counter 一行完成全部计数
+import re
+from collections import Counter
+
+text = "the cat and the dog and the cat"
+words = re.findall(r"[a-z0-9]+", text.lower())
+cnt = Counter(words)             # 一次扫描完成全部计数
+
+print("the:", cnt["the"])        # 3
+print("cat:", cnt["cat"])        # 2
+print("不同单词:", len(cnt))      # 4
+print(cnt.most_common(2))        # [('the', 3), ('cat', 2)]
+</pre>
+
+<h3>5.7.4 对照结论</h3>
+<table class="cmp">
+<tr><th>C 的写法</th><th>Python 的写法</th></tr>
+<tr><td>结构体数组存 (word, cnt),每次查找线性扫描 O(n)</td><td>dict / Counter:一次扫描完成,平均 O(1)</td></tr>
+<tr><td>自己写字符串比较、手动扩容、手动释放</td><td>== 内置,自动扩容,垃圾回收</td></tr>
+</table>
+<div class="box box-tip"><div class="box-title">调试技巧:手写版与库版互相验算</div>
+<p>手写数据结构最常见的 bug 是"错得整齐":两处实现犯同一个错,测试却全绿。对策是章末实验的做法——同一份数据喂给手写表和 dict,抽查若干键的词频必须一致。这个"双实现互验"的习惯,写红黑树、堆时都用得上。</p></div>
+
+<h2>本章复杂度速查表</h2>
+<p>口诀:查找/插入/删除平均 O(1),最坏 O(n);代价是放弃按键顺序。以下结论两版通用。</p>
+<table>
+<tr><th>操作</th><th>数据结构/算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>查找</td><td>散列表(分离链接)</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>插入</td><td>散列表(分离链接)</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>删除</td><td>散列表(分离链接)</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>查找</td><td>散列表(开放定址)</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>插入</td><td>散列表(开放定址)</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>删除(惰性)</td><td>散列表(开放定址)</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>散列函数</td><td>整数取模</td><td><i>O</i>(1)</td><td>—</td></tr>
+<tr><td>散列函数</td><td>字符串 37 倍多项式(键长 L)</td><td><i>O</i>(<i>L</i>)</td><td>—</td></tr>
+<tr><td>再散列</td><td>单次再散列(翻倍重插)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>连续插入</td><td>含再散列的 n 次插入</td><td>摊还 <i>O</i>(1)/次</td><td><i>O</i>(<i>n</i>)/次</td></tr>
+<tr><td>查找/插入/删除</td><td>dict / set(内建散列表)</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按插入序遍历</td><td>dict(3.7+)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按键有序遍历</td><td>sorted(d)(无内建有序字典)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>探测次数</td><td>线性/平方探测,λ ≈ 0.5</td><td>≈ 1.5 次</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>词频统计</td><td>手写散列表 / dict / Counter</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能说出 dict 是内建散列表:查找平均 O(1),3.7+ 保证按插入顺序遍历。</li>
+<li>能手写取模散列,并知道 Python 的 % 是向下取整(负数余数非负,与 C 不同)。</li>
+<li>能手写 37 倍多项式字符串散列,解释"为什么先累加、最后取模";整数任意精度无溢出。</li>
+<li>能说出表大小必须取素数(手写实现时),并给出合数表大小的反例。</li>
+<li>能说出装填因子 λ = N/M 的含义与经验阈值(分离链接 ≈ 0.75,平方探测 &lt; 0.5)。</li>
+<li>能实现分离链接散列表(list of list)的 insert / find / remove。</li>
+<li>能说出开放定址三种方案的探测序列、聚集现象与适用条件。</li>
+<li>能解释惰性删除的必要性(物理删除会切断探测链)。</li>
+<li>能实现再散列,说出"每次插入摊还 O(1)";知道 dict 自动扩容做的是同一件事。</li>
+<li>能判断什么对象可哈希:list/dict/set 不能当键,tuple 可以;d[k] 不存在抛 KeyError,get 返回默认值。</li>
+<li>能用 dict + get、defaultdict、Counter 三种写法做词频统计,知道各自适用场景。</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 表大小 M = 7,散列函数 h(x) = x mod 7,用分离链接法依次插入 13、27、41、55。画出各桶的链表,并计算装填因子 λ 与平均链长。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>13、27、41、55 除以 7 的余数全是 6——四键全落 6 号桶(最坏情况的构造方式)。λ = 4/7 ≈ 0.57,平均链长 4/7,但 6 号桶链长 4。</p></div>
+<div class="q">2. 逐字符取模与最后取模,在 M = 37 和 M = 36 时各会怎样退化?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>M = 37:(h*37+c) mod 37 = c mod 37,退化为"只看最后一个字符";M = 36:37 ≡ 1 (mod 36),每个字符权重都是 1,"abc" 与 "cba" 同值。根治:先累加、最后取一次模。</p></div>
+<div class="q">3. 表大小 M = 11,线性探测依次插入 3、14、25、8、19,给出最终表内容与探测过程。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>3→3;14→3 冲突→4;25→3 冲突→4 冲突→5;8→8;19→8 冲突→9。最终下标 3、4、5、8、9 依次为 3、14、25、8、19。14、25 挤成连续块,正是"一次聚集"。</p></div>
+<div class="q">4. 开放定址表里删除元素为什么不能直接置空?工程上怎么处理?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>直接置空会把探测链拦腰截断:后续键靠被删元素"借道",探测序列在此断掉,再也找不到。工程做法是惰性删除:标记 deleted,查找跳过、插入复用、定期再散列清标记。</p></div>
+<div class="q">5. Python 里为什么 [1, 2] 不能做 dict 的键,而 (1, 2) 可以?d[k] 与 d.get(k, 0) 在键不存在时各是什么行为?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>list 可变,不满足可哈希的前提,做键抛 TypeError: unhashable type;tuple 不可变,可哈希。d[k] 键不存在时抛 KeyError;d.get(k, 0) 返回默认值 0,不抛异常——只读查询优先用 get。</p></div>
+
+<h2>章末实验题:散列表单词统计对比实验</h2>
+<div class="box box-example lab"><div class="box-title">实验 5:散列表单词统计对比实验</div>
+<p><b>实验目标:</b>手写分离链接散列表,与 dict 双路线统计英文文本词频,用计时数据验证装填因子 λ 对性能的影响。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现分离链接散列表(键为字符串):37 倍多项式散列、素数表大小、add/count 操作(覆盖 §5.1 散列函数与素数表、§5.2 分离链接法)。</li>
+<li>任务 2:用自写的表统计文本,输出单词总数、不同单词个数、装填因子 λ(覆盖 §5.1.4 装填因子)。</li>
+<li>任务 3:用 dict 重做统计,抽查 "the"、"hash"、"hello" 三个词,两套结果必须一致(覆盖 §5.6 标准库;兼作手写版正确性验证)。</li>
+<li>任务 4:重复插入 30 遍,改变表大小 M = 8/16/64/256(实际素数 11/17/67/257),每种测 3 次取最快;观察 λ 越大耗时越高,体会再散列的动机(覆盖 §5.2.3 复杂度、§5.4 再散列)。</li>
+<li>任务 5:健壮性——无命令行参数、文件打不开、文本为空都要给出友好提示(覆盖边界处理与工程习惯)。</li>
+</ul>
+<p><b>实验环境:</b>Python 3。运行:python lab5.py sample.txt(任意英文文本,词越多对比越明显)。</p></div>
+<ol class="steps">
+<li>先写工具函数:next_prime 定素数表大小;split_words 切词(字母数字连续成词,转小写,其余字符当分隔)。先用 3–5 个单词手算验证散列。</li>
+<li>再写 HashTable:构造函数用 next_prime 定桶数;hash 用"先累加、最后取模";add 找到键计数 +1,否则插入新键。写完后用小文本对照字典检查词频。</li>
+<li>最后写计时:任务 4 对每个 M 重复 3 次取最快,插入重复 30 遍放大差异;跑前先确认 λ 合理(如 208 个不同单词、M=257 时 λ≈0.81),再做比较。</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,分三段)</div>
+<div class="code-title">实验 5-1 参考答案(第一部分:工具函数与切词)</div>
+<pre class="code"># lab5.py —— 散列表单词统计对比实验(第一部分:工具函数)
+import re
+import sys
+import time
+from collections import defaultdict
+
+
+def next_prime(n):
+    """返回大于等于 n 的最小素数。"""
+    def is_prime(x):
+        if x &lt; 2:
+            return False
+        d = 2
+        while d * d &lt;= x:
+            if x % d == 0:
+                return False
+            d += 1
+        return True
+    while not is_prime(n):
+        n += 1
+    return n
+
+
+def split_words(text):
+    """任务 5:切分单词——字母/数字连续成词(正则),其余字符跳过。"""
+    return re.findall(r"[a-z0-9]+", text.lower())
+</pre>
+<div class="code-title">实验 5-1 参考答案(第二部分:手写分离链接散列表)</div>
+<pre class="code"># ---------- 任务 1:分离链接散列表(字符串键,37 倍散列,素数表) ----------
+class HashTable:
+    """桶数组是 list of list,一个桶就是一条链表。"""
+
+    def __init__(self, m):
+        self.buckets = [[] for _ in range(next_prime(m))]
+        self.size = 0
+
+    def _hash(self, s):
+        h = 0
+        for c in s:
+            h = h * 37 + ord(c)   # 全程不取模,最后再 % 表大小(见 §5.1.3)
+        return h % len(self.buckets)
+
+    def add(self, s):
+        b = self._hash(s)
+        for i, (key, cnt) in enumerate(self.buckets[b]):
+            if key == s:
+                self.buckets[b][i] = (key, cnt + 1)
+                return
+        self.buckets[b].append((s, 1))
+        self.size += 1
+
+    def count(self, s):
+        for key, cnt in self.buckets[self._hash(s)]:
+            if key == s:
+                return cnt
+        return 0
+
+    @property
+    def load_factor(self):
+        return self.size / len(self.buckets)
+</pre>
+<div class="code-title">实验 5-1 参考答案(第三部分:main 与四种表大小对比)</div>
+<pre class="code">def main():
+    if len(sys.argv) &lt; 2:
+        print("用法: python lab5.py &lt;文本文件&gt;")
+        return
+    try:
+        with open(sys.argv[1], encoding="utf-8") as f:
+            text = f.read()
+    except OSError as e:
+        print("错误: 无法打开文件:", e)      # 任务 5:文件打不开
+        return
+    words = split_words(text)
+    if not words:                             # 任务 5:空文本
+        print("警告: 文本为空或没有合法单词,无法统计")
+        return
+    print(f"单词总数(含重复): {len(words)}")
+
+    ht = HashTable(256)                       # 任务 2:手写表统计
+    for w in words:
+        ht.add(w)
+    print(f"手写表: 不同单词 {ht.size} 个,装填因子 λ={ht.load_factor:.2f}")
+
+    mp = defaultdict(int)                     # 任务 3:标准库 dict 重做
+    for w in words:
+        mp[w] += 1
+    print(f"dict: 不同单词 {len(mp)} 个")
+    for w in ("the", "hash", "hello"):
+        print(f"  词 {w!r}: 手写表={ht.count(w)} dict={mp[w]}")
+
+    print("任务4: 表大小(素数)不同 → λ 不同 → 插入耗时(3 次取最快):")
+    for m in (8, 16, 64, 256):
+        best = float("inf")
+        for _ in range(3):                    # 重复 3 次取最快,减少系统噪声
+            t = HashTable(m)
+            t0 = time.perf_counter()
+            for _ in range(30):               # 重复 30 遍放大差异
+                for w in words:
+                    t.add(w)
+            best = min(best, (time.perf_counter() - t0) * 1000)
+        print(f"  M={len(t.buckets)} λ={t.load_factor:.2f} 耗时 {best:.2f} ms")
+    print("观察: λ 越大平均链表越长,耗时越高——这就是再散列(§5.4)的动机。")
+
+
+if __name__ == "__main__":
+    main()
+</pre>
+<p>编译运行命令与真实输出(sample.txt 为 7 段文章拼成,17520 词、208 个不同单词):</p>
+<div class="code-title">实验 5-1 输出样例(本机实测,数值随机器与负载略有波动,趋势稳定)</div>
+<pre class="code">$ python lab5.py sample.txt
+单词总数(含重复): 17520
+手写表: 不同单词 208 个,装填因子 λ=0.81
+dict: 不同单词 208 个
+  词 'the': 手写表=1800 dict=1800
+  词 'hash': 手写表=120 dict=120
+  词 'hello': 手写表=120 dict=120
+任务4: 表大小(素数)不同 → λ 不同 → 插入耗时(3 次取最快):
+  M=11 λ=18.91 耗时 288.13 ms
+  M=17 λ=12.24 耗时 255.71 ms
+  M=67 λ=3.10 耗时 195.66 ms
+  M=257 λ=0.81 耗时 184.79 ms
+观察: λ 越大平均链表越长,耗时越高——这就是再散列(§5.4)的动机。
+
+$ python lab5.py empty.txt
+警告: 文本为空或没有合法单词,无法统计
+</pre>
+<p><b>设计说明:</b>程序分四层,每层对应一个知识点。散列函数写成"先累加、最后取模"的 37 倍多项式(§5.1.3),表大小交给 next_prime(§5.1.2)——本章最易写错的两处,用真实数据检验了正确性。桶用 list of list 实现分离链接(§5.2),桶内元组携带键与计数,一次遍历完成"查重或累加"。任务 3 的抽查是刻意的工程习惯:手写实现与 dict 输出一致,才敢相信手写版正确。任务 4 把 M 从 11 调到 257,λ 从 18.9 降到 0.81,耗时从 288 ms 降到 185 ms——M=11 时平均每链 1589 个词,查找已接近线性扫描,这是"λ 过高 → 性能塌方 → 再散列"的实证。计时 3 次取最快 + 重复 30 遍,压掉系统调度噪声。切词规则决定了"单词"的定义,是统计程序必须显式声明的约定。真实 dict 的自动扩容正是示例 5-7 再散列的生产级版本。</p></div>
+
+<hr class="thin">
+<p class="small">下一章预告:第6章 优先队列(堆)——基于数组的完全二叉树;建堆与删除最小将使用第 3 章的 list,堆的插入(上滤)与删除最小(下滤)是第 7 章堆排序、第 9 章 Dijkstra 最短路径的基石。</p>
+
+</body>
+</html>

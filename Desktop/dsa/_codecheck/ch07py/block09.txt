@@ -1,0 +1,25 @@
+# ---------- 任务 1:归并排序(§7.4,切片 + 合并) ----------
+def merge(left, right):
+    global move_cnt
+    i = j = 0
+    res = []
+    while i < len(left) and j < len(right):
+        if lt(right[j], left[i]):            # 右半更小才取右:相等取左,稳定
+            res.append(right[j])
+            j += 1
+        else:
+            res.append(left[i])
+            i += 1
+        if COUNT:
+            move_cnt += 1
+    res += left[i:] + right[j:]              # 剩余部分直接拼接
+    return res
+
+
+def merge_sort(a):
+    if len(a) <= 1:
+        return a
+    m = len(a) // 2
+    left = merge_sort(a[:m])                 # 切片:创建子列表副本(§7.4)
+    right = merge_sort(a[m:])
+    return merge(left, right)

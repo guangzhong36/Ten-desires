@@ -1,0 +1,10 @@
+void insert(const T& x) {
+    a.push_back(x);                  // 追加到末尾:保持完全二叉树
+    size_t i = a.size() - 1;         // 新元素下标
+    while (i > 1) {                  // 向上冒泡(上滤)
+        size_t p = i / 2;            // 父结点(1 基)
+        if (a[p] <= a[i]) break;     // 父 <= 子,堆序成立,停
+        swap(a[p], a[i]);            // 否则与父交换,继续往上
+        i = p;
+    }
+}

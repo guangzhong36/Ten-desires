@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第3章 表、栈和队列</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第3章 表、栈和队列</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解<span class="term">抽象数据类型(ADT)</span>思想:先定义"做什么",再谈"怎么实现"</li>
+<li>掌握表的两类实现:数组实现(倍增扩容)与链式实现(结点+指针),会对比两者复杂度</li>
+<li>完成从 C 的 <code>malloc</code> 数组到 C++ <code>vector</code> 的迁移,理解容量与长度的区别</li>
+<li>理解<b>迭代器失效</b>这一 C++ 独有的坑,并知道如何规避</li>
+<li>能独立实现栈的数组版与链式版,并用栈解决括号平衡、后缀求值、中缀转后缀三个经典问题</li>
+<li>能独立实现循环数组队列,说清空/满判断的两种方案</li>
+<li>学完能独立实现中缀表达式计算器(栈应用综合),并会正确选用 <code>std::stack</code>/<code>std::queue</code></li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>本章是全书第一个"真正动手实现数据结构"的章节。算法直觉先给结论:<span class="hl">表、栈、队列是后续所有复杂结构的积木</span>——树的层序遍历要用队列,图的 DFS 要用栈,第6章的堆本质是数组,第5章的散列表是"数组+链表"的合体。本章学不透,后面每一章都会还债。</p>
+<p>在 C 里,你已经会两种原始工具:<code>malloc</code> 出来的动态数组和 <code>struct</code>+指针串起来的链表。C 的痛点是双重的:动态数组要自己管理"容量、长度、扩容"三件事,一次 <code>realloc</code> 写错就是内存泄漏或堆损坏;链表没有语言支持,每个操作都要手写指针舞蹈,一不小心就访问悬垂指针。更麻烦的是,C 里"数据结构"和"操作"是分离的——<code>sort</code> 一个数组和 <code>sort</code> 一个链表是两套完全不同的代码。</p>
+<p>C++ 的解法分两层:<b>底层</b>用 <code>vector</code> 替你管理动态数组(自动扩容、自动释放,RAII 保证不泄漏),用 <code>list</code> 提供双向链表;<b>上层</b>用类把数据与操作封装成一个整体——这正是 ADT 思想,也是 C 的 <code>struct</code> 加函数指针表想模拟却始终别扭的东西。本章会手写一遍底层实现(理解原理),再告诉你标准库怎么用(工程实践)。</p>
+<p>栈与队列部分,本章用三个经典应用(括号平衡、后缀求值、中缀转后缀)演示"数据结构服务于算法"的思维方式——它们是编译原理与表达式求值的原型,也是各大面试的高频题。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>本章几乎不需要新数学;倍增扩容的摊还分析直觉即可(严格分析在第11章)。</p>
+<p><b>C 语言前置:</b><code>malloc</code>/<code>free</code> 动态数组、<code>struct</code> 与 <code>-&gt;</code> 指针访问、函数指针(可选)、<code>char*</code> 字符串遍历。</p>
+<p><b>依赖的前面章节:</b>第1章递归(栈的递归实现对照)、第2章大 O 记号(本章复杂度速查表直接用)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1 小时):</b>读 §3.1–§3.2,建立 ADT 概念,完成 vector 迁移练习</li>
+<li><b>第二阶段(1.5 小时):</b>读 §3.3–§3.4,手写动态数组与单链表,上机验证</li>
+<li><b>第三阶段(1.5 小时):</b>读 §3.5–§3.6,手写栈与队列,完成三个栈应用例题</li>
+<li><b>第四阶段(实验,1 小时):</b>完成章末实验中缀表达式计算器</li>
+<li><b>验收标准:</b>能默写单链表插入/删除、循环队列、中缀转后缀,并说清每步复杂度</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§3.1 ADT:抽象数据类型(接口与实现分离、从 C 的 struct+函数指针到类)</li>
+<li>§3.2 表 ADT 与从 C 的迁移(malloc 数组 → vector、倍增扩容、容量 vs 长度)</li>
+<li>§3.3 表的数组实现(手写 MyVector、vector 用法、迭代器与失效)</li>
+<li>§3.4 表的链式实现(结点与指针、手写单链表、vector 与 list 的选型)</li>
+<li>§3.5 栈(数组栈、括号平衡、后缀求值、中缀转后缀、std::stack)</li>
+<li>§3.6 队列(循环数组实现、空/满判断的两种方案、std::queue)</li>
+<li>§3.7 选型与工程实践(何时数组何时链表、栈模拟递归、调试技巧)</li>
+</ul></div>
+
+<h2>§3.1 ADT:抽象数据类型</h2>
+
+<h3>3.1.1 什么是 ADT</h3>
+<p><span class="term">抽象数据类型(ADT)</span> = 一组操作 + 这些操作的语义,<b>不涉及实现细节</b>。例如"栈"这个 ADT 只有三个操作:push(入栈)、pop(出栈)、top(取栈顶),语义是"后进先出(LIFO)"。至于底层用数组还是链表、满时怎么办,属于"实现",与 ADT 无关。好处:<span class="hl">使用者只依赖接口,实现可以随时替换</span>——把数组栈换成链式栈,使用方代码一行不用改。</p>
+
+<h3>3.1.2 从 C 的 struct+函数指针到 C++ 的类</h3>
+<p>C 语言没有类,模拟 ADT 只能用 <code>struct</code> 存数据 + 函数指针表存操作:</p>
+<table class="cmp">
+<tr><th>C 的写法(struct + 函数指针)</th><th>C++ 的写法(class 封装)</th></tr>
+<tr><td><code>struct Stack { int *a; int top; int cap; };</code></td><td><code>class Stack { vector&lt;int&gt; a; … };</code></td></tr>
+<tr><td><code>stack_init(&amp;s); stack_push(&amp;s, x);</code> 每个操作传 &amp;s</td><td><code>s.push(x);</code> 数据与操作天然绑定</td></tr>
+<tr><td>使用者能"意外"访问 <code>s.a[0]</code> 破坏结构</td><td><code>private</code> 成员从语言层面禁止越界访问</td></tr>
+<tr><td>忘记 <code>stack_destroy</code> 即泄漏,没有提醒</td><td>析构函数自动释放,RAII 不依赖使用者自觉</td></tr>
+</table>
+<p>结论:ADT 的思想两种语言都能表达,C++ 的类是它的天然载体——本书所有数据结构都以"类"的形式呈现。</p>
+
+<h2>§3.2 表 ADT 与从 C 的迁移</h2>
+
+<h3>3.2.1 表的基本操作</h3>
+<p>表(list)ADT:线性有序元素的集合,常用操作——按下标访问、按值查找、任意位置插入/删除、遍历。<b>同一个 ADT,两种截然不同的实现</b>(数组与链表),各有胜负,本章的主线就是这张对照表:</p>
+<table>
+<tr><th>操作</th><th>数组实现(vector)</th><th>链式实现(list)</th></tr>
+<tr><td>按下标访问</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按值查找</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>尾部插入</td><td>平均 <i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>头部插入</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(1)</td></tr>
+<tr><td>任意位置插入/删除</td><td><i>O</i>(<i>n</i>)(移动元素)</td><td><i>O</i>(1)(已定位后)</td></tr>
+</table>
+
+<h3>3.2.2 C 的 malloc 数组 → C++ 的 vector</h3>
+<p>回忆 C 里管理动态数组的三件套:记录长度、记录容量、<code>realloc</code> 扩容。C++ 的 <code>vector</code> 把这套动作封装成一个类型:<code>size()</code> 返回当前元素个数(长度),<code>capacity()</code> 返回已分配空间能容纳的个数(容量),两者<b>不是一回事</b>——这是 C 程序员迁移时最需要建立的新概念。</p>
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th></tr>
+<tr><td><code>int *a = malloc(n * sizeof(int));</code></td><td><code>vector&lt;int&gt; a(n);</code></td></tr>
+<tr><td><code>a[len++] = x;</code>(自己管长度)</td><td><code>a.push_back(x);</code></td></tr>
+<tr><td><code>realloc</code> 手动扩容(易错)</td><td>自动扩容,倍增策略</td></tr>
+<tr><td><code>free(a);</code>(忘记即泄漏)</td><td>离开作用域自动释放</td></tr>
+<tr><td><code>a[i]</code> 越界 = 未定义行为</td><td><code>a.at(i)</code> 越界抛异常</td></tr>
+</table>
+
+<p><span class="term">倍增扩容</span>:当 <code>push_back</code> 时容量已满,vector 分配一块<b>2 倍</b>大小的新内存,拷贝全部旧元素,释放旧内存。直觉上"每次扩容都是 O(n),那插入怎么还说平均 O(1)?"——因为扩容发生得越来越少:容量从 1 倍增到 n 需要 log<sub>2</sub> n 次扩容,总拷贝代价 n + n/2 + n/4 + … ≈ 2n,摊到 n 次插入上平均每次 O(1)。严格的摊还分析见第11章,现在先记住结论:<span class="hl">倍增使得尾部插入平均 O(1)</span>。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:capacity 与 size 混淆</div>
+<p><code>reserve(100)</code> 只预分配内存(改 capacity),元素个数仍是 0;要制造 100 个元素必须用 <code>resize(100)</code> 或插入。新手常写 <code>a.reserve(n); a[i] = x;</code> 然后崩溃——此时 <code>a[i]</code> 访问的是<b>不存在的元素</b>(越界)。口诀:reserve 管"房间",resize 管"住客"。</p>
+</div>
+
+<h2>§3.3 表的数组实现</h2>
+
+<h3>3.3.1 手写动态数组:搞懂倍增</h3>
+<div class="code-title">示例 3-1 手写 MyVector:倍增扩容</div>
+<pre class="code">// 手写动态数组:容量不足时倍增(2 倍)拷贝
+class MyVector {
+    int* data_ = nullptr;    // 元素存储
+    size_t size_ = 0;        // 元素个数(长度)
+    size_t cap_ = 0;         // 已分配容量
+public:
+    ~MyVector() { delete[] data_; }        // RAII:自动释放
+    void push_back(int x) {
+        if (size_ == cap_) {               // 满了:倍增
+            size_t newCap = cap_ == 0 ? 1 : cap_ * 2;
+            int* p = new int[newCap];
+            for (size_t i = 0; i &lt; size_; ++i) p[i] = data_[i];
+            delete[] data_;
+            data_ = p;
+            cap_ = newCap;
+        }
+        data_[size_++] = x;
+    }
+    int&amp; operator[](size_t i) { return data_[i]; }   // 按下标访问
+    size_t size() const { return size_; }
+    size_t capacity() const { return cap_; }
+};</pre>
+
+<h3>3.3.2 vector 常用操作速览</h3>
+<div class="code-title">示例 3-2 vector 核心操作</div>
+<pre class="code">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    vector&lt;int&gt; v;                 // 空表
+    v.push_back(3);                // 尾部插入:3
+    v.push_back(1);                // 3 1
+    v.insert(v.begin(), 9);        // 头部插入:9 3 1  (O(n),搬移全部元素)
+    v.erase(v.begin() + 1);        // 删除下标 1:9 1  (O(n))
+    v[1] = 5;                      // 随机访问 O(1):9 5
+    for (int x : v) cout &lt;&lt; x &lt;&lt; ' ';   // 范围 for 遍历
+    cout &lt;&lt; "\nsize=" &lt;&lt; v.size() &lt;&lt; " capacity=" &lt;&lt; v.capacity();
+    return 0;
+}</pre>
+
+<h3>3.3.3 迭代器与失效(本章最大的 C++ 专属坑)</h3>
+<p><span class="term">迭代器(iterator)</span>是"指向容器中位置"的对象,可以看作 C 指针的泛化。<code>v.begin()</code> 指向首元素,<code>v.end()</code> 指向尾后位置。</p>
+
+<div class="code-title">示例 3-3 用迭代器遍历(与 C 指针对照)</div>
+<pre class="code">// C 指针遍历:
+int a[5] = {1, 2, 3, 4, 5};
+for (int* p = a; p != a + 5; ++p)      // 指针自增走到下一个元素
+    printf("%d ", *p);
+
+// C++ 迭代器遍历(结构完全一致:开始/结束/自增/解引用)
+vector&lt;int&gt; v = {1, 2, 3, 4, 5};
+for (auto it = v.begin(); it != v.end(); ++it)
+    cout &lt;&lt; *it &lt;&lt; ' ';              // 迭代器就是"泛化的指针"</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:迭代器失效</div>
+<p>vector 扩容时会<b>整体搬家</b>:旧内存被释放,之前保存的所有迭代器/指针立即失效。下面代码是未定义行为:<code>auto it = v.begin(); v.push_back(x); *it = 0; // 若发生扩容,it 已指向被释放的内存!</code>。规避三招:① 提前 <code>reserve</code> 足够容量;② 每次修改容器后重新获取迭代器;③ 只在下标遍历时才修改容器。同样的规则适用于 C 的 realloc——指针失效不是新问题,只是 C++ 把它包装得更隐蔽。</p>
+</div>
+
+<h2>§3.4 表的链式实现</h2>
+
+<h3>3.4.1 结点与指针</h3>
+<p>链表的原子单位是<span class="term">结点(Node)</span>:一个数据域 + 一个指向下一个结点的指针。C 的 <code>struct Node { int val; struct Node *next; };</code> 与 C++ 的写法几乎一致(去掉了 struct 关键字而已)。链表不需要连续内存,插入/删除只改指针,不用搬移元素——代价是按下标访问要从头走 O(n) 步。</p>
+
+<h3>3.4.2 手写单链表</h3>
+<div class="code-title">示例 3-4 单链表:表头插入、查找、删除</div>
+<pre class="code">struct Node {
+    int val;
+    Node* next;
+    Node(int v, Node* n = nullptr) : val(v), next(n) {}
+};
+
+void insertFront(Node*&amp; head, int x) {    // 表头插入 O(1)
+    head = new Node(x, head);
+}
+
+Node* find(Node* head, int x) {          // 查找 O(n)
+    while (head != nullptr &amp;&amp; head-&gt;val != x)
+        head = head-&gt;next;
+    return head;                          // 找不到返回 nullptr
+}
+
+bool erase(Node*&amp; head, int x) {         // 删除值为 x 的第一个结点
+    if (head == nullptr) return false;
+    if (head-&gt;val == x) {                // 删表头是特例
+        Node* t = head;
+        head = head-&gt;next;
+        delete t;
+        return true;
+    }
+    Node* prev = head;                    // 其余情况:找前驱
+    while (prev-&gt;next != nullptr &amp;&amp; prev-&gt;next-&gt;val != x)
+        prev = prev-&gt;next;
+    if (prev-&gt;next == nullptr) return false;
+    Node* t = prev-&gt;next;
+    prev-&gt;next = t-&gt;next;                // 前驱跳过目标结点
+    delete t;
+    return true;
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:插入删除的"定位"成本</div>
+<p>说"链表插入删除 O(1)"是有前提的:<span class="hl">已经定位到操作位置</span>。定位本身(查找值、走到第 k 个结点)是 O(n)。所以"链表的插入比数组快"只在特定场景成立:频繁头部操作、或已持有位置指针的遍历过程中。速查表里的"O(1)"指的都是"已定位后"。</p>
+</div>
+
+<h3>3.4.3 vector 与 list 的选型</h3>
+<p>C++ 标准库的 <code>std::list</code> 是双向链表,接口与 vector 高度一致(都有 push_back/insert/erase/迭代器)。选型口诀:</p>
+<ul>
+<li>需要随机访问 → vector(链表按下标是 O(n))</li>
+<li>只在尾部增删 → vector(连续内存缓存友好,常数小)</li>
+<li>频繁在头部/中间插入删除且已定位 → list</li>
+<li>拿不准 → vector(工程统计:90% 的场景 vector 更快,链表赢在"无搬移"的场景才值得用)</li>
+</ul>
+
+<div class="code-title">示例 3-5 用 std::list 体会接口一致性</div>
+<pre class="code">#include &lt;list&gt;
+#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    list&lt;int&gt; l = {1, 2, 3};
+    l.push_front(0);                  // 头部插入 O(1),vector 没有这个接口!
+    l.push_back(4);                   // 尾部插入 O(1)
+    auto it = l.begin();
+    ++it; ++it;                       // 走到第 2 个元素(下标访问是 O(n))
+    l.insert(it, 9);                  // 已定位后插入 O(1):0 1 9 2 3 4
+    for (int x : l) cout &lt;&lt; x &lt;&lt; ' '; // 双向链表也支持范围 for
+    return 0;
+}</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:释放链表的内存</div>
+<p>手写链表删除结点后忘记 <code>delete</code> 是最常见的泄漏源;整表销毁要在循环里逐个 delete。工程上更推荐用 <code>std::list</code>(自动管理)或在 Node 中用 <code>unique_ptr</code>(第4章树的实现会演示)。学习阶段手写是为了理解指针结构,生产代码请优先标准库。</p>
+</div>
+
+<h2>§3.5 栈</h2>
+
+<h3>3.5.1 栈 ADT 与数组实现</h3>
+<p>栈(stack):后进先出(LIFO)。三个操作——push(压入)、pop(弹出)、top(查看栈顶)。数组实现最简单:用 vector 存元素,用一个"栈顶下标"标记位置,<b>只在尾部增删</b>,三个操作全部 O(1)。</p>
+
+<div class="code-title">示例 3-6 数组栈(用 vector 实现)</div>
+<pre class="code">class Stack {
+    vector&lt;int&gt; a;                     // 元素数组,栈顶在尾部
+public:
+    void push(int x) { a.push_back(x); }
+    void pop() { a.pop_back(); }       // 出栈:删除尾部
+    int top() const { return a.back(); }
+    bool empty() const { return a.empty(); }
+    size_t size() const { return a.size(); }
+};</pre>
+<p>注意与 C 的函数调用栈对照:递归深度过大时崩溃,本质就是这同一个结构——调用栈被 push 到溢出(第1章讲过)。栈也可以用单链表实现(表头做栈顶,头插头删 O(1)),接口完全不变——这正是 §3.1 说的 ADT 威力。</p>
+
+<h3>3.5.2 应用一:括号平衡检查</h3>
+<div class="code-title">示例 3-7 括号平衡:三种括号匹配检查</div>
+<pre class="code">// 判断字符串中 () [] {} 是否配对且顺序正确
+bool isBalanced(const string&amp; s) {
+    stack&lt;char&gt; st;                    // 标准库栈,元素是 char
+    for (char c : s) {
+        if (c == '(' || c == '[' || c == '{')
+            st.push(c);                // 左括号入栈
+        else if (c == ')' || c == ']' || c == '}') {
+            if (st.empty()) return false;       // 右括号多余
+            char top = st.top();
+            st.pop();
+            if ((c == ')' &amp;&amp; top != '(') ||      // 类型不匹配
+                (c == ']' &amp;&amp; top != '[') ||
+                (c == '}' &amp;&amp; top != '{'))
+                return false;
+        }
+    }
+    return st.empty();                 // 结束时栈空 = 左括号无剩余
+}</pre>
+
+<h3>3.5.3 应用二:后缀表达式求值</h3>
+<p>后缀表达式(逆波兰记法)把运算符放在操作数之后:<code>6 5 2 3 + 8 * + 3 + *</code>,不需要括号。求值规则:遇数字入栈;遇运算符弹出两个操作数,算完把结果压回。这个"惰性计算"模式是栈最漂亮的用法。</p>
+
+<div class="code-title">示例 3-8 后缀表达式求值</div>
+<pre class="code">// 输入:token 序列(数字串与运算符);输出:表达式值
+int evalPostfix(const vector&lt;string&gt;&amp; toks) {
+    stack&lt;int&gt; st;
+    for (const string&amp; t : toks) {
+        if (isdigit(t[0]) || (t.size() &gt; 1 &amp;&amp; t[0] == '-'))
+            st.push(stoi(t));                 // 数字入栈
+        else {
+            int b = st.top(); st.pop();       // 先弹的是右操作数!
+            int a = st.top(); st.pop();
+            if (t == "+") st.push(a + b);
+            else if (t == "-") st.push(a - b);
+            else if (t == "*") st.push(a * b);
+            else st.push(a / b);              // 只支持整除
+        }
+    }
+    return st.top();                          // 最后栈里只剩结果
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:操作数弹出顺序</div>
+<p>后缀 <code>8 2 /</code> 是 8/2=4,但弹栈顺序是先弹 2 再弹 8——<span class="hl">先弹的是右操作数</span>。减法和除法对顺序敏感,写反了就是 <code>2/8</code>。口诀:栈顶是"后出现"的操作数,后出现的是右操作数。</p>
+</div>
+
+<h3>3.5.4 应用三:中缀转后缀</h3>
+<p>人读的是中缀(<code>a+b*c</code>),机器算的是后缀。转换算法(调度场算法):遇数字直接输出;遇运算符,先把栈中<b>优先级不低于它</b>的运算符弹出输出,再压入自己;左括号直接入栈,右括号则弹出到左括号为止。这样保证高优先级先输出。</p>
+
+<div class="code-title">示例 3-9 中缀转后缀(单数字简化版)</div>
+<pre class="code">int prec(char op) { return (op == '+' || op == '-') ? 1 : 2; }
+
+string infixToPostfix(const string&amp; s) {   // s 形如 "6+5*(2+3)",无空格
+    string out;
+    stack&lt;char&gt; st;
+    for (char c : s) {
+        if (isdigit(c)) out += c;                    // 数字直接输出
+        else if (c == '(') st.push(c);
+        else if (c == ')') {
+            while (st.top() != '(') { out += st.top(); st.pop(); }
+            st.pop();                                // 丢弃左括号
+        } else {                                     // 运算符
+            while (!st.empty() &amp;&amp; st.top() != '(' &amp;&amp;
+                   prec(st.top()) &gt;= prec(c)) {      // 栈顶优先级不低于当前
+                out += st.top(); st.pop();
+            }
+            st.push(c);
+        }
+    }
+    while (!st.empty()) { out += st.top(); st.pop(); }
+    return out;
+}</pre>
+
+<div class="box box-example"><div class="box-title">例题 3-1 手工走一遍中缀转后缀</div>
+<p>输入 <code>6+5*(2+3)</code>:6 输出;+ 入栈;5 输出;* 入栈(+ 优先级低,留在栈中);( 入栈;2 输出;+ 入栈;3 输出;) 弹出 +,再弹(;结束弹栈得 *、+。输出:<code>6523+*+</code>。用 §3.5.3 求值:2+3=5,5*5=25,6+25=31。✓</p>
+</div>
+
+<h3>3.5.5 标准库:std::stack</h3>
+<p><code>std::stack</code> 是适配器:默认用 <code>deque</code>(双端队列)做底层,接口就是 push/pop/top/empty/size。本章示例 3-7 已经用过。想换底层可写 <code>stack&lt;int, vector&lt;int&gt;&gt;</code>——又是 ADT 思想的直接体现。</p>
+
+<h2>§3.6 队列</h2>
+
+<h3>3.6.1 队列 ADT 与循环数组实现</h3>
+<p>队列(queue):先进先出(FIFO)。enqueue(入队)在队尾,poll/dequeue(出队)在队头。用数组实现有个经典问题:出队后前面空出的位置怎么办?如果每次出队都把全部元素前移,那是 O(n);不移动、让队头指针"追赶"队尾指针,数组就要<span class="term">循环</span>使用——下标到底后绕回 0。</p>
+
+<div class="code-title">示例 3-10 循环数组队列(用 count 记录元素数)</div>
+<pre class="code">// front 指向队首元素,back 指向队尾下一个空位,count 记录元素数
+class MyQueue {
+    vector&lt;int&gt; data_;
+    int front_ = 0, back_ = 0, count_ = 0;
+public:
+    MyQueue(int cap) : data_(cap) {}
+    void push(int x) {               // 入队:假设未满(满的处理见误区4)
+        data_[back_] = x;
+        back_ = (back_ + 1) % int(data_.size());
+        ++count_;
+    }
+    void pop() {                     // 出队
+        front_ = (front_ + 1) % int(data_.size());
+        --count_;
+    }
+    int front() const { return data_[front_]; }
+    bool empty() const { return count_ == 0; }
+    int size() const { return count_; }
+};</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:空/满判断的两种方案</div>
+<p>若用 front 与 back 两个下标判断空满,会遇到 front == back 时"既可能空也可能满"的歧义。两种解法:① <b>计数法</b>(示例 3-10,多存一个 count,最简单);② <b>浪费一格法</b>(规定 back 永远不追赶 front,队满时留一个空格,满条件是 (back+1) % cap == front)。工程与面试都常考,两种都要会。</p>
+</div>
+
+<h3>3.6.2 标准库:std::queue 与 deque</h3>
+<div class="code-title">示例 3-11 std::queue 与 deque 用法</div>
+<pre class="code">#include &lt;queue&gt;
+#include &lt;deque&gt;
+using namespace std;
+int main() {
+    queue&lt;int&gt; q;                 // 默认基于 deque 的 FIFO 队列
+    q.push(1); q.push(2); q.push(3);
+    while (!q.empty()) {
+        cout &lt;&lt; q.front() &lt;&lt; ' ';  // 1 2 3(先进先出)
+        q.pop();
+    }
+    deque&lt;int&gt; d = {1, 2, 3};     // 双端队列:头尾都可 O(1) 增删
+    d.push_front(0);              // 0 1 2 3
+    d.push_back(4);               // 0 1 2 3 4
+    d.pop_front();                // 1 2 3 4
+    return 0;
+}</pre>
+
+<table class="cmp">
+<tr><th>C 的手写循环队列</th><th>C++ 的标准库</th></tr>
+<tr><td>自己维护 front/back 下标与取模</td><td><code>queue.push/pop/front</code> 一行一个操作</td></tr>
+<tr><td>空/满判断要写计数或浪费一格</td><td>自动扩容,永不"满"</td></tr>
+<tr><td><code>free</code> 忘记调用即泄漏</td><td>离开作用域自动释放</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:循环队列的下标溢出</div>
+<p>示例 3-10 简化了"队满"检查——满时再 push 会覆盖旧元素。生产实现必须显式处理:计数法判 <code>count_ == cap</code> 满则拒绝/扩容,浪费一格法判 <code>(back_+1) % cap == front_</code>。另一个易错点是取模:back 先加 1 再对 capacity 取模,而不是对"当前元素数"取模。</p>
+</div>
+
+<h2>§3.7 选型与工程实践</h2>
+
+<h3>3.7.1 数组 or 链表?一张决策表</h3>
+<table>
+<tr><th>场景</th><th>选择</th><th>理由</th></tr>
+<tr><td>按序访问所有元素(遍历)</td><td>vector</td><td>连续内存,缓存友好,常数小</td></tr>
+<tr><td>大量随机下标访问</td><td>vector</td><td>O(1) vs O(n)</td></tr>
+<tr><td>只做尾部增删(栈)</td><td>vector</td><td>均摊 O(1),实现最简单</td></tr>
+<tr><td>两端增删(队列)</td><td>deque / 循环数组</td><td>两头都 O(1)</td></tr>
+<tr><td>遍历过程中删除元素</td><td>list</td><td>vector 会失效迭代器</td></tr>
+<tr><td>内存极度受限且频繁插入</td><td>list</td><td>无扩容翻倍的峰值内存</td></tr>
+</table>
+
+<h3>3.7.2 栈模拟递归与调试技巧</h3>
+<p>任何递归都可以改写为"显式栈 + 循环"的迭代版(第4章树遍历会用到):函数调用栈压的是"返回地址 + 局部变量",显式栈压的是"待处理的任务"。迭代版不受系统栈深度限制,深度优先搜索(第9章)的大图遍历通常必须用迭代版。调试栈程序的两个技巧:① push 前打印"压入 x",pop 后打印"弹出 x",肉眼跟踪栈的演化;② 断言每个 pop 前 !empty(),把"逻辑错误"提前变成"崩溃点",定位速度翻倍。</p>
+
+<div class="box box-tip"><div class="box-title">工程建议:优先标准库,手写只为理解</div>
+<p>本章手写了动态数组、链表、栈、队列四样东西——目的是让你看清每一层的复杂度来源。生产代码请一律使用 <code>vector/list/stack/queue/deque</code>:它们经过数十年打磨,边界处理(异常安全、自赋值、移动语义)远比自己写的健壮。手写实现的用武之地是"标准库没有的结构"(后几章的树、堆、散列表、图),那才是本书后续的主战场。</p>
+</div>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>按下标访问</td><td>vector(动态数组)</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>尾部插入(push_back)</td><td>vector</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)(扩容)</td></tr>
+<tr><td>头部插入</td><td>vector</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>任意位置插入/删除</td><td>vector</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按值查找</td><td>vector</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按下标访问</td><td>list(链表)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按值查找</td><td>list</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>头部/尾部插入</td><td>list</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>已定位处插入/删除</td><td>list</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>push / pop / top</td><td>栈(数组或链表实现)</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>入队 / 出队 / 取队头</td><td>循环数组队列</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>入队 / 出队</td><td>链式队列</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>两端增删</td><td>deque(双端队列)</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>括号平衡检查</td><td>栈扫描一遍</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>后缀表达式求值</td><td>栈扫描一遍</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>中缀转后缀</td><td>调度场算法</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>vector 倍增扩容</td><td>n 次 push_back 总代价</td><td colspan="2">摊还 <i>O</i>(<i>n</i>),平均每次 <i>O</i>(1)(第11章证明)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能独立说出 ADT 的定义,并举例说明"接口与实现分离"的好处</li>
+<li>能独立说出 vector 的 size 与 capacity 的区别,以及 reserve/resize 的语义</li>
+<li>能独立默写倍增扩容的 push_back,并解释为什么平均 O(1)</li>
+<li>能独立默写单链表的表头插入、查找、删除(含删表头特例)</li>
+<li>能独立解释迭代器失效的原因,并说出三种规避手段</li>
+<li>能独立默写数组栈,并用它解决括号平衡问题</li>
+<li>能独立写出后缀表达式求值,并说清操作数的弹出顺序</li>
+<li>能独立默写中缀转后缀算法(含运算符优先级处理)</li>
+<li>能独立实现循环数组队列,并说出空/满判断的两种方案</li>
+<li>能独立说出 vector 与 list 的选型规则(至少 4 条场景)</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. vector 的 push_back 为什么说"平均 O(1)"而最坏 O(n)?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>平时插入只写一个元素 O(1);仅当 size 达到 capacity 时才触发倍增扩容,需拷贝全部 n 个元素 O(n)。扩容从 1 倍增到 n 共 log<sub>2</sub> n 次,总拷贝 n+n/2+…≈2n,摊到 n 次插入上平均 O(1)。</p>
+</div>
+
+<div class="q">2. <code>v.reserve(100)</code> 后 <code>v[50] = 1</code> 会怎样?为什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>未定义行为(通常崩溃)。reserve 只预分配内存,size() 仍为 0,v[50] 访问的是不存在的元素。应先 resize(100) 或改用 push_back。</p>
+</div>
+
+<div class="q">3. 单链表中删除"值为 x 的结点",为什么表头要单独处理?怎样统一?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>普通结点删除需要前驱结点改指针,而表头没有前驱。解法:① 特判(本章示例 3-4);② 引入哑结点(dummy),表头前面永远站一个空结点,删除逻辑统一;③ 指针的指针 Node** 遍历"指向结点的指针",统一修改。哑结点法在工程中最常用。</p>
+</div>
+
+<div class="q">4. 后缀表达式 <code>8 2 / 3 5 * +</code> 的值是多少?写出求值过程。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>8、2 入栈;/:弹 2、8,8/2=4 入栈;3、5 入栈;*:弹 5、3,3*5=15 入栈;+:弹 15、4,4+15=19。答案 19。注意先弹的是右操作数。</p>
+</div>
+
+<div class="q">5. 循环队列用 front 与 back 两个下标时,为什么 front == back 会"既可能空也可能满"?两种解法是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>队列空时 front 与 back 重合;而队满时 back 绕一圈也追上 front,两个状态无法区分。解法:① 计数法——额外维护元素个数 count,空满由 count 判断;② 浪费一格法——规定 back 永不与 front 重合,满条件是 (back+1) % cap == front,牺牲一个格子换取 O(1) 判断。</p>
+</div>
+
+<div class="q">6. 中缀 <code>a+b*c-d</code> 转后缀的过程是什么?为什么 * 在 + 之前输出?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>a 输出;+ 入栈;b 输出;遇 *:栈顶 + 优先级(1)低于 *(2),不弹出,* 入栈;c 输出;遇 -:栈顶 * 优先级不低于 -,弹出 * 输出;栈顶 + 优先级不低于 -,弹出 + 输出;- 入栈;d 输出;结束弹栈输出 -。结果 <code>abc*+d-</code>。* 先输出是因为它绑定得更紧(优先级高),后缀表达式中运算符顺序即计算顺序。</p>
+</div>
+
+<h2>章末实验题:中缀表达式计算器</h2>
+<div class="box box-example lab"><div class="box-title">实验 3:中缀表达式计算器(栈应用综合)</div>
+<p><b>实验目标:</b>实现一个命令行计算器:读入含 + − * / 与括号的中缀表达式,支持多位数,输出后缀表达式与计算结果。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现 tokenize,把字符串拆成数字与运算符序列,支持多位数(知识点:§3.5.4 中缀转后缀的扩展)</li>
+<li>任务 2:实现中缀转后缀,处理括号与优先级(知识点:§3.5.4 调度场算法)</li>
+<li>任务 3:实现后缀求值,注意弹出顺序(知识点:§3.5.3)</li>
+<li>任务 4:主循环读入表达式,输出后缀式与结果,遇到 <code>quit</code> 退出(知识点:§3.5 栈应用综合)</li>
+<li>任务 5:处理非法输入:除数为 0、括号不匹配时给出错误信息而非崩溃(知识点:§3.5.2 括号平衡)</li>
+</ul>
+<p><b>实验环境:</b>C++17,MSVC 或 g++。编译:<code>cl /EHsc /std:c++17 lab3.cpp</code> 或 <code>g++ -std=c++17 lab3.cpp -o lab3</code>;运行 <code>lab3</code>。</p></div>
+<ol class="steps">
+<li>tokenize 用指针扫描:连续数字拼成一个字符串 token;空格跳过;其余字符单独成 token</li>
+<li>中缀转后缀直接复用示例 3-9 的骨架,把"单字符数字"换成"字符串 token";数字 token 用首字符 isdigit 判定</li>
+<li>求值时先检查操作数栈是否够两个元素(非法输入),再检查除数是否为 0</li>
+<li>括号匹配错误在转换阶段发现:弹栈遇空、或结束后栈里剩左括号,都报"括号不匹配"</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,约 110 行,分两段)</div>
+<pre class="code">// lab3.cpp —— 中缀表达式计算器(第一段:词法与转换)
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;stack&gt;
+#include &lt;cctype&gt;
+#include &lt;stdexcept&gt;
+using namespace std;
+
+// 任务 1:拆分 token(支持多位数与空格)
+vector&lt;string&gt; tokenize(const string&amp; s) {
+    vector&lt;string&gt; toks;
+    for (size_t i = 0; i &lt; s.size();) {
+        if (isspace((unsigned char)s[i])) { ++i; continue; }
+        if (isdigit((unsigned char)s[i])) {
+            string num;
+            while (i &lt; s.size() &amp;&amp; isdigit((unsigned char)s[i]))
+                num += s[i++];
+            toks.push_back(num);
+        } else {
+            toks.push_back(string(1, s[i++]));
+        }
+    }
+    return toks;
+}
+
+int prec(const string&amp; op) { return (op == "+" || op == "-") ? 1 : 2; }
+
+// 任务 2:中缀转后缀(调度场算法)
+vector&lt;string&gt; infixToPostfix(const vector&lt;string&gt;&amp; toks) {
+    vector&lt;string&gt; out;
+    stack&lt;string&gt; st;
+    for (const string&amp; t : toks) {
+        if (isdigit((unsigned char)t[0]))
+            out.push_back(t);                       // 数字直接输出
+        else if (t == "(") st.push(t);
+        else if (t == ")") {
+            while (!st.empty() &amp;&amp; st.top() != "(") {
+                out.push_back(st.top()); st.pop();
+            }
+            if (st.empty()) throw runtime_error("括号不匹配");
+            st.pop();                               // 丢弃左括号
+        } else {                                    // 运算符
+            while (!st.empty() &amp;&amp; st.top() != "(" &amp;&amp;
+                   prec(st.top()) &gt;= prec(t)) {
+                out.push_back(st.top()); st.pop();
+            }
+            st.push(t);
+        }
+    }
+    while (!st.empty()) {
+        if (st.top() == "(") throw runtime_error("括号不匹配");
+        out.push_back(st.top()); st.pop();
+    }
+    return out;
+}
+
+// 任务 3:后缀求值(注意弹出顺序)
+</pre>
+
+<div class="code-title">lab3.cpp(第二段:求值与主循环)</div>
+<pre class="code">int evalPostfix(const vector&lt;string&gt;&amp; toks) {
+    stack&lt;int&gt; st;
+    for (const string&amp; t : toks) {
+        if (isdigit((unsigned char)t[0]))
+            st.push(stoi(t));
+        else {
+            if (st.size() &lt; 2) throw runtime_error("操作数不足");
+            int b = st.top(); st.pop();   // 先弹的是右操作数
+            int a = st.top(); st.pop();
+            if (t == "+") st.push(a + b);
+            else if (t == "-") st.push(a - b);
+            else if (t == "*") st.push(a * b);
+            else {
+                if (b == 0) throw runtime_error("除数为 0");
+                st.push(a / b);
+            }
+        }
+    }
+    if (st.size() != 1) throw runtime_error("表达式非法");
+    return st.top();
+}
+
+int main() {
+    cout &lt;&lt; "中缀表达式计算器(支持 + - * / 与括号,输入 quit 退出)\n";
+    string line;
+    while (true) {
+        cout &lt;&lt; "&gt; ";
+        getline(cin, line);
+        if (line == "quit") break;
+        try {
+            auto toks = tokenize(line);
+            auto post = infixToPostfix(toks);
+            int result = evalPostfix(post);
+            cout &lt;&lt; "后缀式: ";
+            for (const string&amp; t : post) cout &lt;&lt; t &lt;&lt; ' ';
+            cout &lt;&lt; "\n结果: " &lt;&lt; result &lt;&lt; endl;
+        } catch (const exception&amp; e) {
+            cout &lt;&lt; "错误: " &lt;&lt; e.what() &lt;&lt; endl;
+        }
+    }
+    return 0;
+}</pre>
+<p>示例输入输出:</p>
+<pre class="code">&gt; 6+5*(2+3)
+后缀式: 6 5 2 3 + * +
+结果: 31
+&gt; 12/4+7*2
+后缀式: 12 4 / 7 2 * +
+结果: 17
+&gt; (1+2)*3
+后缀式: 1 2 + 3 *
+结果: 9
+&gt; 5/0
+错误: 除数为 0
+&gt; (1+2
+错误: 括号不匹配
+&gt; quit</pre>
+<p><b>设计说明:</b>① tokenize/转换/求值三阶段分离,每阶段只做一件事,出错信息定位到阶段——这是编译原理"词法→语法→语义"流水线的雏形;② 转换与求值都基于同一个栈结构,体现了 ADT"实现替换、接口不变"的思想(两个函数各自声明自己的 stack,互不干扰);③ 错误用异常 <code>throw</code> 统一报告,主循环一个 <code>catch</code> 兜底,避免每个函数各自打印错误导致"错误处理与逻辑纠缠";④ 运算符优先级集中在 <code>prec</code> 一个函数里,新增运算符(如幂 ^)只需改这一处。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第4章 树——把"链式结点"推广为"有分支的结构",学习二叉树遍历、表达式树、二叉查找树与 AVL 平衡。第4章的表达式树与本章的中缀转后缀直接衔接;树的层序遍历将使用本章的队列。</p>
+
+</body>
+</html>

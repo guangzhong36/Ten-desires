@@ -1,0 +1,41 @@
+// 任务 3:朴素递归斐波那契(用于计时)
+long long fibNaive(int n) {
+    if (n <= 1) return n;
+    return fibNaive(n - 1) + fibNaive(n - 2);
+}
+
+int main() {
+    cout << "===== 任务 1:汉诺塔(n = 3)=====\n";
+    hanoi(3, 'A', 'B', 'C', true);
+    cout << "移动步数: " << moveCnt << "(理论 2^3 - 1 = 7)\n";
+    moveCnt = 0;                          // 清零,再进入批量验证
+    for (int n = 1; n <= 10; ++n) {       // 验证 2^n - 1
+        hanoi(n, 'A', 'B', 'C', false);
+        long long expect = (1LL << n) - 1;
+        cout << "n = " << n << ": 实际 " << moveCnt
+             << ",理论 " << expect
+             << (moveCnt == expect ? "  一致" : "  不一致!") << endl;
+        moveCnt = 0;
+    }
+
+    cout << "\n===== 任务 2:全排列(n = 3)=====\n";
+    vector<int> a = {1, 2, 3};
+    long long permCnt = 0;
+    permute(a, 0, permCnt);
+    cout << "排列总数: " << permCnt << "(理论 3! = 6)\n";
+    permCnt = 0;
+    vector<int> b = {1, 2, 3, 4};         // 再验证 4! = 24
+    permute(b, 0, permCnt);
+    cout << "n = 4 排列总数: " << permCnt << "(理论 4! = 24)\n";
+
+    cout << "\n===== 任务 3:朴素斐波那契计时 =====\n";
+    for (int n : {32, 35, 38}) {          // n 每次 +3,调用数约 ×4.2
+        auto t0 = chrono::steady_clock::now();
+        long long f = fibNaive(n);
+        double ms = chrono::duration<double, milli>
+                    (chrono::steady_clock::now() - t0).count();
+        cout << "fib(" << n << ") = " << f << ",耗时 " << ms << " ms\n";
+    }
+    cout << "观察: n 每加 3,耗时约乘 4~5(调用数 2*F(n+1) 的比值约 phi^3 = 4.2)\n";
+    return 0;
+}

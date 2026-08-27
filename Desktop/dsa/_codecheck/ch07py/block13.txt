@@ -1,0 +1,33 @@
+    # 任务 4:比值分析(理论:插入 ×4;归并/快排 ≈×2)
+    print("\n任务 4:n 翻倍时实测时间比值(理论:n² 算法 ×4,n log n 算法 ≈×2)")
+    theory = {"插入": "n² → ×4", "归并": "n log n → ≈×2", "快排": "n log n → ≈×2"}
+    for alg in ("插入", "归并", "快排"):
+        line = f"{alg}({theory[alg]}): "
+        for kind in kinds:
+            ts = sorted(times[kind][alg].items())
+            rs = [f"{ts[i+1][1]/ts[i][1]:.1f}" for i in range(len(ts) - 1)]
+            line += f"{kind}[{' '.join(rs)}]  "
+        print(line)
+
+    # 任务 5(加分):比较/移动次数统计
+    global COUNT, cmp_cnt, move_cnt
+    COUNT = True
+    a = make_data(1000, "随机")
+    cmp_cnt = move_cnt = 0
+    insertion_sort(a[:])
+    print(f"\n任务 5(n=1000 随机):插入 比较={cmp_cnt} 移动={move_cnt}")
+    cmp_cnt = move_cnt = 0
+    merge_sort(a[:])
+    print(f"                归并 比较={cmp_cnt} 移动={move_cnt}(拼接不计)")
+    cmp_cnt = move_cnt = 0
+    quick_sort(a[:])
+    print(f"                快排 比较={cmp_cnt} 交换={move_cnt}")
+    COUNT = False
+
+    print("\n结论:实测比值与理论吻合——插入排序 n 翻倍时间约 ×4,"
+          "归并/快排约 ×2;逆序数据上插入排序退化最明显,"
+          "近有序数据上插入排序接近 O(n),快排三数中值使逆序数据不再退化。")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,606 @@
+<title>第6章 优先队列(堆)</title>
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第6章 优先队列(堆)</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解<span class="term">优先队列</span> ADT(insert/deleteMin/findMin)与第3章普通队列的区别:出队按优先级而非到达顺序</li>
+<li>掌握二叉堆的<span class="term">结构性质</span>(完全二叉树)与<span class="term">堆序性质</span>(父 ≤ 子)</li>
+<li>掌握 1 基数组表示(根=1、左子 2i、右子 2i+1、父 i/2),能默写<span class="term">上滤</span>与<span class="term">下滤</span></li>
+<li>能解释两种建堆方式的复杂度差异</li>
+<li>能说出 d-堆、左式堆、斜堆、二项队列的动机与差别</li>
+<li>会用 <code>std::priority_queue</code> 构造大顶堆、最小堆与自定义比较器</li>
+<li>能用"大小为 k 的小顶堆"独立解决 top-k,并用标准库验证手写堆</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>优先队列的直觉一句话:<span class="hl">"不用排队,按重要性插队"</span>。第3章的普通队列是"先来先服务",而急诊分诊、任务调度、短作业打印都要求"最紧急者先处理"。它只有三个操作:insert、findMin、deleteMin。</p>
+<p>在 C 里,朴素做法两头为难:无序数组 insert <i>O</i>(1) 但 deleteMin 要扫描 <i>O</i>(<i>n</i>);有序数组反过来了。二叉堆的巧妙之处在于<span class="hl">insert 与 deleteMin 同时做到 <i>O</i>(log <i>n</i>)</span>,且不需要指针——完全二叉树直接摊平进数组,父子关系用下标计算,正是 C 程序员最熟悉的数组思维。</p>
+<p>C++ 迁移分三层:底层用第3章的 <code>vector</code> 当堆数组;中间层手写二叉堆类(§6.2–§6.4);上层用标准库 <code>priority_queue</code>(§6.6)。注意 C++ 教材用 1 基(下标 0 闲置),Python 的 <code>heapq</code> 用 0 基(§6.2.3)。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>完全二叉树高度 ≈ log<sub>2</sub> <i>n</i>;求和记号 Σ 与几何级数(建堆 <i>O</i>(<i>n</i>) 推导用);摊还分析直觉(第11章)。</p>
+<p><b>C 语言前置:</b>数组与下标运算;<code>struct</code> 与函数指针;函数指针形式的比较函数;整数除法(1 基父结点 i/2)。</p>
+<p><b>依赖前面章节:</b>第2章大 O;第3章 <code>vector</code>(堆的底层数组)与栈;第4章树术语(父、子、叶、深度、高度)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1 小时):</b>读 §6.1–§6.2,理解 ADT 与两条性质,背熟 1 基公式</li>
+<li><b>第二阶段(1.5 小时):</b>读 §6.3–§6.4,手写上滤/下滤/建堆代码,手工走一遍 insert 与 deleteMin</li>
+<li><b>第三阶段(1 小时):</b>读 §6.5–§6.6,俯瞰堆家族,上机实验三种构造</li>
+<li><b>第四阶段(实验,1 小时):</b>完成章末实验:Top-K 高频词</li>
+<li><b>验收标准:</b>能默写上滤与下滤,说出"二叉堆 insert/deleteMin O(log n)、建堆 O(n)",解释 priority_queue 为何默认大顶堆</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§6.1 优先队列模型与动机(任务排程/急诊分诊、ADT 三操作、队列对比)</li>
+<li>§6.2 二叉堆:结构性质与数组表示(完全二叉树、堆序性质、1 基 vs 0 基换算)</li>
+<li>§6.3 插入与删除最小:上滤与下滤(完整代码、"末元素搬根再下滤"套路)</li>
+<li>§6.4 建堆与其余操作(逐个插入 O(n log n) vs 下滤建堆 O(n)、decreaseKey/delete/merge)</li>
+<li>§6.5 其他堆:d-堆、左式堆、斜堆与二项队列(动机与一句话差别)</li>
+<li>§6.6 标准库:priority_queue(默认大顶堆、最小堆写法、自定义比较器)</li>
+<li>§6.7 手写堆与标准库并排:top-k 实战(小顶堆淘汰技巧、堆排序预告)</li>
+</ul></div>
+
+<h2>§6.1 优先队列模型与动机</h2>
+
+<h3>6.1.1 三个场景:谁最紧急谁先走</h3>
+<p>先看三个场景。① <b>操作系统任务调度</b>:每次选择优先级最高的进程;② <b>打印机队列</b>:短作业优先;③ <b>急诊分诊</b>:按病情严重程度处理,最危重者最先抢救。</p>
+<p>三个场景的共同点一致:<span class="hl">插入一个元素、查看当前最紧急的元素、取出该元素</span>。大小关系代表优先级还是病情,由具体问题映射,数据结构不管。</p>
+
+<h3>6.1.2 优先队列 ADT:三个操作</h3>
+<p><span class="term">优先队列(priority queue)</span> 是抽象数据类型:<code>insert(x)</code> 插入;<code>findMin()</code> 返回最小元但不删除;<code>deleteMin()</code> 删除并返回最小元。约定数值越小优先级越高(最小堆),取最大则把比较方向反过来(§6.6)。注意:<span class="term">堆(heap)</span> 是优先队列最主流的实现,不是 ADT 本身;与存放动态内存的"堆内存"同名,毫无关系。</p>
+
+<div class="box box-tip"><div class="box-title">记号说明(本章约定,与 Python 版一致)</div>
+<p>复杂度记号沿用第2章。下标公式中,"父 i/2"与"(i−1)/2"都指<b>整数除法</b>(代码写 <code>i / 2</code>、<code>(i - 1) / 2</code>)。"最小元""最高优先级"同义。</p>
+</div>
+
+<h3>6.1.3 与普通队列对比:出队顺序由谁决定</h3>
+<p>第3章的普通队列是 FIFO:<span class="hl">出队顺序 = 到达顺序</span>;优先队列相反:<span class="hl">出队顺序 = 优先级顺序</span>。朴素实现却两头为难:</p>
+<table>
+<tr><th>朴素实现</th><th>insert</th><th>deleteMin</th><th>问题</th></tr>
+<tr><td>无序数组/链表</td><td><i>O</i>(1)</td><td><i>O</i>(<i>n</i>)(扫描)</td><td>删除太慢</td></tr>
+<tr><td>有序数组/链表</td><td><i>O</i>(<i>n</i>)(移位)</td><td><i>O</i>(1)</td><td>插入太慢</td></tr>
+<tr><td>二叉堆(本章主角)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td><td>两者均衡</td></tr>
+</table>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th></tr>
+<tr><td><code>struct PQ { int *a; int n; };</code> 数据与操作分离</td><td><code>class BinaryHeap { vector&lt;T&gt; a; … };</code> 数据与操作封装</td></tr>
+<tr><td><code>pq_deleteMin(&amp;pq, &amp;out);</code> 每个操作传指针</td><td><code>pq.deleteMin();</code> 成员函数天然绑定</td></tr>
+<tr><td>找最小要自己写 <code>for</code> 循环扫描</td><td>根就是最小元,<code>findMin()</code> 一行</td></tr>
+<tr><td>数组长度、容量、释放全靠手工</td><td><code>vector</code> 自动管理</td></tr>
+</table>
+
+<h2>§6.2 二叉堆:结构性质与数组表示</h2>
+
+<h3>6.2.1 结构性质:完全二叉树</h3>
+<p>二叉堆首先是一棵<span class="term">完全二叉树</span>:<span class="hl">除最后一层外每层都满,最后一层从左到右连续填充、不留空隙</span>。这条性质的威力在高度:结点数 <i>n</i> 满足 2<sup><i>h</i></sup> ≤ <i>n</i> &lt; 2<sup><i>h</i>+1</sup>,所以 <i>h</i> ≈ log<sub>2</sub> <i>n</i>——<span class="hl">任何根到叶路径都只有对数长度</span>,这正是上滤/下滤高效的根源。</p>
+<p>完全二叉树还不需要指针:结点按层序编号,父子关系用下标直接算出(§6.2.3)。对比第4章的指针树,连续数组存储节省指针空间、缓存友好,代价是形状被锁定,只能在末尾增删。</p>
+
+<h3>6.2.2 堆序性质:最小堆</h3>
+<p><span class="term">堆序性质</span>:对每个非叶结点,<span class="hl">父结点的值 ≤ 子结点的值</span>(最小堆;换成 ≥ 即最大堆)。两条性质合起来才是二叉堆:结构性质保证对数高度,堆序性质保证根是全局最小元,<code>findMin()</code> 是 <i>O</i>(1)。</p>
+<p>立刻澄清:<span class="hl">堆序只约束"父子",兄弟之间没有大小关系</span>。堆因此不是有序数组,不能二分查找,按值查找只能全扫 <i>O</i>(<i>n</i>)。堆只承诺最小元在根,是"弱有序"结构,与第4章 BST 的强有序对照。</p>
+
+<h3>6.2.3 数组表示:1 基与 0 基换算</h3>
+<p>把完全二叉树按层序放进数组,父子关系退化为下标运算。这里出现全系列最重要的"习惯分岔":<span class="hl">C++ 教材(Weiss 原书)用 1 基</span>——根在下标 1,下标 0 闲置;<span class="hl">Python 的 heapq 用 0 基</span>——根在下标 0。两套公式:</p>
+<table>
+<tr><th>含义</th><th>1 基(C++ 教材习惯)</th><th>0 基(Python heapq)</th></tr>
+<tr><td>根</td><td>下标 1</td><td>下标 0</td></tr>
+<tr><td>结点 i 的左子</td><td>2i</td><td>2i+1</td></tr>
+<tr><td>结点 i 的右子</td><td>2i+1</td><td>2i+2</td></tr>
+<tr><td>结点 i 的父</td><td>i/2(整数除法)</td><td>(i−1)/2(整数除法)</td></tr>
+<tr><td>最后一个非叶结点</td><td>n/2(整数除法)</td><td>n/2 − 1</td></tr>
+<tr><td>下标 0 是否闲置</td><td>是,a[0] 闲置</td><td>否,下标 0 就是根</td></tr>
+</table>
+<p>验证:下标 5 的结点,1 基下左子 10、右子 11、父 2;0 基下左子 11、右子 12、父 2。父相同只是巧合——下标 4:1 基父 2,0 基父 1。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:把 0 基公式抄进 1 基代码(或反之)</div>
+<p>两种下标体系并存是本章第一大坑。1 基堆里左子必须写 <code>2*i</code>、父必须写 <code>i/2</code>——抄成 0 基的 <code>2*i+1</code>、<code>(i-1)/2</code> 会取到错位置;把闲置的 <code>a[0]</code> 当根读写,堆序立即被破坏且极难排查。<span class="hl">解决之道:写代码前先声明"用几基"并写进注释,写完用"验证堆序"函数检查</span>(§6.3.3)。</p>
+</div>
+
+<div class="code-title">示例 6-1 二叉堆类骨架(1 基,vector 作底层)</div>
+<pre class="code">// 1 基堆:根在下标 1,左子 2i、右子 2i+1、父 i/2;下标 0 闲置
+template &lt;typename T&gt;
+class BinaryHeap {
+    vector&lt;T&gt; a;                    // 底层数组,a[0] 闲置
+public:
+    BinaryHeap() { a.push_back(T{}); }   // 占住 a[0],保证从下标 1 开始用
+    size_t size() const { return a.size() - 1; }
+    bool empty() const { return size() == 0; }
+    T findMin() const { return a[1]; }   // 根即最小元 O(1)
+};</pre>
+
+<h2>§6.3 插入与删除最小:上滤与下滤</h2>
+
+<h3>6.3.1 插入:上滤(percolateUp)</h3>
+<p>插入策略是"先保结构,再修堆序":<span class="hl">① 新元素追加到末尾</span>(完全二叉树只在末尾留空位,结构自动保持);<span class="hl">② 沿根路径向上冒泡</span>——与父比较,小于父则交换,直到父 ≤ 自己或到根。这叫<span class="term">上滤(percolate up)</span>,路径最长即树高,insert 为 <i>O</i>(log <i>n</i>);上滤只看一个父,正是堆"弱有序"的便利。</p>
+
+<div class="code-title">示例 6-2 insert:上滤</div>
+<pre class="code">void insert(const T&amp; x) {
+    a.push_back(x);                  // 追加到末尾:保持完全二叉树
+    size_t i = a.size() - 1;         // 新元素下标
+    while (i &gt; 1) {                  // 向上冒泡(上滤)
+        size_t p = i / 2;            // 父结点(1 基)
+        if (a[p] &lt;= a[i]) break;     // 父 &lt;= 子,堆序成立,停
+        swap(a[p], a[i]);            // 否则与父交换,继续往上
+        i = p;
+    }
+}</pre>
+
+<h3>6.3.2 删除最小:下滤(percolateDown)</h3>
+<p>删除根会留下空洞,朴素前移会破坏完全二叉树或付出 <i>O</i>(<i>n</i>) 搬移。经典套路:<span class="hl">① 记下根(它就是答案);② 把<b>最后一个元素</b>搬到根</span>(末尾是唯一可合法删除的空位,结构自动保持);<span class="hl">③ 沿"叶方向"向下冒泡</span>——与孩子中<b>较小者</b>比较,大于它则交换,直到 ≤ 两个孩子或到叶。这叫<span class="term">下滤(percolate down)</span>,同样 <i>O</i>(log <i>n</i>)。</p>
+<p>两个细节:必须与"较小的"孩子交换(与较大的换会违反堆序);先检查右子是否存在(下标 2i+1 是否在界内),只有左子也合法。</p>
+
+<div class="code-title">示例 6-3 deleteMin:末元素搬根再下滤</div>
+<pre class="code">// 下滤:把下标 i 的元素向下沉(deleteMin 与建堆共用)
+void percolateDown(size_t i) {
+    size_t n = a.size();
+    while (true) {
+        size_t smallest = i;
+        for (size_t c : {2 * i, 2 * i + 1})  // 左子、右子(1 基)
+            if (c &lt; n &amp;&amp; a[c] &lt; a[smallest])
+                smallest = c;                // 选"较小"的孩子
+        if (smallest == i) break;            // 两个孩子都不小于自己
+        swap(a[i], a[smallest]);
+        i = smallest;
+    }
+}
+
+// 删除最小元:最后一个元素搬到根,再下滤
+T deleteMin() {
+    T min = a[1];                    // 记下根(答案)
+    a[1] = a.back();                 // 末元素搬到根:保持完全二叉树
+    a.pop_back();
+    if (a.size() &gt; 1) percolateDown(1);   // 只剩 1 个元素则免
+    return min;
+}</pre>
+
+<div class="box box-example"><div class="box-title">例题 6-1 手工走一遍 insert 与 deleteMin</div>
+<p>设 1 基堆初始为 <code>[_, 13, 21, 16, 24, 31, 19, 68, 65, 26, 32]</code>(a[0] 闲置)。<b>insert(14)</b>:追加到下标 11,沿 11→5→2→1 上滤:31 &gt; 14 换、21 &gt; 14 换、13 ≤ 14 停,得 <code>[_, 13, 14, 16, 24, 21, 19, 68, 65, 26, 32, 31]</code>。<b>deleteMin()</b>:取走 13,末元素 31 搬根,依次换过 14、21、26,得 <code>[_, 14, 21, 16, 24, 26, 19, 68, 65, 31, 32]</code>,最小元 14。</p>
+</div>
+
+<h3>6.3.3 完整接口与调试技巧</h3>
+<p>完整堆还应有 <code>top()/findMin()</code>、<code>empty()</code>、<code>size()</code> 等接口;若需"按插入顺序稳定",可在元素里加序号比较(见 §6.7 的 (频次, 词) 元组)。</p>
+
+<div class="box box-tip"><div class="box-title">调试技巧:写一个"验证堆序"的断言函数</div>
+<p>堆的 bug 极具隐蔽性:上滤少换一层、下滤选错孩子,结果仍"接近正确"。随手加 <code>checkHeap()</code>:遍历所有非叶结点 i(1 ≤ i ≤ n/2),断言 <code>a[i] &lt;= a[2*i]</code>(若存在)且 <code>a[i] &lt;= a[2*i+1]</code>(若存在),每次 insert/deleteMin 后调用,把可疑行为扼杀在摇篮里。</p>
+</div>
+
+<h2>§6.4 建堆与其余操作</h2>
+
+<h3>6.4.1 两种建堆方式</h3>
+<p>建堆有两种做法。① <b>自顶向下</b>:空堆逐个 insert,每次 <i>O</i>(log <i>n</i>),共 <i>O</i>(<i>n</i> log <i>n</i>)。② <b>自底向上(下滤建堆)</b>:n 个元素按任意顺序放进数组(天然构成完全二叉树,只是堆序可能被违反),从最后非叶结点(n/2)往前逐个 percolateDown 到根,总代价 <i>O</i>(<i>n</i>)。"一次性给全所有元素"的场景都用下滤建堆。</p>
+
+<div class="code-title">示例 6-4 下滤建堆:O(n)</div>
+<pre class="code">// 下滤建堆:从最后一个非叶结点(n/2)开始,逐个下滤到根
+void buildHeap(vector&lt;T&gt; items) {
+    a.clear();
+    a.push_back(T{});                // 占位 a[0]
+    for (const T&amp; x : items) a.push_back(x);
+    for (size_t i = a.size() / 2; i &gt;= 1; --i)
+        percolateDown(i);            // 复用示例 6-3 的下滤
+}</pre>
+
+<div class="box box-example"><div class="box-title">例题 6-2 手工走一遍下滤建堆</div>
+<p>输入 <code>[150, 80, 40, 30, 10, 70, 110, 100, 20, 90, 60, 50, 120, 140, 130]</code>(n = 15,最后非叶 = 下标 7)。从 7 往前:7(110)≤130 停;6(70)与 50 换;5(10)≤90、60 停;4(30)与 20 换;3(40)≤50、110 停;2(80)与 10 换、再与 60 换;1(150)依次与 10、20、30 换。最终 <code>[_, 10, 20, 40, 30, 60, 50, 110, 100, 80, 90, 70, 150, 120, 140, 130]</code>。</p>
+</div>
+
+<h3>6.4.2 为什么下滤建堆是 O(n):一句话推导</h3>
+<p>关键观察:高度为 <i>h</i> 的结点约有 <i>n</i>/2<sup><i>h</i>+1</sup> 个,每个下滤至多走 <i>h</i> 步,总代价 Σ<sub><i>h</i></sub> <i>h</i>·<i>n</i>/2<sup><i>h</i>+1</sup> 是"几何级数收尾"的求和,结果 <i>O</i>(<i>n</i>)。直觉:<span class="hl">矮的结点数量多但只需下滤几步,高的结点下滤远但数量极少</span>;逐个插入的代价全集中在"深叶子上滤到根"的长路径。严格证明在第11章。</p>
+
+<h3>6.4.3 decreaseKey、delete 与 merge</h3>
+<ul>
+<li><b>decreaseKey(p, delta)</b>:键变小只能向上走——直接上滤,<i>O</i>(log <i>n</i>)。前提是知道 p 的位置(堆不提供查找);经典用途:Dijkstra 松弛(第9章)。</li>
+<li><b>delete(任意位置 p)</b>:把 a[p] 换成最小值(根的副本),上滤到根,再 deleteMin——两步都 <i>O</i>(log <i>n</i>)。</li>
+<li><b>merge(合并两个堆)</b>:二叉堆的短板——必须把两个数组拷到一起再建堆,<i>O</i>(<i>n</i>)。频繁合并堆的应用,二叉堆不够用,这正是 §6.5 堆家族的动机。</li>
+</ul>
+
+<div class="code-title">示例 6-5 decreaseKey 与 delete(任意位置)</div>
+<pre class="code">// 键变小只会"向上"走:减键后上滤 O(log n)
+void decreaseKey(size_t pos, const T&amp; amount) {
+    a[pos] -= amount;
+    while (pos &gt; 1 &amp;&amp; a[pos / 2] &gt; a[pos]) {
+        swap(a[pos / 2], a[pos]);
+        pos /= 2;
+    }
+}
+
+// 删除任意位置:盖成最小值上滤到根,再 deleteMin O(log n)
+void removeAt(size_t pos) {
+    a[pos] = a[1];                   // 根是最小值,盖上去不破坏堆序
+    while (pos &gt; 1) {                // 一路换到根
+        swap(a[pos / 2], a[pos]);
+        pos /= 2;
+    }
+    deleteMin();                     // 现在根就是原来的 a[pos]
+}</pre>
+
+<h2>§6.5 其他堆:d-堆、左式堆、斜堆与二项队列</h2>
+
+<h3>6.5.1 为什么不止一种堆</h3>
+<p>二叉堆已做到 insert/deleteMin 均 <i>O</i>(log <i>n</i>)、findMin <i>O</i>(1),为何还要别的堆?因为<b>操作组合不同</b>:插入远多于删除的系统希望 insert 更快;频繁合并堆的系统受不了 merge <i>O</i>(<i>n</i>)。没有一种堆能同时最优,每个成员都在特定操作上让步、换取另一操作的改进。</p>
+
+<h3>6.5.2 d-堆:多叉,降低高度</h3>
+<p><span class="term">d-堆</span> 是二叉堆的直接推广:每个结点最多 d 个孩子(二叉堆即 d = 2)。高度从 log<sub>2</sub> <i>n</i> 降到 log<sub><i>d</i></sub> <i>n</i>,insert(只与一个父比较)变快为 <i>O</i>(log<sub><i>d</i></sub> <i>n</i>);但 deleteMin 要在 d 个孩子里找最小,变慢为 <i>O</i>(<i>d</i> log<sub><i>d</i></sub> <i>n</i>)。典型场景:insert 远多于 deleteMin 的离散事件模拟,常用 d = 4 或 5。</p>
+
+<h3>6.5.3 左式堆:为 merge 而生</h3>
+<p>二叉堆 merge <i>O</i>(<i>n</i>) 的根源是"完全二叉树"锁死了形状。<span class="term">左式堆(leftist heap)</span> 主动放弃完全性,改用新约束:<span class="hl">对每个结点,左子的零路径长(NPL)不小于右子的</span>——即"左偏"。<span class="term">零路径长(null path length)</span> 是到最近叶子的最短路径长度(空结点为 −1)。它保证最右路径很短,merge 只需递归沿最右路径合并,<i>O</i>(log <i>n</i>);insert/deleteMin 都可用 merge 实现。</p>
+
+<h3>6.5.4 斜堆:左式堆的摊还简化版</h3>
+<p><span class="term">斜堆(skew heap)</span> 是左式堆的极简主义版本:不维护 NPL,merge 后<b>无条件交换左右子树</b>。实现更短,但单次可能退化 <i>O</i>(<i>n</i>),整体摊还 <i>O</i>(log <i>n</i>)(第11章证明)。它与左式堆的关系,正如伸展树之于 AVL 树。</p>
+
+<h3>6.5.5 二项队列:森林</h3>
+<p><span class="term">二项队列(binomial queue)</span> 的思路完全不同:不是一棵树,而是一组"二项树"组成的<b>森林</b>。第 k 棵二项树大小恰为 2<sup>k</sup>,每种大小最多一棵——n 个元素按二进制位决定有哪些树(如 n = 13 = 1101,有 8、4、1 三棵)。插入像二进制加法"进位"合并同大小树,摊还 <i>O</i>(1);merge 与 deleteMin 均 <i>O</i>(log <i>n</i>)。</p>
+
+<table class="tight">
+<tr><th>堆类型</th><th>动机</th><th>insert</th><th>deleteMin</th><th>merge</th></tr>
+<tr><td>二叉堆</td><td>最常用,数组存储、缓存友好</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>d-堆</td><td>插入多于删除,降高度</td><td><i>O</i>(log<sub><i>d</i></sub> <i>n</i>)</td><td><i>O</i>(<i>d</i> log<sub><i>d</i></sub> <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>左式堆</td><td>高效 merge,左偏约束</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>斜堆</td><td>左式堆的摊还简化版</td><td>摊还 <i>O</i>(log <i>n</i>)</td><td>摊还 <i>O</i>(log <i>n</i>)</td><td>摊还 <i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>二项队列</td><td>森林结构,插入摊还 O(1)</td><td>摊还 <i>O</i>(1)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+</table>
+
+<h2>§6.6 标准库:priority_queue</h2>
+
+<h3>6.6.1 三种构造:大顶堆、最小堆与自定义比较器</h3>
+<p><code>std::priority_queue</code> 是优先队列的工程实现,底层默认用 <code>vector</code> 存堆。最大的坑:默认是"大顶堆"——<code>top()</code> 返回最大元素(底层比较器 <code>less&lt;T&gt;</code>)。要最小堆必须写全三个模板参数;自定义比较器语义与 <code>std::sort</code> 相反:返回 true 表示第一个参数优先级更低。</p>
+
+<div class="code-title">示例 6-6 priority_queue 的三种构造</div>
+<pre class="code">#include &lt;queue&gt;
+#include &lt;functional&gt;
+using namespace std;
+
+priority_queue&lt;int&gt; mx;               // ① 默认大顶堆(底层 less):top() 是最大元
+mx.push(3); mx.push(1); mx.push(9);
+// mx.top() == 9,pop 顺序:9 3 1
+
+// ② 最小堆:三模板参数
+priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; mn;
+mn.push(3); mn.push(1); mn.push(9);
+// mn.top() == 1,pop 顺序:1 3 9
+
+// ③ 自定义比较器:按"频次"给 (词, 频次) 建最小堆
+struct Cmp {
+    bool operator()(const pair&lt;string, int&gt;&amp; x,
+                    const pair&lt;string, int&gt;&amp; y) const {
+        return x.second &gt; y.second;   // 返回 true 表示 x 优先级更低
+    }
+};
+priority_queue&lt;pair&lt;string, int&gt;, vector&lt;pair&lt;string, int&gt;&gt;, Cmp&gt; pq;</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:忘记 priority_queue 默认是大顶堆</div>
+<p>习惯"优先队列 = 最小先出"的同学,直接用 <code>priority_queue&lt;int&gt;</code> 拿到的却是最大元——标准库最高频 bug。两个检查:① 想清楚 top() 出来的是谁,最小堆务必写全三个模板参数,嫌啰嗦可用 <code>using</code> 起别名;② <code>pop()</code>/<code>top()</code> 前先判 <code>empty()</code>,空堆 top 未定义。</p>
+</div>
+
+<h3>6.6.2 接口限制与选型</h3>
+<p><code>priority_queue</code> 接口只有五个:push、pop、top、empty、size。限制:<code>pop()</code> 不返回被删元素;无迭代器;无 decreaseKey;"批量建堆"只能在构造时拷入整个容器(内部自动下滤)。它本质是<b>适配器</b>:包住一个 <code>vector</code> 只露出堆的三操作,与 <code>std::stack</code>/<code>std::queue</code> 同一家族。</p>
+
+<table class="cmp">
+<tr><th>C 的手写二叉堆</th><th>C++ 的 std::priority_queue</th></tr>
+<tr><td>自己写数组、上滤、下滤约 60 行</td><td>构造一行声明,五个成员函数即全接口</td></tr>
+<tr><td>比较逻辑写死在代码里</td><td>比较器是模板参数,less/greater/自定义随意换</td></tr>
+<tr><td>内存泄漏风险全在自己肩上</td><td>RAII 自动管理,离开作用域自动释放</td></tr>
+<tr><td>可以随时读写底层数组(调试友好)</td><td>封装后只能走三操作,防止误用</td></tr>
+</table>
+
+<div class="box box-tip"><div class="box-title">工程建议:什么时候直接上 priority_queue</div>
+<p>工程中"需要动态维护最值"的场景一律优先 <code>priority_queue</code>:任务调度、Top-K、贪心(第10章哈夫曼)、Dijkstra(第9章)。手写堆的用武之地:需要 decreaseKey(标准库没有)、批量建堆后长期复用、或考试要求展示原理。"一次性排好序"用 <code>std::sort</code>;"边插入边取最值"才用堆。</p>
+</div>
+
+<h2>§6.7 手写堆与标准库并排:top-k 实战</h2>
+
+<h3>6.7.1 问题:求最大的 k 个(top-k)</h3>
+<p><b>Top-K 问题</b>:给定 n 个元素,求最大的 k 个(排行榜、热门词)。朴素做法全部排序是 <i>O</i>(<i>n</i> log <i>n</i>);堆做法 <i>O</i>(<i>n</i> log <i>k</i>),k 远小于 n 时近乎线性。核心技巧叫<b>小顶堆淘汰法</b>:<span class="hl">维护"当前最大的 k 个"的小顶堆——堆顶恰是第 k 大,即淘汰"门槛";新元素大于堆顶才替换</span>。</p>
+<p>为什么用"小顶堆"而非"大顶堆"?<span class="hl">大顶堆的堆顶是全局最大,淘汰后不知谁替补</span>;小顶堆的堆顶是"最小的入选者",谁比它大谁挤掉它,淘汰逻辑一行搞定。</p>
+
+<table class="cmp">
+<tr><th>C 的朴素做法(qsort 全排序)</th><th>C++ 的堆做法(priority_queue)</th></tr>
+<tr><td><code>qsort</code> 把 n 个元素全部排序,<i>O</i>(<i>n</i> log <i>n</i>)</td><td>大小为 k 的小顶堆,<i>O</i>(<i>n</i> log <i>k</i>)</td></tr>
+<tr><td>结果数组占 n 个位置</td><td>堆只占 k 个位置,可流式处理</td></tr>
+<tr><td>新数据到达必须重新 qsort 一遍</td><td><code>push</code>/<code>top</code>/<code>pop</code> 动态维护,每次 O(log k)</td></tr>
+<tr><td>比较函数用函数指针,写在调用处之外</td><td>比较器是模板参数,<code>greater&lt;T&gt;</code> 一行搞定</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:top-k 时"无脑入堆",忘了先与堆顶比较</div>
+<p>堆满后仍直接 push,堆会涨过 k;或"先 push 再 pop 堆顶",把刚进来的大元素又弹走——淘汰条件写反。正确顺序只有一种:<span class="hl">先与堆顶比较,大于门槛才 pop 再 push,且 pop 必须在 push 之前</span>。把"比较 → pop → push"的顺序写成注释即可防错。</p>
+</div>
+
+<h3>6.7.2 手写版与标准库版并排</h3>
+<p>同一任务——给一组 (频次, 词) 求频次最高的 k 个——分别用手写堆与 priority_queue 实现。两份代码逻辑结构一字不差,正是"手写理解原理、标准库交付工程"的教科书式对照。</p>
+
+<div class="code-title">示例 6-7 手写堆版 top-k(复用示例 6-1~6-3 的 BinaryHeap)</div>
+<pre class="code">// items: (频次, 词);按频次降序输出最大的 k 个
+vector&lt;pair&lt;int, string&gt;&gt; topK(const vector&lt;pair&lt;int, string&gt;&gt;&amp; items, int k) {
+    BinaryHeap&lt;pair&lt;int, string&gt;&gt; h;         // 手写最小堆
+    for (const auto&amp; t : items) {
+        if (h.size() &lt; size_t(k))
+            h.insert(t);                     // 堆未满:直接入堆
+        else if (t &gt; h.findMin()) {          // 超过"第 k 大门槛"才替换
+            h.deleteMin();
+            h.insert(t);
+        }
+    }
+    vector&lt;pair&lt;int, string&gt;&gt; res;
+    while (!h.empty()) { res.push_back(h.findMin()); h.deleteMin(); }
+    reverse(res.begin(), res.end());         // 弹出是升序,反转为降序
+    return res;
+}</pre>
+
+<div class="code-title">示例 6-8 标准库版 top-k:逻辑一字不差</div>
+<pre class="code">// 同一任务用 priority_queue:只换构造与函数名
+vector&lt;pair&lt;int, string&gt;&gt; topKStd(const vector&lt;pair&lt;int, string&gt;&gt;&amp; items, int k) {
+    using P = pair&lt;int, string&gt;;
+    priority_queue&lt;P, vector&lt;P&gt;, greater&lt;P&gt;&gt; h;   // 标准库最小堆
+    for (const P&amp; t : items) {
+        if (int(h.size()) &lt; k)
+            h.push(t);
+        else if (t &gt; h.top()) {              // 同上:高于门槛才替换
+            h.pop();
+            h.push(t);
+        }
+    }
+    vector&lt;P&gt; res;
+    while (!h.empty()) { res.push_back(h.top()); h.pop(); }
+    reverse(res.begin(), res.end());
+    return res;
+}</pre>
+
+<h3>6.7.3 复杂度分析与堆排序预告</h3>
+<p>每个元素至多一次比较 + 一次替换(<i>O</i>(log <i>k</i>)),总代价 <i>O</i>(<i>n</i> log <i>k</i>);k = n 时退化为 <i>O</i>(<i>n</i> log <i>n</i>)。优势在<b>内存</b>:堆只占 k 个位置,几十 GB 的日志放不进内存,却能流式处理。</p>
+<p>预告第7章:堆排序直接复用本章的二叉堆——<span class="hl">建堆 <i>O</i>(<i>n</i>),连续 deleteMin <i>n</i> 次,弹出元素天然有序,总代价 <i>O</i>(<i>n</i> log <i>n</i>)</span>,与插入、希尔、归并、快排逐一对比。</p>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>insert</td><td>二叉堆</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>deleteMin / deleteMax</td><td>二叉堆</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>findMin</td><td>二叉堆</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>buildHeap(下滤建堆)</td><td>二叉堆</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>buildHeap(逐个插入)</td><td>二叉堆</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>decreaseKey</td><td>二叉堆</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>delete(任意元素)</td><td>二叉堆</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>merge</td><td>二叉堆</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>按值查找 find</td><td>二叉堆</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>insert</td><td>d-堆</td><td><i>O</i>(log<sub><i>d</i></sub> <i>n</i>)</td><td><i>O</i>(log<sub><i>d</i></sub> <i>n</i>)</td></tr>
+<tr><td>deleteMin</td><td>d-堆</td><td><i>O</i>(<i>d</i> log<sub><i>d</i></sub> <i>n</i>)</td><td><i>O</i>(<i>d</i> log<sub><i>d</i></sub> <i>n</i>)</td></tr>
+<tr><td>merge</td><td>左式堆</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>merge</td><td>斜堆</td><td>摊还 <i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>insert</td><td>二项队列</td><td>摊还 <i>O</i>(1)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>deleteMin</td><td>二项队列</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>merge</td><td>二项队列</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>top-k(大小为 k 的小顶堆)</td><td>二叉堆 + 一次遍历</td><td><i>O</i>(<i>n</i> log <i>k</i>)</td><td><i>O</i>(<i>n</i> log <i>k</i>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能说出优先队列 ADT 的三个操作与普通队列的本质区别</li>
+<li>能说出二叉堆的两条性质,并画出完全二叉树的数组填充</li>
+<li>能默写 1 基公式(左子 2i、右子 2i+1、父 i/2、最后非叶 n/2),并与 0 基公式换算</li>
+<li>能默写 insert(上滤)与 deleteMin(末元素搬根再下滤)的代码</li>
+<li>能解释"删除最小为什么是搬最后一个元素",以及"下滤为什么必须选较小的孩子"</li>
+<li>能独立写出下滤建堆,并解释两种建堆方式的复杂度差异</li>
+<li>能说出 decreaseKey、delete、merge 的代价与场景</li>
+<li>能一句话说出 d-堆、左式堆、斜堆、二项队列的动机与差别</li>
+<li>能写出最小堆 priority_queue 的完整构造,并指出默认大顶堆的坑</li>
+<li>能独立实现"大小为 k 的小顶堆"解决 top-k,并解释为什么不用大顶堆</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 二叉堆为什么必须是完全二叉树?如果允许任意形状的二叉树,会损失什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>完全性保证高度恒为 log<sub>2</sub> <i>n</i> 与数组连续存储(无指针、下标算父子)。若形状任意,最坏退化成链,高度与操作都变 <i>O</i>(<i>n</i>),还得用指针。</p>
+</div>
+
+<div class="q">2. 1 基堆中下标 i 的结点的父、左子、右子分别是什么?0 基堆呢?试各举一例。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>1 基:父 i/2、左子 2i、右子 2i+1(如 i=5:父 2、左 10、右 11);0 基:父 (i−1)/2、左子 2i+1、右子 2i+2(如 i=5:父 2、左 11、右 12)。"父为 2"只是巧合,不可混用。</p>
+</div>
+
+<div class="q">3. 在最小堆中查找某个值的复杂度是多少?为什么不能像 BST 那样二分?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>O(n)。堆序只约束父子关系,兄弟之间没有大小关系,无法一次比较排除一半子树;堆也不是有序数组,连续存储帮不上二分。堆只承诺最小元在根。</p>
+</div>
+
+<div class="q">4. 把 15 个元素下滤建堆,最后一个下滤的结点是哪个?为什么不是第一个?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>最后下滤的是根(下标 1)。建堆从最后非叶结点(n/2)往前处理,先让下面子树各自成堆,上层下滤时才能保证孩子子树已是堆、只需比较两个孩子。根最后处理,一次下滤把最小值带到根。</p>
+</div>
+
+<div class="q">5. deleteMin 为什么要把"最后一个元素"搬到根,而不是把后面元素整体前移?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>整体前移会留下空隙(破坏结构性质)或付出 O(n) 搬移。最后一个元素是唯一"删除后数组仍连续"的位置:先搬到根保持结构,再下滤修复堆序,两步各 O(log n)。</p>
+</div>
+
+<div class="q">6. 求 top-k 为什么用大小为 k 的"小顶堆"?用"大顶堆"行吗?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>小顶堆的堆顶是"当前入选者里最小的"(第 k 大门槛),新元素与堆顶比较即可决定淘汰谁。大顶堆的堆顶是全局最大,被淘汰后无法 O(1) 判断谁替补,只能维护更多信息或退化成排序。求"最小的 k 个"改用大小为 k 的大顶堆。</p>
+</div>
+
+<h2>章末实验题:Top-K 高频词(堆实现)</h2>
+<div class="box box-example lab"><div class="box-title">实验 6:Top-K 高频词(手写堆 + 标准库双实现)</div>
+<p><b>实验目标:</b>流式读入英文文本,先用<b>手写二叉堆</b>求频次最高的 k 个词,再用 <code>std::priority_queue</code> 重做并验证两版结果一致。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现二叉堆类(insert/deleteMin/下滤建堆,1 基或 0 基自选,注释中说明所用下标公式)(知识点:§6.2–§6.4 上滤/下滤/建堆)</li>
+<li>任务 2:流式读入文本,切分出单词并维护"词频"字典(知识点:§6.1 + 第5章散列)</li>
+<li>任务 3:用"大小为 k 的小顶堆"求频次最高的 k 个词,淘汰技巧:堆满时频次高于堆顶才替换(知识点:§6.7 top-k)</li>
+<li>任务 4:用 <code>priority_queue</code>(注意最小堆构造)重做任务 3,对比两版结果一致(知识点:§6.6 标准库)</li>
+<li>任务 5:处理边界:k ≤ 0、文本为空、k 大于词数时给出合理输出而非崩溃(知识点:§6.3)</li>
+</ul>
+<p><b>实验环境:</b>C++17。编译:<code>g++ -std=c++17 -O2 lab6.cpp -o lab6</code>;运行:<code>./lab6 k &lt; 文本文件</code>。</p></div>
+<ol class="steps">
+<li>先写 MinHeap 模板类(1 基),用例题 6-1 的序列手工验证 insert 与 deleteMin,再写 top-k 函数</li>
+<li>词切分用 <code>isalpha</code> 逐字符扫描,全部转小写;词频字典用 <code>unordered_map&lt;string, int&gt;</code></li>
+<li>堆元素用 <code>pair&lt;int, string&gt;</code>(频次在前):先比频次、平局比词序</li>
+<li>标准库版只改三处:构造(加 greater)、push/pop 换名、堆顶 h.top();便于对照</li>
+<li>运行样例:<code>./lab6 3 &lt; sample.txt</code>,再试 k = 0 与空文件</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,约 120 行,分三段)</div>
+<pre class="code">// lab6.cpp —— 第一段:MinHeap(1 基)
+#include &lt;algorithm&gt;
+#include &lt;cctype&gt;
+#include &lt;iostream&gt;
+#include &lt;queue&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+// 任务 1:手写二叉堆(1 基,下标公式见 §6.2.3)
+template &lt;typename T&gt;
+class MinHeap {
+    vector&lt;T&gt; a;                              // 元素从下标 1 开始
+
+    void siftDown(size_t i) {                 // 下滤:与较小孩子交换
+        size_t n = a.size();
+        while (true) {
+            size_t smallest = i;
+            for (size_t c : {2 * i, 2 * i + 1})   // 左子、右子(1 基)
+                if (c &lt; n &amp;&amp; a[c] &lt; a[smallest])
+                    smallest = c;
+            if (smallest == i) break;
+            swap(a[i], a[smallest]);
+            i = smallest;
+        }
+    }
+
+public:
+    MinHeap() { a.push_back(T{}); }           // 占住 a[0]
+    size_t size() const { return a.size() - 1; }
+    bool empty() const { return size() == 0; }
+    const T&amp; top() const { return a[1]; }     // 根即最小元 O(1)
+
+    void push(const T&amp; x) {                   // 上滤:放末尾后向上冒泡
+        a.push_back(x);
+        size_t i = a.size() - 1;
+        while (i &gt; 1) {
+            size_t p = i / 2;                 // 父结点(1 基)
+            if (a[p] &lt;= a[i]) break;
+            swap(a[p], a[i]);
+            i = p;
+        }
+    }
+
+    void pop() {                              // 删除最小:末元素搬根再下滤
+        a[1] = a.back();
+        a.pop_back();
+        if (a.size() &gt; 1) siftDown(1);
+    }
+
+    static MinHeap buildFrom(const vector&lt;T&gt;&amp; items) {  // 下滤建堆 O(n)
+        MinHeap h;
+        for (const T&amp; x : items) h.a.push_back(x);
+        for (size_t i = h.a.size() / 2; i &gt;= 1; --i)    // 最后非叶 = n/2
+            h.siftDown(i);
+        return h;
+    }
+};</pre>
+
+<div class="code-title">lab6.cpp(第二段:词频统计与手写堆 top-k)</div>
+<pre class="code">// 任务 2:流式切词并统计词频
+void countWords(unordered_map&lt;string, int&gt;&amp; freq) {
+    string line;
+    while (getline(cin, line)) {
+        for (size_t i = 0; i &lt; line.size();) {
+            if (!isalpha((unsigned char)line[i])) { ++i; continue; }
+            size_t j = i;
+            while (j &lt; line.size() &amp;&amp; isalpha((unsigned char)line[j])) ++j;
+            string w = line.substr(i, j - i);
+            for (char&amp; c : w) c = char(tolower((unsigned char)c));
+            ++freq[w];
+            i = j;
+        }
+    }
+}
+
+// 任务 3:手写小顶堆求 top-k
+vector&lt;pair&lt;int, string&gt;&gt; topkHeap(const vector&lt;pair&lt;int, string&gt;&gt;&amp; items, int k) {
+    MinHeap&lt;pair&lt;int, string&gt;&gt; h;
+    for (const auto&amp; t : items) {            // t = (频次, 词)
+        if (h.size() &lt; size_t(k))
+            h.push(t);                       // 堆未满:直接入堆
+        else if (t &gt; h.top()) {              // 高于"第 k 大门槛"才替换
+            h.pop();
+            h.push(t);
+        }
+    }
+    vector&lt;pair&lt;int, string&gt;&gt; res;
+    while (!h.empty()) { res.push_back(h.top()); h.pop(); }
+    reverse(res.begin(), res.end());         // 弹出是升序,反转为降序
+    return res;
+}</pre>
+
+<div class="code-title">lab6.cpp(第三段:标准库版与主程序)</div>
+<pre class="code">// 任务 4:标准库重做(小顶堆 = 大顶堆 + greater)
+vector&lt;pair&lt;int, string&gt;&gt; topkStd(const vector&lt;pair&lt;int, string&gt;&gt;&amp; items, int k) {
+    using P = pair&lt;int, string&gt;;
+    priority_queue&lt;P, vector&lt;P&gt;, greater&lt;P&gt;&gt; pq;
+    for (const P&amp; t : items) {
+        if (int(pq.size()) &lt; k)
+            pq.push(t);
+        else if (t &gt; pq.top()) {
+            pq.pop();
+            pq.push(t);
+        }
+    }
+    vector&lt;P&gt; res;
+    while (!pq.empty()) { res.push_back(pq.top()); pq.pop(); }
+    reverse(res.begin(), res.end());
+    return res;
+}
+
+int main(int argc, char* argv[]) {
+    if (argc &lt; 2) { cerr &lt;&lt; "用法: ./lab6 k &lt; 文本文件\n"; return 1; }
+    int k = stoi(argv[1]);
+    unordered_map&lt;string, int&gt; freq;
+    countWords(freq);                        // 任务 2:词频字典
+    vector&lt;pair&lt;int, string&gt;&gt; items;
+    for (const auto&amp; [w, c] : freq) items.push_back({c, w});
+
+    // 任务 5:边界处理——k &lt;= 0 或文本为空
+    if (k &lt;= 0 || items.empty()) {
+        cout &lt;&lt; "k = " &lt;&lt; k &lt;&lt; ", 词数 = " &lt;&lt; items.size()
+             &lt;&lt; ":边界情形,答案为空。\n";
+        return 0;
+    }
+
+    auto r1 = topkHeap(items, k);
+    auto r2 = topkStd(items, k);
+    cout &lt;&lt; "词数 = " &lt;&lt; items.size() &lt;&lt; ", k = " &lt;&lt; k &lt;&lt; "\n";
+    cout &lt;&lt; "手写堆 : ";
+    for (const auto&amp; [c, w] : r1) cout &lt;&lt; w &lt;&lt; "(" &lt;&lt; c &lt;&lt; ") ";
+    cout &lt;&lt; "\npriority_queue: ";
+    for (const auto&amp; [c, w] : r2) cout &lt;&lt; w &lt;&lt; "(" &lt;&lt; c &lt;&lt; ") ";
+    cout &lt;&lt; "\n结果一致: " &lt;&lt; (r1 == r2 ? "是" : "否") &lt;&lt; "\n";
+    return 0;
+}</pre>
+<p>示例输入与输出(真实运行;sample.txt 与 empty.txt 为测试文件):</p>
+<pre class="code">$ cat sample.txt
+to be or not to be that is the question
+whether tis nobler in the mind to suffer
+the slings and arrows of outrageous fortune
+or to take arms against a sea of troubles
+and by opposing end them to die to sleep no more
+
+$ ./lab6 3 &lt; sample.txt
+词数 = 34, k = 3
+手写堆 : to(6) the(3) or(2)
+priority_queue: to(6) the(3) or(2)
+结果一致: 是
+
+$ ./lab6 5 &lt; empty.txt
+k = 5, 词数 = 0:边界情形,答案为空。</pre>
+<p><b>设计说明:</b>① 1 基公式写进类注释,与 Python 版 0 基实现互为对照;② 元素用 (频次, 词) 元组,平局比词序,结果可复现;③ 两版结果一致即互相验证;④ 词频统计用 <code>unordered_map</code>(第5章),与堆协同完成统计 → Top-K 流水线;⑤ 边界显式处理,避免空堆访问。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第7章 排序——堆排序将直接使用本章的二叉堆:下滤建堆 <i>O</i>(<i>n</i>),再连续 deleteMin <i>n</i> 次得到有序序列,总代价 <i>O</i>(<i>n</i> log <i>n</i>);插入、希尔、归并、快排逐一登场。</p>

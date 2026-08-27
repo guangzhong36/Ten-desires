@@ -1,0 +1,11 @@
+// 再散列:装填因子超过阈值就把表翻倍并重新插入全部元素
+void rehash() {
+    if (loadFactor() < 0.75) return;            // λ 未超标则不做
+    int oldM = int(buckets_.size());
+    vector<list<string>> oldBuckets = buckets_; // 先备份旧桶
+    buckets_.assign(nextPrime(oldM * 2), {});   // 新表:翻倍后取素数
+    size_ = 0;
+    for (auto& chain : oldBuckets)              // 重新插入每个旧元素
+        for (const string& x : chain)
+            insert(x);                          // 会用新表大小重算散列
+}

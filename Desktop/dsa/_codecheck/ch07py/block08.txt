@@ -1,0 +1,38 @@
+# lab7.py —— 三种排序的性能对比实验(插入/归并/快排)
+# 运行: python lab7.py
+import random
+import time
+
+random.seed(12345)     # 固定种子,输出可复现
+
+CUTOFF = 16            # 快排小区间改用插入排序的阈值(§7.5)
+
+# ---------- 任务 5(可选加分):比较/移动计数器 ----------
+COUNT = False          # 置 True 时统计,性能测试期间保持 False
+cmp_cnt = 0
+move_cnt = 0
+
+
+def lt(x, y):
+    global cmp_cnt
+    if COUNT:
+        cmp_cnt += 1
+    return x < y
+
+
+# ---------- 任务 1:插入排序(§7.1) ----------
+def insertion_sort(a, left=0, right=None):
+    if right is None:
+        right = len(a) - 1
+    for i in range(left + 1, right + 1):
+        key = a[i]
+        j = i - 1
+        while j >= left and lt(key, a[j]):   # 严格大于才右移:相等不动,稳定
+            a[j + 1] = a[j]                  # 元素右移
+            j -= 1
+            global move_cnt
+            if COUNT:
+                move_cnt += 1
+        a[j + 1] = key                       # 落位
+        if COUNT:
+            move_cnt += 1

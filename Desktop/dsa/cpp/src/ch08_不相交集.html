@@ -1,0 +1,612 @@
+<title>第8章 不相交集</title>
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第8章 不相交集</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–4 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解<span class="term">等价关系</span>三性质与"动态"等价问题为何要求在线回答</li>
+<li>掌握树形表示:每集合一棵树、根是<span class="term">代表元</span>,一个 <code>parent</code> 数组即可实现</li>
+<li>完成 C 数组到 C++ <code>vector</code> 的迁移,写出朴素 <code>find</code>/<code>union</code>,亲手踩一遍"链退化"</li>
+<li>掌握<span class="term">按大小合并</span>、<span class="term">按秩合并</span>(树高 <i>O</i>(log <i>n</i>))与<span class="term">路径压缩</span>(均摊近 <i>O</i>(1))</li>
+<li>学完能用并查集生成随机迷宫、统计连通分量,为第9章 Kruskal 铺路</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>本章是全书<b>代码量最小、思想密度最高</b>的一章:完整实现约 30 行,却支撑着网络连通、迷宫生成、第9章 Kruskal 算法等大应用。先给结论:<span class="hl">不相交集(并查集)只做一件事——维护一堆集合,支持"查归属"与"合并"两种操作</span>。</p>
+<p>在 C 里你天然会想到笨办法:开 <code>mark[N]</code> 数组记录每个元素属于第几组,合并时遍历整个数组把所有第 b 组的元素改成第 a 组。能工作,但每次合并 <i>O</i>(<i>n</i>),合并 n 次就是 <i>O</i>(<i>n</i><sup>2</sup>)。本章的树形表示把合并降为"改一个指针"——<span class="hl">"用树的结构信息换时间"</span>的经典一步。</p>
+<p>C++ 的迁移点有两处:① 用 <code>vector&lt;int&gt;</code> 取代 <code>int parent[N]</code>,初始化用 <code>iota</code> 一行搞定;② 用函数封装 <code>find</code>/<code>unionSets</code>,而不是把 parent 数组到处裸传。标准库没有并查集,这一章<b>手写就是全部</b>——每一行都要理解到位。</p>
+<p>本章路线:先定义问题(§8.1),写朴素实现踩一遍退化的坑(§8.2),依次加两种优化(§8.3–§8.4),看清复杂度如何摊还到近 <i>O</i>(1)(§8.5),最后在迷宫与连通分量中验证(§8.6–§8.7)。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>等价关系三性质(自反、对称、传递);对数(第2章)——按大小合并的高度证明用 <i>O</i>(log <i>n</i>)。</p>
+<p><b>C 语言前置:</b><code>int</code> 数组、<code>for</code> 循环初始化、递归函数(§8.4 递归 find 需要)。</p>
+<p><b>依赖的前面章节:</b>第3章 <code>vector</code>(存放 parent 数组)、第4章树的父指针表示(parent 数组正是"树"的另一种存法)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1 小时):</b>读 §8.1–§8.2,跑通朴素实现,手工模拟"链退化"</li>
+<li><b>第二阶段(1.5 小时):</b>读 §8.3–§8.4,实现按秩合并与路径压缩</li>
+<li><b>第三阶段(1 小时):</b>读 §8.5–§8.7,理解摊还直觉,用并查集生成迷宫</li>
+<li><b>第四阶段(实验,1 小时):</b>完成章末实验:迷宫生成 + 连通分量统计 + 性能对比</li>
+<li><b>验收标准:</b>能默写 20 行内的完整并查集,并说出三种配置的复杂度</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§8.1 等价关系与动态等价问题:三性质、find/union、为何"动态"</li>
+<li>§8.2 基本实现:树表示与朴素 union/find(根=代表元、链退化)</li>
+<li>§8.3 按大小合并与按秩合并:size/rank 数组、树高 <i>O</i>(log <i>n</i>) 的证明</li>
+<li>§8.4 路径压缩:递归与迭代两写法、压扁树的机制、叠加效果</li>
+<li>§8.5 复杂度:摊还近 <i>O</i>(1) 的直觉、反阿克曼函数 <i>α</i>(<i>n</i>)</li>
+<li>§8.6 应用:迷宫生成、连通分量统计、Kruskal 预告、替代方案对比</li>
+<li>§8.7 实现要点与调试:初始化、先 find 到根、秩不失效、打印 parent</li>
+</ul></div>
+
+<h2>§8.1 等价关系与动态等价问题</h2>
+
+<h3>8.1.1 等价关系:三性质</h3>
+<p><span class="term">等价关系(equivalence relation)</span>是定义在集合上的二元关系,满足三条性质:① <b>自反</b>:<i>a</i> ≡ <i>a</i>;② <b>对称</b>:<i>a</i> ≡ <i>b</i> 则 <i>b</i> ≡ <i>a</i>;③ <b>传递</b>:<i>a</i> ≡ <i>b</i> 且 <i>b</i> ≡ <i>c</i>,则 <i>a</i> ≡ <i>c</i>。三条缺一不可。等价关系把集合划分成若干<span class="term">等价类</span>:互相等价的元素属于同一类——这些类互不相交,正是"不相交"一词的来历。</p>
+<p>例子:整数"相等"、整数"模 m 同余"、电路里"两点由导线连通",都是等价关系。再看<b>反例</b>:中学的"同班同学"——自反、对称都满足,但<b>不传递</b>:甲、乙同班,乙、丙同班,甲、丙未必同班。它不是等价关系,不能用并查集建模"全班连通"。</p>
+
+<h3>8.1.2 动态等价问题:union 与 find</h3>
+<p>给定 <i>N</i> 个元素,初始时每个元素自成一个集合。支持两种操作:</p>
+<ul>
+<li><code>find(x)</code>:返回 x 所在集合的名字——用该集合的<b>代表元</b>(representative)当名字;</li>
+<li><code>union(a, b)</code>:把 a、b 所在的两个集合合并成一个(若本就在同一集合,什么都不做)。</li>
+</ul>
+<p>注意"动态"二字的分量:若所有关系一次性给定再问"1 号和 5 号通不通",那是<b>静态</b>问题,遍历一遍算出全部等价类即可(第9章的 DFS 能做)。实际场景中<span class="hl">查询与合并交错到来:接入一根新网线(合并),立刻有人问两台机器通不通(find),接着又接新线……</span>每一步都必须在当下即时回答,不能等收集完所有操作再算。这正是"动态等价问题"的在线(on-line)性质,也是必须专门设计数据结构的理由。</p>
+
+<h3>8.1.3 应用预告</h3>
+<p>后面你会反复见到它:<b>① 迷宫生成</b>:随机拆墙但保证任意两格连通(§8.6 详解,章末实验);<b>② Kruskal 最小生成树</b>(第9章):按边权从小到大加边,用 <code>find</code> 判断两端是否已连通——并查集是它的灵魂;<b>③ 工程应用</b>:网络断点检测、图像连通域标记。记住一句话:<span class="hl">凡是"合并集合 + 查询归属"成对出现的问题,先想并查集</span>。</p>
+
+<h2>§8.2 基本实现:树表示与朴素 union/find</h2>
+
+<h3>8.2.1 树表示:根就是代表元</h3>
+<p>怎么表示"一组元素属于同一集合"?答案是<b>树</b>:每个集合一棵树,树的<span class="hl">根是代表元</span>——<code>find(x)</code> 沿父链上溯到根并返回根,集合的名字即根;合并时让一棵树的根指向另一棵树的根,只改一个指针。这是第4章"父指针表示法"的直接应用:<code>parent[i]</code> 是结点 i 的父结点;根满足 <code>parent[root] == root</code>("我是根"的哨兵约定)。</p>
+
+<h3>8.2.2 从 C 的数组到 C++ 的 vector</h3>
+<p>C 里写 <code>int parent[N]</code>;C++ 换成 <code>vector&lt;int&gt;</code>,长度运行期决定,<code>iota</code> 一行初始化:</p>
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th></tr>
+<tr><td><code>int parent[N];</code> 长度写死</td><td><code>vector&lt;int&gt; parent(n);</code> 长度运行期决定</td></tr>
+<tr><td><code>for (i=0; i&lt;N; ++i) parent[i] = i;</code></td><td><code>iota(parent.begin(), parent.end(), 0);</code> 一行初始化</td></tr>
+<tr><td>越界访问 = 未定义行为</td><td><code>parent.at(i)</code> 越界抛异常,调试期友好</td></tr>
+<tr><td>函数传参要带长度 N</td><td><code>parent.size()</code> 自带长度</td></tr>
+</table>
+
+<div class="code-title">示例 8-1 朴素实现:find 沿父链上溯,union 让根指向根</div>
+<pre class="code">// parent[i] == i 表示 i 是根;其余 parent[i] 是 i 的父结点
+vector&lt;int&gt; parent;
+
+int find(int x) {                       // 朴素 find:沿父链上溯到根
+    while (parent[x] != x)
+        x = parent[x];
+    return x;
+}
+
+void unionSets(int a, int b) {          // 朴素 union:让 a 的根指向 b 的根
+    int ra = find(a), rb = find(b);
+    if (ra != rb)
+        parent[ra] = rb;
+}
+
+int main() {
+    int n = 8;
+    parent.resize(n);
+    for (int i = 0; i &lt; n; ++i)
+        parent[i] = i;                  // 初始化:每个元素都是自己的根
+    unionSets(1, 2);
+    unionSets(3, 4);
+    unionSets(2, 3);
+    return find(4);
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:三个必须想清楚的点</div>
+<p>① <code>union</code> 前必须先 <code>find</code>:合并的是"两个集合"不是"两个元素",拿根来挂;<span class="hl">只有根能当代表元</span>,挂普通结点会破坏树结构。② parent 里存的是"父结点"不是"集合编号":集合没有全局编号,根的名字就是集合的名字,<code>find</code> 必须走到根才能回答归属。③ 初始化绝不能省:<code>parent[i] = i</code> 让每个元素自成一棵单结点树,这是推理的地基。</p>
+</div>
+
+<h3>8.2.3 朴素实现的致命伤:链退化</h3>
+<div class="box box-pitfall"><div class="box-title">误区 1:朴素 union 会把树连成一条链</div>
+<p>依次执行 <code>union(0,1), union(1,2), …, union(n-2, n-1)</code>:第一次让 0 指向 1,第二次让 1 指向 2……parent 变成 <code>0-&gt;1, 1-&gt;2, …, n-2-&gt;n-1</code>,树被拉成一条 <i>n</i> 结点的链。<code>find(0)</code> 要走 <i>O</i>(<i>n</i>) 步,做 <i>n</i> 次 find 就是 <i>O</i>(<i>n</i><sup>2</sup>)。<span class="hl">链 = 树高的灾难:树形表示的全部好处都建立在"树要矮"上</span>,§8.3 的两种合并策略正是从"让树长不高"入手。</p>
+</div>
+
+<h2>§8.3 按大小合并与按秩合并</h2>
+
+<h3>8.3.1 按大小合并:小树并入大树</h3>
+<p><span class="term">按大小合并(union by size)</span>的规则一句话:<span class="hl">总是把结点数少的树挂到结点数多的树下</span>。为此维护 <code>size</code> 数组:<code>size[root]</code> 是根所在树的结点数(只在根上有效),合并时小根指向大根并累加。</p>
+
+<div class="code-title">示例 8-2 按大小合并:size 数组只在根上有效</div>
+<pre class="code">// sz[root] = 根所在树的结点数(只在根上有效)
+vector&lt;int&gt; parent, sz;
+
+int find(int x) {
+    while (parent[x] != x) x = parent[x];
+    return x;
+}
+
+void unionBySize(int a, int b) {
+    int ra = find(a), rb = find(b);
+    if (ra == rb) return;               // 已在同一集合
+    if (sz[ra] &lt; sz[rb]) swap(ra, rb);  // 小树并入大树
+    parent[rb] = ra;                    // rb 不再是根,sz 作废
+    sz[ra] += sz[rb];
+}</pre>
+
+<h3>8.3.2 按秩合并:浅树并入深树</h3>
+<p><span class="term">按秩合并(union by rank)</span>是"按大小"的孪生兄弟:目标都是<b>别让树长高</b>。它维护 <code>rank</code> 数组:<code>rank[root]</code> 是树高的<b>上界</b>(初始 0)。合并时秩小的树挂到秩大的树下;秩相同则任选一树做根并把秩加一。实现更短,且"上界"语义给 §8.4 路径压缩更大自由度。</p>
+
+<div class="code-title">示例 8-3 按秩合并:浅树挂到深树下</div>
+<pre class="code">// rank[root] = 树高的上界(只在根上有效),初始 0
+vector&lt;int&gt; parent, rank_;
+
+int find(int x) {
+    while (parent[x] != x) x = parent[x];
+    return x;
+}
+
+void unionByRank(int a, int b) {
+    int ra = find(a), rb = find(b);
+    if (ra == rb) return;
+    if (rank_[ra] &lt; rank_[rb]) swap(ra, rb);   // 浅树挂到深树
+    parent[rb] = ra;
+    if (rank_[ra] == rank_[rb])                // 两棵同秩树合并
+        ++rank_[ra];                           // 新树秩 +1
+}</pre>
+
+<h3>8.3.3 为什么树高是 O(log n)</h3>
+<p>两种策略是同一句证明:<span class="hl">一个结点深度每增加 1,它所在树的规模至少翻一倍</span>。x 深度增加只发生在"它的树被并入另一棵树"时:按大小合并规定小树并入大树,新树大小 ≥ 2 × 旧树;按秩合并规定浅树并入深树,而秩 r 的树至少 2<sup>r</sup> 个结点(归纳可证)。故 x 深度最多增加 log<sub>2</sub> <i>n</i> 次,<span class="hl">树高 ≤ log<sub>2</sub> n,find 保证 O(log n)</span>。n = 10<sup>6</sup> 时 log<sub>2</sub> n ≈ 20,链却是 10<sup>6</sup>。</p>
+
+<table>
+<tr><th>策略</th><th>维护什么</th><th>合并规则</th><th>何时 +1</th><th>附带能力</th></tr>
+<tr><td>按大小合并</td><td>size[root] = 结点数</td><td>小树并入大树</td><td>新根 size 累加</td><td>可查询集合大小</td></tr>
+<tr><td>按秩合并</td><td>rank[root] = 高度上界</td><td>浅树并入深树</td><td>两秩相等时 +1</td><td>与路径压缩配合更顺</td></tr>
+</table>
+<div class="box box-keypoint"><div class="box-title">重点:两种策略等价,选一个记住</div>
+<p>两者都保证树高 <i>O</i>(log <i>n</i>),复杂度相同。<b>按秩合并代码更短</b>,且"秩是上界"的语义与路径压缩天然兼容(见 §8.7.2);按大小合并的额外好处是能回答"这个集合有几个元素"。本章正文与实验采用按秩合并,换成 size 只需三行改动。</p>
+</div>
+
+<h2>§8.4 路径压缩</h2>
+
+<h3>8.4.1 思想:把树压扁</h3>
+<p>按大小/按秩合并把树高控制在 <i>O</i>(log <i>n</i>),但还能更狠:<span class="term">路径压缩(path compression)</span>在 <code>find</code> 的<b>路途中</b>动手——既然已经走到根,就把沿途每个结点直接挂到根下面,<code>find(x)</code> 之后 x 到根的距离变成 1,整条路径被压成"菊花状"。压缩<b>只发生在 find 上</b>,union 调用 find 时自动受益——一次 find 的代价,换来路径上所有结点后续 find 的 <i>O</i>(1)。</p>
+
+<h3>8.4.2 递归实现与迭代实现</h3>
+<div class="code-title">示例 8-4 路径压缩:递归与迭代两种写法</div>
+<pre class="code">// 递归版:返回根,回溯时把沿途结点挂到根
+int findRec(int x) {
+    if (parent[x] != x)
+        parent[x] = findRec(parent[x]);  // 先递归到根,再逐层挂
+    return parent[x];
+}
+
+// 迭代版(两趟):先找根,再沿原路压缩
+int findIter(int x) {
+    int root = x;
+    while (parent[root] != root)
+        root = parent[root];             // 第一趟:上溯找根
+    while (parent[x] != x) {             // 第二趟:沿途结点挂到根
+        int nxt = parent[x];
+        parent[x] = root;
+        x = nxt;
+    }
+    return root;
+}</pre>
+<p>递归版三行,但隐患:递归深度 = 树高。按秩合并时树高 <i>O</i>(log <i>n</i>) 完全安全;若只压缩不按秩(很多竞赛模板这样),最坏树高可达 <i>n</i>,递归 find 会栈溢出。迭代版两趟循环,无栈深风险,是工程稳妥选择——本章实验用的就是迭代版。</p>
+
+<table class="cmp">
+<tr><th>C 的写法(递归上溯)</th><th>C++ 的写法(迭代两趟)</th></tr>
+<tr><td><code>int f(int x){ return p[x]==x ? x : f(p[x]); }</code></td><td><code>while(p[root]!=root) root=p[root];</code> 第一趟找根</td></tr>
+<tr><td>递归深度 = 树高,深链会爆栈</td><td><code>while(p[x]!=x){ nxt=p[x]; p[x]=root; x=nxt; }</code> 再压缩</td></tr>
+<tr><td>修改在回溯期,代码短</td><td>第二趟显式压缩,无栈深问题</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:递归 find 遇到深链会栈溢出</div>
+<p>路径压缩 + 按秩合并时递归没问题;但只压缩不按秩时树高可达 <i>n</i>,<code>findRec(0)</code> 的递归深度就是 <i>n</i>,调用栈很快爆掉(约十万层就崩)。更隐蔽的坑是<b>忘了用压缩版</b>:写了 <code>findIter</code> 却仍调用朴素 find,压缩永不发生。检查:连续 <code>find</code> 两次同一结点,看路径是否变短。</p>
+</div>
+
+<h3>8.4.3 与按秩合并叠加:近 O(1)</h3>
+<p>按秩合并让树"长不高"(高度 <i>O</i>(log <i>n</i>)),路径压缩让树"越来越扁",叠加后,<span class="hl">并查集的操作复杂度被压到"均摊近 O(1)"</span>——精确上界是反阿克曼函数 <i>α</i>(<i>n</i>),见 §8.5.3。这是本数据结构的最终形态:<b>union = 两次 find + 一次指针修改,find ≈ O(1)</b>,请务必默写。</p>
+
+<div class="box box-tip"><div class="box-title">实现建议:迭代两趟的写法与验证</div>
+<p>迭代两趟容易把变量搞混,验证三要点:① 第一趟后 <code>root</code> 必须是根(<code>parent[root] == root</code>);② 第二趟先保存 <code>nxt = parent[x]</code> 再改写 <code>parent[x]</code>,否则覆盖后丢链;③ 返回 <code>root</code> 而非 <code>x</code>。用幂等性自测:连续两次 <code>find(x)</code>,第二次必然一步到根。</p>
+</div>
+
+<h2>§8.5 复杂度:摊还近 O(1)</h2>
+
+<h3>8.5.1 三种配置,三个档次</h3>
+<table>
+<tr><th>配置</th><th>单次 find 最坏</th><th>m 次操作总代价</th></tr>
+<tr><td>朴素实现(无优化)</td><td><i>O</i>(<i>n</i>)(链)</td><td><i>O</i>(<i>m</i> <i>n</i>)</td></tr>
+<tr><td>仅按大小/按秩合并</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>m</i> log <i>n</i>)</td></tr>
+<tr><td>按秩合并 + 路径压缩</td><td>均摊近 <i>O</i>(1)(单次最坏仍 <i>O</i>(log <i>n</i>))</td><td><i>O</i>(<i>m</i> <i>α</i>(<i>n</i>)),实际当 <i>O</i>(<i>m</i>) 用</td></tr>
+</table>
+<p>读表注意"单次"与"总代价"之分:完整优化下<b>某一次</b> find 仍可能慢(遇到未压缩深链,一次性压扁),但"债"被后续 find 偿还——这就是<span class="hl">摊还</span>:把总代价摊到每次操作上,平均近 <i>O</i>(1)。</p>
+
+<h3>8.5.2 摊还近 O(1) 的直觉</h3>
+<p>问:x 的 parent 会被改写几次?压缩改写它时直接挂到根,之后每次 find 一步到达;只有"它所在的树又并入更大的树"时,它才可能再被改写。按秩合并保证每次并入树至少翻倍,故每结点最多被改写 <i>O</i>(log <i>n</i>) 次——这只是粗糙上界,"压扁"带来的加速使真实总量小得多:1975 年 Tarjan 证明 m 次操作总代价 <i>O</i>(<i>m</i> <i>α</i>(<i>n</i>))。工程上,<span class="hl">把并查集操作当作 O(1) 用,99.99% 的场景不会出错</span>。</p>
+
+<h3>8.5.3 反阿克曼函数:为什么当常数用</h3>
+<p><span class="term">反阿克曼函数</span> <i>α</i>(<i>n</i>) 是阿克曼函数(增长极快的递归函数)的反函数:使阿克曼函数达到 <i>n</i> 所需的最小自变量。它慢到难以想象:<span class="hl"><i>α</i>(10<sup>80</sup>) ≤ 4~5</span>——"全宇宙原子数"级别的 n 也只让 <i>α</i> 走到 4、5。故 <i>O</i>(<i>m</i> <i>α</i>(<i>n</i>)) 在实践中就是 <i>O</i>(<i>m</i>):<b>每次 union/find 均摊近 O(1),当常数用</b>。这与第2章"log 几乎不增长"一脉相承——<i>α</i> 是更极端的"几乎不增长"。</p>
+
+<div class="box box-tip"><div class="box-title">记号说明(本章约定)</div>
+<p><i>α</i>(<i>n</i>) 读作"反阿克曼",是分析意义上的上界;标准写法"均摊近 <i>O</i>(1)",严谨写法 <i>O</i>(<i>α</i>(<i>n</i>))。"摊还"≠"平均":平均对随机输入取期望,摊还对<b>同一个操作序列</b>的总代价取平均——并查集的近 O(1) 不依赖任何随机性假设。</p>
+</div>
+
+<h2>§8.6 应用:迷宫生成与连通分量</h2>
+
+<h3>8.6.1 迷宫生成:随机拆墙,并查集判连通</h3>
+<p>把 <i>w</i>×<i>h</i> 网格的每格看成一个集合(初始互不相交),收集所有相邻格子之间的墙,<b>随机打乱顺序</b>后依次尝试拆墙:两端<b>不连通</b>就拆掉并 union,已连通则留着,直到只剩一个集合。两个性质:</p>
+<ul>
+<li><b>无环</b>:每面被拆的墙都连接两个原本不连通的区域,永远不会形成回路;</li>
+<li><b>全连通</b>:结束时只有一个集合,任意两格都能到达。</li>
+</ul>
+<p>共 <i>n</i> = <i>w</i>×<i>h</i> 个格子,成功拆墙恰好 <i>n</i>−1 面(每拆一面分量减一,从 n 减到 1)。<i>n</i>−1 面墙、无环、全连通——正是<span class="hl">生成树</span>:迷宫即网格图的随机生成树,任意两格之间有且仅有一条路径。学术上叫"随机 Kruskal 迷宫",与第9章 Kruskal 最小生成树的唯一区别:墙的"权"是随机顺序。</p>
+
+<div class="code-title">示例 8-5 迷宫生成核心:拆墙循环(完整程序见章末实验)</div>
+<pre class="code">// 格子编号 id = r*w+c;right/down 记录每格右墙与下墙
+void genMaze(int w, int h) {
+    int n = w * h;
+    UnionFind uf(n);                     // 完整优化版并查集
+    vector&lt;vector&lt;bool&gt;&gt; right(h, vector&lt;bool&gt;(w, true));  // 右墙
+    vector&lt;vector&lt;bool&gt;&gt; down(h, vector&lt;bool&gt;(w, true));   // 下墙
+    vector&lt;pair&lt;int, int&gt;&gt; walls;        // 候选墙:存两端格子编号
+    auto id = [w](int r, int c) { return r * w + c; };
+    for (int r = 0; r &lt; h; ++r)
+        for (int c = 0; c &lt; w; ++c) {
+            if (c + 1 &lt; w) walls.push_back({id(r, c), id(r, c + 1)});  // 右墙
+            if (r + 1 &lt; h) walls.push_back({id(r, c), id(r + 1, c)});  // 下墙
+        }
+    shuffle(walls.begin(), walls.end(), rng);    // 随机顺序拆墙
+    int cnt = n;                          // 连通分量个数
+    for (auto [a, b] : walls) {
+        if (uf.unite(a, b)) {             // 两端不连通才拆
+            --cnt;                        // 每拆一面墙,分量减一
+            // ... 对应墙置 false(见实验完整代码)
+        }
+        if (cnt == 1) break;              // 全连通即停
+    }
+}</pre>
+
+<h3>8.6.2 连通分量统计</h3>
+<p>并查集自带连通分量信息:初始化时分量数为 <i>n</i>;每次 <code>union</code> 成功(两端原本不连通)分量数减一——生成迷宫的同时就能报出"还有几个连通块",实验任务 3 正是记录这条下降曲线。若没维护计数,也可遍历全部元素数根:<code>find(i)</code> 即 i 的代表元,根相同即同一分量。前者 O(1)/次,后者 <i>O</i>(<i>n</i> <i>α</i>(<i>n</i>))。</p>
+
+<h3>8.6.3 手写并查集 vs 集合标记法:优势场景</h3>
+<p>与本章开头提过的"笨办法"认真对比一次,才明白并查集赢在哪:</p>
+<div class="code-title">示例 8-7 替代方案:用 map 维护"元素 -> 集合编号"</div>
+<pre class="code">// 替代:union 时把较小集合所有元素逐个改编号
+unordered_map&lt;int, int&gt; owner;             // 元素 -&gt; 集合编号
+int findOwner(int x) { return owner[x]; }  // 查归属 O(1)
+
+void unionOwner(int a, int b) {
+    int oa = owner[a], ob = owner[b];
+    if (oa == ob) return;
+    // 遍历全部元素把集合 ob 的成员改成 oa:O(n)!
+    for (auto&amp; [x, o] : owner)
+        if (o == ob) o = oa;
+}
+// 并查集:union 只改一个指针,均摊近 O(1),差距 n 倍</pre>
+
+<table class="cmp">
+<tr><th>C 的连通性标记法</th><th>C++ 的并查集</th></tr>
+<tr><td><code>mark[N]</code> 记录归属,合并要遍历整个数组改编号,<i>O</i>(<i>n</i>)</td><td><code>parent</code> 树形表示,合并改一个指针,均摊近 <i>O</i>(1)</td></tr>
+<tr><td>查归属 <i>O</i>(1),但合并贵</td><td>查归属(两次 find)与合并都近 <i>O</i>(1)</td></tr>
+<tr><td>能直接枚举集合的全部成员</td><td>不支持枚举成员(要枚举需另存集合列表)</td></tr>
+<tr><td>合并 m 次总代价 <i>O</i>(<i>mn</i>)</td><td>合并 m 次总代价 <i>O</i>(<i>m</i> <i>α</i>(<i>n</i>))</td></tr>
+</table>
+<p><b>手写 vs 替代:</b>标准库没有并查集,两种方案都得手写。选择标准:<span class="hl">频繁"合并 + 查归属"用并查集;需"枚举集合成员"或"合并极少"才考虑标记法</span>。迷宫 10<sup>6</sup> 格时,标记法每次拆墙扫描 10<sup>6</sup> 个格子,并查集是常数步。这也解释了第9章 Kruskal 为何必须配并查集:换成标记法,排序的 <i>O</i>(<i>E</i> log <i>E</i>) 会被合并的 <i>O</i>(<i>E</i> <i>V</i>) 吞掉,算法不可用。</p>
+
+<h2>§8.7 实现要点与调试</h2>
+
+<h3>8.7.1 三个必须养成的习惯</h3>
+<ul>
+<li><b>初始化用 <code>parent[i] = i</code>(或 <code>iota</code>):</b>漏掉初始化,find 沿未定义值乱走甚至死循环,多半不报错,最阴险。</li>
+<li><b>合并前先 find 到根:</b>直接写 <code>parent[a] = b</code> 是"元素挂元素",树结构立刻损坏。</li>
+<li><b>size/rank 只在根上维护:</b>非根结点的 size/rank 已过期,更新只能发生在合并后当选新根的结点上。</li>
+</ul>
+
+<h3>8.7.2 路径压缩不破坏秩的近似性</h3>
+<p>反直觉但正确的结论:<span class="hl">find 做路径压缩时,不需要(也不应该)更新 rank</span>。rank 是"树高的上界":压缩把树压矮,实际高度变小,旧 rank 仍是合法上界,只是"松"了——下次合并最多让树高略高于最优,不影响 <i>O</i>(log <i>n</i>) 与均摊近 O(1)。find 里更新 rank 反而白付代价。这就是"秩 = 上界"而非"精确高度":只承诺上界,压缩无损。</p>
+
+<h3>8.7.3 调试技巧:把结构画出来</h3>
+<div class="code-title">示例 8-8 调试利器:打印 parent 数组</div>
+<pre class="code">// 打印 parent 数组,观察树形态
+void dump(const vector&lt;int&gt;&amp; parent, int n) {
+    for (int i = 0; i &lt; n; ++i)
+        cout &lt;&lt; i &lt;&lt; "-&gt;" &lt;&lt; parent[i] &lt;&lt; "  ";
+    cout &lt;&lt; "\n";
+}
+// 小数据验证:unionSets(0,1); unionSets(1,2); dump(parent, 3);
+// 输出 "0-&gt;1  1-&gt;2  2-&gt;2" 立刻看出 0-1-2 长链;压扁后 "0-&gt;2  1-&gt;2  2-&gt;2"。</pre>
+
+<div class="box box-tip"><div class="box-title">调试三招</div>
+<p>① 小数据手推:n 取 5~8,把每步 union 后的 parent 抄在纸上与 dump 对照;② 打印关键点:find 返回前打印"x 到根",压缩是否生效一目了然;③ 断言根性:<code>assert(parent[find(i)] == find(i))</code>,把"结构被破坏"提前暴露为断言失败。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:初始化写成"全部指向 0"</div>
+<p>把 <code>parent</code> 全初始化为 0:find(3) 走到 0 就停下,0 被误当所有集合的根,任何两个元素的 find 结果都相同——"全都连通"的假象,且不崩溃、不报错。排查口诀:初始化后立刻 dump,parent 必须等于下标。</p>
+</div>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>find</td><td>朴素实现(无优化)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)(链状树)</td></tr>
+<tr><td>union</td><td>朴素实现(无优化)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>find</td><td>仅按大小合并</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>find / union</td><td>仅按秩合并</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>find</td><td>按秩合并 + 路径压缩</td><td colspan="2">均摊近 <i>O</i>(1)(严格 <i>O</i>(<i>α</i>(<i>n</i>)))</td></tr>
+
+<tr><td>union</td><td>按秩合并 + 路径压缩</td><td colspan="2">均摊近 <i>O</i>(1)(两次 find + 一次指针修改)</td></tr>
+<tr><td>初始化</td><td>建 <i>n</i> 个单元素集合</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>递归版压缩 find</td><td>递归实现</td><td>均摊近 <i>O</i>(1)</td><td>递归深度 = 树高,深链栈溢出</td></tr>
+<tr><td>迭代版压缩 find</td><td>迭代实现(两趟)</td><td>均摊近 <i>O</i>(1)</td><td>均摊近 <i>O</i>(1),无栈深问题</td></tr>
+<tr><td>求连通分量个数</td><td>遍历全部元素数根</td><td><i>O</i>(<i>n</i> <i>α</i>(<i>n</i>))</td><td><i>O</i>(<i>n</i> <i>α</i>(<i>n</i>))</td></tr>
+<tr><td>维护连通分量数</td><td>union 成功时 count−1</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>迷宫生成</td><td>随机拆墙 + 并查集判连通</td><td><i>O</i>(<i>E</i> <i>α</i>(<i>V</i>))</td><td><i>O</i>(<i>E</i> <i>α</i>(<i>V</i>))</td></tr>
+<tr><td>Kruskal 判连通</td><td>每条边两次 find + 一次 union</td><td colspan="2">均摊近 <i>O</i>(1)/边,总 <i>O</i>(<i>E</i> log <i>E</i>)(排序主导)</td></tr>
+<tr><td>反阿克曼函数 <i>α</i>(<i>n</i>)</td><td>完整优化的单次操作上界</td><td colspan="2"><i>α</i>(10<sup>80</sup>) ≤ 4~5,当常数用</td></tr>
+<tr><td>集合标记法</td><td>dict/map 维护集合编号</td><td>union <i>O</i>(<i>n</i>)(遍历集合)</td><td>union <i>O</i>(<i>n</i>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能说出等价关系三性质,判断"同班同学""模 m 同余"是否等价关系</li>
+<li>能独立说出 <code>find</code>/<code>union</code> 的语义,以及"动态"为何要求在线回答</li>
+<li>能用 parent 数组 + 树形表示实现朴素并查集,解释"根 = 代表元"</li>
+<li>能解释朴素 union 为何把树连成链,find 退化 <i>O</i>(<i>n</i>)</li>
+<li>能实现按大小/按秩合并,说出"深度每 +1 树规模至少翻倍"的直觉</li>
+<li>能写出路径压缩的递归版与迭代版,说出迭代版为何更稳</li>
+<li>能说出三种配置的复杂度:无优化 <i>O</i>(<i>n</i>)/仅按秩合并 <i>O</i>(log <i>n</i>)/完整优化均摊近 <i>O</i>(1),以及"当常数用"的理由</li>
+<li>能用并查集生成随机迷宫,并调试:初始化、先 find 到根、rank 不失效、打印 parent</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. "同班同学"关系满足等价关系的哪几条?缺哪条?为什么它导致"全班连通"不能用并查集建模?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>自反、对称满足,传递不满足:甲、乙同班且乙、丙同班,甲、丙可能不同班。三条不全,"同学"不能把集合划分成互不相交的等价类,故不能用并查集。</p>
+</div>
+
+<div class="q">2. 依次执行 union(0,1), union(1,2), …, union(n−2, n−1) 后,find(0) 要走多少步?为什么是灾难?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>树变成链 0→1→…→n−1,find(0) 沿父链走 n−1 步,即 <i>O</i>(<i>n</i>);<i>n</i> 次 find 总代价 <i>O</i>(<i>n</i><sup>2</sup>),n = 10<sup>6</sup> 时是 10<sup>12</sup> 步,远超可行范围。这正是朴素实现必须优化的原因。</p>
+</div>
+
+<div class="q">3. 按大小合并为什么保证树高 <i>O</i>(log n)?给出直觉证明。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>x 深度每 +1,必然是它所在的小树被并入一棵不小于自己的树(小树并入大树),新树大小 ≥ 2 × 旧树,故 x 深度最多增加 log<sub>2</sub> n 次,树高 ≤ log<sub>2</sub> n。</p>
+</div>
+
+<div class="q">4. 路径压缩为何能让后续 find 变快?递归版与迭代版各自的风险是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>一次 find 把沿途所有结点挂到根,之后它们再 find 都是一步到达——"一次的代价,换一路的 O(1)"。递归版代码短,但递归深度 = 树高,只压缩不按秩时深链会栈溢出;迭代版无栈深风险,工程更稳。</p>
+</div>
+
+<div class="q">5. 迷宫生成中,为何拆墙数恰好等于格子数 − 1?若拆墙时两端已连通会怎样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>每拆一面墙必连通两个原本不相交的集合,分量数恰好减一,从 n 减到 1 共拆 n−1 面。若两端已连通还拆墙会形成回路,破坏"恰有一条路",必须用 find 判断后跳过。n−1 面、无环、全连通 = 生成树。</p>
+</div>
+
+<h2>章末实验题:迷宫生成与连通分量统计</h2>
+<div class="box box-example lab"><div class="box-title">实验 8:迷宫生成与连通分量统计(并查集综合应用)</div>
+<p><b>实验目标:</b>实现完整优化并查集(按秩合并 + 路径压缩),生成随机 ASCII 迷宫,统计拆墙中连通分量的变化,实测朴素版与优化版性能差距。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现并查集类:<code>find</code>(迭代两趟路径压缩)+ <code>unite</code>(按秩合并),维护 <code>count</code>(知识点:§8.3 按秩合并、§8.4 路径压缩)</li>
+<li>任务 2:对 w×h 网格随机拆墙,两端不连通才拆,直到全连通;输出 ASCII 迷宫(知识点:§8.6 迷宫生成、§8.2 树表示)</li>
+<li>任务 3:记录拆墙中连通分量数量的变化,在尝试 25%/50%/75%/100% 处输出关键点,验证"每拆一面墙分量减一"(知识点:§8.6.2 连通分量统计)</li>
+<li>任务 4:实现朴素版(无优化)做同一操作序列,对比耗时,体会 <i>O</i>(<i>n</i><sup>2</sup>) 与近 <i>O</i>(1) 的差距(知识点:§8.5 复杂度)</li>
+</ul>
+<p><b>实验环境:</b>C++17,MSVC 或 g++。编译:<code>g++ -std=c++17 -O2 lab.cpp -o lab</code>;运行:<code>./lab</code>(Windows 下 <code>lab.exe</code>)。</p></div>
+<ol class="steps">
+<li>先写并查集类:parent 用 <code>iota</code> 初始化,rank 全 0,count = n;find 写迭代两趟版,unite 按秩合并,成功合并时 count−1</li>
+<li>候选墙:右墙 (r, c)-(r, c+1)、下墙 (r, c)-(r+1, c),<code>shuffle</code> + <code>mt19937</code> 固定种子随机化</li>
+<li>拆墙循环中维护 record 表,在 idx 达到墙总数的 1/4、1/2、3/4、全部时记录 (idx, count)</li>
+<li>渲染按"顶/底横线 + 格子行 + 中间横线"拼字符串,行宽一致(每格 3 字符)</li>
+<li>任务 4 用同一操作序列(依次 union(i, i+1) 再全部 find)跑朴素版与优化版,<code>steady_clock</code> 计时;朴素版 union 的代价会延迟到 find 阶段爆发,是观察"摊还"的绝佳素材</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,约 165 行,分四段)</div>
+<pre class="code">// lab.cpp —— 迷宫生成与连通分量统计(第一段:并查集与朴素版)
+// 编译:g++ -std=c++17 -O2 -o lab lab.cpp   运行:./lab
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;numeric&gt;
+#include &lt;random&gt;
+#include &lt;chrono&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+using Clock = chrono::steady_clock;
+
+// ---------- 任务 1:并查集(按秩合并 + 路径压缩) ----------
+class UnionFind {
+    vector&lt;int&gt; parent_, rank_;
+public:
+    int count;                              // 当前连通分量个数
+    UnionFind(int n) : parent_(n), rank_(n, 0), count(n) {
+        iota(parent_.begin(), parent_.end(), 0);
+    }
+    int find(int x) {                       // 迭代版路径压缩:两趟
+        int root = x;
+        while (parent_[root] != root) root = parent_[root];
+        while (parent_[x] != x) {           // 第二趟:沿途结点挂到根
+            int nxt = parent_[x];
+            parent_[x] = root;
+            x = nxt;
+        }
+        return root;
+    }
+    bool unite(int a, int b) {
+        int ra = find(a), rb = find(b);
+        if (ra == rb) return false;
+        if (rank_[ra] &lt; rank_[rb]) swap(ra, rb);
+        parent_[rb] = ra;                   // 浅树挂到深树
+        if (rank_[ra] == rank_[rb]) ++rank_[ra];
+        --count;                            // 成功合并,分量减 1
+        return true;
+    }
+};
+
+// ---------- 任务 4 对比用:朴素版(无任何优化) ----------
+struct NaiveUF {
+    vector&lt;int&gt; parent_;
+    NaiveUF(int n) : parent_(n) {
+        iota(parent_.begin(), parent_.end(), 0);
+    }
+    int find(int x) {
+        while (parent_[x] != x) x = parent_[x];
+        return x;
+    }
+    void unite(int a, int b) {
+        a = find(a); b = find(b);
+        if (a != b) parent_[a] = b;         // 固定挂到 b 下,易成长链
+    }
+};</pre>
+
+<div class="code-title">lab.cpp(第二段:迷宫生成)</div>
+<pre class="code">// ---------- 任务 2/3:随机迷宫生成 ----------
+struct Maze {
+    int w, h;
+    vector&lt;vector&lt;bool&gt;&gt; right, down;       // 右墙、下墙
+    vector&lt;pair&lt;int, int&gt;&gt; record;          // 任务 3:连通分量变化采样
+};
+
+Maze genMaze(int w, int h, int seed = 2024) {
+    UnionFind uf(w * h);
+    Maze m{w, h,
+           vector&lt;vector&lt;bool&gt;&gt;(h, vector&lt;bool&gt;(w, true)),
+           vector&lt;vector&lt;bool&gt;&gt;(h, vector&lt;bool&gt;(w, true)),
+           {}};
+    vector&lt;pair&lt;int, int&gt;&gt; walls;           // 墙用两端格子编号表示
+    auto id = [w](int r, int c) { return r * w + c; };
+    for (int r = 0; r &lt; h; ++r)
+        for (int c = 0; c &lt; w; ++c) {
+            if (c + 1 &lt; w) walls.push_back({id(r, c), id(r, c + 1)});   // 右墙
+            if (r + 1 &lt; h) walls.push_back({id(r, c), id(r + 1, c)});   // 下墙
+        }
+    mt19937 rng(seed);
+    shuffle(walls.begin(), walls.end(), rng);
+    int key[3] = {int(walls.size()) / 4, int(walls.size()) / 2,
+                  int(walls.size()) * 3 / 4};
+    int ki = 0;
+    for (size_t i = 0; i &lt; walls.size(); ++i) {
+        int a = walls[i].first, b = walls[i].second;
+        if (uf.unite(a, b)) {               // 两端不连通才拆墙
+            int r1 = a / w, c1 = a % w, r2 = b / w, c2 = b % w;
+            if (c1 == c2) m.down[min(r1, r2)][c1] = false;
+            else          m.right[r1][min(c1, c2)] = false;
+        }
+        if (ki &lt; 3 &amp;&amp; int(i + 1) &gt;= key[ki]) {
+            m.record.push_back({int(i + 1), uf.count});
+            ++ki;
+        }
+    }
+    m.record.push_back({int(walls.size()), uf.count});
+    return m;
+}</pre>
+
+<div class="code-title">lab.cpp(第三段:ASCII 渲染)</div>
+<pre class="code">// ---------- 任务 2:ASCII 渲染 ----------
+string render(const Maze&amp; m) {
+    string top = "+";
+    for (int c = 0; c &lt; m.w; ++c) top += "--+";     // 顶部横线(永不拆)
+    string s = top + "\n";
+    for (int r = 0; r &lt; m.h; ++r) {
+        string row = "|";                           // 最左竖墙(永不拆)
+        for (int c = 0; c &lt; m.w; ++c)
+            row += "  " + string(1, m.right[r][c] ? '|' : ' ');
+        s += row + "\n";
+        if (r == m.h - 1) {
+            s += top + "\n";                        // 底部横线(永不拆)
+        } else {
+            string line = "+";
+            for (int c = 0; c &lt; m.w; ++c)
+                line += string(m.down[r][c] ? "--" : "  ") + "+";
+            s += line + "\n";
+        }
+    }
+    return s;
+}</pre>
+
+<div class="code-title">lab.cpp(第四段:性能对比与主程序)</div>
+<pre class="code">// ---------- 任务 4:朴素版 vs 完整优化版性能对比 ----------
+void bench(int n) {
+    vector&lt;pair&lt;int, int&gt;&gt; ops;
+    for (int i = 0; i &lt; n - 1; ++i) ops.push_back({i, i + 1});  // 顺序合并成链
+    auto ms = [](auto t0, auto t1) {
+        return chrono::duration&lt;double, milli&gt;(t1 - t0).count();
+    };
+    long long s = 0;
+    auto t0 = Clock::now();
+    NaiveUF naive(n);
+    for (auto [a, b] : ops) naive.unite(a, b);      // 每次 union 沿链走 O(n)
+    auto t1 = Clock::now();
+    for (int x = 0; x &lt; n; ++x) s += naive.find(x); // 链尾 find 走 O(n)
+    auto t2 = Clock::now();
+    UnionFind opt(n);
+    for (auto [a, b] : ops) opt.unite(a, b);
+    auto t3 = Clock::now();
+    for (int x = 0; x &lt; n; ++x) s += opt.find(x);
+    auto t4 = Clock::now();
+    cout &lt;&lt; "任务4: " &lt;&lt; n &lt;&lt; " 次 union(连成链)+ " &lt;&lt; n
+         &lt;&lt; " 次 find(耗时对比):\n";
+    cout &lt;&lt; "  朴素版: union 阶段 " &lt;&lt; ms(t0, t1) &lt;&lt; " ms, find 阶段 "
+         &lt;&lt; ms(t1, t2) &lt;&lt; " ms\n";
+    cout &lt;&lt; "  优化版: union 阶段 " &lt;&lt; ms(t2, t3) &lt;&lt; " ms, find 阶段 "
+         &lt;&lt; ms(t3, t4) &lt;&lt; " ms\n";
+    cout &lt;&lt; "  find 阶段加速比:约 " &lt;&lt; (t2 - t1) / (t4 - t3)
+         &lt;&lt; " 倍(检查值 s=" &lt;&lt; s % 1000 &lt;&lt; ")\n";
+}
+
+int main() {
+    int w = 6, h = 4;
+    Maze m = genMaze(w, h, 2024);
+    cout &lt;&lt; "随机迷宫 " &lt;&lt; w &lt;&lt; " 列 x " &lt;&lt; h &lt;&lt; " 行(种子 2024,共 "
+         &lt;&lt; w * h &lt;&lt; " 个格子):\n";
+    cout &lt;&lt; render(m);
+    int total = m.record.back().first;
+    cout &lt;&lt; "\n任务3: 拆墙过程中连通分量数量的变化(共 " &lt;&lt; total
+         &lt;&lt; " 面候选墙):\n";
+    cout &lt;&lt; "  初始: " &lt;&lt; w * h &lt;&lt; " 个连通分量\n";
+    for (auto [tried, comp] : m.record)
+        cout &lt;&lt; "  尝试 " &lt;&lt; tried &lt;&lt; "/" &lt;&lt; total &lt;&lt; " 面墙后: 连通分量 "
+             &lt;&lt; comp &lt;&lt; "\n";
+    cout &lt;&lt; "  结束时连通分量为 1,迷宫全连通、无环(恰好拆 " &lt;&lt; w * h - 1
+         &lt;&lt; " 面墙)。\n\n";
+    bench(40000);
+    return 0;
+}</pre>
+<p>示例输出(本机 WinLibs g++ 17 实测):</p>
+<pre class="code">随机迷宫 6 列 x 4 行(种子 2024,共 24 个格子):
++--+--+--+--+--+--+
+|        |  |     |
++--+  +--+  +  +  +
+|              |  |
++--+--+  +--+  +  +
+|        |     |  |
++--+  +  +--+--+  +
+|     |  |        |
++--+--+--+--+--+--+
+
+任务3: 拆墙过程中连通分量数量的变化(共 38 面候选墙):
+  初始: 24 个连通分量
+  尝试 9/38 面墙后: 连通分量 15
+  尝试 19/38 面墙后: 连通分量 5
+  尝试 28/38 面墙后: 连通分量 2
+  尝试 38/38 面墙后: 连通分量 1
+  结束时连通分量为 1,迷宫全连通、无环(恰好拆 23 面墙)。
+
+任务4: 40000 次 union(连成链)+ 40000 次 find(耗时对比):
+  朴素版: union 阶段 0.0338 ms, find 阶段 1114.44 ms
+  优化版: union 阶段 0.1915 ms, find 阶段 0.0298 ms
+  find 阶段加速比:约 37397 倍(检查值 s=0)</pre>
+<p><b>设计说明:</b>① UnionFind 与 NaiveUF 共用同一操作序列,对比才公平——差的是增长阶(<i>O</i>(<i>n</i><sup>2</sup>) vs 近 <i>O</i>(1)),不是常数;② 朴素版 union 阶段反而更快(0.03 ms vs 0.19 ms):链的代价"延迟"到 find 阶段爆发——§8.5 摊还思想的注脚:比算法要看操作序列的<b>总代价</b>;③ 任务 3 采样点取"尝试墙数"而非"成功拆墙数":拆墙有失败(两端已连通),曲线呈阶梯状,更能体现 find 判连通;④ 种子固定 2024,可复现;⑤ 固定挂法 <code>parent_[a] = b</code> 刻意制造长链,暴露退化——现实中盲目选挂向也可能遭遇同样最坏输入。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第9章 图论算法——图的表示、拓扑排序、最短路径与最小生成树。Kruskal 将使用本章的不相交集:边按权排序后,find 判断两端是否已连通,union 把选中边连入生成树——两条核心操作正是本章主线。</p>

@@ -1,0 +1,9 @@
+// F(0)=0, F(1)=1, F(n) = F(n-1) + F(n-2)
+// 朴素递归:F(k) 被重复计算无数遍(违反合成效益法则)
+long long fibNaive(int n) {
+    if (n <= 1) return n;                 // 基准情形
+    return fibNaive(n - 1) + fibNaive(n - 2);  // 不断推进,但一裂为二
+}
+
+// 调用次数 = 2*F(n+1) - 1(F(40) 约 3.3 亿次),n 每加 10 约乘 120
+// 递推式 T(n) = T(n-1) + T(n-2) + O(1) → O(2^n)

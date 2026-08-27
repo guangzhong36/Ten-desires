@@ -1,0 +1,26 @@
+# lab5.py —— 散列表单词统计对比实验(第一部分:工具函数)
+import re
+import sys
+import time
+from collections import defaultdict
+
+
+def next_prime(n):
+    """返回大于等于 n 的最小素数。"""
+    def is_prime(x):
+        if x < 2:
+            return False
+        d = 2
+        while d * d <= x:
+            if x % d == 0:
+                return False
+            d += 1
+        return True
+    while not is_prime(n):
+        n += 1
+    return n
+
+
+def split_words(text):
+    """任务 5:切分单词——字母/数字连续成词(正则),其余字符跳过。"""
+    return re.findall(r"[a-z0-9]+", text.lower())

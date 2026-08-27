@@ -1,0 +1,19 @@
+def sift_down(a, i, n):                       # 下滤 a[i];n 为当前堆大小
+    while True:
+        largest = i
+        for c in (2 * i + 1, 2 * i + 2):      # 左子、右子(0 基)
+            if c < n and a[c] > a[largest]:
+                largest = c
+        if largest == i:
+            break
+        a[i], a[largest] = a[largest], a[i]
+        i = largest
+
+
+def heap_sort(a):
+    n = len(a)
+    for i in range(n // 2 - 1, -1, -1):       # 1. 下滤建堆 O(n)
+        sift_down(a, i, n)
+    for i in range(n - 1, 0, -1):             # 2. 逐个钉死最大元
+        a[0], a[i] = a[i], a[0]
+        sift_down(a, 0, i)

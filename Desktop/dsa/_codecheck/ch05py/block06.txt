@@ -1,0 +1,8 @@
+# 开放定址:线性探测插入(空单元用 None 标记)
+pos = hash_str(s, M)
+while table[pos] is not None and table[pos] != s:
+    pos = (pos + 1) % M        # 冲突就向后挪一格,越界绕回 0
+if table[pos] is None:
+    table[pos] = s             # 找到空位,插入
+else:
+    pass                       # 键已存在,什么也不做

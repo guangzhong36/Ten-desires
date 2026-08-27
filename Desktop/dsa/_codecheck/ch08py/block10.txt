@@ -1,0 +1,43 @@
+# ---------- 任务 4:朴素版 vs 完整优化版性能对比 ----------
+def bench(n):
+    ops = [(i, i + 1) for i in range(n - 1)]   # 顺序合并:朴素版会连成长链
+    t0 = time.perf_counter()
+    naive = NaiveUF(n)
+    for a, b in ops:
+        naive.union(a, b)                      # 每次 union 都沿链走 O(n)
+    t1 = time.perf_counter()
+    s = 0
+    for x in range(n):
+        s += naive.find(x)                     # 链尾 find 走 O(n)
+    t2 = time.perf_counter()
+    opt = UnionFind(n)
+    for a, b in ops:
+        opt.union(a, b)
+    t3 = time.perf_counter()
+    for x in range(n):
+        s += opt.find(x)
+    t4 = time.perf_counter()
+    ms = lambda a, b: (b - a) * 1000
+    print(f"任务4: {n} 次 union(连成链)+ {n} 次 find(耗时对比):")
+    print(f"  朴素版: union 阶段 {ms(t0, t1):.0f} ms, find 阶段 {ms(t1, t2):.0f} ms")
+    print(f"  优化版: union 阶段 {ms(t2, t3):.0f} ms, find 阶段 {ms(t3, t4):.0f} ms")
+    print(f"  find 阶段加速比:约 {(t2 - t1) / (t4 - t3):.0f} 倍(检查值 s={s % 1000})")
+
+def main():
+    w, h = 6, 4
+    right, down, record = gen_maze(w, h, seed=2024)
+    print("=" * 44)
+    print(f"随机迷宫 {w} 列 x {h} 行(种子 2024,共 {w * h} 个格子):")
+    print(render(w, h, right, down))
+    print()
+    total = record[-1][0]
+    print(f"任务3: 拆墙过程中连通分量数量的变化(共 {total} 面候选墙):")
+    print(f"  初始: {w * h} 个连通分量")
+    for tried, comp in record:
+        print(f"  尝试 {tried:2d}/{total} 面墙后: 连通分量 {comp:2d}")
+    print(f"  结束时连通分量为 1,迷宫全连通、无环(恰好拆 {w * h - 1} 面墙)。")
+    print()
+    bench(5000)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,20 @@
+def merge(left, right):
+    i = j = 0
+    res = []
+    while i < len(left) and j < len(right):
+        if right[j] < left[i]:                # 右半更小才取右
+            res.append(right[j])             # 相等取左 → 稳定
+            j += 1
+        else:
+            res.append(left[i])
+            i += 1
+    return res + left[i:] + right[j:]        # 剩余半区整体搬入
+
+
+def merge_sort(a):
+    if len(a) <= 1:
+        return a
+    m = len(a) // 2
+    left = merge_sort(a[:m])                 # 切片:创建子列表副本
+    right = merge_sort(a[m:])
+    return merge(left, right)

@@ -1,0 +1,26 @@
+// 每次 push 收 3 元(1 元自用 + 2 元存款),扩容拷贝从账户支付。
+class BankArray {
+    int* data_ = nullptr;
+    size_t size_ = 0, cap_ = 0;
+public:
+    long long balance = 0;          // 账户余额
+    long long minBalance = 0;       // 全程最低余额
+    void push_back(int x) {
+        balance += 3;               // 收 3 元
+        balance -= 1;               // 支付本次写入
+        if (size_ == cap_) {        // 容量满:倍增
+            size_t newCap = cap_ == 0 ? 1 : cap_ * 2;
+            int* p = new int[newCap];
+            for (size_t i = 0; i < size_; ++i) {  // 每拷 1 个付 1 元
+                p[i] = data_[i];
+                balance -= 1;
+            }
+            delete[] data_;
+            data_ = p;
+            cap_ = newCap;
+        }
+        data_[size_++] = x;
+        if (balance < minBalance) minBalance = balance;
+    }
+    ~BankArray() { delete[] data_; }
+};

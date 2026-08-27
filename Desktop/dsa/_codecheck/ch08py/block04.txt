@@ -1,0 +1,16 @@
+# 递归版:返回根,回溯时把沿途结点挂到根
+def find_rec(x):
+    if parent[x] != x:
+        parent[x] = find_rec(parent[x])
+    return parent[x]
+
+# 迭代版(两趟):先找根,再沿原路压缩
+def find_iter(x):
+    root = x
+    while parent[root] != root:   # 第一趟:上溯找根
+        root = parent[root]
+    while parent[x] != x:         # 第二趟:沿途结点挂到根
+        nxt = parent[x]
+        parent[x] = root
+        x = nxt
+    return root

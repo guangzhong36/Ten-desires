@@ -1,0 +1,36 @@
+// hello.cpp —— 第一个完整 C++ 程序:学生成绩统计
+// 输入:学生姓名与分数;输出:平均分与最高分
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+class Student {                       // 类:姓名 + 分数
+public:
+    string name;
+    int score;
+    Student(string n, int s) : name(n), score(s) {}  // 构造函数
+};
+
+int main() {
+    int n;
+    cout << "学生人数: ";
+    cin >> n;
+    vector<Student> stu;              // 动态数组:存 Student 对象
+    for (int i = 0; i < n; ++i) {
+        string name;
+        int score;
+        cin >> name >> score;         // 读入一行中的两个值
+        stu.push_back(Student(name, score));
+    }
+    int sum = 0, best = 0;
+    for (const Student& s : stu) {    // 范围 for:引用避免拷贝
+        sum += s.score;
+        if (s.score > best) best = s.score;
+    }
+    cout << "平均分: " << sum / n << ",最高分: " << best << endl;
+    return 0;
+}
+// 运行示例:
+// 学生人数: 3,输入:张三 90、李四 85、王五 95
+// 平均分: 90,最高分: 95

@@ -1,0 +1,18 @@
+// 判断字符串中 () [] {} 是否配对且顺序正确
+bool isBalanced(const string& s) {
+    stack<char> st;                    // 标准库栈,元素是 char
+    for (char c : s) {
+        if (c == '(' || c == '[' || c == '{')
+            st.push(c);                // 左括号入栈
+        else if (c == ')' || c == ']' || c == '}') {
+            if (st.empty()) return false;       // 右括号多余
+            char top = st.top();
+            st.pop();
+            if ((c == ')' && top != '(') ||      // 类型不匹配
+                (c == ']' && top != '[') ||
+                (c == '}' && top != '{'))
+                return false;
+        }
+    }
+    return st.empty();                 // 结束时栈空 = 左括号无剩余
+}

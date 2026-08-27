@@ -1,0 +1,9 @@
+class Stack {
+    vector<int> a;                     // 元素数组,栈顶在尾部
+public:
+    void push(int x) { a.push_back(x); }
+    void pop() { a.pop_back(); }       // 出栈:删除尾部
+    int top() const { return a.back(); }
+    bool empty() const { return a.empty(); }
+    size_t size() const { return a.size(); }
+};

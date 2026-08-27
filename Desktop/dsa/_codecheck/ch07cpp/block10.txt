@@ -1,0 +1,44 @@
+int median3(vector<int>& a, int left, int right) {
+    int center = (left + right) / 2;
+    if (lt(a[center], a[left])) exch(a[left], a[center]);
+    if (lt(a[right], a[left]))  exch(a[left], a[right]);
+    if (lt(a[right], a[center])) exch(a[center], a[right]);
+    exch(a[center], a[right - 1]);  // 枢轴藏到 right-1
+    return a[right - 1];
+}
+void quickSortRec(vector<int>& a, int left, int right) {
+    if (left + CUTOFF <= right) {
+        int pivot = median3(a, left, right);
+        int i = left, j = right - 1;
+        for (;;) {
+            while (lt(a[++i], pivot)) {}  // 哨兵 a[left]<=pivot 保证能停
+            while (lt(pivot, a[--j])) {}  // a[right-1]==pivot 保证能停
+            if (i < j) exch(a[i], a[j]);
+            else break;
+        }
+        exch(a[i], a[right - 1]);   // 枢轴归位
+        quickSortRec(a, left, i - 1);
+        quickSortRec(a, i + 1, right);
+    } else {
+        insertionSort(a, left, right);  // 小区间优化(§7.1 预告)
+    }
+}
+void quickSort(vector<int>& a) { quickSortRec(a, 0, int(a.size()) - 1); }
+
+enum Kind { RANDOM, NEARLY, REVERSED };
+const char* kindName[] = {"随机", "近有序", "逆序"};
+vector<int> makeData(int n, Kind k, mt19937& rng) {
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) a[i] = i + 1;
+    if (k == RANDOM) {
+        for (int i = n - 1; i > 0; --i)
+            swap(a[i], a[uniform_int_distribution<int>(0, i)(rng)]);
+    } else if (k == NEARLY) {
+        for (int i = 0; i < 20; ++i)   // 固定 20 次随机交换:逆序对 O(n)
+            swap(a[uniform_int_distribution<int>(0, n - 1)(rng)],
+                 a[uniform_int_distribution<int>(0, n - 1)(rng)]);
+    } else {
+        for (int i = 0; i < n; ++i) a[i] = n - i;
+    }
+    return a;
+}

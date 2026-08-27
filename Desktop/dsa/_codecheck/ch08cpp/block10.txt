@@ -1,0 +1,21 @@
+// ---------- 任务 2:ASCII 渲染 ----------
+string render(const Maze& m) {
+    string top = "+";
+    for (int c = 0; c < m.w; ++c) top += "--+";     // 顶部横线(永不拆)
+    string s = top + "\n";
+    for (int r = 0; r < m.h; ++r) {
+        string row = "|";                           // 最左竖墙(永不拆)
+        for (int c = 0; c < m.w; ++c)
+            row += "  " + string(1, m.right[r][c] ? '|' : ' ');
+        s += row + "\n";
+        if (r == m.h - 1) {
+            s += top + "\n";                        // 底部横线(永不拆)
+        } else {
+            string line = "+";
+            for (int c = 0; c < m.w; ++c)
+                line += string(m.down[r][c] ? "--" : "  ") + "+";
+            s += line + "\n";
+        }
+    }
+    return s;
+}

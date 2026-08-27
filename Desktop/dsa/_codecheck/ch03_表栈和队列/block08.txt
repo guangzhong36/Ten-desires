@@ -1,0 +1,17 @@
+// 输入:token 序列(数字串与运算符);输出:表达式值
+int evalPostfix(const vector<string>& toks) {
+    stack<int> st;
+    for (const string& t : toks) {
+        if (isdigit(t[0]) || (t.size() > 1 && t[0] == '-'))
+            st.push(stoi(t));                 // 数字入栈
+        else {
+            int b = st.top(); st.pop();       // 先弹的是右操作数!
+            int a = st.top(); st.pop();
+            if (t == "+") st.push(a + b);
+            else if (t == "-") st.push(a - b);
+            else if (t == "*") st.push(a * b);
+            else st.push(a / b);              // 只支持整除
+        }
+    }
+    return st.top();                          // 最后栈里只剩结果
+}

@@ -1,0 +1,13 @@
+#include <list>
+#include <iostream>
+using namespace std;
+int main() {
+    list<int> l = {1, 2, 3};
+    l.push_front(0);                  // 头部插入 O(1),vector 没有这个接口!
+    l.push_back(4);                   // 尾部插入 O(1)
+    auto it = l.begin();
+    ++it; ++it;                       // 走到第 2 个元素(下标访问是 O(n))
+    l.insert(it, 9);                  // 已定位后插入 O(1):0 1 9 2 3 4
+    for (int x : l) cout << x << ' '; // 双向链表也支持范围 for
+    return 0;
+}

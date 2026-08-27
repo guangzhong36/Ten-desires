@@ -1,0 +1,13 @@
+# dict:Python 内建的散列表,键值对即用即走
+cnt = {}                     # 空字典
+for w in words:
+    cnt[w] = cnt.get(w, 0) + 1      # get:取不到返回默认值 0
+
+# 三种"查"的姿势
+if w in cnt:                 # 只想知道在不在:in 成员判断
+    n = cnt[w]               # 直接下标:键不存在会 KeyError!
+n = cnt.get(w, 0)            # get:不存在返回默认值,不抛异常
+
+# 遍历:3.7+ 按插入顺序
+for k, v in cnt.items():
+    print(k, v)

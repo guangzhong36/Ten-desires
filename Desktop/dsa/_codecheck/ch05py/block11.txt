@@ -1,0 +1,14 @@
+# 可哈希:不可变对象才能当键,list 不行,tuple 可以
+d = {}
+d["name"] = "Ada"           # str 可哈希
+d[(1, 2)] = "point"         # tuple 可哈希
+# d[[1, 2]] = "x"           # TypeError: unhashable type: 'list'
+
+# 一行建表:字典推导式
+freq = {w: words.count(w) for w in set(words)}
+
+# 更高效的默认值工厂
+from collections import defaultdict, Counter
+cnt = defaultdict(int)      # 访问不存在的键自动给 0
+cnt["hello"] += 1
+top3 = Counter(words).most_common(3)   # 词频排序,取前 3

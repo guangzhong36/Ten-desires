@@ -1,0 +1,8 @@
+// 下滤建堆:从最后一个非叶结点(n/2)开始,逐个下滤到根
+void buildHeap(vector<T> items) {
+    a.clear();
+    a.push_back(T{});                // 占位 a[0]
+    for (const T& x : items) a.push_back(x);
+    for (size_t i = a.size() / 2; i >= 1; --i)
+        percolateDown(i);            // 复用示例 6-3 的下滤
+}

@@ -1,0 +1,12 @@
+# 标准库版:Counter 一行完成全部计数
+import re
+from collections import Counter
+
+text = "the cat and the dog and the cat"
+words = re.findall(r"[a-z0-9]+", text.lower())
+cnt = Counter(words)             # 一次扫描完成全部计数
+
+print("the:", cnt["the"])        # 3
+print("cat:", cnt["cat"])        # 2
+print("不同单词:", len(cnt))      # 4
+print(cnt.most_common(2))        # [('the', 3), ('cat', 2)]

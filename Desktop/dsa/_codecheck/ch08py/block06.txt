@@ -1,0 +1,14 @@
+# 替代方案:union 时把较小集合的所有元素逐个改编号
+owner = {i: i for i in range(n)}       # 元素 -> 集合编号
+def find_owner(x):
+    return owner[x]                    # 查归属 O(1)
+
+def union_owner(a, b):
+    oa, ob = owner[a], owner[b]
+    if oa == ob:
+        return
+    # 遍历全部元素把集合 ob 的成员改成 oa:O(n)!
+    for x, o in owner.items():
+        if o == ob:
+            owner[x] = oa
+# 并查集:union 只改一个指针,均摊近 O(1),差距 n 倍

@@ -1,0 +1,16 @@
+// 标准库:unordered_map(散列)与 map(红黑树)对单词计数
+#include <unordered_map>
+unordered_map<string, int> cnt;
+for (const string& w : words)
+    ++cnt[w];                    // w 不存在时自动插入,次数从 0 加 1
+
+// 遍历:按散列顺序,无任何顺序保证
+for (auto& kv : cnt)
+    cout << kv.first << ": " << kv.second << "\n";
+
+// 三种查找姿势
+auto it = cnt.find("hello");     // 返回迭代器;找不到返回 end()
+if (it != cnt.end())
+    cout << it->first << ": " << it->second << "\n";
+if (cnt.count("hello"))          // 只想知道在不在:count() 返回 0 或 1
+    cout << cnt.at("hello");     // at():找不到会抛 out_of_range 异常

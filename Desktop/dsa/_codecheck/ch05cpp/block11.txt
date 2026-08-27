@@ -1,0 +1,14 @@
+// 自定义类型进散列表:标准库要求 可哈希 + 可判等
+struct Student {
+    string name;
+    int id;
+    bool operator==(const Student& o) const {   // 判等:成员全部相等
+        return name == o.name && id == o.id;
+    }
+};
+struct StudentHash {                            // 函数对象:散列函数
+    size_t operator()(const Student& s) const {
+        return hash<string>()(s.name) ^ hash<int>()(s.id);
+    }
+};
+unordered_set<Student, StudentHash> roster;     // 用法:两个模板参数

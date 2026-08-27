@@ -1,0 +1,25 @@
+// parent[i] == i 表示 i 是根;其余 parent[i] 是 i 的父结点
+vector<int> parent;
+
+int find(int x) {                       // 朴素 find:沿父链上溯到根
+    while (parent[x] != x)
+        x = parent[x];
+    return x;
+}
+
+void unionSets(int a, int b) {          // 朴素 union:让 a 的根指向 b 的根
+    int ra = find(a), rb = find(b);
+    if (ra != rb)
+        parent[ra] = rb;
+}
+
+int main() {
+    int n = 8;
+    parent.resize(n);
+    for (int i = 0; i < n; ++i)
+        parent[i] = i;                  // 初始化:每个元素都是自己的根
+    unionSets(1, 2);
+    unionSets(3, 4);
+    unionSets(2, 3);
+    return find(4);
+}

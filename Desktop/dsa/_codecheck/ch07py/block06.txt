@@ -1,0 +1,8 @@
+from functools import cmp_to_key
+v = [5, 2, 8, 1, 9]
+sorted(v)                                     # 升序(返回新列表)
+sorted(v, reverse=True)                       # 降序
+sorted(v, key=lambda x: x % 10)               # 按个位数升序
+names = ["bob", "alice", "carl"]
+sorted(names, key=len)                        # 按长度升序
+sorted(names, key=cmp_to_key(lambda x, y: x - y))  # 三值比较桥接,语义同 qsort

@@ -1,0 +1,14 @@
+// 需要 #include <vector>
+int maxSubSum1(const vector<int>& a) {
+    int maxSum = 0;
+    for (size_t i = 0; i < a.size(); ++i)      // 起点
+        for (size_t j = i; j < a.size(); ++j)  // 终点
+        {
+            int thisSum = 0;
+            for (size_t k = i; k <= j; ++k)    // 累加 a[i..j]
+                thisSum += a[k];
+            if (thisSum > maxSum)
+                maxSum = thisSum;
+        }
+    return maxSum;
+}
