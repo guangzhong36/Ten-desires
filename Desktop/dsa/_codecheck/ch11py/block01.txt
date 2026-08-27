@@ -1,0 +1,17 @@
+# 模拟 push/pop/multiPop 序列,统计总代价,验证摊还结论
+def multiPop(st, k):
+    cost = 0
+    while st and cost < k:
+        st.pop()
+        cost += 1
+    return cost
+
+n = 10000
+st, total = [], 0
+for i in range(n):
+    st.append(i)                    # push:代价 1
+    total += 1
+    if i % 1000 == 999:             # 每 1000 次 push 来一个大 multiPop
+        total += multiPop(st, n)    # 弹空:每个元素只出栈一次
+print(f"操作数 n = {n}, 总代价 = {total} (≤ 2n = {2*n}), 摊还 = {total/n}")
+# 输出:操作数 n = 10000, 总代价 = 20000 (≤ 2n = 20000), 摊还 = 2.0

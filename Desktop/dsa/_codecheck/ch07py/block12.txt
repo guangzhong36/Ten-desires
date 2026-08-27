@@ -1,0 +1,41 @@
+def main():
+    sizes = (1000, 2000, 4000, 8000, 16000, 32000, 64000)
+    kinds = ("随机", "近有序", "逆序")
+    times = {k: {"插入": {}, "归并": {}, "快排": {}} for k in kinds}
+
+    # 任务 3:正确性验证(与 sorted 输出一致,含重复元素)
+    ok = True
+    for kind in kinds:
+        a = make_data(500, kind)
+        std = sorted(a)
+        b = a[:]; insertion_sort(b); ok &= (b == std)
+        ok &= (merge_sort(a[:]) == std)
+        b = a[:]; quick_sort(b); ok &= (b == std)
+    a = [random.randint(0, 20) for _ in range(500)]   # 重复元素
+    std = sorted(a)
+    b = a[:]; insertion_sort(b); ok &= (b == std)
+    ok &= (merge_sort(a[:]) == std)
+    b = a[:]; quick_sort(b); ok &= (b == std)
+    print(f"任务 3:三种算法与 sorted 输出一致: {ok}")
+
+    # 任务 2:性能表(插入 n>8000 按 ×4 规律推算,避免无谓等待)
+    print("任务 2:耗时表(单位 ms;插入排序 n>8000 为(推算))")
+    for kind in kinds:
+        print(f"\n[{kind}]")
+        print("n        插入       归并       快排")
+        for n in sizes:
+            a = make_data(n, kind)
+            row = [f"{n}"]
+            if n <= 8000:
+                t = ms_time(insertion_sort, a[:])
+                times[kind]["插入"][n] = t
+                row.append(f"{t:9.1f}")
+            else:
+                row.append("   (推算)")
+            t = ms_time(merge_sort, a[:], copies=False)  # 归并不改动原列表
+            times[kind]["归并"][n] = t
+            row.append(f"{t:9.1f}")
+            t = ms_time(quick_sort, a[:])
+            times[kind]["快排"][n] = t
+            row.append(f"{t:9.1f}")
+            print("  ".join(row))

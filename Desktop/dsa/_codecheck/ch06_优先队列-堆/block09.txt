@@ -1,0 +1,59 @@
+// lab6.cpp —— 第一段:MinHeap(1 基)
+#include <algorithm>
+#include <cctype>
+#include <iostream>
+#include <queue>
+#include <string>
+#include <unordered_map>
+#include <vector>
+using namespace std;
+
+// 任务 1:手写二叉堆(1 基,下标公式见 §6.2.3)
+template <typename T>
+class MinHeap {
+    vector<T> a;                              // 元素从下标 1 开始
+
+    void siftDown(size_t i) {                 // 下滤:与较小孩子交换
+        size_t n = a.size();
+        while (true) {
+            size_t smallest = i;
+            for (size_t c : {2 * i, 2 * i + 1})   // 左子、右子(1 基)
+                if (c < n && a[c] < a[smallest])
+                    smallest = c;
+            if (smallest == i) break;
+            swap(a[i], a[smallest]);
+            i = smallest;
+        }
+    }
+
+public:
+    MinHeap() { a.push_back(T{}); }           // 占住 a[0]
+    size_t size() const { return a.size() - 1; }
+    bool empty() const { return size() == 0; }
+    const T& top() const { return a[1]; }     // 根即最小元 O(1)
+
+    void push(const T& x) {                   // 上滤:放末尾后向上冒泡
+        a.push_back(x);
+        size_t i = a.size() - 1;
+        while (i > 1) {
+            size_t p = i / 2;                 // 父结点(1 基)
+            if (a[p] <= a[i]) break;
+            swap(a[p], a[i]);
+            i = p;
+        }
+    }
+
+    void pop() {                              // 删除最小:末元素搬根再下滤
+        a[1] = a.back();
+        a.pop_back();
+        if (a.size() > 1) siftDown(1);
+    }
+
+    static MinHeap buildFrom(const vector<T>& items) {  // 下滤建堆 O(n)
+        MinHeap h;
+        for (const T& x : items) h.a.push_back(x);
+        for (size_t i = h.a.size() / 2; i >= 1; --i)    // 最后非叶 = n/2
+            h.siftDown(i);
+        return h;
+    }
+};

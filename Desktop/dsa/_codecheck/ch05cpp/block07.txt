@@ -1,0 +1,11 @@
+// 平方探测:第 i 次冲突后尝试 pos + i^2
+int pos = hashStr(s, M);
+int i = 0;
+while (table[pos] != EMPTY && table[pos] != s) {
+    ++i;
+    pos = (pos + i * i) % M;   // 探测序列:pos+1, pos+4, pos+9, ...
+}
+if (table[pos] == EMPTY)
+    table[pos] = s;
+// 定理(教材 5.4 节):表大小为素数且装填因子 λ < 1/2 时,
+// 平方探测总能找到空单元,且最多探测一半的表长

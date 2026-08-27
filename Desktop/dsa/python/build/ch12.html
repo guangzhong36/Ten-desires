@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第12章 高级数据结构</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · DATA STRUCTURES</div>
+<h1 class="chapter-title">第12章 高级数据结构</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★★★ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解红黑树五条性质与插入修正,知道它是 2-3-4 树的二叉表示</li>
+<li>掌握 Treap 与跳表的随机化平衡思想,能完整实现插入/删除/查找</li>
+<li>掌握 k-d 树最近邻剪枝查询,理解配对堆摊还 <i>O</i>(1) 合并</li>
+<li>学会 Python 的"有序字典"替代惯例:list+bisect、dict+sorted、sortedcontainers,并实测 10<sup>4</sup> 级跳表字典</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Python:本章主题如何迁移</div>
+<p>前 11 章最大的缺口是"平衡":BST 遇有序输入退化成链表,AVL 实现繁琐。本章五个结构给出三种哲学:<span class="hl">红黑树用确定不变式强制平衡;Treap 与跳表把平衡交给随机性(期望 <i>O</i>(log <i>n</i>));配对堆靠摊还分析兜底</span>。</p>
+<p>C 里做"有序字典"要手写几百行平衡树,一个修正分支写错就悄悄失衡。Python 没有内建平衡树,但有两条轻量惯例:<code>list</code> + <code>bisect</code> 二分(小数据)、<code>dict</code> + <code>sorted</code>(批处理),大数据再上第三方 <code>sortedcontainers</code>——这正是本章"选型"的实用部分。</p>
+<p>跳表与 Treap 的价值在"实现简单":代码量接近链表,却拿到期望 <i>O</i>(log <i>n</i>)——用"概率上几乎不可能坏"换"写起来几乎不可能错",Redis 的 zset 底层就是跳表。Python 实现它们比 C 更短:指针变成列表索引,<code>new</code>/<code>delete</code> 变成对象引用与垃圾回收。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>概率期望直觉(几何分布)、对数运算、摊还分析概念(第11章)。</p>
+<p><b>C 语言前置:</b><code>struct</code> 与指针、链表结点增删(第3章)、函数指针、<code>malloc</code>/<code>free</code> 对照 Python 的对象与引用计数。</p>
+<p><b>依赖的前面章节:</b>第4章树(BST、旋转、AVL)、第5章散列、第6章堆、第11章摊还分析。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(2 小时):</b>读 §12.1–§12.4,背下修正口诀,手写 Treap、跳表与 k-d 树</li>
+<li><b>第二阶段(1 小时):</b>读 §12.5–§12.6,理解配对堆与 Python 选型惯例</li>
+<li><b>第三阶段(实验,1 小时):</b>完成章末实验:跳表字典的实现与对比</li>
+<li><b>验收标准:</b>能随口说出"红黑树高度 <i>O</i>(log <i>n</i>)""跳表期望 <i>O</i>(log <i>n</i>)",知道 Python 有序映射的三种替代</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§12.1 红黑树:五条性质与插入修正</li>
+<li>§12.2 Treap:随机优先级的树堆</li>
+<li>§12.3 跳表:多层链表的概率平衡</li>
+<li>§12.4 k-d 树:多维空间切分与最近邻</li>
+<li>§12.5 配对堆:摊还 <i>O</i>(1) 合并的实用堆</li>
+<li>§12.6 标准库选型指南</li>
+<li>§12.7 全书总结:十二章知识地图</li>
+</ul></div>
+
+<h2>§12.1 红黑树:五条性质与插入修正</h2>
+
+<h3>12.1.1 五条性质与"黑高"</h3>
+<p><span class="term">红黑树</span>是一棵二叉查找树,每个结点带红/黑一色,满足五条性质:① 结点非红即黑;② 根是黑色;③ 叶结点(NIL)是黑色;④ 红结点的子结点都是黑色——<span class="hl">"红结点不能有红孩子"</span>;⑤ 从任一结点到其所有后代叶的路径上,黑色结点数相同,这个数叫<span class="term">黑高</span>。</p>
+<p>关键保证:设黑高 <i>h</i><sub>b</sub>,最短路径(全黑)长 <i>h</i><sub>b</sub>,性质4 又禁红红相邻,最长路径至多 2<i>h</i><sub>b</sub>——<span class="hl">最长 ≤ 最短的 2 倍,树高 <i>O</i>(log <i>n</i>),三操作最坏 <i>O</i>(log <i>n</i>)</span>。这就是"弱平衡":不追求 AVL 的高度差 ≤ 1。</p>
+
+<h3>12.1.2 插入修正:变色与旋转</h3>
+<p>插入先染<b>红</b>——红结点不影响性质5(黑高不变),只可能破坏性质4(红父红子)。修正只看叔叔颜色:<span class="hl">叔叔红 → 变色;叔叔黑 → 旋转</span>。</p>
+
+<div class="code-title">示例 12-1 插入修正:叔叔为黑 → 旋转 + 变色</div>
+<pre class="code">红黑树插入修正之二:叔叔为黑(或空),旋转 + 变色(LL 型为例)
+           黑 10(爷爷)                      黑 5(子树新根)
+          /       \      对爷爷右旋        /       \
+       红 5(父)   黑 15   -----------→   红 3     红 10
+       /                                           \
+    红 3 ← 新插入                                   黑 15
+   (直线型:父左子左)     旋后变色:5 染黑、10 染红
+                         黑高与性质4 同时恢复,修正结束</pre>
+
+<p>叔叔为红时,父、叔变黑,爷爷变红,冲突上移一层继续检查;爷爷若是根最后染黑。叔叔为黑时按 AVL 的四种形态旋转:<b>LL/RR 直线一次旋转,LR/RL 之字形两次旋转</b>;旋转后被提上来的结点染黑、爷爷染红。</p>
+
+<div class="box box-keypoint"><div class="box-title">重点:插入易、删除难</div>
+<p>插入只处理"红父红子"一处冲突,沿路径上移 <i>O</i>(log <i>n</i>) 层;删除要把黑高"挖掉"一层,处理"双黑"问题——<span class="hl">红黑树"实现极复杂、接口极简单",删除从不手写,因此适合内建在标准库</span>。</p>
+</div>
+
+<h3>12.1.3 与 2-3-4 树的关系</h3>
+<p>一句话:<span class="term">红黑树是 2-3-4 树的二叉表示</span>——把 2-3-4 树一个结点内的 2~3 个键"压扁"成红黑交替的二叉链。</p>
+
+<h3>12.1.4 Python 视角:没有 map,但有三种替代</h3>
+<p>C++ 有 <code>std::map</code>(红黑树),Java 有 <code>TreeMap</code>;<span class="hl">Python 标准库没有平衡树</span>——因为 <code>dict</code> 平均 <i>O</i>(1) 已覆盖大多数场景,少数"要有序"的场景用三种替代:① 小数据 <code>list</code> + <code>bisect</code> 二分定位;② 批处理 <code>dict</code> + <code>sorted()</code>;③ 大数据上第三方 <code>sortedcontainers.SortedDict</code>(红黑树实现)。</p>
+
+<table class="cmp">
+<tr><th>C 的手写有序查找表</th><th>Python 的替代</th></tr>
+<tr><td>手写 AVL/红黑树:数百行,修正分支众多</td><td>小数据:<code>list</code> + <code>bisect</code>;大数据:<code>SortedDict</code></td></tr>
+<tr><td>有序遍历要自己写中序递归</td><td><code>sorted(d.keys())</code> 一行,或 <code>SortedDict</code> 直接迭代</td></tr>
+<tr><td>范围查询手写"第一个 &gt;= x 的结点"</td><td><code>bisect_left/right</code> 现成定位</td></tr>
+<tr><td>忘记 <code>free</code> 整棵树即泄漏</td><td>垃圾回收自动回收全部结点</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:性质4 的方向与口诀记反</div>
+<p>性质4 是"红结点的孩子必须黑",<b>反过来"黑结点的孩子必须红"是错的</b>——黑结点孩子颜色任意。高频错误还有口诀记反:叔叔红时去旋转,树永远修不好。</p>
+</div>
+
+<h2>§12.2 Treap:随机优先级的树堆</h2>
+
+<h3>12.2.1 思想:BST + 堆序</h3>
+<p>BST 退化根源是"输入顺序决定树形"。Treap(tree+heap)给每个结点一个<b>随机优先级</b>,并要求其满足<b>堆序</b>(小顶堆:父 ≤ 子)。键决定"在哪里",优先级决定"谁当根"——优先级随机,树形就随机,期望高度 <i>O</i>(log <i>n</i>)。<span class="hl">把平衡从"旋转纠错"换成"随机决定",实现从几百行降到几十行</span>。</p>
+
+<h3>12.2.2 插入与旋转</h3>
+<p>插入:先按 BST 规则插到叶位置,再沿路径向上旋转,直到父的优先级 ≤ 子——与二叉堆"上滤"异曲同工。删除同理:把目标旋转着推下去,变叶子再摘除。</p>
+
+<div class="code-title">示例 12-5 Treap 完整实现(第一段:结构、旋转、插入)</div>
+<pre class="code"># Treap:键满足 BST 序,随机优先级满足小顶堆堆序
+import random
+
+class Node:
+    __slots__ = ("key", "pri", "left", "right")   # 省内存
+    def __init__(self, key, pri):
+        self.key = key
+        self.pri = pri
+        self.left = self.right = None
+
+def rotate_right(t):          # 右旋:提升左孩子
+    x = t.left
+    t.left = x.right
+    x.right = t
+    return x
+
+def rotate_left(t):           # 左旋:提升右孩子
+    x = t.right
+    t.right = x.left
+    x.left = t
+    return x
+
+def insert(t, key, pri):
+    if t is None:
+        return Node(key, pri)
+    if key &lt; t.key:
+        t.left = insert(t.left, key, pri)
+        if t.left.pri &lt; t.pri:
+            t = rotate_right(t)               # 堆序上滤
+    elif key &gt; t.key:
+        t.right = insert(t.right, key, pri)
+        if t.right.pri &lt; t.pri:
+            t = rotate_left(t)
+    return t</pre>
+
+<div class="code-title">示例 12-6 Treap 完整实现(第二段:删除与查找)</div>
+<pre class="code">def erase(t, key):
+    if t is None:
+        return None
+    if key &lt; t.key:
+        t.left = erase(t.left, key)
+    elif key &gt; t.key:
+        t.right = erase(t.right, key)
+    elif t.left is None:
+        return t.right
+    elif t.right is None:
+        return t.left
+    elif t.left.pri &lt; t.right.pri:            # 优先级小的旋上来
+        t = rotate_right(t)
+        t.right = erase(t.right, key)
+    else:
+        t = rotate_left(t)
+        t.left = erase(t.left, key)
+    return t
+
+def find(t, key):
+    while t is not None and t.key != key:
+        t = t.left if key &lt; t.key else t.right
+    return t is not None</pre>
+
+<h3>12.2.3 期望 O(log n) 的直觉与缺陷</h3>
+<p>直觉:根是整棵树优先级最小的结点,优先级随机,所以"根是第 <i>k</i> 小的键"的概率均匀为 1/<i>n</i>,左右子树递归同构——<span class="hl">与快排"随机枢轴"的分析同构:Treap 就是快排的树形版本</span>。最坏情形(优先级恰好按键单调)概率 1/<i>n</i>!,现实不会出现。优先级相等时须约定比较方向,否则可能破坏 BST 序。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:堆序方向与旋转方向配错</div>
+<p>本例用小顶堆(父 ≤ 子),口诀"左小右旋、右小左旋";若定义成大顶堆,所有比较都要取反。实现后用有序序列插入再中序遍历:输出必须升序,且每个结点优先级 ≤ 子结点。</p>
+</div>
+
+<h2>§12.3 跳表:多层链表的概率平衡</h2>
+
+<h3>12.3.1 多层链表与几何分布</h3>
+<p>有序链表查找 <i>O</i>(<i>n</i>),因为每步只能走一个结点。跳表(skip list)的思路:<span class="hl">多建几层链表,上层是下层的"快速通道"</span>。每个新结点先进入最底层,再以概率 1/2 晋升,再以概率 1/2 继续……层数 <i>k</i> 满足<span class="term">几何分布</span>:P(层 ≥ <i>k</i>) = 2<sup>−(k−1)</sup>,每层结点数期望 <i>n</i>/2<sup>k−1</sup>。查找从最高层出发,每层右移到"下一个更大"结点前再下降,共 <i>O</i>(log <i>n</i>) 层。</p>
+
+<h3>12.3.2 三操作:查找、插入、删除</h3>
+<p>三操作共享同一"下探"骨架:从最高层向右试探,把每层"最后一个 &lt; key 的结点"记进 <code>update</code> 列表。<b>查找</b>:下探后看 <code>update[0].next[0]</code> 是否为 key。<b>插入</b>:随机层数 <code>lvl</code>,若高于当前最高层先补 <code>update</code> 头指针,再逐层链入。<b>删除</b>:下探后若第 0 层后继即目标,逐层跳过,最后回收空高层。C 里每层指针要手写 <code>Node* next[k]</code>,Python 用 <code>next = [None] * (lvl + 1)</code> 一行搞定,<code>__slots__</code> 还能省内存。</p>
+
+<div class="code-title">示例 12-7 跳表完整实现(第一段:结构、查找、插入)</div>
+<pre class="code">import random
+
+class Node:
+    __slots__ = ("key", "next")           # next[i]:第 i 层的后继
+    def __init__(self, key, lvl):
+        self.key = key
+        self.next = [None] * (lvl + 1)    # 层号 0..lvl 均有效
+
+class SkipList:
+    def __init__(self, max_lvl=16):
+        self.head = Node(0, max_lvl)      # 头结点:全部层的起点
+        self.max_lvl = max_lvl
+        self.level = 0
+        self.rng = random.Random(12345)   # 固定种子:可复现
+
+    def random_level(self):               # 几何分布:每层 1/2 概率晋升
+        lvl = 1
+        while self.rng.getrandbits(1) and lvl &lt; self.max_lvl:
+            lvl += 1
+        return lvl
+
+    def find(self, key):
+        cur = self.head
+        for i in range(self.level, -1, -1):
+            while cur.next[i] and cur.next[i].key &lt; key:
+                cur = cur.next[i]
+        x = cur.next[0]
+        return x is not None and x.key == key
+
+    def insert(self, key):
+        if self.find(key):
+            return                        # 字典语义:键唯一
+        update = [None] * len(self.head.next)
+        cur = self.head
+        for i in range(self.level, -1, -1):
+            while cur.next[i] and cur.next[i].key &lt; key:
+                cur = cur.next[i]
+            update[i] = cur               # 每层最后一个 &lt; key
+        lvl = self.random_level()
+        if lvl &gt; self.level:
+            for i in range(self.level + 1, lvl + 1):
+                update[i] = self.head
+            self.level = lvl
+        x = Node(key, lvl)
+        for i in range(lvl + 1):
+            x.next[i] = update[i].next[i]
+            update[i].next[i] = x</pre>
+
+<div class="code-title">示例 12-8 跳表完整实现(第二段:删除与按序遍历)</div>
+<pre class="code">    def erase(self, key):
+        update = [None] * len(self.head.next)
+        cur = self.head
+        for i in range(self.level, -1, -1):
+            while cur.next[i] and cur.next[i].key &lt; key:
+                cur = cur.next[i]
+            update[i] = cur
+        x = cur.next[0]
+        if x is None or x.key != key:
+            return False
+        for i in range(self.level + 1):
+            if update[i].next[i] != x:    # 该层没有 x
+                break
+            update[i].next[i] = x.next[i]
+        while self.level &gt; 0 and self.head.next[self.level] is None:
+            self.level -= 1               # 回收空高层
+        return True
+
+    def keys(self):
+        v = []
+        p = self.head.next[0]
+        while p:
+            v.append(p.key)
+            p = p.next[0]
+        return v
+
+    def __len__(self):
+        return len(self.keys())</pre>
+
+<h3>12.3.3 与平衡树对比:期望 vs 确定</h3>
+<table>
+<tr><th>对比项</th><th>跳表</th><th>红黑树 / AVL</th></tr>
+<tr><td>平衡机制 / 实现难度</td><td>随机层数,≈ 链表级,几十行</td><td>旋转 + 不变式,高,数百行</td></tr>
+<tr><td>高度</td><td>期望 <i>O</i>(log <i>n</i>),最坏 <i>O</i>(<i>n</i>)</td><td>最坏保证 <i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>每结点内存</td><td>平均约 2 个指针</td><td>2 个指针 + 颜色位</td></tr>
+<tr><td>工程使用</td><td>Redis 有序集合 zset、LevelDB</td><td>std::map/set、Java TreeMap</td></tr>
+</table>
+<p><span class="hl">确定性与实现难度不可兼得</span>:要最坏保证(实时系统)选红黑树;要快速实现选跳表——跳表还天然便于无锁并发修改。</p>
+
+<table class="cmp">
+<tr><th>C 的手写多级链表</th><th>Python 的跳表类</th></tr>
+<tr><td>每层一个 <code>Node* next[k]</code> 数组要手写分配</td><td><code>next = [None] * (lvl + 1)</code> 一行</td></tr>
+<tr><td>释放多层结点容易重复 free 或泄漏</td><td>垃圾回收自动回收,<code>__slots__</code> 省内存</td></tr>
+<tr><td>随机层数用 <code>rand()</code>,可移植性差</td><td><code>random.Random(种子)</code> 质量与可复现性都有保证</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:随机层数用错了分布</div>
+<p>层数必须<b>几何分布</b>(每层 1/2 概率继续)。三个常见错误:① 固定层数让高层退化成线性扫描 <i>O</i>(<i>n</i>);② 删除后不回收空高层;③ 用 <code>time()</code> 做种子,同一秒插入的结点层数高度相关。调试:逐层打印链表,验证"第 0 层完整、高层稀疏"。</p>
+</div>
+
+<h2>§12.4 k-d 树:多维空间切分与最近邻</h2>
+
+<h3>12.4.1 交替维度切分建树</h3>
+<p><span class="term">k-d 树</span>递归地选一个维度取<b>中位数</b>作切分点,左子树为小于切分点的点集,右子树反之;下一层换另一个维度。对二维点:第 0 层按 <i>x</i>、第 1 层按 <i>y</i>、第 2 层再按 <i>x</i>……<span class="hl">维度交替,保证每个区域在两个方向都被"削"过</span>,树高 <i>O</i>(log <i>n</i>)。C++ 用 <code>nth_element</code> 线性选中位数;Python 直接用 <code>sorted</code> 或 <code>statistics.median</code> 选,代价同为 <i>O</i>(<i>n</i> log <i>n</i>) 建树。</p>
+
+<div class="code-title">示例 12-9 k-d 树:交替维度建树(二维)</div>
+<pre class="code">def build(pts, lo, hi, depth):
+    """pts 就地重排后返回子树根;返回 (根, 新列表) 也行,这里用下标切分"""
+    if lo &gt; hi:
+        return None
+    dim = depth % 2                          # 维度交替:0 按 x,1 按 y
+    mid = (lo + hi) // 2
+    pts[lo:hi + 1] = sorted(pts[lo:hi + 1],  # 中位数切分
+                            key=lambda p: p[dim])
+    node = {"p": pts[mid], "dim": dim, "left": None, "right": None}
+    node["left"] = build(pts, lo, mid - 1, depth + 1)
+    node["right"] = build(pts, mid + 1, hi, depth + 1)
+    return node</pre>
+
+<h3>12.4.2 最近邻查询与剪枝</h3>
+<p>给定查询点 <i>q</i>,找点集中距离最近者。先沿树下探到 <i>q</i> 所在区域,得到"当前最佳距离" <i>d</i><sub>best</sub>;回溯时——<span class="hl">若 <i>q</i> 到分割线的距离 ≥ <i>d</i><sub>best</sub>,另一侧任何点都不可能更近,整棵子树剪掉</span>。</p>
+
+<div class="code-title">示例 12-10 k-d 树:最近邻查询(带剪枝)</div>
+<pre class="code">def dist2(a, b):
+    dx, dy = a[0] - b[0], a[1] - b[1]
+    return dx * dx + dy * dy
+
+def nearest(node, q):
+    """返回 (最佳距离平方, 最佳点)"""
+    best_d, best_p = float("inf"), None
+    def dfs(node):
+        nonlocal best_d, best_p
+        if node is None:
+            return
+        d = dist2(node["p"], q)
+        if d &lt; best_d:
+            best_d, best_p = d, node["p"]
+        dim = node["dim"]
+        cut = node["p"][dim]
+        qc = q[dim]
+        near, far = (node["left"], node["right"]) if qc &lt; cut \
+                    else (node["right"], node["left"])   # 先探近侧
+        dfs(near)
+        d_cut = (qc - cut) * (qc - cut)       # q 到分割线距离
+        if d_cut &lt; best_d:                    # 剪枝:够近才跨过去
+            dfs(far)
+    dfs(node)
+    return best_d, best_p</pre>
+
+<div class="box box-tip"><div class="box-title">记号说明:距离平方省去开根号</div>
+<p>最近邻只需比较大小,<code>dist2</code> 返回距离平方即可,省掉每步一次 <code>sqrt</code>;剪枝条件用平方比较数学等价。</p>
+</div>
+
+<h3>12.4.3 应用与退化警告</h3>
+<p>k-d 树是"多维点集查询"的默认答案:游戏引擎的"最近敌人"查询替代逐对检测的 <i>O</i>(<i>n</i><sup>2</sup>),光线追踪与 k-NN 分类也建立在"空间切分 + 剪枝"上。数据挤在一条直线上时剪枝失效,查询最坏 <i>O</i>(<i>n</i>);生产级替代是 R 树或网格索引。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:剪枝条件漏写或写反</div>
+<p>最近邻两种经典错误:① 漏掉 <code>if d_cut &lt; best_d</code> 直接递归两侧——正确但退化成全树搜索 <i>O</i>(<i>n</i>);② 比较方向反了——可能跳过真正更近的点。调试:拿 5 点小数据集逐结点打印"近侧/远侧/是否剪枝"核对。</p>
+</div>
+
+<h2>§12.5 配对堆:摊还 <i>O</i>(1) 合并的实用堆</h2>
+
+<h3>12.5.1 配对堆是什么</h3>
+<p>第6章的二叉堆支持 insert 与 deleteMin,但<b>合并两个堆</b>要 <i>O</i>(<i>n</i>)。左式堆 merge 是 <i>O</i>(log <i>n</i>) 但实现复杂;<span class="term">配对堆</span>(pairing heap)走实用路线:<span class="hl">merge 只比两个根的键,把小根挂到大根的孩子链表里,摊还 <i>O</i>(1);deleteMin 把根的孩子两两配对合并,摊还 <i>O</i>(log <i>n</i>)</span>。</p>
+
+<div class="code-title">示例 12-11 配对堆:merge、insert、deleteMin</div>
+<pre class="code"># 配对堆:孩子用"左孩子 + 右兄弟"链表表示,根最小
+class PHNode:
+    __slots__ = ("val", "child", "next")
+    def __init__(self, val):
+        self.val = val
+        self.child = None      # 第一个孩子,next 为兄弟链
+        self.next = None
+
+def merge(a, b):               # 摊还 O(1)
+    if a is None:
+        return b
+    if b is None:
+        return a
+    if a.val &gt; b.val:
+        a, b = b, a            # 键小的做根
+    b.next = a.child
+    a.child = b
+    return a
+
+def merge_pairs(first):        # 两趟合并:摊还 O(log n)
+    if first is None or first.next is None:
+        return first
+    a, b = first, first.next
+    rest = b.next
+    return merge(merge(a, b), merge_pairs(rest))
+
+def delete_min(root):
+    children = root.child
+    return merge_pairs(children)   # 根即最小,直接摘掉
+
+# insert = merge(现有堆, 单结点堆),即摊还 O(1)</pre>
+
+<h3>12.5.2 三堆选择的一句话</h3>
+<p><span class="hl">只做优先队列(不合并):二叉堆;需要合并且代码量敏感:配对堆;需要最坏保证的合并:左式堆</span>。代价是摊还而非最坏:单次 deleteMin 可能偶发 <i>O</i>(<i>n</i>),长时间平均 <i>O</i>(log <i>n</i>)。Python 工程上优先队列直接用 <code>heapq</code> 即可;配对堆的价值在于理解"摊还"与"可合并堆"这两个概念。</p>
+
+<h2>§12.6 标准库选型指南</h2>
+
+<h3>12.6.1 Python 没有 map:三种替代的决策表</h3>
+<p>C++ 同学随手写 <code>std::map</code>,Python 的标准答案随数据规模走:<code>list</code> + <code>bisect</code>、<code>dict</code> + <code>sorted</code>、第三方 <code>sortedcontainers</code>。怎么选:</p>
+<table>
+<tr><th>需求</th><th>list + bisect</th><th>dict + sorted</th><th>SortedDict(sortedcontainers)</th></tr>
+<tr><td>按键升序遍历</td><td>列表本身有序</td><td>不支持(需 sorted)</td><td>支持(中序遍历)</td></tr>
+<tr><td>范围查询 [lo, hi]</td><td>支持(bisect 定位)</td><td>不支持</td><td>支持(irange)</td></tr>
+<tr><td>查找 / 插入</td><td><i>O</i>(log <i>n</i>) / <i>O</i>(<i>n</i>)</td><td>平均 <i>O</i>(1) / 平均 <i>O</i>(1)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>适用规模</td><td>小(≤10<sup>4</sup>)</td><td>任意(无序)</td><td>大且持续有序</td></tr>
+</table>
+
+<h3>12.6.2 bisect:有序列表的二分工具箱</h3>
+<p><code>bisect_left(a, x)</code> 返回"第一个 &gt;= x"的下标,<code>bisect_right</code> 返回"第一个 &gt; x"的下标——配合 <code>list.insert</code> 就是一棵"数组版平衡树"的插入;配合切片就是范围查询:</p>
+
+<div class="code-title">示例 12-12 用 bisect 做有序字典(小数据)</div>
+<pre class="code">from bisect import bisect_left, bisect_right
+
+keys, vals = [], []
+def d_insert(k, v):
+    i = bisect_left(keys, k)
+    if i &lt; len(keys) and keys[i] == k:
+        vals[i] = v
+    else:
+        keys.insert(i, k)
+        vals.insert(i, v)
+
+def d_find(k):
+    i = bisect_left(keys, k)
+    return vals[i] if i &lt; len(keys) and keys[i] == k else None
+
+lo, hi = bisect_left(keys, 4), bisect_right(keys, 8)
+print(keys[lo:hi])                # 范围查询 [4, 8]</pre>
+
+<h3>12.6.3 手写 vs 标准库:有序字典并排</h3>
+<p>把 §12.3 的跳表包一层,接口与 <code>SortedDict</code> 对齐——第3章 ADT 的威力:</p>
+
+<div class="code-title">示例 12-13 手写跳表字典 vs SortedDict,接口并排</div>
+<pre class="code"># ---- 手写版:§12.3 的 SkipList 包成有序字典 ----
+class SkipDict:
+    def __init__(self):
+        self._sl = SkipList()
+    def insert(self, k): self._sl.insert(k)
+    def find(self, k):   return self._sl.find(k)
+    def erase(self, k):  return self._sl.erase(k)
+    def keys(self):      return self._sl.keys()
+    def __len__(self):   return len(self._sl)
+
+d = SkipDict()
+d.insert(5); d.insert(3)
+print(d.keys())                       # [3, 5]
+
+# ---- 标准库版:同一套接口,红黑树实现(第三方库) ----
+from sortedcontainers import SortedDict
+m = SortedDict({3: "three", 5: "five", 8: "eight"})
+print(list(m))                        # [3, 5, 8]
+print(m.irange(4, 8))                 # 范围查询 [4, 8]</pre>
+
+<h3>12.6.4 工程选型建议</h3>
+<ul>
+<li>一次性有序输出:任意容器 + <code>sorted()</code>(C++ 要手写排序或 std::sort)</li>
+<li>持续插入 + 需要有序:小数据 <code>list</code> + <code>bisect</code>,大数据 <code>SortedDict</code></li>
+<li>只查不遍历:<code>dict</code>(平均 <i>O</i>(1));注意 dict 自 3.7 起保持插入顺序,但<b>不是</b>按键序</li>
+<li>顺序敏感又不愿装库:dict + 用时 <code>sorted(d.keys())</code>,适合批处理</li>
+</ul>
+
+<table class="cmp">
+<tr><th>C 的做法</th><th>Python 的做法</th></tr>
+<tr><td><code>qsort(a, n, sz, cmp)</code> 传函数指针</td><td><code>sorted(a, key=...)</code> 传 key 函数或 lambda</td></tr>
+<tr><td>map 底层红黑树,排序是容器特性</td><td>dict 无序;要序用 bisect/SortedDict</td></tr>
+<tr><td>比较器写错静默产生错误排序</td><td><code>sorted(key=)</code> 越简单越不易错,还可 <code>functools.cmp_to_key</code> 迁移 C 比较器</td></tr>
+</table>
+
+<h2>§12.7 全书总结:十二章知识地图</h2>
+
+<h3>12.7.1 十二章知识地图</h3>
+<div class="toc-map"><ul>
+<li>第1章 绪论:递归与数学 → 第2章 算法分析:<i>O</i>/<i>Ω</i>/<i>Θ</i></li>
+<li>第3章 表栈队列:数组与链表 → 第4章 树:BST、AVL、遍历</li>
+<li>第5章 散列:冲突处理 → 第6章 堆:二叉堆、上滤下滤</li>
+<li>第7章 排序:八大排序 → 第8章 不相交集:union/find</li>
+<li>第9章 图:最短路与 MST → 第10章 算法设计:贪心、分治、DP</li>
+<li>第11章 摊还分析:三方法 → 第12章 高级结构:平衡与期望</li>
+</ul></div>
+
+<h3>12.7.2 "遇到问题选什么结构"终极决策表</h3>
+<table>
+<tr><th>需求场景</th><th>推荐结构</th><th>理由</th></tr>
+<tr><td>只做等值查找/去重</td><td>散列(dict / set)</td><td>平均 <i>O</i>(1),常数最小</td></tr>
+<tr><td>需要按键有序遍历</td><td>跳表或 SortedDict</td><td>底层链/中序即有序序列</td></tr>
+<tr><td>范围查询 [lo, hi]</td><td>bisect 定位有序列表</td><td><i>O</i>(log <i>n</i>) 定位 + <i>O</i>(k) 输出</td></tr>
+<tr><td>优先队列(含合并)</td><td>heapq / 配对堆</td><td><i>O</i>(log <i>n</i>) / 合并摊还 <i>O</i>(1)</td></tr>
+<tr><td>多维点集最近邻</td><td>k-d 树</td><td>平均 <i>O</i>(log <i>n</i>) 剪枝查询</td></tr>
+</table>
+
+<h3>12.7.3 下一步学习方向</h3>
+<p>学完十二章,你已具备"手写任何基础结构 + 正确选型"的能力,三个方向任选:① <b>算法竞赛</b>——跳表与 Treap 常作为平衡树的快速替代;② <b>系统设计</b>——缓存用散列、排行榜用跳表、范围索引用 B+ 树;③ <b>数据库索引</b>——B+ 树是红黑树的"磁盘亲戚"。最后记住:<span class="hl">数据结构没有银弹,选型的本质是拿时间复杂度、实现复杂度与最坏保证做三角权衡</span>。</p>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>查找 / 插入 / 删除</td><td>红黑树(SortedDict 底层)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>有序遍历全部元素</td><td>红黑树中序 / SortedDict 迭代</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>前驱 / 后继</td><td>有序列表 bisect 定位</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>Treap</td><td>期望 <i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)(优先级恰好有序)</td></tr>
+<tr><td>查找 / 插入 / 删除</td><td>跳表</td><td>期望 <i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)(全部同层)</td></tr>
+<tr><td>建树</td><td>k-d 树(sorted 切分)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>最近邻查询</td><td>k-d 树</td><td>平均 <i>O</i>(log <i>n</i>)</td><td><i>O</i>(<i>n</i>)(数据退化)</td></tr>
+<tr><td>合并两个堆</td><td>配对堆</td><td>摊还 <i>O</i>(1)</td><td>摊还 <i>O</i>(1)</td></tr>
+<tr><td>插入(单结点)</td><td>配对堆</td><td>摊还 <i>O</i>(1)</td><td>摊还 <i>O</i>(1)</td></tr>
+<tr><td>deleteMin</td><td>配对堆</td><td>摊还 <i>O</i>(log <i>n</i>)</td><td>摊还 <i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>按键查找</td><td>dict(散列)</td><td>平均 <i>O</i>(1)</td><td><i>O</i>(<i>n</i>)(散列冲突)</td></tr>
+<tr><td>有序遍历</td><td>sorted(d.keys())</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>范围查询 [lo, hi]</td><td>bisect 定位有序列表</td><td><i>O</i>(log <i>n</i>) + <i>O</i>(<i>k</i>)</td><td>同左(<i>k</i> 为输出个数)</td></tr>
+<tr><td>二分查找</td><td>bisect_left / bisect_right</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>插入到有序列表</td><td>list.insert(bisect 定位后)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能默写红黑树五条性质,并解释"性质4+5 → 高度 <i>O</i>(log <i>n</i>)"</li>
+<li>能画出插入修正两个分支(叔叔红变色、叔叔黑旋转)与四种旋转形态</li>
+<li>能说出"红黑树是 2-3-4 树的二叉表示"</li>
+<li>能独立实现 Treap 与跳表的插入/删除/查找,说出期望为何 <i>O</i>(log <i>n</i>)</li>
+<li>能说出跳表与红黑树的取舍(期望 vs 确定、实现难度、内存、并发)</li>
+<li>能独立实现 k-d 树交替维度建树与最近邻剪枝查询</li>
+<li>能说出配对堆合并摊还 <i>O</i>(1)、deleteMin 摊还 <i>O</i>(log <i>n</i>),一句话对比三堆</li>
+<li>能说出 Python 有序映射三替代(list+bisect、dict+sorted、SortedDict)及各自复杂度</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 为什么性质4 与性质5 一起能保证红黑树高度 <i>O</i>(log <i>n</i>)?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>性质5 说所有路径黑高相同,设黑高 <i>h</i><sub>b</sub>;性质4 禁红红相邻,最长路径至多 2<i>h</i><sub>b</sub>,最短路径 <i>h</i><sub>b</sub>——最长 ≤ 2 × 最短。而黑高 <i>h</i><sub>b</sub> 的树至少 2<sup><i>h</i><sub>b</sub></sup>−1 个内部结点,故树高 ≤ 2 log<sub>2</sub>(<i>n</i>+1) = <i>O</i>(log <i>n</i>)。</p>
+</div>
+
+<div class="q">2. Treap 的期望高度为什么是 <i>O</i>(log <i>n</i>)?最坏情形是什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>优先级随机时,根是"优先级最小结点"的概率均匀为 1/<i>n</i>,左右子树递归同构——与快排随机枢轴同构。最坏是优先级恰好按键单调,高度 <i>O</i>(<i>n</i>),概率 1/<i>n</i>!。</p>
+</div>
+
+<div class="q">3. 跳表查找从第几层开始?层数为什么用几何分布而不是固定层数?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>从当前最高层开始逐层下降。几何分布(每层 1/2 概率晋升)使每层期望结点数 <i>n</i>/2<sup>k</sup>,查找每层只走常数步,期望 <i>O</i>(log <i>n</i>);固定层数则退化成线性扫描。</p>
+</div>
+
+<div class="q">4. k-d 树最近邻查询的剪枝条件是什么?漏写会怎样?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>回溯时,若查询点到分割线的距离平方 ≥ 当前最佳距离平方,另一侧不可能更近,整棵子树剪掉;只有严格小于才进入。漏写则退化成全树搜索 <i>O</i>(<i>n</i>);方向写反则可能漏掉更近的点。</p>
+</div>
+
+<div class="q">5. Python 里要"按键有序的映射",从小到大数据量各有什么方案?各是什么复杂度?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>小数据(≤10<sup>4</sup>):<code>list</code> + <code>bisect</code>,查找 <i>O</i>(log <i>n</i>)、插入 <i>O</i>(<i>n</i>);批处理:<code>dict</code> + 用时 <code>sorted(d.keys())</code>,整体 <i>O</i>(<i>n</i> log <i>n</i>);大数据且持续有序:第三方 <code>SortedDict</code>(红黑树),查找/插入 <i>O</i>(log <i>n</i>)。标准库没有平衡树,这是与 C++ <code>std::map</code> 最大的差异。</p>
+</div>
+
+<h2>章末实验题:跳表字典的实现与对比</h2>
+<div class="box box-example lab"><div class="box-title">实验 12:跳表字典的实现与对比</div>
+<p><b>实验目标:</b>实现完整跳表并封装成有序字典,与 <code>dict</code> 对照验证正确性,实测 10<sup>4</sup> 级随机键耗时。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现跳表的查找/插入/删除与随机层数(知识点:§12.3 三操作与几何分布)</li>
+<li>任务 2:封装成有序字典接口 insert/find/erase/keys(知识点:§12.3 底层链有序 + 第3章 ADT)</li>
+<li>任务 3:用 <code>dict</code> 做同一组随机操作,验证输出一致(知识点:§12.6 标准库对照)</li>
+<li>任务 4:对 10<sup>4</sup> 级随机键分别计时插入与查找(知识点:§12.3 期望复杂度 + 第2章计时)</li>
+<li>任务 5:删除全部元素,验证跳表为空(知识点:§12.3 删除与空层回收)</li>
+</ul>
+<p><b>实验环境:</b>Python 3.8+。运行:<code>python lab12.py</code>。</p></div>
+<ol class="steps">
+<li>按示例 12-7/12-8 实现 SkipList,升/降/乱序三组输入冒烟测试,keys() 必须升序</li>
+<li>任务 3 用同一种子生成随机操作序列,插入前先 find 去重;任务 4 洗牌生成 10<sup>4</sup> 个不重复键,结果累加输出防死代码消除</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,约 100 行,分四段)</div>
+<pre class="code"># lab12.py —— 跳表字典的实现与对比(第一段:任务1 跳表核心)
+import random
+import time
+
+class Node:
+    __slots__ = ("key", "next")
+    def __init__(self, key, lvl):
+        self.key = key
+        self.next = [None] * (lvl + 1)      # 层号 0..lvl 均有效
+
+class SkipList:                              # 任务 1:三操作 + 随机层数
+    def __init__(self, max_lvl=16):
+        self.head = Node(0, max_lvl)
+        self.max_lvl = max_lvl
+        self.level = 0
+        self.rng = random.Random(12345)      # 固定种子:可复现
+
+    def random_level(self):                  # 几何分布:每层 1/2 概率晋升
+        lvl = 1
+        while self.rng.getrandbits(1) and lvl &lt; self.max_lvl:
+            lvl += 1
+        return lvl
+
+    def find(self, key):
+        cur = self.head
+        for i in range(self.level, -1, -1):
+            while cur.next[i] and cur.next[i].key &lt; key:
+                cur = cur.next[i]
+        x = cur.next[0]
+        return x is not None and x.key == key
+
+    def insert(self, key):
+        if self.find(key):
+            return                           # 字典语义:键唯一
+        update = [None] * len(self.head.next)
+        cur = self.head
+        for i in range(self.level, -1, -1):
+            while cur.next[i] and cur.next[i].key &lt; key:
+                cur = cur.next[i]
+            update[i] = cur
+        lvl = self.random_level()
+        if lvl &gt; self.level:
+            for i in range(self.level + 1, lvl + 1):
+                update[i] = self.head
+            self.level = lvl
+        x = Node(key, lvl)
+        for i in range(lvl + 1):
+            x.next[i] = update[i].next[i]
+            update[i].next[i] = x
+</pre>
+
+<div class="code-title">lab12.py(第二段:删除、遍历 + 任务2 字典封装)</div>
+<pre class="code">
+    def erase(self, key):
+        update = [None] * len(self.head.next)
+        cur = self.head
+        for i in range(self.level, -1, -1):
+            while cur.next[i] and cur.next[i].key &lt; key:
+                cur = cur.next[i]
+            update[i] = cur
+        x = cur.next[0]
+        if x is None or x.key != key:
+            return False
+        for i in range(self.level + 1):
+            if update[i].next[i] != x:
+                break
+            update[i].next[i] = x.next[i]
+        while self.level &gt; 0 and self.head.next[self.level] is None:
+            self.level -= 1                  # 回收空高层
+        return True
+
+    def keys(self):
+        v = []
+        p = self.head.next[0]
+        while p:
+            v.append(p.key)
+            p = p.next[0]
+        return v
+
+    def __len__(self):
+        return len(self.keys())
+
+
+class SkipDict:                              # 任务 2:有序字典接口
+    def __init__(self):
+        self._sl = SkipList()
+    def insert(self, k): self._sl.insert(k)
+    def find(self, k):   return self._sl.find(k)
+    def erase(self, k):  return self._sl.erase(k)
+    def keys(self):      return self._sl.keys()
+    def __len__(self):   return len(self._sl)
+</pre>
+
+<div class="code-title">lab12.py(第三段:任务3 一致性对照 + 任务4 计时)</div>
+<pre class="code">def main():
+    # 任务 3:与 dict 对照,输出必须一致
+    print("== 任务3:跳表字典 vs dict 一致性 ==")
+    d = SkipDict()
+    ref = {}
+    rng = random.Random(12345)
+    for i in range(20000):
+        k = rng.randrange(100000)
+        op = i % 4                           # 0/1 插,2 删,3 查
+        if op &lt;= 1:
+            if k not in ref:
+                d.insert(k)
+            ref[k] = k
+        elif op == 2:
+            d.erase(k)
+            ref.pop(k, None)
+        else:
+            if d.find(k) != (k in ref):
+                print("不一致! key=", k)
+                return 1
+    dk, mk = d.keys(), sorted(ref)
+    print("20000 次随机操作后:跳表 len=%d,dict len=%d" % (len(d), len(ref)))
+    print("跳表前 10 键:", dk[:10])
+    print("按键序与 sorted(dict) 一致:", dk == mk)
+
+    # 任务 4:10^4 随机键计时
+    N = 10000
+    ks = list(range(N))
+    rng.shuffle(ks)                          # 洗牌为随机序列
+    s2 = SkipDict()
+    t0 = time.perf_counter()
+    for k in ks:
+        s2.insert(k)
+    sl_ins = (time.perf_counter() - t0) * 1000
+    ref2 = {}
+    t0 = time.perf_counter()
+    for k in ks:
+        ref2[k] = k
+    d_ins = (time.perf_counter() - t0) * 1000
+    hits = 0
+    t0 = time.perf_counter()
+    for k in ks:
+        hits += 1 if s2.find(k) else 0
+    sl_find = (time.perf_counter() - t0) * 1000
+    t0 = time.perf_counter()
+    for k in ks:
+        hits += 1 if k in ref2 else 0
+    d_find = (time.perf_counter() - t0) * 1000
+    print("\n== 任务4:10^4 随机键计时 ==")
+    print("插入 %d 键:跳表 %.4f ms,dict %.4f ms" % (N, sl_ins, d_ins))
+    print("查找 %d 键:跳表 %.4f ms,dict %.4f ms" % (N, sl_find, d_find))
+    print("(命中数 %d,防止死代码消除)" % hits)</pre>
+
+<div class="code-title">lab12.py(第四段:任务5 删除全部 + 入口)</div>
+<pre class="code">    # 任务 5:删除全部元素,验证跳表为空
+    for k in ks:
+        s2.erase(k)
+    print("\n== 任务5:删除全部后 ==")
+    print("跳表 len=%d,为空=%s,find(0)=%s"
+          % (len(s2), len(s2) == 0, s2.find(0)))
+
+
+if __name__ == "__main__":
+    main()</pre>
+<p>示例输出(真实运行,机器不同数值不同,量级关系一致):</p>
+<pre class="code">== 任务3:跳表字典 vs dict 一致性 ==
+20000 次随机操作后:跳表 len=9281,dict len=9281
+跳表前 10 键: [1, 14, 21, 26, 31, 36, 38, 46, 47, 48]
+按键序与 sorted(dict) 一致: True
+
+== 任务4:10^4 随机键计时 ==
+插入 10000 键:跳表 27.6136 ms,dict 0.4609 ms
+查找 10000 键:跳表 14.3060 ms,dict 0.3026 ms
+(命中数 20000,防止死代码消除)
+
+== 任务5:删除全部后 ==
+跳表 len=0,为空=True,find(0)=False</pre>
+<p><b>设计说明:</b>① <code>update</code> 列表统一"下探路径",插入/删除共享骨架;② 插入前先 <code>find</code> 去重,与 dict 键唯一语义对齐;③ 任务3 用同一随机操作序列同时驱动两者,任何一次查找不一致立即退出;④ 同一份键序列计时,跳表与 dict 同为 <i>O</i>(log <i>n</i>) 对 <i>O</i>(1),dict 常数更小;删除后回收空高层,len=0 验证删除路径正确。对照标准库用 <code>dict</code> + <code>sorted</code>,正是 §12.6 的 Python 惯例。</p>
+</div>
+
+<hr class="thin">
+<p class="small">全书十二章到此结束:第1–2章打下递归与复杂度地基,第3–9章建起线性结构、树、散列、堆、排序、图的工具箱,第10–11章学会设计范式与摊还分析,本章补上最后一块拼图——平衡与概率。数据结构是算法工程师的母语,愿你在竞赛、系统设计或工程实践中带着这十二章的判断力走得更远。</p>
+
+</body>
+</html>

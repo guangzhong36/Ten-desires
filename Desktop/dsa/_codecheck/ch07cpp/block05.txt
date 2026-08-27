@@ -1,0 +1,28 @@
+const int CUTOFF = 16;    // 长度 ≤ 16 改用插入排序
+
+int median3(vector<int>& a, int left, int right) {
+    int center = (left + right) / 2;
+    if (a[center] < a[left])  swap(a[left], a[center]);
+    if (a[right]  < a[left])  swap(a[left], a[right]);
+    if (a[right]  < a[center]) swap(a[center], a[right]);
+    swap(a[center], a[right - 1]);     // 枢轴藏到 right-1
+    return a[right - 1];
+}
+
+void quickSortRec(vector<int>& a, int left, int right) {
+    if (left + CUTOFF <= right) {
+        int pivot = median3(a, left, right);
+        int i = left, j = right - 1;
+        for (;;) {
+            while (a[++i] < pivot) {}  // 找 ≥ 枢轴者(a[left] 哨兵)
+            while (pivot < a[--j]) {}  // 找 ≤ 枢轴者(a[right-1] 哨兵)
+            if (i < j) swap(a[i], a[j]);
+            else break;
+        }
+        swap(a[i], a[right - 1]);      // 枢轴归位
+        quickSortRec(a, left, i - 1);
+        quickSortRec(a, i + 1, right);
+    } else {
+        insertionSort(a, left, right); // 小区间插入(§7.1)
+    }
+}

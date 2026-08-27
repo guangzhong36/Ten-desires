@@ -1,0 +1,8 @@
+# Python 版:整数任意精度,不会溢出;逻辑与 C 完全对应
+def hash_str(s: str, M: int) -> int:
+    h = 0
+    for c in s:                # 逐个字符取码,累乘累加
+        h = h * 37 + ord(c)    # 每一步都乘 37 再加当前字符
+    return h % M               # 最后取一次模,结果在 [0, M-1]
+
+# 调用示例:h = hash_str("hello", 17) → 0 到 16 之间的整数

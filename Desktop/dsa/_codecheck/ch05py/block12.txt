@@ -1,0 +1,44 @@
+# 手写版:桶里放 (单词, 次数) 元组,统计每个单词的出现次数
+class WordCounter:
+    def __init__(self, m):
+        self.buckets = [[] for _ in range(next_prime(m))]
+        self.distinct = 0
+
+    def add(self, w):
+        b = self.buckets[self._hash(w)]
+        for i, (key, cnt) in enumerate(b):
+            if key == w:
+                b[i] = (key, cnt + 1)   # 已存在:计数 +1
+                return
+        b.append((w, 1))                # 新词:插到桶尾
+        self.distinct += 1
+
+    def count(self, w):
+        for key, cnt in self.buckets[self._hash(w)]:
+            if key == w:
+                return cnt
+        return 0
+
+    def _hash(self, s):
+        h = 0
+        for c in s:
+            h = h * 37 + ord(c)
+        return h % len(self.buckets)
+
+
+def split_words(text):
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def main():
+    text = "the cat and the dog and the cat"
+    wc = WordCounter(16)                # 表大小 16 → 素数 17
+    for w in split_words(text):
+        wc.add(w)
+    print("the:", wc.count("the"))      # 3
+    print("cat:", wc.count("cat"))      # 2
+    print("不同单词:", wc.distinct)       # 4
+
+
+if __name__ == "__main__":
+    main()

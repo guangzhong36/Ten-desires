@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第1章 绪论</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO PYTHON · DATA STRUCTURES</div>
+<h1 class="chapter-title">第1章 绪论</h1>
+<div class="chapter-meta"><b>建议学时:</b>3–5 小时 | <b>难度:</b>★★☆☆☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>复习全书的地基数学:指数、对数、级数、模运算及其算法用途</li>
+<li>理解"程序 = 数据结构 + 算法",建立正确性与效率维度,预告复杂度记号</li>
+<li>掌握<span class="term">递归</span>的<b>四法则</b>,能写出阶乘等经典递归</li>
+<li>完成 C 到 Python 的第一波迁移:print/input、list、def、class</li>
+<li>亲手实现斐波那契的朴素递归与记忆化两版,体会 <i>O</i>(2<sup><i>n</i></sup>) 与 <i>O</i>(<i>n</i>) 之别</li>
+<li>掌握 RecursionError 的成因与 sys.setrecursionlimit 的用法和危险</li>
+<li>学完能独立实现汉诺塔与全排列(章末实验),验证 2<sup>n</sup>−1 与 n!</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 Python:本章主题如何迁移</div>
+<p>全书一句话直觉:<span class="hl">数据结构决定"数据怎么放",算法决定"问题怎么做",两者合起来决定"程序跑多快"</span>。第1章是唯一的地基章,不打地基,后面 11 章都要还债。</p>
+<p>语言迁移上,你的 C 技能大部分直接平移:循环、分支、函数一一对应,差异在"形态":块用缩进、变量不声明类型、数组换成了自动扩容的 <code>list</code>。本章只补四样新工具:<code>print/input</code>、<code>list</code>(动态数组 + 切片)、<code>def</code>、<code>class</code>;先学会它们,第3章起才能专心学数据结构。</p>
+<p>Python 有两个 C 没有的独特优势:<span class="hl">整数任意精度</span>(永不溢出)与<b>解释器自动管理内存</b>(不用 malloc/free)。代价是同样代码通常比 C++ 慢 30–100 倍,但增长阶是语言无关的(第2章):Python 的 <i>O</i>(<i>n</i>) 照样碾压 C 的 <i>O</i>(<i>n</i><sup>2</sup>)。</p>
+<p>算法直觉上,本章最重要的思想是<span class="hl">递归</span>:把大问题缩小成"同样结构的小问题"。同一个斐波那契,笨写是指数级,加一行"记忆化"就变成线性——全书第一次"复杂度决定生死"的现场演示;Python 的 <code>functools.lru_cache</code> 让记忆化一行实现。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>高中数学:幂运算与对数(§1.1 系统复习);求和记号 Σ 会读即可(§1.1 给出全部公式)。</p>
+<p><b>C 语言前置:</b>函数定义与调用、<code>for/while</code> 循环、数组与下标、<code>printf/scanf</code>、<code>struct</code> 与指针(会更好)。</p>
+<p><b>依赖的前面章节:</b>无,本章是全书第一章。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1 小时):</b>读 §1.1–§1.2,在 REPL 里验证指数/对数/级数/取模的例子,背下里程碑数值</li>
+<li><b>第二阶段(1.5 小时):</b>读 §1.3–§1.4,把 §1.4 的完整小程序存为 hello.py 并运行、改造</li>
+<li><b>第三阶段(1.5 小时):</b>读 §1.5–§1.6,亲手运行朴素与记忆化斐波那契,观察时间如何爆炸</li>
+<li><b>第四阶段(实验,1 小时):</b>完成章末实验汉诺塔与全排列,验证 2<sup>n</sup>−1 与 n!</li>
+<li><b>验收标准:</b>能默写递归四法则,独立写出朴素与记忆化斐波那契,解释 RecursionError 与 setrecursionlimit 的危险</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§1.1 数学复习:指数、对数与换底、级数三公式、负数取模(C/Python 差异)</li>
+<li>§1.2 算法概念:程序 = 数据结构 + 算法、正确性、效率、复杂度预告</li>
+<li>§1.3 递归简介:递归四法则、调用栈回顾、阶乘示例</li>
+<li>§1.4 从 C 到 Python 速成:print/input、list、def、class、完整小程序</li>
+<li>§1.5 完整示例:斐波那契——朴素 vs 记忆化、手写 vs lru_cache</li>
+<li>§1.6 递归的工程注意:RecursionError、setrecursionlimit 的用法与危险</li>
+<li>§1.7 全书路线图:12 章一句话导航</li>
+</ul></div>
+
+<h2>§1.1 数学复习</h2>
+
+<h3>1.1.1 指数规则</h3>
+<p>指数是全书最频繁出现的运算,下列规则必须刻进直觉,后面推导复杂度时随时在用:</p>
+<ul>
+<li>a<sup>0</sup> = 1(a ≠ 0);a<sup>1</sup> = a;a<sup>−n</sup> = 1/a<sup>n</sup></li>
+<li><b>同底数相乘,指数相加:</b>a<sup>m</sup> · a<sup>n</sup> = a<sup>m+n</sup></li>
+<li><b>幂的幂,指数相乘:</b>(a<sup>m</sup>)<sup>n</sup> = a<sup>m·n</sup></li>
+<li><b>同底数相除,指数相减:</b>a<sup>m</sup> / a<sup>n</sup> = a<sup>m−n</sup></li>
+</ul>
+<p>背几个里程碑数值:2<sup>10</sup> = 1024;2<sup>20</sup> ≈ 10<sup>6</sup>;2<sup>30</sup> ≈ 10<sup>9</sup>;2<sup>40</sup> ≈ 10<sup>12</sup>。反过来记:10<sup>6</sup> ≈ 2<sup>20</sup>,意味着对 100 万规模做"每次减半"的查找最多约 20 步——这是第2章对数直觉的起点。可在 REPL 用 <code>2 ** 30</code> 验证。</p>
+
+<div class="box box-tip"><div class="box-title">记号说明(全书约定,首次出现)</div>
+<p>本书数学记号统一如下:幂用上标,如 <i>n</i><sup>2</sup>、2<sup><i>n</i></sup>;对数的底数用下标,如 log<sub>2</sub> <i>n</i>;递推式行内用等宽代码,如 <code>T(n) = T(n-1) + O(1)</code>;求和用希腊字母 Σ,如 Σ<sub>i=1</sub><sup>n</sup> i;模运算在正文写 <i>a</i> mod <i>b</i>,在代码里一律写语言语法 <code>a % b</code>。代码与数学记号严格分离:代码里只用 <code>%</code>、<code>**</code>。</p>
+</div>
+
+<h3>1.1.2 对数</h3>
+<p><span class="term">对数</span>的定义:log<sub>b</sub> X = a 当且仅当 b<sup>a</sup> = X(b &gt; 0、b ≠ 1、X &gt; 0)。一句话直觉:<span class="hl">对数回答"几次方"——"2 的几次方等于 8",答 log<sub>2</sub> 8 = 3</span>。对数与指数互为逆运算,是"减半""倍增"类算法(二分查找、快速幂、欧几里得算法)的天然度量。</p>
+<p><b>换底公式</b>(全书最重要的对数公式):log<sub>b</sub> X = log<sub>a</sub> X / log<sub>a</sub> b。推导:设 log<sub>b</sub> X = c,则 b<sup>c</sup> = X,两边取对数得 c·log<sub>a</sub> b = log<sub>a</sub> X。工程含义:换底只差常数倍,而常数倍会被大 O 记号吞掉(第2章),所以<b>底数在复杂度分析里不重要</b>。</p>
+<p><b>记法约定</b>:计算机领域 log 默认以 2 为底;ln 是以 e ≈ 2.718 为底;lg 有时指以 10 为底。三个里程碑:log<sub>2</sub> 1024 = 10;log<sub>2</sub> 10<sup>6</sup> ≈ 20;log<sub>2</sub> 10<sup>9</sup> ≈ 30。对数"几乎不增长":规模翻 1000 倍,log<sub>2</sub> n 只从 10 长到 20——对数级算法都值得信赖。</p>
+
+<h3>1.1.3 级数</h3>
+<p>三个级数公式是第2章复杂度计算的原料:</p>
+<ul>
+<li><b>算术级数:</b>Σ<sub>i=1</sub><sup>n</sup> i = n(n+1)/2 ≈ n<sup>2</sup>/2——双重循环的总迭代次数,量级 <i>O</i>(<i>n</i><sup>2</sup>)。例:1+2+…+100 = 5050</li>
+<li><b>几何级数:</b>Σ<sub>i=0</sub><sup>n</sup> 2<sup>i</sup> = 2<sup>n+1</sup> − 1——倍增翻倍的总量,量级 <i>O</i>(2<sup><i>n</i></sup>)。例:1+2+4+8+16+32 = 63;推广:Σ<sub>i=0</sub><sup>n</sup> r<sup>i</sup> = (r<sup>n+1</sup> − 1)/(r−1)</li>
+<li><b>调和级数:</b>Σ<sub>i=1</sub><sup>n</sup> 1/i ≈ ln <i>n</i>——量级 <i>O</i>(log <i>n</i>),出现在快排平均分析中</li>
+</ul>
+
+<h3>1.1.4 模运算</h3>
+<p><span class="term">模运算</span>:<i>a</i> mod <i>b</i> 表示 a 除以 b 的余数,数学上写成 a = q·b + r(q 为商、r 为余数);"余数"取决于"商怎么取整",这正是各语言分歧的根源(★见下)。两条最重要的性质(散列、循环数组下标、快速幂的全部基础):</p>
+<ul>
+<li>(a+b) mod m = ((a mod m) + (b mod m)) mod m</li>
+<li>(a·b) mod m = ((a mod m) · (b mod m)) mod m</li>
+</ul>
+
+<div class="box box-keypoint"><div class="box-title">重点:Python 与 C 的负数取模不一样</div>
+<p>取模的关键分歧在<b>负数</b>:C 除法"向 0 截断",余数符号与被除数相同;Python 除法"向下取整",余数符号与除数相同。同一表达式,两种语言答案不同:</p>
+<table class="cmp">
+<tr><th>C 的写法(商向 0 截断)</th><th>Python 的写法(商向负无穷取整)</th></tr>
+<tr><td><code>-7 % 3</code> 结果是 <b>-1</b>(-7/3 截断为 -2,余数 -7−(−2)·3 = -1)</td><td><code>-7 % 3</code> 结果是 <b>2</b>(-7/3 向下取整为 -3,余数 -7−(−3)·3 = 2)</td></tr>
+<tr><td><code>7 % -3</code> 结果是 <b>1</b>(-2 为商,1 为余数)</td><td><code>7 % -3</code> 结果是 <b>-2</b>(-3 为商,-2 为余数)</td></tr>
+<tr><td><code>-7 / 3</code> 结果是 <b>-2</b>(截断)</td><td><code>-7 // 3</code> 结果是 <b>-3</b>(向下取整)</td></tr>
+</table>
+<p>两者在"同号"时一致,只在异号时分歧。判奇偶、判整除不受影响——受影响的是"余数的正负与大小"。本书代码都在"非负输入"语境中使用 <code>%</code>,但从 C 移植时会悄悄改变结果,务必知道这个坑。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:把 C 的取模语义带进 Python</div>
+<p>Python 的 <code>-7 % 3</code> 是 <b>2</b> 而不是 -1:商向负无穷取整,余数恒与除数同号(除数非负时恒非负)。从 C 移植含负数除法的代码,结果可能悄悄改变:<code>a % b == 0</code> 的整除判断不变,但 <code>a / b</code> 的符号行为完全不同(C 截断,Python <code>//</code> 向下取整),需要 C 语义用 <code>math.trunc(a / b)</code>。另一个专属坑:<code>5 / 2</code> 得到浮点 2.5——真除法与整除(<code>//</code>)是两回事。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:int 溢出?Python 不存在</div>
+<p>C 的 <code>int</code> 是 32 位,<code>INT_MAX + 1</code> 回绕成负数或是未定义行为;斐波那契 F(47) 就超界(§1.5)。Python 的整数是<b>任意精度</b>的:2<sup>1000</sup>、1000! 这种 C 中早已溢出的数,Python 精确到每一位。代价:大整数运算比固定宽度慢,每个整数都是堆上对象,同样 O(n) 循环通常比 C++ 慢 30–100 倍。</p>
+</div>
+
+<div class="code-title">示例 1-1 Python 负数取模实测</div>
+<pre class="code"># Python 与 C 不同:取模结果是"向下取整"除法的余数
+# 公式:余数 = 被除数 - 商 × 除数,商向负无穷取整
+print(-7 % 3)      # 2:-7/3 = -2.33,商向下取整为 -3,余数 -7 - (-3)*3 = 2
+print(7 % -3)      # -2:商向下取整为 -3,余数 7 - (-3)*(-3) = -2
+print(-7 // 3)     # -3:整除同样向下取整(与 C 的截断不同!)
+print(-7 / 3)      # -2.3333333333333335:真除法,结果总是浮点数
+print(7 % 3, -7 % -3)   # 1 -1:同号时与 C 的行为一致
+print((-7) % 3)    # 2:加括号防混淆,与 print(-7 % 3) 结果相同</pre>
+
+<h2>§1.2 算法概念</h2>
+
+<h3>1.2.1 程序 = 数据结构 + 算法</h3>
+<p>瑞士计算机科学家 Niklaus Wirth 的名言:<span class="hl">程序 = 数据结构 + 算法</span>。<span class="term">数据结构</span>回答"数据如何组织",<span class="term">算法</span>回答"问题如何求解",两者互相成就:同一份数据,组织方式不同,解法难度天差地别。经典例子——电话簿:按姓名排序可以二分查找(第2章)瞬间定位;打乱顺序只能逐个翻。</p>
+
+<h3>1.2.2 正确性与效率</h3>
+<p>一个解法要配得上"算法"二字,必须同时满足两条:<b>正确性</b>——对一切合法输入给出正确输出;<b>效率</b>——时间与空间在可接受范围内。正确但慢到跑不完等于不能用,快但错比慢更危险。</p>
+<p>例:求 2<sup>n</sup>,连乘 n 次——正确,但 n = 10<sup>6</sup> 时要一百万次乘法;第2章的快速幂约 20 次搞定。本书的尺度:先保证正确,再追求高效;复杂度分析(第2章)给"效率"机器无关的精确度量,本章只需建立直觉:<span class="hl">数据规模变大时,运行时间如何增长</span>。</p>
+
+<h3>1.2.3 复杂度记号预告</h3>
+<p>全书用大 <i>O</i> 记号描述效率。先混个脸熟,第2章给严格定义:</p>
+<ul>
+<li><i>O</i>(1) 常数:步数与规模无关——按下标取列表元素</li>
+<li><i>O</i>(log <i>n</i>) 对数:规模翻倍只多一步</li>
+<li><i>O</i>(<i>n</i>) 线性:遍历一趟</li>
+<li><i>O</i>(<i>n</i> log <i>n</i>) 线性对数:归并排序</li>
+<li><i>O</i>(<i>n</i><sup>2</sup>) 平方:双重循环——插入排序</li>
+<li><i>O</i>(2<sup><i>n</i></sup>) 指数:穷举、朴素斐波那契,稍大就不可用</li>
+</ul>
+<p>增长阶排序(必须背诵):常数 &lt; 对数 &lt; 线性 &lt; 线性对数 &lt; 平方 &lt; 立方 &lt; 指数。本章预用两个结论(方法见第2章):<b>递推式 <code>T(n) = T(n-1) + O(1)</code> 的解是 <i>O</i>(<i>n</i>)</b>(阶乘),<b>朴素斐波那契的递推式 <code>T(n) = T(n-1) + T(n-2) + O(1)</code> 的解是 <i>O</i>(2<sup><i>n</i></sup>)</b>。</p>
+
+<h2>§1.3 递归简介</h2>
+
+<h3>1.3.1 递归四法则</h3>
+<p>Weiss 教材把递归写成四条法则,每条都配一个"违反后果":</p>
+<ol>
+<li><b>基准情形(base case):</b>存在不需要递归、直接得出答案的情形。没有基准情形 = 无限递归,程序永不停止。</li>
+<li><b>不断推进:</b>每次递归调用都必须让问题朝基准情形靠近。不推进 = 死循环;推进太快跳过基准情形 = 边界错误。</li>
+<li><b>设计法则:</b>假设所有递归调用都能正确工作,只设计"当前层如何利用子问题的答案"。不要手工跟踪每一层——人脑栈只有几层深,程序栈可以有上千层。</li>
+<li><b>合成效益法则:</b>不要在递归调用的不同分支中重复求解同一个问题实例。同一子问题被算很多遍,复杂度会爆炸成指数级——§1.5 的朴素斐波那契正是反面教材。</li>
+</ol>
+
+<h3>1.3.2 C 递归与调用栈回顾</h3>
+<p>你学 C 时写过递归,现在补上底层机制。程序运行时,系统维护一块<b>调用栈</b>(call stack):每次函数调用,系统把"返回地址 + 参数 + 局部变量"打包成一个<span class="term">栈帧</span>(stack frame)压入调用栈;函数返回时弹出,继续执行调用点的下一条语句。递归调用也是普通调用,只是被调用的函数与自己同名。</p>
+<p>由此得出两个推论:① <span class="hl">递归深度 = 同时存活(尚未返回)的栈帧数</span>;② 递归占用额外内存(每层一个栈帧)。C 的调用栈约 8MB,深度过大时进程静默崩溃;Python 用"递归深度上限 + RecursionError"显式保护——这是两版刻意不同的工程注意点(§1.6 详解)。</p>
+<p>C 与 Python 的递归语法几乎一致:定义、调用、参数传递同构;差异在函数体靠缩进分层,且默认深度上限只有 1000(§1.6)。</p>
+
+<h3>1.3.3 阶乘示例</h3>
+<p>阶乘 n! = n × (n−1) × … × 1,基准情形 0! = 1。递归定义:n! = n·(n−1)!——线性递归的标准形态,递推式 T(n) = T(n−1) + O(1),解为 <i>O</i>(<i>n</i>)。</p>
+
+<div class="code-title">示例 1-2 阶乘:递归版与迭代版</div>
+<pre class="code"># 递归版:n! = n * (n-1)!,n &lt;= 1 是基准情形
+# 与 C 的写法几乎一致:递归是语言无关的思想
+def fact_rec(n):
+    if n &lt;= 1:
+        return 1                     # 基准情形:0! = 1! = 1
+    return n * fact_rec(n - 1)       # 不断推进:n 越来越小
+
+# 迭代版:循环乘过去,不占调用栈
+def fact_iter(n):
+    r = 1
+    for i in range(2, n + 1):
+        r *= i
+    return r
+
+# 验证:两种写法一致,且 100! 不溢出(任意精度)
+print(fact_rec(10), fact_iter(10))   # 3628800 3628800
+print(len(str(fact_iter(100))))      # 158:100! 有 158 位数字</pre>
+
+<h2>§1.4 从 C 到 Python 速成</h2>
+
+<h3>1.4.1 输入输出:printf/scanf → print/input</h3>
+<p>Python 的 <code>print()</code> 替代 <code>printf</code>,<code>input()</code> 替代 <code>scanf</code>:<code>print(x, y)</code> 自动以空格分隔并换行;<code>input()</code> 读取<b>一整行字符串</b>并去掉末尾换行。最重要的差异:<span class="hl"><code>input()</code> 返回字符串,读数字必须手动转换</span>——<code>int(input())</code> 读整数、<code>float(input())</code> 读浮点数,忘记转换是入门第一坑(C 的 <code>%d</code> 自动解析,Python 必须显式)。</p>
+<table class="cmp">
+<tr><th>C 的写法</th><th>Python 的写法</th></tr>
+<tr><td><code>printf("n = %d\n", n);</code></td><td><code>print(f"n = {n}")</code> 或 <code>print("n =", n)</code></td></tr>
+<tr><td><code>scanf("%d", &amp;n);</code></td><td><code>n = int(input())</code></td></tr>
+<tr><td><code>scanf("%s %d", name, &amp;score);</code></td><td><code>name, score = input().split()</code></td></tr>
+<tr><td>格式符写错 = 静默读错/崩溃</td><td>类型不匹配直接抛异常,显式暴露</td></tr>
+</table>
+<p>f 字符串(<code>f"平均分: {avg}"</code>)是格式化输出的标准姿势,省略了 C 的 <code>%d</code> 位置参数。</p>
+
+<h3>1.4.2 动态数组与字符串:malloc 数组/char* → list/str</h3>
+<p>C 里动态数组要自己管"长度、容量、扩容、释放"四件事;Python 的 <code>list</code> 全部内置:自动扩容、垃圾回收、自带 <code>len()</code>。字符串 <code>str</code> 是不可变字符序列,操作对应 C 的 <code>&lt;string.h&gt;</code> 函数。学习阶段要理解 list 的底层(第3章会手写一遍倍增扩容),工程阶段直接用。</p>
+<table class="cmp">
+<tr><th>C 的写法</th><th>Python 的写法</th></tr>
+<tr><td><code>int *a = malloc(n * sizeof(int));</code></td><td><code>a = [0] * n</code> 或 <code>a = []</code></td></tr>
+<tr><td><code>a[len++] = x;</code>(自己管长度)</td><td><code>a.append(x)</code>(自动扩容)</td></tr>
+<tr><td><code>strcpy(buf, s); strcat(buf, t);</code></td><td><code>s = "hello"; s += " world"</code></td></tr>
+<tr><td><code>free(a);</code>(忘记即泄漏)</td><td>垃圾回收器自动释放</td></tr>
+<tr><td><code>a[i]</code> 越界 = 未定义行为(可能崩溃)</td><td><code>a[i]</code> 越界抛 <code>IndexError</code>,显式暴露</td></tr>
+</table>
+
+<div class="code-title">示例 1-3 list 与字符串速览</div>
+<pre class="code">s = "hello"                    # 字符串:不可变字符序列
+s += " world"                  # 拼接(产生新字符串)
+print(len(s), s[0])            # 11 h
+v = [3, 1, 4]                  # 列表:自动扩容的动态数组
+v.append(1)                    # 尾部插入
+v[0] = 7                       # 按下标访问 O(1)
+print(len(v), v[0])            # 4 7
+for x in v:                    # 遍历
+    print(x, end=" ")
+print(v[1:3])                  # 切片:取下标 1..2 的视图
+print(sorted(v))               # 排序返回新列表(第7章)</pre>
+
+<h3>1.4.3 函数:C 的函数 → def</h3>
+<p>Python 函数用 <code>def 函数名(参数):</code> 定义,函数体靠<b>缩进</b>分层(C 靠花括号)。与 C 的三个差异:① 参数与返回值都不写类型;② 可有默认参数 <code>def f(a, b=1)</code>;③ 返回多个值用元组 <code>return a, b</code>,调用处 <code>x, y = f()</code> 解包。递归写法与 C 同构——定义里调用自己即可。函数是一等对象,可当参数传递(第10章,§1.5 实验会用到)。</p>
+
+<h3>1.4.4 类入门:struct+函数 → class</h3>
+<p>C 里"数据 + 操作"分离:struct 存数据,全局函数操作它,每次调用都要传指针。Python 的 <code>class</code> 把数据与操作封装成整体,方法(成员函数)的第一个参数固定是 <code>self</code>(指对象自己)。这是全书所有数据结构(栈、树、堆……)的呈现形式,第3章还会从 ADT 角度深化。</p>
+
+<div class="code-title">示例 1-4 类入门:计数器</div>
+<pre class="code"># C 的做法:struct + 全局函数 counter_inc(&amp;c)
+# Python 的做法:class 把数据与操作打包,self 指对象自己
+class Counter:
+    def __init__(self):          # 构造函数:创建对象时自动调用
+        self.cnt = 0             # 成员变量
+
+    def inc(self):               # 方法:操作自己的数据
+        self.cnt += 1
+
+    def get(self):
+        return self.cnt
+
+c = Counter()                    # C 里要 counter_init(&amp;c),这里自动执行
+c.inc()
+c.inc()
+print(c.get())                   # 2</pre>
+
+<h3>1.4.5 运行与完整小程序</h3>
+<p>Python 不需要编译:保存为 <code>hello.py</code> 后运行 <code>python hello.py</code>,或输入 <code>python</code> 进入 REPL 逐行试验。程序入口习惯用 <code>if __name__ == "__main__":</code> 包裹主流程,既能直接运行、也能被 import(第10章用到)。</p>
+
+<div class="code-title">示例 1-5 完整小程序:学生成绩统计(综合本节全部知识点)</div>
+<pre class="code"># hello.py —— 第一个完整 Python 程序:学生成绩统计
+# 输入:姓名与分数;输出:平均分与最高分
+class Student:
+    def __init__(self, name, score):   # 构造函数
+        self.name = name               # 成员变量
+        self.score = score
+
+def main():
+    n = int(input("学生人数: "))       # input 返回字符串,必须转 int
+    stu = []                           # 列表,存 Student 对象
+    for _ in range(n):
+        name, score = input().split()  # "张三 90" -&gt; ["张三", "90"]
+        stu.append(Student(name, int(score)))
+    total = 0
+    best = 0
+    for s in stu:                      # 遍历
+        total += s.score
+        if s.score &gt; best:
+            best = s.score
+    print(f"平均分: {total // n},最高分: {best}")
+
+if __name__ == "__main__":
+    main()
+
+# 运行命令:python hello.py
+# 运行示例:
+# 学生人数: 3
+# 张三 90 / 李四 85 / 王五 95
+# 平均分: 90,最高分: 95</pre>
+
+<h2>§1.5 完整示例:斐波那契</h2>
+
+<h3>1.5.1 朴素递归:指数级</h3>
+<p>斐波那契数列:F(0) = 0,F(1) = 1,F(n) = F(n−1) + F(n−2)。照定义直接写递归——这是教科书般的"正确但低效":</p>
+
+<div class="code-title">示例 1-6 朴素递归斐波那契,O(2<sup>n</sup>)</div>
+<pre class="code"># F(0)=0, F(1)=1, F(n) = F(n-1) + F(n-2)
+# 朴素递归:同一个 F(k) 被重复计算无数遍(违反合成效益法则)
+def fib_naive(n):
+    if n &lt;= 1:
+        return n                     # 基准情形
+    return fib_naive(n - 1) + fib_naive(n - 2)  # 不断推进,但一裂为二
+
+# 调用次数 = 2*F(n+1) - 1(F(40) 约 3.3 亿次)
+# 递推式解为 O(2^n);n 每加 10,调用数约乘 120</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:"递归只是慢一点"——是数量级爆炸</div>
+<p>同一输入,朴素版 F(40) 约 3.3 亿次调用(本机实测 F(34) ≈ 0.43 秒,推算 F(40) ≈ 8 秒),记忆化版(下节)约 41 次调用,相差约八百万倍。<span class="hl">指数级增长意味着:输入每加一点,时间乘一个常数</span>——n 从 40 到 50,调用数再乘约 120(φ<sup>10</sup> ≈ 123),任何现实规模都不成立。另外,朴素版在 n 接近 1000 时还会触发 RecursionError(§1.6)——"指数级 + 深递归"是双重灾难。</p>
+</div>
+
+<h3>1.5.2 记忆化:线性</h3>
+<p>观察调用树:F(5) 要算 F(4)、F(3),F(4) 又要算 F(3)、F(2)——<span class="hl">F(3) 被重复计算了两次,F(2) 更多次</span>。解决办法就是<span class="term">记忆化</span>(memoization):第一次算出 F(k) 就存进表格,以后再要直接查表。每个 F(k) 只算一次,共 n+1 个不同子问题,每个 O(1),总计 <i>O</i>(<i>n</i>)。</p>
+
+<div class="code-title">示例 1-7 手写记忆化 vs 标准库 lru_cache</div>
+<pre class="code">from functools import lru_cache
+
+# 手写记忆化:用字典记住已经算过的结果
+memo = {}
+def fib_hand(n):
+    if n &lt;= 1:
+        return n
+    if n not in memo:                # 没算过才算,算过直接取
+        memo[n] = fib_hand(n - 1) + fib_hand(n - 2)
+    return memo[n]
+
+# 标准库写法:lru_cache 一行实现同样缓存
+@lru_cache(maxsize=None)
+def fib_cache(n):
+    if n &lt;= 1:
+        return n
+    return fib_cache(n - 1) + fib_cache(n - 2)
+
+# 两种写法结果一致,F(100) 瞬间算完(C 的 long long 早已溢出)
+print(fib_hand(100))                 # 354224848179261915075
+print(fib_cache(100))                # 354224848179261915075</pre>
+
+<h3>1.5.3 手写 vs 标准库</h3>
+<p>上面并排展示了本章"手写 + 标准库"的范例:手写版用字典显式管理缓存,让你看清机制;<code>lru_cache</code> 一行实现——内部正是手写版的机制(带"最近最少使用"淘汰策略,C/C++ 没有直接对应物)。工程中:单个函数需要缓存直接用 <code>@lru_cache</code>;需要控制缓存生命周期(如按测试用例清空)时手写字典。两者都要会:看懂手写版才能排查 <code>lru_cache</code> 的问题。</p>
+
+<h3>1.5.4 迭代版:空间也省下来</h3>
+<p>斐波那契还能更省:只保留前两个值滚动前进,时间 O(n)、空间 O(1):<code>a, b = 0, 1</code>,循环 <code>a, b = b, a + b</code>(元组同时赋值,C 里要写三行临时变量)。对比三版:朴素 O(2<sup>n</sup>) 时间、记忆化 O(n) 时间 O(n) 空间、迭代 O(n) 时间 O(1) 空间。记忆化解决"重复计算",迭代解决"重复计算 + 栈空间"——能迭代时优先迭代。用迭代算 F(10<sup>6</sup>) 也只需几十毫秒。</p>
+
+<h2>§1.6 递归的工程注意</h2>
+
+<h3>1.6.1 RecursionError 与递归深度上限</h3>
+<p>与 C/C++ 的"静默段错误"不同,Python 用显式保护代替崩溃:递归深度默认上限 <code>sys.getrecursionlimit()</code> = 1000,超过即抛 RecursionError——这是<b>好事</b>:问题在错误堆栈里暴露得一清二楚,而不是进程无声消失。</p>
+
+<div class="code-title">示例 1-8 RecursionError 现场</div>
+<pre class="code"># 危险代码!运行会抛 RecursionError
+def count_down(n):
+    print(n)
+    count_down(n - 1)      # 永不停止,直到超过递归深度上限
+
+# count_down(10**6)
+# 打印到 996 附近时抛出异常:
+# RecursionError: maximum recursion depth exceeded
+# 到达上限才报错,不是立刻崩溃</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:递归深度 = 递归"层数",不是 n 的位数</div>
+<p>常见误解:递归 n = 10<sup>6</sup> 只是"数字大一点"。事实:线性递归的深度就是 n——F(10<sup>6</sup>) 需要 10<sup>6</sup> 层栈帧,远超 1000 上限,必然 RecursionError。<span class="hl">凡是深度可能超过约 1000 的递归,在 Python 里都写不了</span>,必须改迭代或分治(log 深度永远安全,第2章)。</p>
+</div>
+
+<h3>1.6.2 sys.setrecursionlimit:用法与危险</h3>
+<p>上限可以调大:<code>sys.setrecursionlimit(20000)</code> 提到 2 万层。合法场景:"深度合理但超过默认值"的递归——例如对 10<sup>4</sup> 规模的链表递归遍历(第3、4章的树,深度 = 树高)。</p>
+
+<div class="code-title">示例 1-9 setrecursionlimit 的用法与边界</div>
+<pre class="code">import sys
+print(sys.getrecursionlimit())        # 默认 1000
+
+def sum_rec(n):
+    if n == 0:
+        return 0
+    return n + sum_rec(n - 1)
+
+sys.setrecursionlimit(20000)          # 调大到 2 万层
+print(sum_rec(10000))                 # 50005000:深度 1 万,轻松完成
+# 危险:若调到 10^6 并真的递归 10^6 层——
+# ① 解释器自身的 C 栈先耗尽,进程直接段错误崩溃,
+#    连 try/except 都拦不住;
+# ② 深度 10^6 可能吃掉数百 MB 内存;
+# ③ RecursionError 这道"安全网"失效</pre>
+
+<div class="box box-tip"><div class="box-title">工程建议:setrecursionlimit 的三条纪律</div>
+<p>① 只小幅调高(默认值 10–20 倍以内),调大不调小;② 调大后仍用迭代优先的算法设计,把递归当作"深度可控的例外";③ 宁可写显式栈(第3章)也不赌大上限——显式栈深度只受内存限制。记住:<span class="hl">setrecursionlimit 是"最后一根稻草",不是常规工具</span>。</p>
+</div>
+
+<h3>1.6.3 如何避免深层递归</h3>
+<p>避免深层递归的三招:① <b>循环改写</b>——尾递归(递归调用在末尾)最容易改写,空间从 O(n) 变 O(1),§1.5.4 的迭代斐波那契就是例子;② <b>显式栈</b>——自己维护的列表模拟系统调用栈(第3章),不受深度限制;③ <b>控制深度</b>——"减半"式递归(分治,第2章)深度只有 log<sub>2</sub> n,10<sup>6</sup> 规模也不到 20 层,永远安全。</p>
+
+<h2>§1.7 全书路线图</h2>
+<p>全书 12 章,一句话导航:</p>
+<ul>
+<li><b>第2章 算法分析:</b>大 O 记号、运行时间计算</li>
+<li><b>第3章 表、栈和队列:</b>三种最基础 ADT,两种实现</li>
+<li><b>第4章 树:</b>遍历、表达式树、BST、AVL</li>
+<li><b>第5章 散列:</b>散列函数、分离链接与开放定址</li>
+<li><b>第6章 优先队列(堆):</b>二叉堆、堆排序</li>
+<li><b>第7章 排序:</b>插入/希尔/堆/归并/快排/桶排</li>
+<li><b>第8章 不相交集:</b>按秩合并与路径压缩的并查集</li>
+<li><b>第9章 图论算法:</b>DFS/BFS、拓扑排序、最短路径、最小生成树</li>
+<li><b>第10章 算法设计技巧:</b>贪心、分治、动态规划、回溯、随机化</li>
+<li><b>第11章 摊还分析:</b>聚集、会计、势能三种方法</li>
+<li><b>第12章 高级数据结构:</b>伸展树、B 树、跳表</li>
+</ul>
+<p>依赖关系:第2章是第3章起所有复杂度结论的依赖,务必学透;第3–9章是"结构线",第10章是"算法线",两线在第10章汇合;第11章为摊还补上严格证明。每章结束时回看这张图。</p>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作 / 算法</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>求 a<sup>n</sup></td><td>朴素连乘(手写循环)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>求 a<sup>n</sup></td><td>快速幂(第2章)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>求 log<sub>b</sub> X</td><td>换底公式 + 库函数 log</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>级数求和</td><td>算术级数(公式直接算)</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>级数求和</td><td>几何级数(公式直接算)</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>级数求和</td><td>调和级数(逐项累加)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>整数取模</td><td>C(商向 0 截断)</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>整数取模</td><td>Python(商向下取整)</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>阶乘 n!</td><td>递归(线性递归)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>阶乘 n!</td><td>迭代循环</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>斐波那契 F(n)</td><td>朴素递归(违反合成效益法则)</td><td><i>O</i>(2<sup><i>n</i></sup>)</td><td><i>O</i>(2<sup><i>n</i></sup>)</td></tr>
+<tr><td>斐波那契 F(n)</td><td>记忆化递归</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>斐波那契 F(n)</td><td>迭代滚动(两个变量)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>递归调用</td><td>递推式 T(n) = T(n−1) + O(1)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>递归调用</td><td>递推式 T(n) = T(n−1) + T(n−2) + O(1)</td><td><i>O</i>(2<sup><i>n</i></sup>)</td><td><i>O</i>(2<sup><i>n</i></sup>)</td></tr>
+<tr><td>递归深度</td><td>Python 默认上限(RecursionError)</td><td>1000 层</td><td>setrecursionlimit 可调大,但过大有崩溃风险</td></tr>
+<tr><td>调用栈空间</td><td>C/C++ 递归深度 n(默认栈约 8MB)</td><td>O(n) 栈空间</td><td>深度过大即段错误</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能默写指数四条规则与里程碑数值</li>
+<li>能说出对数定义、换底公式与 log/log<sub>2</sub>/ln 约定,并解释"底数不重要"</li>
+<li>能默写算术、几何、调和三个级数公式并说出各自量级</li>
+<li>能说出 Python 与 C 负数取模的区别(Python 向下取整,−7%3=2;C 截断,−7%3=−1)与"整除 vs 真除法"</li>
+<li>能说出 Python 整数任意精度与 C 的 int 溢出的对比</li>
+<li>能说出"程序 = 数据结构 + 算法",举例说明数据结构如何影响算法难度</li>
+<li>能默写递归四法则,并指出朴素斐波那契违反的是合成效益法则</li>
+<li>能独立写出阶乘的递归版与迭代版,说出 T(n) = T(n−1) + O(1) 的解</li>
+<li>能独立写出朴素与记忆化斐波那契(手写字典版与 @lru_cache 版),说出各自复杂度</li>
+<li>能解释 RecursionError 与 setrecursionlimit 的用法和危险</li>
+<li>能用 python hello.py 运行一个含 input/print、list、def、class 的完整程序</li>
+<li>能说出本书 12 章的大致内容与依赖关系</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 计算:2<sup>10</sup> 是多少?log<sub>2</sub> 1024 是多少?Σ<sub>i=1</sub><sup>100</sup> i 是多少?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>2<sup>10</sup> = 1024;log<sub>2</sub> 1024 = 10;Σ<sub>i=1</sub><sup>100</sup> i = 100×101/2 = 5050。对应指数、对数、算术级数三个公式。</p>
+</div>
+
+<div class="q">2. Python 中 -7 % 3 与 7 % -3 分别等于多少?与 C 有何不同?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>-7 % 3 = 2,7 % -3 = -2。Python 除法向下取整:-7/3 取商 -3,余数 -7−(−3)×3 = 2;7/−3 取商 -3,余数 7−(−3)×(−3) = -2;C 向 0 截断,分别为 -1 与 1。同号一致,异号不同;判奇偶、判整除不受影响。</p>
+</div>
+
+<div class="q">3. 递归四法则是什么?朴素递归斐波那契违反了哪一条?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>① 基准情形:有不需递归的直接答案;② 不断推进:每次调用都朝基准情形靠近;③ 设计法则:假设所有递归调用都正确,只组装当前层;④ 合成效益法则:不在调用间重复求解同一问题实例。朴素斐波那契违反第④条,复杂度爆炸到 O(2<sup>n</sup>)。</p>
+</div>
+
+<div class="q">4. 递推式 T(n) = T(n−1) + O(1) 的解是什么?给出直觉推导。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>解为 O(n)。展开:T(n) = T(n−1) + c = T(n−2) + 2c = … = T(0) + n·c,共 n 步、每步常数代价。阶乘与递归求和都是这个递推式。</p>
+</div>
+
+<div class="q">5. 朴素递归斐波那契计算 F(40) 大约需要多少次递归调用?记忆化后呢?为什么 Python 里还可能先遇到 RecursionError?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>朴素版调用次数 = 2×F(41)−1 ≈ 3.3 亿次(本机实测约 8 秒);记忆化后约 41 次调用,瞬间完成。但 n = 40 时递归深度只有 40,不会触发 1000 层上限,只有 n 接近 1000 才会先撞 RecursionError。更现实的风险是:指数级调用本身就慢到不可用。</p>
+</div>
+
+<div class="q">6. Python 默认递归深度上限是多少?把 sys.setrecursionlimit 调得过大有什么危险?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>默认 1000 层(sys.getrecursionlimit() 查看)。危险:① 调得过大(如 10<sup>6</sup>)并真递归到那个深度时,解释器自身的 C 栈先耗尽,进程段错误崩溃,连 try/except 都拦不住;② 每层帧内存开销可观;③ RecursionError 这道安全网失效。正确姿势:能改迭代就改迭代,setrecursionlimit 只小幅调高。</p>
+</div>
+
+<h2>章末实验题:递归综合实验:汉诺塔与全排列</h2>
+<div class="box box-example lab"><div class="box-title">实验 1:汉诺塔与全排列(递归综合)</div>
+<p><b>实验目标:</b>用递归实现汉诺塔与全排列,验证 2<sup>n</sup>−1 与 n! 两个计数结论,并用真实计时感受朴素斐波那契的指数级增长。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:汉诺塔——递归打印移动步骤、统计总步数,验证 n = 1..10 步数恒为 2<sup>n</sup>−1(知识点:§1.3 递归四法则、基准情形)</li>
+<li>任务 2:递归生成全排列——交换 + 回溯,验证 n = 3、4 的排列总数为 3! = 6、4! = 24(知识点:§1.3 树形递归、回溯思想)</li>
+<li>任务 3:对比 n 增大时朴素递归斐波那契的时间增长——记录 n = 28/31/34 的耗时,验证 n 加 3 时耗时约乘 4~5(调用数比值恰为 φ³ ≈ 4.2;知识点:§1.5 指数级复杂度、§1.2 效率直觉)</li>
+</ul>
+<p><b>实验环境:</b>Python 3.8+。运行:<code>python lab1.py</code>。</p></div>
+<ol class="steps">
+<li>先写 hanoi:基准情形 n == 1(只剩一个盘子,直接搬);否则三步——上面 n−1 个搬到中转柱、搬最大盘、再搬 n−1 个。注意三次调用中参数轮换的顺序;用全局变量统计步数(先声明 global)</li>
+<li>打印开关只对 n = 3 打开,n = 1..10 只输出"实际 vs 理论 2<sup>n</sup>−1"对照行</li>
+<li>写 permute:固定前 k 位;for 循环把 a[k..] 每个元素换到第 k 位;递归排列剩余部分;换回来还原现场(回溯三件套);基准情形 k == n 时用 <code>a[:]</code> 拷贝当前排列</li>
+<li>计时用 <code>time.perf_counter()</code>(§2.1 系统讲),对 n = 28/31/34 各测一次,算"每加 3 乘几"的比值</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,分两段)</div>
+
+<div class="code-title">lab1.py(第一段:任务 1 汉诺塔与任务 2 全排列)</div>
+<pre class="code"># lab1.py —— 递归综合实验(第一段:任务1与任务2)
+import time
+
+move_cnt = 0                      # 汉诺塔移动总步数
+
+# 任务 1:汉诺塔。print_move=True 时打印每步
+def hanoi(n, src, via, dst, print_move):
+    global move_cnt
+    if n == 1:                    # 基准情形:只剩一个盘子,直接搬
+        if print_move:
+            print(f"  {src} -&gt; {dst}")
+        move_cnt += 1
+        return
+    hanoi(n - 1, src, dst, via, print_move)   # 1. 上面 n-1 个搬到中转柱
+    if print_move:
+        print(f"  {src} -&gt; {dst}")
+    move_cnt += 1                 # 2. 最大盘子搬到目标柱
+    hanoi(n - 1, via, src, dst, print_move)   # 3. n-1 个从中转柱搬到目标
+
+# 任务 2:全排列(回溯)。固定前 k 位,把 a[k..] 逐个换到 a[k]
+def permute(a, k, result):
+    if k == len(a):               # 基准情形:最后一位也固定了
+        result.append(a[:])       # 拷贝当前排列(避免后续回溯改掉它)
+        return
+    for i in range(k, len(a)):
+        a[k], a[i] = a[i], a[k]   # 把 a[i] 换到第 k 位
+        permute(a, k + 1, result) # 递归排列剩余部分
+        a[k], a[i] = a[i], a[k]   # 回溯:换回来,还原现场</pre>
+
+<div class="code-title">lab1.py(第二段:任务 3 计时与主程序)</div>
+<pre class="code"># 任务 3:朴素递归斐波那契(用于计时)
+def fib_naive(n):
+    if n &lt;= 1:
+        return n
+    return fib_naive(n - 1) + fib_naive(n - 2)
+
+def main():
+    global move_cnt
+    print("===== 任务 1:汉诺塔(n = 3)=====")
+    hanoi(3, "A", "B", "C", True)
+    print(f"移动步数: {move_cnt}(理论 2^3 - 1 = 7)")
+    move_cnt = 0                  # 清零,再进入批量验证
+    for n in range(1, 11):        # 验证 2^n - 1
+        hanoi(n, "A", "B", "C", False)
+        expect = 2 ** n - 1
+        print(f"n = {n}: 实际 {move_cnt},理论 {expect}",
+              "一致" if move_cnt == expect else "不一致!")
+        move_cnt = 0
+
+    print("\n===== 任务 2:全排列(n = 3)=====")
+    result = []
+    permute([1, 2, 3], 0, result)
+    for p in result:
+        print(" ".join(map(str, p)))
+    print(f"排列总数: {len(result)}(理论 3! = 6)")
+    result = []
+    permute([1, 2, 3, 4], 0, result)   # 再验证 4! = 24
+    print(f"n = 4 排列总数: {len(result)}(理论 4! = 24)")
+
+    print("\n===== 任务 3:朴素斐波那契计时 =====")
+    for n in (28, 31, 34):        # n 每次 +3,调用数约 ×4.2
+        t0 = time.perf_counter()
+        f = fib_naive(n)
+        ms = (time.perf_counter() - t0) * 1000
+        print(f"fib({n}) = {f},耗时 {ms:.1f} ms")
+    print("观察: n 每加 3,耗时约乘 4~5(调用数 2*F(n+1) 的比值约 phi^3 = 4.2)")
+
+if __name__ == "__main__":
+    main()</pre>
+<p><b>运行命令:</b><code>python lab1.py</code>。示例输出(第一段,n = 3 的移动过程):</p>
+<pre class="code">===== 任务 1:汉诺塔(n = 3)=====
+  A -&gt; C
+  A -&gt; B
+  C -&gt; B
+  A -&gt; C
+  B -&gt; A
+  B -&gt; C
+  A -&gt; C
+移动步数: 7(理论 2^3 - 1 = 7)
+n = 1: 实际 1,理论 1 一致
+n = 2: 实际 3,理论 3 一致
+n = 3: 实际 7,理论 7 一致
+n = 4: 实际 15,理论 15 一致
+n = 5: 实际 31,理论 31 一致
+n = 6: 实际 63,理论 63 一致
+n = 7: 实际 127,理论 127 一致
+n = 8: 实际 255,理论 255 一致
+n = 9: 实际 511,理论 511 一致
+n = 10: 实际 1023,理论 1023 一致</pre>
+<p>示例输出(第二段;耗时因机器而异,比值规律一致):</p>
+<pre class="code">===== 任务 2:全排列(n = 3)=====
+1 2 3
+1 3 2
+2 1 3
+2 3 1
+3 2 1
+3 1 2
+排列总数: 6(理论 3! = 6)
+n = 4 排列总数: 24(理论 4! = 24)
+
+===== 任务 3:朴素斐波那契计时 =====
+fib(28) = 317811,耗时 23.0 ms
+fib(31) = 1346269,耗时 103.8 ms
+fib(34) = 5702887,耗时 433.7 ms
+观察: n 每加 3,耗时约乘 4~5(调用数 2*F(n+1) 的比值约 phi^3 = 4.2)</pre>
+<p><b>设计说明:</b>① 三个任务共用"基准情形 + 不断推进"的递归骨架:汉诺塔的基准是 n == 1,全排列是"最后一位也固定",斐波那契是 n ≤ 1——同一个思想的三次演练;② 汉诺塔的两次递归调用展示了"参数轮换"技巧,调用次数 2<sup>n</sup>−1 正是第2章递推式 T(n) = 2T(n−1) + O(1) 的实物原型;③ 全排列的"交换 → 递归 → 换回"是回溯法(第10章)的最小模板;④ 任务 3 用真实计时把 O(2<sup>n</sup>) 变成肉眼可见:本机 n = 28/31/34 耗时 23/104/434 ms,每加 3 约乘 4~5(比值恰为 φ³ ≈ 4.2);⑤ 打印与计数分离(print_move 开关)让"演示过程"与"批量验证"互不干扰;⑥ <code>time.perf_counter()</code> 是第2章所有实验的标准计时器,本实验提前练手。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第2章 算法分析——我们将为大 O 记号建立严格定义,学会对循环与递归做复杂度计算,并把最大子序列和问题从 O(n<sup>3</sup>) 一路优化到 O(n)。本章的递推式、对数与级数公式,正是第2章一切推导的数学地基。</p>
+
+</body>
+</html>

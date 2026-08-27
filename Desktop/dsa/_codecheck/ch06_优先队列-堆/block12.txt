@@ -1,0 +1,15 @@
+$ cat sample.txt
+to be or not to be that is the question
+whether tis nobler in the mind to suffer
+the slings and arrows of outrageous fortune
+or to take arms against a sea of troubles
+and by opposing end them to die to sleep no more
+
+$ ./lab6 3 < sample.txt
+词数 = 34, k = 3
+手写堆 : to(6) the(3) or(2)
+priority_queue: to(6) the(3) or(2)
+结果一致: 是
+
+$ ./lab6 5 < empty.txt
+k = 5, 词数 = 0:边界情形,答案为空。

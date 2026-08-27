@@ -1,0 +1,43 @@
+// 任务 4:标准库重做(小顶堆 = 大顶堆 + greater)
+vector<pair<int, string>> topkStd(const vector<pair<int, string>>& items, int k) {
+    using P = pair<int, string>;
+    priority_queue<P, vector<P>, greater<P>> pq;
+    for (const P& t : items) {
+        if (int(pq.size()) < k)
+            pq.push(t);
+        else if (t > pq.top()) {
+            pq.pop();
+            pq.push(t);
+        }
+    }
+    vector<P> res;
+    while (!pq.empty()) { res.push_back(pq.top()); pq.pop(); }
+    reverse(res.begin(), res.end());
+    return res;
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) { cerr << "用法: ./lab6 k < 文本文件\n"; return 1; }
+    int k = stoi(argv[1]);
+    unordered_map<string, int> freq;
+    countWords(freq);                        // 任务 2:词频字典
+    vector<pair<int, string>> items;
+    for (const auto& [w, c] : freq) items.push_back({c, w});
+
+    // 任务 5:边界处理——k <= 0 或文本为空
+    if (k <= 0 || items.empty()) {
+        cout << "k = " << k << ", 词数 = " << items.size()
+             << ":边界情形,答案为空。\n";
+        return 0;
+    }
+
+    auto r1 = topkHeap(items, k);
+    auto r2 = topkStd(items, k);
+    cout << "词数 = " << items.size() << ", k = " << k << "\n";
+    cout << "手写堆 : ";
+    for (const auto& [c, w] : r1) cout << w << "(" << c << ") ";
+    cout << "\npriority_queue: ";
+    for (const auto& [c, w] : r2) cout << w << "(" << c << ") ";
+    cout << "\n结果一致: " << (r1 == r2 ? "是" : "否") << "\n";
+    return 0;
+}

@@ -1,0 +1,15 @@
+# 打印 parent 列表,观察树形态
+def dump(parent):
+    print(" ".join(f"{i}->{parent[i]}" for i in range(len(parent))))
+
+# 验证"根性":每个元素的 find 结果必须是根
+def check(parent):
+    def find(x):
+        while parent[x] != x:
+            x = parent[x]
+        return x
+    for i in range(len(parent)):
+        assert find(i) == parent[find(i)]
+
+# 小数据验证:union_sets(0,1); union_sets(1,2); dump(parent)
+# 输出 "0->1  1->2  2->2" 立刻看出 0-1-2 长链;压扁后 "0->2  1->2  2->2"。

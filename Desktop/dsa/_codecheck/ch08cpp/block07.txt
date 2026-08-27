@@ -1,0 +1,8 @@
+// 打印 parent 数组,观察树形态
+void dump(const vector<int>& parent, int n) {
+    for (int i = 0; i < n; ++i)
+        cout << i << "->" << parent[i] << "  ";
+    cout << "\n";
+}
+// 小数据验证:unionSets(0,1); unionSets(1,2); dump(parent, 3);
+// 输出 "0->1  1->2  2->2" 立刻看出 0-1-2 长链;压扁后 "0->2  1->2  2->2"。

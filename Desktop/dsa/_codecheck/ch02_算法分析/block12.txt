@@ -1,0 +1,9 @@
+int maxSubSum4(const vector<int>& a) {          // O(n) 在线算法
+    int maxSum = 0, thisSum = 0;
+    for (int x : a) {
+        thisSum += x;
+        if (thisSum > maxSum) maxSum = thisSum;
+        else if (thisSum < 0) thisSum = 0;
+    }
+    return maxSum;
+}

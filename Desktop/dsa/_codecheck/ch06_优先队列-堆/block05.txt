@@ -1,0 +1,18 @@
+// 键变小只会"向上"走:减键后上滤 O(log n)
+void decreaseKey(size_t pos, const T& amount) {
+    a[pos] -= amount;
+    while (pos > 1 && a[pos / 2] > a[pos]) {
+        swap(a[pos / 2], a[pos]);
+        pos /= 2;
+    }
+}
+
+// 删除任意位置:盖成最小值上滤到根,再 deleteMin O(log n)
+void removeAt(size_t pos) {
+    a[pos] = a[1];                   // 根是最小值,盖上去不破坏堆序
+    while (pos > 1) {                // 一路换到根
+        swap(a[pos / 2], a[pos]);
+        pos /= 2;
+    }
+    deleteMin();                     // 现在根就是原来的 a[pos]
+}

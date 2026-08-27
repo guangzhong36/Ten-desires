@@ -1,0 +1,28 @@
+// 需要 #include <algorithm>  (std::max)
+int maxSumRec(const vector<int>& a, int left, int right) {
+    if (left == right)                 // 基准情形:单个元素
+        return a[left] > 0 ? a[left] : 0;
+
+    int center = (left + right) / 2;
+    int maxLeft  = maxSumRec(a, left, center);        // 左半
+    int maxRight = maxSumRec(a, center + 1, right);   // 右半
+
+    int maxLeftBorder = 0, leftBorder = 0;   // 跨中界:向左延伸
+    for (int i = center; i >= left; --i) {
+        leftBorder += a[i];
+        if (leftBorder > maxLeftBorder)
+            maxLeftBorder = leftBorder;
+    }
+    int maxRightBorder = 0, rightBorder = 0; // 向右延伸
+    for (int i = center + 1; i <= right; ++i) {
+        rightBorder += a[i];
+        if (rightBorder > maxRightBorder)
+            maxRightBorder = rightBorder;
+    }
+    return max(max(maxLeft, maxRight),
+               maxLeftBorder + maxRightBorder);
+}
+
+int maxSubSum3(const vector<int>& a) {
+    return maxSumRec(a, 0, int(a.size()) - 1);
+}

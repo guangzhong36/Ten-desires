@@ -1,0 +1,16 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+int main() {
+    string s = "hello";              // 赋值即拷贝,无需 strcpy
+    s += " world";                   // 拼接,无需 strcat
+    cout << s.size() << " " << s[0] << endl;   // 11 h
+    vector<int> v = {3, 1, 4};       // 初始化列表,无需手动 malloc
+    v.push_back(1);                  // 尾部插入,自动扩容
+    v[0] = 7;                        // 按下标访问,O(1)
+    cout << v.size() << " " << v[0] << endl;   // 4 7
+    for (int x : v)                  // 范围 for:遍历容器
+        cout << x << " ";
+    return 0;
+}

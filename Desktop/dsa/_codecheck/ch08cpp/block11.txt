@@ -1,0 +1,47 @@
+// ---------- 任务 4:朴素版 vs 完整优化版性能对比 ----------
+void bench(int n) {
+    vector<pair<int, int>> ops;
+    for (int i = 0; i < n - 1; ++i) ops.push_back({i, i + 1});  // 顺序合并成链
+    auto ms = [](auto t0, auto t1) {
+        return chrono::duration<double, milli>(t1 - t0).count();
+    };
+    long long s = 0;
+    auto t0 = Clock::now();
+    NaiveUF naive(n);
+    for (auto [a, b] : ops) naive.unite(a, b);      // 每次 union 沿链走 O(n)
+    auto t1 = Clock::now();
+    for (int x = 0; x < n; ++x) s += naive.find(x); // 链尾 find 走 O(n)
+    auto t2 = Clock::now();
+    UnionFind opt(n);
+    for (auto [a, b] : ops) opt.unite(a, b);
+    auto t3 = Clock::now();
+    for (int x = 0; x < n; ++x) s += opt.find(x);
+    auto t4 = Clock::now();
+    cout << "任务4: " << n << " 次 union(连成链)+ " << n
+         << " 次 find(耗时对比):\n";
+    cout << "  朴素版: union 阶段 " << ms(t0, t1) << " ms, find 阶段 "
+         << ms(t1, t2) << " ms\n";
+    cout << "  优化版: union 阶段 " << ms(t2, t3) << " ms, find 阶段 "
+         << ms(t3, t4) << " ms\n";
+    cout << "  find 阶段加速比:约 " << (t2 - t1) / (t4 - t3)
+         << " 倍(检查值 s=" << s % 1000 << ")\n";
+}
+
+int main() {
+    int w = 6, h = 4;
+    Maze m = genMaze(w, h, 2024);
+    cout << "随机迷宫 " << w << " 列 x " << h << " 行(种子 2024,共 "
+         << w * h << " 个格子):\n";
+    cout << render(m);
+    int total = m.record.back().first;
+    cout << "\n任务3: 拆墙过程中连通分量数量的变化(共 " << total
+         << " 面候选墙):\n";
+    cout << "  初始: " << w * h << " 个连通分量\n";
+    for (auto [tried, comp] : m.record)
+        cout << "  尝试 " << tried << "/" << total << " 面墙后: 连通分量 "
+             << comp << "\n";
+    cout << "  结束时连通分量为 1,迷宫全连通、无环(恰好拆 " << w * h - 1
+         << " 面墙)。\n\n";
+    bench(40000);
+    return 0;
+}

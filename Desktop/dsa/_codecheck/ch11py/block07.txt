@@ -1,0 +1,48 @@
+def main():
+    N = 10000   # 连续插入的元素个数
+
+    # ---- 任务 2、3:两种扩容策略的拷贝统计与代价对比 ----
+    d = DoublingArray()
+    for i in range(N):
+        d.push_back(i)
+    print(f"[任务2/3] 倍增策略:连续插入 {N} 个元素")
+    print(f"  总拷贝次数 = {d.total_copies} (理论 ≈ 2n = {2 * N})")
+    print(f"  单次最大代价 = {d.max_cost} 次拷贝(仅发生在扩容的那一次 push)")
+    print(f"  平均代价 = {d.total_copies / N:.4f} 次拷贝/push\n")
+
+    l = LinearArray()
+    for i in range(N):
+        l.push_back(i)
+    print(f"[任务2/3] 笨扩容(每次 +1):连续插入 {N} 个元素")
+    print(f"  总拷贝次数 = {l.total_copies} (理论 ≈ n^2/2 = {N * N // 2})")
+    print(f"  单次最大代价 = {l.max_cost} 次拷贝(最后一次扩容)")
+    print(f"  平均代价 = {l.total_copies / N:.4f} 次拷贝/push\n")
+
+    # ---- 任务 4:会计方法验证"存 3 元"够不够 ----
+    b = BankArray()
+    for i in range(N):
+        b.push_back(i)
+    print(f"[任务4] 会计方法:存 3 元策略运行 {N} 次 push 后")
+    print(f"  账户余额 = {b.balance}, 全程最低余额 = {b.min_balance} (非负即证明有效)\n")
+
+    # ---- 任务 5:标准库 list 的扩容拐点(用 sys.getsizeof 观察) ----
+    a = []
+    last = sys.getsizeof(a)
+    print("[任务5] Python list 扩容拐点(元素数 → 占用字节,前 200 个元素):")
+    row = []
+    for i in range(1, 201):
+        a.append(i)
+        cur = sys.getsizeof(a)
+        if cur != last:               # 内存变化 = 一次扩容拐点
+            row.append(f"{len(a)}→{cur}B")
+            if len(row) == 12:
+                print("  " + "  ".join(row))
+                row = []
+            last = cur
+    if row:
+        print("  " + "  ".join(row))
+    print("\n结论: CPython 的 list 按比例增长(约 1/8 增量),拐点约 1.125 倍,"
+          "虽不是严格的 2 倍,但几何增长 ⇒ 摊还 O(1) 不变,与本章理论一致。")
+
+if __name__ == "__main__":
+    main()

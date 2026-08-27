@@ -1,0 +1,40 @@
+// lab5.cpp —— 散列表单词统计对比实验(第一部分:工具函数)
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <list>
+#include <unordered_map>
+#include <chrono>
+#include <cctype>
+using namespace std;
+using Clock = chrono::steady_clock;
+
+// ---------- 工具:素数判断与下一个素数 ----------
+bool isPrime(int n) {
+    if (n < 2) return false;
+    for (int d = 2; d * d <= n; ++d)
+        if (n % d == 0) return false;
+    return true;
+}
+int nextPrime(int n) {
+    while (!isPrime(n)) ++n;
+    return n;
+}
+
+// 任务 5:切分单词——字母/数字连续成词并转小写,其余字符跳过
+vector<string> splitWords(const string& text) {
+    vector<string> words;
+    string cur;
+    for (char c : text) {
+        if (isalnum((unsigned char)c)) {
+            cur += (char)tolower((unsigned char)c);
+        } else if (!cur.empty()) {
+            words.push_back(cur);
+            cur.clear();
+        }
+    }
+    if (!cur.empty()) words.push_back(cur);
+    return words;
+}

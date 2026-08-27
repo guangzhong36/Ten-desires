@@ -1,0 +1,33 @@
+    // 任务 2:耗时表(插入 n>8000 标注"(推算)")
+    cout << "任务 2:耗时表(单位 ms;插入排序 n>8000 为(推算))\n";
+    for (int k = 0; k < 3; ++k) {
+        cout << "\n[" << kindName[k] << "]\n";
+        cout << left << setw(8) << "n" << setw(11) << "插入" << setw(11) << "归并" << "快排\n";
+        for (size_t s = 0; s < sizes.size(); ++s) {
+            vector<int> a = makeData(sizes[s], Kind(k), rng);
+            cout << setw(8) << sizes[s];
+            if (sizes[s] <= 8000) {
+                ins[k][s] = msTime(insertionSortAll, a, guard);
+                cout << setw(11) << fixed << setprecision(2) << ins[k][s];
+            } else { ins[k][s] = -1; cout << setw(11) << "(推算)"; }
+            mrg[k][s] = msTime(mergeSort, a, guard);
+            qck[k][s] = msTime(quickSort, a, guard);
+            cout << setw(11) << mrg[k][s] << qck[k][s] << "\n";
+        }
+    }
+
+    // 任务 4:比值分析(理论:插入 ×4;归并/快排 ≈×2)
+    cout << "\n任务 4:n 翻倍时实测时间比值(理论:n² 算法 ×4,n log n 算法 ≈×2)\n";
+    auto ratios = [&](const char* name, double t[3][7]) {
+        cout << name << ": ";
+        for (int k = 0; k < 3; ++k) {
+            cout << kindName[k] << "[";
+            for (size_t s = 1; s < sizes.size(); ++s)
+                if (t[k][s] > 0 && t[k][s - 1] > 0) cout << setprecision(2) << (t[k][s] / t[k][s - 1]) << " ";
+            cout << "] ";
+        }
+        cout << "\n";
+    };
+    ratios("插入", ins);
+    ratios("归并", mrg);
+    ratios("快排", qck);

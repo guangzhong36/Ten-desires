@@ -1,0 +1,24 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    vector<int> st;
+    long long total = 0;
+    int n = 10000;
+    for (int i = 0; i < n; ++i) {
+        st.push_back(i);              // push:代价 1
+        total += 1;
+        if (i % 1000 == 999) {        // 每 1000 次 push 来一个大 multiPop
+            while (!st.empty()) {     // 弹空:每个元素只出栈一次
+                st.pop_back();
+                total += 1;
+            }
+        }
+    }
+    cout << "操作数 n = " << n
+         << ", 总代价 = " << total
+         << " (≤ 2n = " << 2 * n << ")"
+         << ", 摊还 = " << (double)total / n << endl;
+    return 0;
+}

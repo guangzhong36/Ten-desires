@@ -1,0 +1,16 @@
+#include <queue>
+#include <deque>
+using namespace std;
+int main() {
+    queue<int> q;                 // 默认基于 deque 的 FIFO 队列
+    q.push(1); q.push(2); q.push(3);
+    while (!q.empty()) {
+        cout << q.front() << ' ';  // 1 2 3(先进先出)
+        q.pop();
+    }
+    deque<int> d = {1, 2, 3};     // 双端队列:头尾都可 O(1) 增删
+    d.push_front(0);              // 0 1 2 3
+    d.push_back(4);               // 0 1 2 3 4
+    d.pop_front();                // 1 2 3 4
+    return 0;
+}

@@ -1,0 +1,12 @@
+def shell_sort(a):
+    n = len(a)
+    gap = n // 2
+    while gap > 0:                            # 希尔增量:n/2, n/4, ..., 1
+        for i in range(gap, n):               # 对每组做插入排序
+            key = a[i]
+            j = i
+            while j >= gap and a[j - gap] > key:   # 一次跳 gap 格
+                a[j] = a[j - gap]
+                j -= gap
+            a[j] = key
+        gap //= 2

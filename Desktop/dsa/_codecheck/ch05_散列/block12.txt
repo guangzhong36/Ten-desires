@@ -1,0 +1,40 @@
+// 手写版:桶内放 (单词, 次数),统计每个单词的出现次数
+class WordCounter {
+    vector<list<pair<string, int>>> buckets_;   // 桶数组
+    int distinct_ = 0;                          // 不同单词个数
+public:
+    explicit WordCounter(int m) : buckets_(nextPrime(m)) {}
+
+    void add(const string& w) {                 // 出现一次就计数一次
+        auto& b = buckets_[hashStr(w, int(buckets_.size()))];
+        for (auto& kv : b)
+            if (kv.first == w) { ++kv.second; return; }  // 已存在:+1
+        b.push_back({w, 1});                    // 新词:插到链表尾
+        ++distinct_;
+    }
+
+    int count(const string& w) const {          // 查询词频,不存在返回 0
+        auto& b = buckets_[hashStr(w, int(buckets_.size()))];
+        for (auto& kv : b)
+            if (kv.first == w) return kv.second;
+        return 0;
+    }
+
+    int distinct() const { return distinct_; }
+};
+
+int main() {
+    WordCounter wc(16);                         // 表大小 16 → 素数 17
+    string text = "the cat and the dog and the cat";
+    string cur;
+    for (char c : text) {                       // 切词:非字母数字当分隔
+        if (isalnum((unsigned char)c))
+            cur += (char)tolower((unsigned char)c);
+        else if (!cur.empty()) { wc.add(cur); cur.clear(); }
+    }
+    if (!cur.empty()) wc.add(cur);
+    cout << "the: " << wc.count("the") << "\n";   // 3
+    cout << "cat: " << wc.count("cat") << "\n";   // 2
+    cout << "不同单词: " << wc.distinct() << "\n"; // 4
+    return 0;
+}

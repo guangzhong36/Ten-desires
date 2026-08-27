@@ -1,0 +1,33 @@
+struct Node {
+    int val;
+    Node* next;
+    Node(int v, Node* n = nullptr) : val(v), next(n) {}
+};
+
+void insertFront(Node*& head, int x) {    // 表头插入 O(1)
+    head = new Node(x, head);
+}
+
+Node* find(Node* head, int x) {          // 查找 O(n)
+    while (head != nullptr && head->val != x)
+        head = head->next;
+    return head;                          // 找不到返回 nullptr
+}
+
+bool erase(Node*& head, int x) {         // 删除值为 x 的第一个结点
+    if (head == nullptr) return false;
+    if (head->val == x) {                // 删表头是特例
+        Node* t = head;
+        head = head->next;
+        delete t;
+        return true;
+    }
+    Node* prev = head;                    // 其余情况:找前驱
+    while (prev->next != nullptr && prev->next->val != x)
+        prev = prev->next;
+    if (prev->next == nullptr) return false;
+    Node* t = prev->next;
+    prev->next = t->next;                // 前驱跳过目标结点
+    delete t;
+    return true;
+}

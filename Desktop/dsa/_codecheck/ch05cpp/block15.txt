@@ -1,0 +1,36 @@
+// ---------- 任务 1:分离链接散列表(字符串键,37 倍散列,素数表) ----------
+class HashTable {
+    struct Entry { string key; int cnt; };
+    vector<list<Entry>> buckets_;   // 桶数组:vector<list<...>>
+    int size_ = 0;                  // 不同单词个数
+public:
+    explicit HashTable(int m) : buckets_(nextPrime(m)) {}
+
+    int hash(const string& s) const {
+        unsigned long long h = 0;   // 全程不取模,最后再 % 表大小(见 §5.1.3)
+        for (char c : s)
+            h = h * 37 + (unsigned char)c;
+        return int(h % buckets_.size());
+    }
+
+    void add(const string& s) {            // 计数 +1,首次出现则插入
+        int b = hash(s);
+        for (auto& e : buckets_[b])
+            if (e.key == s) { ++e.cnt; return; }
+        buckets_[b].push_back({s, 1});
+        ++size_;
+    }
+
+    int count(const string& s) const {     // 查询词频,不存在返回 0
+        int b = hash(s);
+        for (const auto& e : buckets_[b])
+            if (e.key == s) return e.cnt;
+        return 0;
+    }
+
+    int distinct() const { return size_; }
+    int bucketCount() const { return int(buckets_.size()); }
+    double loadFactor() const {            // 装填因子 λ = 元素数/表大小
+        return double(size_) / buckets_.size();
+    }
+};

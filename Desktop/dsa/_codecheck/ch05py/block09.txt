@@ -1,0 +1,12 @@
+# 再散列:装填因子超过阈值就把表翻倍并重新插入全部元素
+def rehash(self):
+    if self.load_factor < 0.75:
+        return                          # λ 未超标则不做
+    old_buckets = self.buckets          # 先备份旧桶
+    new_m = next_prime(len(old_buckets) * 2)   # 新表大小:翻倍后取素数
+    self.buckets = [[] for _ in range(new_m)]
+    self.size = 0
+    for b in old_buckets:               # 重新插入每个旧元素
+        for x in b:
+            self.insert(x)              # 会用新表大小重算散列
+# 单次再散列 O(n),摊到每次插入上仍是 O(1)——摊还分析见 §11

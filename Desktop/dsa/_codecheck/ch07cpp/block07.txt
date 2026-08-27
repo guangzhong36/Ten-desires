@@ -1,0 +1,9 @@
+// 值域 [0, M) 的非负整数;cnt 兼作位置账本
+void countingSort(vector<int>& a, int M) {
+    vector<int> cnt(M, 0), out(a.size());
+    for (int x : a) ++cnt[x];                    // 1. 计数
+    for (int i = 1; i < M; ++i) cnt[i] += cnt[i - 1];  // 2. 前缀和
+    for (int i = int(a.size()) - 1; i >= 0; --i)      // 3. 倒序扫描
+        out[--cnt[a[i]]] = a[i];                 // 稳定:相等后到先取
+    a = out;
+}

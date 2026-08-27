@@ -1,0 +1,40 @@
+// ---------- 任务 2/3:随机迷宫生成 ----------
+struct Maze {
+    int w, h;
+    vector<vector<bool>> right, down;       // 右墙、下墙
+    vector<pair<int, int>> record;          // 任务 3:连通分量变化采样
+};
+
+Maze genMaze(int w, int h, int seed = 2024) {
+    UnionFind uf(w * h);
+    Maze m{w, h,
+           vector<vector<bool>>(h, vector<bool>(w, true)),
+           vector<vector<bool>>(h, vector<bool>(w, true)),
+           {}};
+    vector<pair<int, int>> walls;           // 墙用两端格子编号表示
+    auto id = [w](int r, int c) { return r * w + c; };
+    for (int r = 0; r < h; ++r)
+        for (int c = 0; c < w; ++c) {
+            if (c + 1 < w) walls.push_back({id(r, c), id(r, c + 1)});   // 右墙
+            if (r + 1 < h) walls.push_back({id(r, c), id(r + 1, c)});   // 下墙
+        }
+    mt19937 rng(seed);
+    shuffle(walls.begin(), walls.end(), rng);
+    int key[3] = {int(walls.size()) / 4, int(walls.size()) / 2,
+                  int(walls.size()) * 3 / 4};
+    int ki = 0;
+    for (size_t i = 0; i < walls.size(); ++i) {
+        int a = walls[i].first, b = walls[i].second;
+        if (uf.unite(a, b)) {               // 两端不连通才拆墙
+            int r1 = a / w, c1 = a % w, r2 = b / w, c2 = b % w;
+            if (c1 == c2) m.down[min(r1, r2)][c1] = false;
+            else          m.right[r1][min(c1, c2)] = false;
+        }
+        if (ki < 3 && int(i + 1) >= key[ki]) {
+            m.record.push_back({int(i + 1), uf.count});
+            ++ki;
+        }
+    }
+    m.record.push_back({int(walls.size()), uf.count});
+    return m;
+}

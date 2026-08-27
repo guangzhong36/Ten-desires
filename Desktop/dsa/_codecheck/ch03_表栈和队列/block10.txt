@@ -1,0 +1,19 @@
+// front 指向队首元素,back 指向队尾下一个空位,count 记录元素数
+class MyQueue {
+    vector<int> data_;
+    int front_ = 0, back_ = 0, count_ = 0;
+public:
+    MyQueue(int cap) : data_(cap) {}
+    void push(int x) {               // 入队:假设未满(满的处理见误区4)
+        data_[back_] = x;
+        back_ = (back_ + 1) % int(data_.size());
+        ++count_;
+    }
+    void pop() {                     // 出队
+        front_ = (front_ + 1) % int(data_.size());
+        --count_;
+    }
+    int front() const { return data_[front_]; }
+    bool empty() const { return count_ == 0; }
+    int size() const { return count_; }
+};

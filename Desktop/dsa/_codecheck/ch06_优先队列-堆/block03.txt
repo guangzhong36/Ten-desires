@@ -1,0 +1,22 @@
+// 下滤:把下标 i 的元素向下沉(deleteMin 与建堆共用)
+void percolateDown(size_t i) {
+    size_t n = a.size();
+    while (true) {
+        size_t smallest = i;
+        for (size_t c : {2 * i, 2 * i + 1})  // 左子、右子(1 基)
+            if (c < n && a[c] < a[smallest])
+                smallest = c;                // 选"较小"的孩子
+        if (smallest == i) break;            // 两个孩子都不小于自己
+        swap(a[i], a[smallest]);
+        i = smallest;
+    }
+}
+
+// 删除最小元:最后一个元素搬到根,再下滤
+T deleteMin() {
+    T min = a[1];                    // 记下根(答案)
+    a[1] = a.back();                 // 末元素搬到根:保持完全二叉树
+    a.pop_back();
+    if (a.size() > 1) percolateDown(1);   // 只剩 1 个元素则免
+    return min;
+}

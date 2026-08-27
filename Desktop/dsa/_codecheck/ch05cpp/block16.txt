@@ -1,0 +1,52 @@
+// ---------- 计时工具:插入 repeat 遍,放大差异 ----------
+double msInsert(HashTable& ht, const vector<string>& words, int repeat) {
+    auto t0 = Clock::now();
+    for (int r = 0; r < repeat; ++r)
+        for (const string& w : words) ht.add(w);
+    return chrono::duration<double, milli>(Clock::now() - t0).count();
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) { cout << "用法: lab5 <文本文件>\n"; return 1; }
+    ifstream fin(argv[1]);
+    if (!fin) { cout << "错误: 无法打开文件 " << argv[1] << "\n"; return 1; }
+    stringstream ss;
+    ss << fin.rdbuf();
+    vector<string> words = splitWords(ss.str());
+    if (words.empty()) {                  // 任务 5:空文本
+        cout << "警告: 文本为空或没有合法单词\n";
+        return 0;
+    }
+    cout << "单词总数(含重复): " << words.size() << "\n";
+
+    // 任务 2:手写表统计
+    HashTable ht(256);
+    msInsert(ht, words, 1);
+    cout << "手写表: 不同单词 " << ht.distinct()
+         << " 个,装填因子 λ=" << ht.loadFactor() << "\n";
+
+    // 任务 3:标准库重做,抽查输出一致性
+    unordered_map<string, int> mp;
+    for (const string& w : words) ++mp[w];
+    cout << "unordered_map: 不同单词 " << mp.size() << " 个\n";
+    for (const char* w : {"the", "hash", "hello"})
+        cout << "  词 \"" << w << "\": 手写表=" << ht.count(w)
+             << " map=" << mp[w] << "\n";
+
+    // 任务 4:不同 λ 下的插入耗时(表大小不同 → λ 不同,3 次取最快)
+    cout << "任务4: 表大小(素数)不同 → λ 不同 → 插入耗时(3 次取最快):\n";
+    for (int m : {8, 16, 64, 256}) {
+        double best = 1e300;
+        for (int trial = 0; trial < 3; ++trial) {   // 重复 3 次取最快
+            HashTable t(m);
+            double ms = msInsert(t, words, 30);
+            if (ms < best) best = ms;
+        }
+        HashTable t(m);
+        msInsert(t, words, 1);
+        cout << "  M=" << t.bucketCount() << " λ=" << t.loadFactor()
+             << " 耗时 " << best << " ms\n";
+    }
+    cout << "观察: λ 越大平均链表越长,耗时越高——这就是再散列(§5.4)的动机。\n";
+    return 0;
+}

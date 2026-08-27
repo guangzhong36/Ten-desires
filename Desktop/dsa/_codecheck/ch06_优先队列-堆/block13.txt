@@ -1,0 +1,8 @@
+$ python lab6.py 3 < sample.txt
+词数 = 34, k = 3
+手写堆 : [('to', 6), ('the', 3), ('or', 2)]
+heapq  : [('to', 6), ('the', 3), ('or', 2)]
+结果一致: True
+
+$ python lab6.py 5 < empty.txt
+k = 5, 词数 = 0:边界情形,答案为空。

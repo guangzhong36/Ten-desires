@@ -1,0 +1,9 @@
+/* C 回顾:字符串散列 */
+int hashStrC(char* s, int M) {
+    unsigned int h = 0;              /* unsigned 累加,防止溢出成负数 */
+    while (*s != '\0') {
+        h = h * 37 + (unsigned char)*s;  /* 每步乘 37 再加当前字符 */
+        ++s;
+    }
+    return (int)(h % M);             /* 最后才取模,结果落在 [0, M-1] */
+}

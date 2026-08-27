@@ -1,0 +1,17 @@
+// 同一任务用 priority_queue:只换构造与函数名
+vector<pair<int, string>> topKStd(const vector<pair<int, string>>& items, int k) {
+    using P = pair<int, string>;
+    priority_queue<P, vector<P>, greater<P>> h;   // 标准库最小堆
+    for (const P& t : items) {
+        if (int(h.size()) < k)
+            h.push(t);
+        else if (t > h.top()) {              // 同上:高于门槛才替换
+            h.pop();
+            h.push(t);
+        }
+    }
+    vector<P> res;
+    while (!h.empty()) { res.push_back(h.top()); h.pop(); }
+    reverse(res.begin(), res.end());
+    return res;
+}

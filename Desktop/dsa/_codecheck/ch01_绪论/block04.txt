@@ -1,0 +1,10 @@
+// C 的做法:struct Counter { int cnt; }; + 全局函数 counter_inc(&c)
+// C++ 的做法:数据与操作放进同一个 class,成员函数直接操作自己的数据
+class Counter {
+    int cnt_ = 0;                     // 成员变量(默认私有,外部不可见)
+public:
+    void inc() { ++cnt_; }            // 成员函数:修改自己的状态
+    void reset() { cnt_ = 0; }
+    int get() const { return cnt_; }  // const 成员函数:承诺不修改对象
+};
+// 使用:Counter c; c.inc(); c.inc(); cout << c.get();  // 输出 2

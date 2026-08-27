@@ -1,0 +1,16 @@
+// items: (频次, 词);按频次降序输出最大的 k 个
+vector<pair<int, string>> topK(const vector<pair<int, string>>& items, int k) {
+    BinaryHeap<pair<int, string>> h;         // 手写最小堆
+    for (const auto& t : items) {
+        if (h.size() < size_t(k))
+            h.insert(t);                     // 堆未满:直接入堆
+        else if (t > h.findMin()) {          // 超过"第 k 大门槛"才替换
+            h.deleteMin();
+            h.insert(t);
+        }
+    }
+    vector<pair<int, string>> res;
+    while (!h.empty()) { res.push_back(h.findMin()); h.deleteMin(); }
+    reverse(res.begin(), res.end());         // 弹出是升序,反转为降序
+    return res;
+}

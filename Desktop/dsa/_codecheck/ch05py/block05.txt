@@ -1,0 +1,35 @@
+# 分离链接散列表:桶数组是 list of list,一个桶就是一条链表
+class HashTable:
+    def __init__(self, M):
+        self.buckets = [[] for _ in range(next_prime(M))]
+        self.size = 0
+
+    def _hash(self, s):
+        h = 0
+        for c in s:
+            h = h * 37 + ord(c)
+        return h % len(self.buckets)
+
+    def find(self, s):
+        for x in self.buckets[self._hash(s)]:
+            if x == s:
+                return True
+        return False
+
+    def insert(self, s):
+        if self.find(s):
+            return
+        self.buckets[self._hash(s)].append(s)
+        self.size += 1
+
+    def remove(self, s):
+        b = self.buckets[self._hash(s)]
+        for i, x in enumerate(b):
+            if x == s:
+                b.pop(i)
+                self.size -= 1
+                return
+
+    @property
+    def load_factor(self):
+        return self.size / len(self.buckets)

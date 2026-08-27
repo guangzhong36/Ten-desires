@@ -1,0 +1,11 @@
+int maxSubSum4(const vector<int>& a) {
+    int maxSum = 0, thisSum = 0;
+    for (int x : a) {          // C++ 范围 for,等价于按序遍历
+        thisSum += x;
+        if (thisSum > maxSum)
+            maxSum = thisSum;
+        else if (thisSum < 0)
+            thisSum = 0;       // 负前缀弃之,从下一个元素重新开始
+    }
+    return maxSum;
+}

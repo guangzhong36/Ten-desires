@@ -1,0 +1,18 @@
+# parent[i] == i 表示 i 是根;其余 parent[i] 是 i 的父结点
+parent = list(range(8))        # 一行初始化:每个元素都是自己的根
+
+def find(x):                   # 朴素 find:沿父链上溯到根
+    while parent[x] != x:
+        x = parent[x]
+    return x
+
+def union_sets(a, b):          # 朴素 union:让 a 的根指向 b 的根
+    ra, rb = find(a), find(b)
+    if ra != rb:
+        parent[ra] = rb
+
+union_sets(1, 2)
+union_sets(3, 4)
+union_sets(2, 3)               # 现在 {1,2,3,4} 在同一集合
+# find(1) -> find(2) -> find(3) -> find(4):一路到根 4
+print(find(4))

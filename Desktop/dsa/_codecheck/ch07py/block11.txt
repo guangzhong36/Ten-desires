@@ -1,0 +1,9 @@
+def ms_time(func, a, copies=True):
+    """计时:同数据重复 3 次取最小值,压制系统噪声;copies=True 时每次用副本。"""
+    best = float("inf")
+    for _ in range(3):
+        b = a[:] if copies else a
+        t0 = time.perf_counter()
+        func(b)
+        best = min(best, (time.perf_counter() - t0) * 1000)
+    return best

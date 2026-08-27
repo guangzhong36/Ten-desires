@@ -1,0 +1,22 @@
+void merge(vector<int>& a, vector<int>& tmp, int l, int m, int r) {
+    int i = l, j = m + 1, k = l;
+    while (i <= m && j <= r) {
+        if (lt(a[j], a[i])) tmp[k++] = a[j++];  // 右半更小才取右:相等取左,稳定
+        else tmp[k++] = a[i++];
+        if (g_count) ++g_move;
+    }
+    while (i <= m) { tmp[k++] = a[i++]; if (g_count) ++g_move; }
+    while (j <= r) { tmp[k++] = a[j++]; if (g_count) ++g_move; }
+    for (k = l; k <= r; ++k) { a[k] = tmp[k]; if (g_count) ++g_move; }
+}
+void mergeSortRec(vector<int>& a, vector<int>& tmp, int l, int r) {
+    if (l >= r) return;
+    int m = (l + r) / 2;
+    mergeSortRec(a, tmp, l, m);
+    mergeSortRec(a, tmp, m + 1, r);
+    merge(a, tmp, l, m, r);
+}
+void mergeSort(vector<int>& a) {
+    vector<int> tmp(a.size());      // 辅助数组只分配一次
+    mergeSortRec(a, tmp, 0, int(a.size()) - 1);
+}

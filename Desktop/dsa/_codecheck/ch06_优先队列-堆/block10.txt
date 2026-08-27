@@ -1,0 +1,32 @@
+// 任务 2:流式切词并统计词频
+void countWords(unordered_map<string, int>& freq) {
+    string line;
+    while (getline(cin, line)) {
+        for (size_t i = 0; i < line.size();) {
+            if (!isalpha((unsigned char)line[i])) { ++i; continue; }
+            size_t j = i;
+            while (j < line.size() && isalpha((unsigned char)line[j])) ++j;
+            string w = line.substr(i, j - i);
+            for (char& c : w) c = char(tolower((unsigned char)c));
+            ++freq[w];
+            i = j;
+        }
+    }
+}
+
+// 任务 3:手写小顶堆求 top-k
+vector<pair<int, string>> topkHeap(const vector<pair<int, string>>& items, int k) {
+    MinHeap<pair<int, string>> h;
+    for (const auto& t : items) {            // t = (频次, 词)
+        if (h.size() < size_t(k))
+            h.push(t);                       // 堆未满:直接入堆
+        else if (t > h.top()) {              // 高于"第 k 大门槛"才替换
+            h.pop();
+            h.push(t);
+        }
+    }
+    vector<pair<int, string>> res;
+    while (!h.empty()) { res.push_back(h.top()); h.pop(); }
+    reverse(res.begin(), res.end());         // 弹出是升序,反转为降序
+    return res;
+}

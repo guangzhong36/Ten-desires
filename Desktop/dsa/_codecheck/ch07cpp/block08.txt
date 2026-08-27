@@ -1,0 +1,30 @@
+// lab7.cpp —— 三种排序的性能对比实验(插入/归并/快排)
+#include <algorithm>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+#include <random>
+#include <vector>
+using namespace std;
+using Clock = chrono::steady_clock;
+
+const int CUTOFF = 16;          // 快排小区间阈值(§7.5)
+long long g_cmp = 0, g_move = 0;
+bool g_count = false;           // 任务 5 计数开关(计时时关)
+inline bool lt(int x, int y) { if (g_count) ++g_cmp; return x < y; }
+inline void exch(int& x, int& y) { if (g_count) ++g_move; swap(x, y); }
+
+void insertionSort(vector<int>& a, int left, int right) {
+    for (int i = left + 1; i <= right; ++i) {
+        int key = a[i];
+        int j = i - 1;
+        while (j >= left && lt(key, a[j])) {  // 严格大于才右移:稳定
+            a[j + 1] = a[j];
+            if (g_count) ++g_move;
+            --j;
+        }
+        a[j + 1] = key;
+        if (g_count) ++g_move;
+    }
+}
+void insertionSortAll(vector<int>& a) { insertionSort(a, 0, int(a.size()) - 1); }

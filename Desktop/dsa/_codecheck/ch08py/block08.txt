@@ -1,0 +1,52 @@
+# lab.py —— 迷宫生成与连通分量统计(第一段:并查集与朴素版)
+# 运行:python lab.py
+import random
+import time
+
+# ---------- 任务 1:并查集(按秩合并 + 路径压缩) ----------
+class UnionFind:
+    """按秩合并 + 路径压缩的并查集,parent[i] == i 表示 i 是根。"""
+
+    def __init__(self, n):
+        self.parent = list(range(n))   # parent[i] = i 表示 i 是根
+        self.rank = [0] * n            # 秩:树高的上界,只在根上有意义
+        self.count = n                 # 当前连通分量个数
+
+    def find(self, x):
+        """迭代版路径压缩:先上溯找根,再沿原路把沿途结点挂到根。"""
+        root = x
+        while self.parent[root] != root:
+            root = self.parent[root]
+        while self.parent[x] != x:     # 第二趟:逐个压缩
+            nxt = self.parent[x]
+            self.parent[x] = root
+            x = nxt
+        return root
+
+    def union(self, a, b):
+        """合并 a、b 所在集合;合并成功返回 True,已在同一集合返回 False。"""
+        ra, rb = self.find(a), self.find(b)
+        if ra == rb:
+            return False
+        if self.rank[ra] < self.rank[rb]:   # 浅树挂到深树
+            ra, rb = rb, ra
+        self.parent[rb] = ra
+        if self.rank[ra] == self.rank[rb]:
+            self.rank[ra] += 1              # 两棵同秩树合并,新树秩 +1
+        self.count -= 1                     # 成功合并一次,连通分量减 1
+        return True
+
+# ---------- 任务 4 对比用:朴素版(无任何优化) ----------
+class NaiveUF:
+    def __init__(self, n):
+        self.parent = list(range(n))
+
+    def find(self, x):
+        while self.parent[x] != x:
+            x = self.parent[x]
+        return x
+
+    def union(self, a, b):
+        a, b = self.find(a), self.find(b)
+        if a != b:
+            self.parent[a] = b       # 固定让 a 挂到 b 下,容易形成长链

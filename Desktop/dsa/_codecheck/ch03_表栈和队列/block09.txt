@@ -1,0 +1,22 @@
+int prec(char op) { return (op == '+' || op == '-') ? 1 : 2; }
+
+string infixToPostfix(const string& s) {   // s 形如 "6+5*(2+3)",无空格
+    string out;
+    stack<char> st;
+    for (char c : s) {
+        if (isdigit(c)) out += c;                    // 数字直接输出
+        else if (c == '(') st.push(c);
+        else if (c == ')') {
+            while (st.top() != '(') { out += st.top(); st.pop(); }
+            st.pop();                                // 丢弃左括号
+        } else {                                     // 运算符
+            while (!st.empty() && st.top() != '(' &&
+                   prec(st.top()) >= prec(c)) {      // 栈顶优先级不低于当前
+                out += st.top(); st.pop();
+            }
+            st.push(c);
+        }
+    }
+    while (!st.empty()) { out += st.top(); st.pop(); }
+    return out;
+}

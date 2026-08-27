@@ -1,0 +1,12 @@
+// 替代:union 时把较小集合所有元素逐个改编号
+unordered_map<int, int> owner;             // 元素 -> 集合编号
+int findOwner(int x) { return owner[x]; }  // 查归属 O(1)
+
+void unionOwner(int a, int b) {
+    int oa = owner[a], ob = owner[b];
+    if (oa == ob) return;
+    // 遍历全部元素把集合 ob 的成员改成 oa:O(n)!
+    for (auto& [x, o] : owner)
+        if (o == ob) o = oa;
+}
+// 并查集:union 只改一个指针,均摊近 O(1),差距 n 倍

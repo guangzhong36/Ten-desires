@@ -1,0 +1,25 @@
+# 格子编号 id = r*w + c;right/down 记录墙
+def gen_maze(w, h, seed=2024):
+    uf = UnionFind(w * h)                 # 完整优化版并查集
+    right = [[True] * w for _ in range(h)]  # 右墙
+    down = [[True] * w for _ in range(h)]   # 下墙
+    walls = []
+    for r in range(h):
+        for c in range(w):
+            if c + 1 < w:
+                walls.append((r, c, r, c + 1))   # 右墙
+            if r + 1 < h:
+                walls.append((r, c, r + 1, c))   # 下墙
+    random.seed(seed)
+    random.shuffle(walls)                 # 随机顺序拆墙
+    cnt = w * h                           # 连通分量个数
+    for r1, c1, r2, c2 in walls:
+        if uf.union(r1 * w + c1, r2 * w + c2):  # 两端不连通才拆
+            cnt -= 1                      # 每拆一面墙,分量减一
+            if c1 == c2:
+                down[r1][c1] = False
+            else:
+                right[r1][c1] = False
+        if cnt == 1:
+            break                         # 全连通即停
+    return right, down

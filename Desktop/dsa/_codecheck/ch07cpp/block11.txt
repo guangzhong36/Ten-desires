@@ -1,0 +1,31 @@
+// 计时:3 次取最小,每次用副本,结果读走防优化
+double msTime(void (*f)(vector<int>&), vector<int> a, long long& guard) {
+    double best = 1e18;
+    for (int r = 0; r < 3; ++r) {
+        vector<int> b = a;
+        auto t0 = Clock::now();
+        f(b);
+        guard += b.front();
+        best = min(best, chrono::duration<double, milli>(Clock::now() - t0).count());
+    }
+    return best;
+}
+
+int main() {
+    mt19937 rng(12345);             // 固定种子,可复现
+    const vector<int> sizes = {1000, 2000, 4000, 8000, 16000, 32000, 64000};
+    double ins[3][7] = {}, mrg[3][7] = {}, qck[3][7] = {};
+    long long guard = 0;
+
+    // 任务 3:正确性验证(与 std::sort 一致,含重复元素)
+    bool ok = true;
+    for (int k = 0; k < 4; ++k) {
+        vector<int> a = makeData(500, Kind(k % 3), rng);
+        if (k == 3) for (int& x : a) x = uniform_int_distribution<int>(0, 20)(rng);
+        vector<int> ref = a, b;
+        sort(ref.begin(), ref.end());
+        b = a; insertionSort(b, 0, int(b.size()) - 1); ok &= (b == ref);
+        b = a; mergeSort(b);                          ok &= (b == ref);
+        b = a; quickSort(b);                          ok &= (b == ref);
+    }
+    cout << "任务 3:三种算法与 std::sort 输出一致: " << (ok ? "是" : "否") << "\n";

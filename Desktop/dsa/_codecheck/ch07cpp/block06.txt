@@ -1,0 +1,10 @@
+#include <algorithm>
+vector<int> v = {5, 2, 8, 1, 9};
+sort(v.begin(), v.end());                     // 升序
+sort(v.begin(), v.end(), greater<int>());     // 降序
+sort(v.begin(), v.end(),
+     [](int x, int y) { return x % 10 < y % 10; });  // 按个位数升序
+vector<string> names = {"bob", "alice", "carl"};
+sort(names.begin(), names.end(),
+     [](const string& x, const string& y) { return x.size() < y.size(); });
+// 按长度升序;要稳定必须用 stable_sort!

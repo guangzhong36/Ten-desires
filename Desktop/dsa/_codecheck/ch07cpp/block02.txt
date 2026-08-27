@@ -1,0 +1,14 @@
+void shellSort(vector<int>& a) {
+    int n = int(a.size());
+    for (int gap = n / 2; gap > 0; gap /= 2) {   // 希尔增量:n/2, n/4, ..., 1
+        for (int i = gap; i < n; ++i) {          // 对每组做插入排序
+            int key = a[i];
+            int j = i;
+            while (j >= gap && a[j - gap] > key) {  // 一次跳 gap 格
+                a[j] = a[j - gap];
+                j -= gap;
+            }
+            a[j] = key;
+        }
+    }
+}

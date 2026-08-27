@@ -1,0 +1,8 @@
+// 双散列:冲突时以第二个散列函数的值做步长
+int h1 = hashStr(s, M);        // 主散列:决定初始位置
+int step = hashStr2(s, M);     // 第二散列:决定步长,注意不能为 0
+int pos = h1;
+while (table[pos] != EMPTY && table[pos] != s)
+    pos = (pos + step) % M;    // 每次前进 step 格
+if (table[pos] == EMPTY)
+    table[pos] = s;

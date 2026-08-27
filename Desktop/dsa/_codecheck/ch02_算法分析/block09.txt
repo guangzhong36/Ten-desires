@@ -1,0 +1,12 @@
+const long long MOD = 1000000007LL;
+// 计算 (a^n) % MOD;n >= 0
+long long powMod(long long a, long long n) {
+    long long result = 1;
+    while (n > 0) {
+        if (n & 1)                 // 当前二进制位为 1 则乘入
+            result = result * a % MOD;
+        a = a * a % MOD;           // a 平方:对应指数减半
+        n >>= 1;                   // n 右移一位 = n/2
+    }
+    return result;
+}

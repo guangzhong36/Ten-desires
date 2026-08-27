@@ -1,0 +1,38 @@
+// 分离链接散列表:桶数组 vector<list<string>>,一个桶就是一条链表
+class HashTable {
+    vector<list<string>> buckets_;   // 桶数组:每个元素是一条链表
+    int size_ = 0;                   // 表中元素总个数
+public:
+    explicit HashTable(int M)
+        : buckets_(nextPrime(M)) {}  // 表大小必须是素数(§5.1.2)
+
+    int hash(const string& s) const {        // 37 倍多项式散列
+        unsigned long long h = 0;
+        for (char c : s)
+            h = h * 37 + (unsigned char)c;
+        return int(h % buckets_.size());
+    }
+
+    bool find(const string& s) const {       // 查找:先定桶,再在链内找
+        for (const string& x : buckets_[hash(s)])
+            if (x == s) return true;
+        return false;
+    }
+
+    void insert(const string& s) {           // 插入:已存在则跳过
+        if (find(s)) return;
+        buckets_[hash(s)].push_back(s);      // 挂到对应桶的链表尾
+        ++size_;
+    }
+
+    void remove(const string& s) {           // 删除:定位桶后链内删除
+        list<string>& b = buckets_[hash(s)];
+        for (auto it = b.begin(); it != b.end(); ++it)
+            if (*it == s) { b.erase(it); --size_; return; }
+    }
+
+    int size() const { return size_; }
+    double loadFactor() const {              // 装填因子 λ = 元素数/表大小
+        return double(size_) / buckets_.size();
+    }
+};

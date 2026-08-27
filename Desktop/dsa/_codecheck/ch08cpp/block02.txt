@@ -1,0 +1,15 @@
+// sz[root] = 根所在树的结点数(只在根上有效)
+vector<int> parent, sz;
+
+int find(int x) {
+    while (parent[x] != x) x = parent[x];
+    return x;
+}
+
+void unionBySize(int a, int b) {
+    int ra = find(a), rb = find(b);
+    if (ra == rb) return;               // 已在同一集合
+    if (sz[ra] < sz[rb]) swap(ra, rb);  // 小树并入大树
+    parent[rb] = ra;                    // rb 不再是根,sz 作废
+    sz[ra] += sz[rb];
+}

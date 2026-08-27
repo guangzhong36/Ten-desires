@@ -1,0 +1,16 @@
+// 递归版:把 n! 分解为 n * (n-1)!,n <= 1 是基准情形
+// 与 C 的写法完全一致——递归是语言无关的思想
+long long factRec(int n) {
+    if (n <= 1) return 1;          // 基准情形:0! = 1! = 1
+    return n * factRec(n - 1);     // 不断推进:n 越来越小
+}
+
+// 迭代版:循环乘过去,不占调用栈
+long long factIter(int n) {
+    long long r = 1;
+    for (int i = 2; i <= n; ++i)
+        r *= i;
+    return r;
+}
+
+// 验证:factRec(10) = factIter(10) = 3628800

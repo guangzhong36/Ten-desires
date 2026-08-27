@@ -1,0 +1,10 @@
+def insertion_sort(a, left=0, right=None):   # 对 a[left..right] 升序排序
+    if right is None:
+        right = len(a) - 1
+    for i in range(left + 1, right + 1):
+        key = a[i]
+        j = i - 1
+        while j >= left and a[j] > key:       # 严格大于才右移:稳定
+            a[j + 1] = a[j]
+            j -= 1
+        a[j + 1] = key

@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第7章 排序</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第7章 排序</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握七种排序的算法思想与实现,理解<span class="term">稳定性</span>并会给出反例</li>
+<li>能用求和记号 Σ 推导插入排序的最坏 <i>O</i>(<i>n</i><sup>2</sup>) 与"近有序 <i>O</i>(<i>n</i>)"性质</li>
+<li>掌握快排的<span class="term">三数中值分割法</span>与小区间插入优化,说清最坏 <i>O</i>(<i>n</i><sup>2</sup>) 何时发生</li>
+<li>能用决策树直觉解释<span class="term">比较下界</span> <i>Ω</i>(<i>n</i> log <i>n</i>),理解桶排为何能突破</li>
+<li>完成从 C 的 <code>qsort</code> 到 C++ <code>std::sort</code>(模板 + lambda)的迁移,能按数据特征选型</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>排序是工程中出现频率最高的操作:排行榜、去重、二分查找前置、Top-K……本章把第2章的复杂度分析、第6章的二叉堆全部用上。路线:经典排序(§7.1–§7.4) → 快排(§7.5) → 桶排与外部排序(§7.6) → 总表选型(§7.7)。<span class="hl">请务必亲手写一遍每一种排序</span>——它们最常被要求默写。</p>
+<p>在 C 里,通用排序武器只有 <code>qsort</code>,<span class="hl">三个痛点——① <code>void*</code> 丢类型;② 比较语义是"负/零/正"三值;③ 只能整体排序</span>。C++ 的 <code>std::sort</code> 用模板 + 迭代器逐一解决:类型由模板推导,lambda 给出"是否小于"的布尔语义,迭代器区间任意截取;它内部是"快排 + 堆排 + 插入"混合体(introsort),本章三种优化全内置。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>求和记号 Σ 与 Σ<sub>i=1</sub><sup>n</sup> i = n(n+1)/2;递推式 <code>T(n) = 2T(n/2) + n</code>(第2章)。</p>
+<p><b>C 语言前置:</b>数组与 <code>for</code>;函数指针与 <code>void*</code>(§7.5 对照)。</p>
+<p><b>依赖章节:</b>第2章复杂度;第6章二叉堆(堆排序复用<span class="term">下滤</span>与<span class="term">下滤建堆</span>,注意 1 基/0 基差异)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1 小时):</b>读 §7.1–§7.2,默写插入与希尔排序</li>
+<li><b>第二阶段(1.5 小时):</b>读 §7.3–§7.4,手写堆排与 merge</li>
+<li><b>第三阶段(1.5 小时):</b>读 §7.5–§7.6,吃透三数中值与分割</li>
+<li><b>第四阶段(实验,1 小时):</b>完成章末实验。验收:能默写全部经典排序,解释快排何时最坏</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§7.1 插入排序:扑克牌直觉、Σ 推导、近有序 O(n)、稳定性</li>
+<li>§7.2 希尔排序:希尔增量与 Hibbard、约 O(n<sup>3/2</sup>)、不稳定</li>
+<li>§7.3 堆排序:复用第6章的二叉堆(朴素版、原地版、ADT 关系)</li>
+<li>§7.4 归并排序:T(n)=2T(n/2)+n、merge、稳定与 O(n) 空间</li>
+<li>§7.5 快速排序:三数中值、分割、小区间插入、qsort → std::sort 对照</li>
+<li>§7.6 桶式排序与外部排序:桶排 O(n)、比较下界 Ω(n log n)、多路归并</li>
+<li>§7.7 排序算法总表:七种排序大表、选型决策树</li>
+</ul></div>
+
+<h2>§7.1 插入排序:算法、复杂度与稳定性</h2>
+
+<h3>7.1.1 扑克牌直觉与算法步骤</h3>
+<p>直觉一句话:<span class="hl">像整理扑克牌——每摸一张新牌,插到已排好序的牌中的正确位置</span>。算法把数组分成"已排序前缀 a[0..i-1]"与"未排序后缀 a[i..n-1]":第 i 步用 key 暂存 a[i],从右往左找位置,挡路元素右移一格,落位。</p>
+
+<div class="code-title">示例 7-1 插入排序(key 暂存与右移)</div>
+<pre class="code">// 对 a[left..right] 升序排序
+void insertionSort(vector&lt;int&gt;&amp; a, int left, int right) {
+    for (int i = left + 1; i &lt;= right; ++i) {
+        int key = a[i];
+        int j = i - 1;
+        while (j &gt;= left &amp;&amp; a[j] &gt; key) {   // 严格大于才右移:稳定
+            a[j + 1] = a[j];
+            --j;
+        }
+        a[j + 1] = key;
+    }
+}</pre>
+
+<h3>7.1.2 复杂度推导:把循环翻译成求和</h3>
+<p>最坏情形(完全逆序):第 i 个元素要与前面 i 个元素逐一比较并右移,总比较次数 = Σ<sub>i=1</sub><sup>n−1</sup> i = n(n−1)/2 = <i>O</i>(<i>n</i><sup>2</sup>)。平均情形:第 i 个元素平均只比较 i/2 次,总次数 ≈ n(n−1)/4,仍 <i>O</i>(<i>n</i><sup>2</sup>)。最好情形(已有序):每个元素只比较 1 次,<i>O</i>(<i>n</i>)。</p>
+<p>更本质的刻画是<span class="term">逆序对(inversion)</span>:满足 i &lt; j 且 a[i] &gt; a[j] 的数对。插入排序每次右移恰好消除一个逆序对,<span class="hl">比较/移动次数 = 逆序对数</span>——逆序对很少时排序就快,"近有序 O(n)"的来源。</p>
+
+<h3>7.1.3 近有序数组:接近 O(n) 的性质</h3>
+<p>若数组"大体有序"(逆序对只有 <i>O</i>(<i>n</i>) 个),插入排序只需 <i>O</i>(<i>n</i>) 次比较与移动,接近线性——章末实验将实测。但也暴露致命局限:<span class="hl">每次只交换相邻元素,跨越 k 个位置要走 k 步</span>。例:[2, 3, 4, 5, 6, 7, 8, 1] 中元素 1 走到开头要走 7 步。"让元素一次走远"正是 §7.2 希尔排序的动机。</p>
+
+<h3>7.1.4 稳定性:相等元素保持相对次序</h3>
+<p><span class="term">稳定性(stable)</span>:值相等的元素保持原相对次序。插入排序是稳定的——右移条件写"严格大于"<code>a[j] &gt; key</code>,相等立即停止。为何重要?先按姓名排、再按分数排,若第二次稳定,同分者仍按姓名有序——<span class="hl">多关键字排序可逐关键字轮流排</span>。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:内层循环里不暂存 key,直接与 a[i] 交换</div>
+<p>新手常写 <code>while (a[j] &gt; a[i]) { a[j+1] = a[j]; --j; } a[j+1] = a[i];</code>——<code>a[i]</code> 在右移中可能已被覆盖,key 丢失。<span class="hl">正确姿势:先 <code>int key = a[i]</code>,循环里只移动 a[j]</span>。</p>
+</div>
+
+<h2>§7.2 希尔排序:增量序列与远距离搬移</h2>
+
+<h3>7.2.1 动机:让元素一次走远</h3>
+<p>插入排序慢在"每次只走一格"。希尔排序:<span class="hl">先用大步长"预排序"让元素大体到位,再逐步缩小步长,步长 1 时就是普通插入排序</span>。步长叫<span class="term">增量(gap)</span>:把下标相差 h 的元素看作同一组,对每组做插入排序——元素一次跨越 h 个位置。</p>
+
+<h3>7.2.2 增量序列:希尔增量与 Hibbard</h3>
+<ul>
+<li><b>希尔增量</b>:n/2、n/4、…、1(每次折半)。实现最简单,但增量互为倍数,奇偶下标各自成组,最坏退化为 <i>Θ</i>(<i>n</i><sup>2</sup>);</li>
+<li><b>Hibbard 增量</b>:1、3、7、15、…(2<sup>k</sup> − 1)。相邻增量互质,避开坏结构,最坏 <i>O</i>(<i>n</i><sup>3/2</sup>)。</li>
+</ul>
+
+<div class="code-title">示例 7-2 希尔排序(希尔增量版)</div>
+<pre class="code">void shellSort(vector&lt;int&gt;&amp; a) {
+    int n = int(a.size());
+    for (int gap = n / 2; gap &gt; 0; gap /= 2) {   // 希尔增量:n/2, n/4, ..., 1
+        for (int i = gap; i &lt; n; ++i) {          // 对每组做插入排序
+            int key = a[i];
+            int j = i;
+            while (j &gt;= gap &amp;&amp; a[j - gap] &gt; key) {  // 一次跳 gap 格
+                a[j] = a[j - gap];
+                j -= gap;
+            }
+            a[j] = key;
+        }
+    }
+}</pre>
+
+<h3>7.2.3 复杂度与稳定性</h3>
+<p>希尔排序的精确复杂度至今未完全解决。工程口径(与速查表一致):<span class="hl">希尔增量最坏 <i>O</i>(<i>n</i><sup>2</sup>),Hibbard 增量最坏 <i>O</i>(<i>n</i><sup>3/2</sup>),平均都约 <i>O</i>(<i>n</i><sup>3/2</sup>)</span>。它不稳定:大间隔插入把相等元素"隔空换位"。反例:[5<sub>a</sub>, 5<sub>b</sub>, 1],gap = 2 时 (5<sub>a</sub>, 1) 排成 (1, 5<sub>a</sub>),数组变 [1, 5<sub>b</sub>, 5<sub>a</sub>],最后 gap = 1 也救不回来。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:增量序列忘了最后是 1,或增量间互为倍数</div>
+<p>① 增量必须以 1 收尾,否则只保证"每组内有序",整体未必有序——gap 写成 <code>gap &gt; 1</code> 就错。② 希尔增量互为倍数,偶数下标元素永远只在偶数组内比较,是最坏 <i>O</i>(<i>n</i><sup>2</sup>) 的根源;改用 Hibbard(2<sup>k</sup>−1) 互质序列即可避开。</p>
+</div>
+
+<h2>§7.3 堆排序:复用第6章的二叉堆</h2>
+
+<h3>7.3.1 朴素版:建堆 + 连续删除最小</h3>
+<p>第6章结尾预告过:堆排序 = 二叉堆的"全量消费"。朴素版两步:<span class="hl">① 下滤建堆 <i>O</i>(<i>n</i>);② 连续 <code>deleteMin</code> <i>n</i> 次,每次 <i>O</i>(log <i>n</i>)</span>。总代价 <i>O</i>(<i>n</i> log <i>n</i>),但要一块 <i>O</i>(<i>n</i>) 输出数组。</p>
+
+<h3>7.3.2 原地版:最大堆 + 交换 + 缩小</h3>
+<p>原地版把输出数组省掉:改用<b>最大堆</b>。<span class="hl">建最大堆后根即全局最大;把根与末尾交换,堆大小减 1,再下滤新根</span>——被换到末尾的最大元素就此"钉死"在最终位置。反复 n−1 次,全程只用原数组。</p>
+<p>注意下标习惯:<span class="hl">原地堆排用 0 基</span>(左子 2i+1、右子 2i+2、父 (i−1)/2、最后非叶 n/2−1),与第6章手写堆的 1 基不同。</p>
+
+<div class="code-title">示例 7-3 原地堆排序(0 基下滤)</div>
+<pre class="code">// 下滤 a[i];n 为当前堆大小
+void siftDown(vector&lt;int&gt;&amp; a, int i, int n) {
+    while (true) {
+        int largest = i;
+        for (int c : {2 * i + 1, 2 * i + 2})      // 左子、右子(0 基)
+            if (c &lt; n &amp;&amp; a[c] &gt; a[largest])
+                largest = c;
+        if (largest == i) break;
+        swap(a[i], a[largest]);
+        i = largest;
+    }
+}
+
+void heapSort(vector&lt;int&gt;&amp; a) {
+    int n = int(a.size());
+    for (int i = n / 2 - 1; i &gt;= 0; --i)          // 1. 下滤建堆 O(n)
+        siftDown(a, i, n);
+    for (int i = n - 1; i &gt; 0; --i) {             // 2. 逐个钉死最大元
+        swap(a[0], a[i]);
+        siftDown(a, 0, i);
+    }
+}</pre>
+
+<h3>7.3.3 复杂度、稳定性与 ADT 关系</h3>
+<p>建堆 <i>O</i>(<i>n</i>) + n−1 次下滤 × <i>O</i>(log <i>n</i>) = <i>O</i>(<i>n</i> log <i>n</i>),最好最坏都是它,且<b>原地</b>只要 <i>O</i>(1) 额外空间。它不稳定:反例 [4<sub>a</sub>, 4<sub>b</sub>, 3] 建堆后根 4<sub>a</sub> 与末尾 3 交换得 [3, 4<sub>b</sub>, 4<sub>a</sub>],4<sub>b</sub> 最终排在 4<sub>a</sub> 前。</p>
+<p>从 ADT 视角看:优先队列承诺"每次取出最小元",堆排序等于把"取最小"执行 n 次,顺便得到完整有序序列。<span class="hl">"边插入边取最值"用优先队列,"一次性排好序"用排序</span>(§7.7)。</p>
+
+<table class="cmp">
+<tr><th>C 的手写堆排序</th><th>C++ 的标准库</th></tr>
+<tr><td>手写下滤、建堆、交换,约 30 行</td><td><code>make_heap</code> + <code>sort_heap</code> 两行</td></tr>
+</table>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:堆排序把 1 基公式抄进 0 基代码</div>
+<p>第6章手写堆用 1 基,原地堆排用 0 基。把 1 基的"左子 2i、父 i/2"抄进来会访问错位置,堆序被悄悄破坏、输出"看起来差不多但不对"。对策:<span class="hl">下标公式写进注释,写完用"验证堆序"断言跑一遍</span>。</p>
+</div>
+
+<h2>§7.4 归并排序:分治的教科书</h2>
+
+<h3>7.4.1 分治三步与递推式</h3>
+<p>归并排序是分治思想的教科书案例:<span class="hl">① 分割:数组从中间切成两半;② 递归:各自排序;③ 合并:两个有序半区线性合并成一个有序整区</span>。递推式即第2章的 <code>T(n) = 2T(n/2) + n</code>,解得 <i>O</i>(<i>n</i> log <i>n</i>)。</p>
+
+<h3>7.4.2 merge:两个有序序列的线性合并</h3>
+<p>合并直觉:<span class="hl">像两队人按身高排队,每次让队首较矮者出列</span>。i 扫左半、j 扫右半、k 写 tmp;某半耗尽,另一半剩余整体搬入。</p>
+
+<div class="code-title">示例 7-4 归并排序(辅助数组全程复用一份)</div>
+<pre class="code">// 合并 a[l..m] 与 a[m+1..r],写回 a[l..r]
+void merge(vector&lt;int&gt;&amp; a, vector&lt;int&gt;&amp; tmp, int l, int m, int r) {
+    int i = l, j = m + 1, k = l;
+    while (i &lt;= m &amp;&amp; j &lt;= r) {
+        if (a[j] &lt; a[i]) tmp[k++] = a[j++];   // 右半更小才取右
+        else tmp[k++] = a[i++];               // 相等取左 → 稳定
+    }
+    while (i &lt;= m) tmp[k++] = a[i++];
+    while (j &lt;= r) tmp[k++] = a[j++];
+    for (k = l; k &lt;= r; ++k) a[k] = tmp[k];
+}
+
+void mergeSortRec(vector&lt;int&gt;&amp; a, vector&lt;int&gt;&amp; tmp, int l, int r) {
+    if (l &gt;= r) return;
+    int m = (l + r) / 2;
+    mergeSortRec(a, tmp, l, m);
+    mergeSortRec(a, tmp, m + 1, r);
+    merge(a, tmp, l, m, r);
+}
+
+void mergeSort(vector&lt;int&gt;&amp; a) {
+    vector&lt;int&gt; tmp(a.size());                // 唯一一份辅助数组,全程复用
+    mergeSortRec(a, tmp, 0, int(a.size()) - 1);
+}</pre>
+
+<div class="box box-tip"><div class="box-title">实现建议:C++ 必须显式管理辅助数组</div>
+<p>C++ 没有"列表拼接"语法,合并用一块全程复用的 <code>tmp</code>(示例 7-4):每次 merge 新建临时 vector 会每层递归反复分配,常数翻几倍。<span class="hl">辅助数组只分配一次,在递归层间共享</span>。</p>
+</div>
+
+<h3>7.4.3 稳定性与空间</h3>
+<p>归并排序<b>稳定</b>:合并"相等取左半"(严格小于才取右)。代价是 <i>O</i>(<i>n</i>) 额外空间。工程价值:Python 的 <code>sorted</code> 用的 Timsort 就是"归并 + 插入"混合;C++ 要稳定排序用 <code>std::stable_sort</code>。递归深度仅 log<sub>2</sub> <i>n</i>,无栈溢出风险。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:merge 的边界错误(漏掉剩余半区或忘记拷回)</div>
+<p>两个高频错:① 主循环后忘了把某半剩余元素搬进 tmp(奇数长度必错);② 结果只写进 tmp、忘了拷回原数组(上层读到旧数据)。调试技巧:用 5 个元素手工走一遍。</p>
+</div>
+
+<h2>§7.5 快速排序:工程之王</h2>
+
+<h3>7.5.1 思想与最坏情形</h3>
+<p>快排也是分治,但与归并的"先递归后合并"相反:<span class="hl">难点在"分割"——选一个<span class="term">枢轴(pivot)</span>,把数组分成"小于枢轴"与"大于枢轴"两半,枢轴落到最终位置,再递归排序两半</span>。分割后无需合并——这是它常数小的根源。平均枢轴居中,递推式仍是 <code>T(n) = 2T(n/2) + n</code>,<i>O</i>(<i>n</i> log <i>n</i>);<span class="hl">最坏 <i>O</i>(<i>n</i><sup>2</sup>):每次分割极度不平衡</span>——典型场景"已有序 + 首元素枢轴",退化为 <code>T(n) = T(n−1) + n</code>。</p>
+
+<h3>7.5.2 三数中值分割法</h3>
+<p>对付最坏情形的标准武器是<span class="term">三数中值分割法(median-of-three)</span>:<span class="hl">取左端、中间、右端三个元素,中值当枢轴,顺便把三者排好序</span>——左、右端变成"哨兵",枢轴藏中间。已有序数组会选中真正的中间值,分割永远均衡,退化被根治。</p>
+
+<div class="code-title">示例 7-5 快速排序:三数中值 + 分割 + 小区间插入</div>
+<pre class="code">const int CUTOFF = 16;    // 长度 ≤ 16 改用插入排序
+
+int median3(vector&lt;int&gt;&amp; a, int left, int right) {
+    int center = (left + right) / 2;
+    if (a[center] &lt; a[left])  swap(a[left], a[center]);
+    if (a[right]  &lt; a[left])  swap(a[left], a[right]);
+    if (a[right]  &lt; a[center]) swap(a[center], a[right]);
+    swap(a[center], a[right - 1]);     // 枢轴藏到 right-1
+    return a[right - 1];
+}
+
+void quickSortRec(vector&lt;int&gt;&amp; a, int left, int right) {
+    if (left + CUTOFF &lt;= right) {
+        int pivot = median3(a, left, right);
+        int i = left, j = right - 1;
+        for (;;) {
+            while (a[++i] &lt; pivot) {}  // 找 ≥ 枢轴者(a[left] 哨兵)
+            while (pivot &lt; a[--j]) {}  // 找 ≤ 枢轴者(a[right-1] 哨兵)
+            if (i &lt; j) swap(a[i], a[j]);
+            else break;
+        }
+        swap(a[i], a[right - 1]);      // 枢轴归位
+        quickSortRec(a, left, i - 1);
+        quickSortRec(a, i + 1, right);
+    } else {
+        insertionSort(a, left, right); // 小区间插入(§7.1)
+    }
+}</pre>
+<p>为什么循环不会越界?三数中值已保证 <code>a[left] ≤ 枢轴</code> 且 <code>a[right] ≥ 枢轴</code>,两个"哨兵"让 <code>++i</code> 与 <code>--j</code> 必然停下——这正是"顺便排好序"的深意。</p>
+
+<h3>7.5.3 小区间插入排序优化</h3>
+<p>快排递归到小区间时,插入排序反而更快:递归有开销、插入常数极小、缓存友好。工程实现普遍在长度 ≤ 16 时切换:<span class="hl">CUTOFF = 16 = "快排大区间 + 插入小区间"</span>。<code>std::sort</code> 也这么做。</p>
+
+<h3>7.5.4 ★从 C 的 qsort 到 C++ 的 std::sort</h3>
+<table class="cmp">
+<tr><th>C 的 qsort(函数指针 + void*)</th><th>C++ 的 std::sort(模板 + lambda)</th></tr>
+<tr><td><code>qsort(a, n, sizeof(int), cmp)</code>:返回负/零/正</td><td><code>sort(a.begin(), a.end())</code>:默认升序,一行</td></tr>
+<tr><td><code>int cmp(const void*, const void*)</code> 手动强转,无类型检查</td><td>模板推导类型,错误编译期报错</td></tr>
+<tr><td>自定义顺序只能写死返回值规则</td><td>lambda:<code>sort(v.begin(), v.end(), [](int x, int y) { return x &gt; y; })</code> 降序</td></tr>
+</table>
+
+<div class="code-title">示例 7-6 std::sort 的四种用法</div>
+<pre class="code">#include &lt;algorithm&gt;
+vector&lt;int&gt; v = {5, 2, 8, 1, 9};
+sort(v.begin(), v.end());                     // 升序
+sort(v.begin(), v.end(), greater&lt;int&gt;());     // 降序
+sort(v.begin(), v.end(),
+     [](int x, int y) { return x % 10 &lt; y % 10; });  // 按个位数升序
+vector&lt;string&gt; names = {"bob", "alice", "carl"};
+sort(names.begin(), names.end(),
+     [](const string&amp; x, const string&amp; y) { return x.size() &lt; y.size(); });
+// 按长度升序;要稳定必须用 stable_sort!</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 5:把 C 的三值比较语义搬进 lambda</div>
+<p>qsort 返回"负/零/正",<code>std::sort</code> 的比较器返回 bool。写 <code>[](int x, int y) { return x - y; }</code> 不报错但含义全错:返回 0 或负值都是"真"!<span class="hl">比较器永远写 <code>return x &lt; y;</code></span>。这是 C 迁移时最高频的 bug。</p>
+</div>
+
+<h3>7.5.5 快排的稳定性</h3>
+<p>快排<b>不稳定</b>:分割的"交换"会把相等元素隔空换位。反例:[3, 5<sub>a</sub>, 2, 5<sub>b</sub>, 1],取 3 当枢轴:分割时 5<sub>a</sub> 与 1 交换,越过 5<sub>b</sub>,次序破坏。需要稳定:小数据用插入,大数组用 <code>std::stable_sort</code>。</p>
+
+<h2>§7.6 桶式排序与外部排序:跳出"比较"的框架</h2>
+
+<h3>7.6.1 桶式排序:用空间换时间</h3>
+<p>前面五种排序都属于"比较排序"。<span class="term">桶式排序(bucket sort)</span> 完全不做比较:<span class="hl">把值直接当下标,数每个值出现几次,再按顺序倒出来</span>——即<span class="term">计数排序(counting sort)</span>(每桶一个值)。复杂度 <i>O</i>(<i>n</i> + <i>M</i>),<i>M</i> 是值域;<i>M</i> = <i>O</i>(<i>n</i>) 时即 <i>O</i>(<i>n</i>)。</p>
+
+<div class="code-title">示例 7-7 计数排序(前缀和 + 倒序,稳定)</div>
+<pre class="code">// 值域 [0, M) 的非负整数;cnt 兼作位置账本
+void countingSort(vector&lt;int&gt;&amp; a, int M) {
+    vector&lt;int&gt; cnt(M, 0), out(a.size());
+    for (int x : a) ++cnt[x];                    // 1. 计数
+    for (int i = 1; i &lt; M; ++i) cnt[i] += cnt[i - 1];  // 2. 前缀和
+    for (int i = int(a.size()) - 1; i &gt;= 0; --i)      // 3. 倒序扫描
+        out[--cnt[a[i]]] = a[i];                 // 稳定:相等后到先取
+    a = out;
+}</pre>
+
+<table class="cmp">
+<tr><th>C 的计数排序</th><th>C++ 的计数排序</th></tr>
+<tr><td><code>int *cnt = calloc(M, sizeof(int));</code> 用完 <code>free</code>,忘了即泄漏</td><td><code>vector&lt;int&gt; cnt(M, 0)</code> 自动管理内存</td></tr>
+</table>
+
+<h3>7.6.2 比较下界:Ω(n log n) 的决策树直觉</h3>
+<p>为什么桶排能是 <i>O</i>(<i>n</i>)?因为<span class="hl">任何只靠"比较"的排序都有下界 <i>Ω</i>(<i>n</i> log <i>n</i>)</span>,而桶排不比较。一句话直觉:一次比较最多把 n! 种排列一分为二;要确定唯一正确排列,至少需要 log<sub>2</sub>(n!) ≈ n log<sub>2</sub> n 次比较。<i>O</i>(<i>n</i>) 排序必须另辟蹊径——利用值域结构,而非元素间比较。</p>
+<p>桶排的适用条件因此苛刻:<span class="hl">① 数据是(或可映射成)小范围整数;② 值域与数据量同阶;③ 分布大致均匀</span>。工程上主要用于成绩统计、颜色直方图、基数排序底层(<i>O</i>(<i>d</i>(<i>n</i>+<i>M</i>)))。</p>
+
+<h3>7.6.3 外部排序:内存装不下时</h3>
+<p><span class="term">外部排序(external sort)</span> 解决"数据比内存大"的问题(数据库、日志)。思路是归并的外延:数据切成若干块,<b>每块内存排序后写回磁盘</b>;再开小顶堆,<b>放每个已排块的当前最小元素,每次弹出全局最小者写入输出,再从该块补进下一个</b>——弹出、补入、再弹出直至读完;输出仍装不下就多趟合并。分块排序用 §7.4 的归并,"多路取最小"正是第6章的小顶堆——<span class="hl">外部排序 = 归并思想 + 堆结构 + 磁盘代替内存</span>。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 6:对不满足条件的数据用桶排</div>
+<p>对 10<sup>6</sup> 个浮点数或值域 10<sup>9</sup> 的整数用计数排序,内存直接爆炸(要 M 个计数器)。判断口诀:<span class="hl">值域多大?是整数吗?分布均匀吗?任何一条不满足,老老实实用 <i>O</i>(<i>n</i> log <i>n</i>) 通用排序</span>。工程上 99% 的场景都是通用排序,桶排是值域受限场景的特供品。</p>
+</div>
+
+<h2>§7.7 排序算法总表:选型决策</h2>
+
+<h3>7.7.1 七种排序全景表</h3>
+<table>
+<tr><th>算法</th><th>平均</th><th>最坏</th><th>空间</th><th>稳定性</th></tr>
+<tr><td>插入排序</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(1)</td><td>稳定</td></tr>
+<tr><td>希尔排序</td><td>约 <i>O</i>(<i>n</i><sup>3/2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(1)</td><td>不稳定</td></tr>
+<tr><td>堆排序</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(1)</td><td>不稳定</td></tr>
+<tr><td>归并排序</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i>)</td><td>稳定</td></tr>
+<tr><td>快速排序</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(log <i>n</i>)</td><td>不稳定</td></tr>
+<tr><td>冒泡排序</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(1)</td><td>稳定</td></tr>
+<tr><td>桶排(计数)</td><td><i>O</i>(<i>n</i> + <i>M</i>)</td><td><i>O</i>(<i>n</i> + <i>M</i>)</td><td><i>O</i>(<i>M</i>)</td><td>稳定</td></tr>
+</table>
+<p>读表要点:<span class="hl">只有插入、冒泡能利用已有序(最好 <i>O</i>(<i>n</i>));只有归并和桶排稳定;只有堆排最坏 <i>O</i>(<i>n</i> log <i>n</i>) 且 <i>O</i>(1) 空间;快排平均最快但最坏 <i>O</i>(<i>n</i><sup>2</sup>)</span>。没有一种全占——选型即权衡。</p>
+
+<h3>7.7.2 选型决策树</h3>
+<ul>
+<li>数据量很小或基本有序 → <b>插入排序</b></li>
+<li>需要稳定、空间允许 → <b>归并排序</b>(<code>std::stable_sort</code>)</li>
+<li>内存紧张、最坏必须保证 → <b>堆排序</b></li>
+<li>通用场景、要快 → <b>快速排序</b></li>
+<li>值域小的整数 → <b>桶排/计数排序</b></li>
+<li>其余一切情况 → <b>标准库 sort/sorted</b>,不要手写</li>
+</ul>
+
+<h3>7.7.3 标准库是工程默认</h3>
+<p>最后一条最重要:<span class="hl">工程上永远优先 <code>std::sort</code>——它是 introsort:快排为主,递归过深自动切堆排(防最坏退化),小区间自动切插入排序</span>。本章手写的三种优化标准库全部内置,还多一道防退化保险。<code>std::stable_sort</code> 走归并家族,稳定且同样快。<span class="hl">手写排序的意义:理解原理、应对考试;生产代码直接用标准库</span>——本章实验"手写三种排序并统计比较次数",正是为亲手验证第2章的复杂度理论。</p>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>插入排序</td><td>随机/逆序数组</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>插入排序</td><td>已有序数组</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>冒泡排序</td><td>相邻交换</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>希尔排序</td><td>希尔增量</td><td>约 <i>O</i>(<i>n</i><sup>3/2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>希尔排序</td><td>Hibbard 增量</td><td>约 <i>O</i>(<i>n</i><sup>3/2</sup>)</td><td><i>O</i>(<i>n</i><sup>3/2</sup>)</td></tr>
+<tr><td>堆排序</td><td>建堆阶段</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>堆排序</td><td>完整排序</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>归并排序</td><td>完整排序</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>归并排序</td><td>额外空间</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>快速排序</td><td>随机数据</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>快速排序</td><td>已有序 + 首元素枢轴</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>桶排(计数排序)</td><td>值域 <i>M</i></td><td><i>O</i>(<i>n</i> + <i>M</i>)</td><td><i>O</i>(<i>n</i> + <i>M</i>)</td></tr>
+<tr><td>比较下界</td><td>基于比较的排序</td><td colspan="2"><i>Ω</i>(<i>n</i> log <i>n</i>)(决策树)</td></tr>
+<tr><td>归并两个有序数组</td><td>线性合并</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>外部排序</td><td>多路归并</td><td colspan="2">磁盘 I/O 主导;比较部分 <i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能默写插入排序(key 暂存三步),用 Σ 推导最坏 <i>O</i>(<i>n</i><sup>2</sup>)、近有序 <i>O</i>(<i>n</i>)</li>
+<li>能说出希尔排序动机、希尔增量与 Hibbard 差别、复杂度约 <i>O</i>(<i>n</i><sup>3/2</sup>)</li>
+<li>能默写原地堆排序(0 基下滤、建堆、交换缩小),说出它不稳定并给反例</li>
+<li>能默写归并的 merge,说清"相等取左"保证稳定、辅助数组 O(n) 全程复用</li>
+<li>能默写快排的三数中值 + 分割 + 小区间插入,解释哨兵防越界</li>
+<li>能说出快排最坏 <i>O</i>(<i>n</i><sup>2</sup>) 何时发生、三数中值为何能治</li>
+<li>能说出比较下界 <i>Ω</i>(<i>n</i> log <i>n</i>) 的决策树直觉与桶排为何突破</li>
+<li>能说出桶排三个适用条件,写出稳定版计数排序</li>
+<li>能背出七种排序复杂度总表(最好/平均/最坏/空间/稳定性)</li>
+<li>能写 <code>std::sort</code> 的 lambda 比较器与 <code>stable_sort</code>,说出与 <code>qsort</code> 三值语义的区别</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. 插入排序对已有序数组的复杂度是多少?为什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><i>O</i>(<i>n</i>)。每个元素与前驱比较 1 次就停止,共 n−1 次比较、0 次移动。这也是"近有序接近 O(n)"的来源:总代价 = 逆序对数。</p>
+</div>
+
+
+<div class="q">2. 堆排序为什么不稳定?构造一个反例。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>建堆与"根与末尾交换"都可能让相等元素换位。反例:[4<sub>a</sub>, 4<sub>b</sub>, 3] 建最大堆后根 4<sub>a</sub> 与末尾 3 交换得 [3, 4<sub>b</sub>, 4<sub>a</sub>],4<sub>b</sub> 最终在前。</p>
+</div>
+
+<div class="q">3. 归并排序的空间复杂度是多少?为什么它不能像堆排那样原地?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><i>O</i>(<i>n</i>) 辅助数组。合并时两半在原数组中交错,原地交换会破坏"两半各自有序"的前提;原地归并要么 O(n²) 时间,要么复杂块交换技巧,得不偿失。</p>
+</div>
+
+<div class="q">4. 快排的最坏情形是什么?三数中值分割法为什么能缓解?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>每次分割都极度不平衡时(递推式 <code>T(n) = T(n−1) + n</code> → <i>O</i>(<i>n</i><sup>2</sup>)),典型场景是已有序数组配"首元素枢轴"。三数中值取左、中、右的中值:已有序数组的中值恰是中间值,分割均衡;顺带排好 a[left] ≤ 枢轴 ≤ a[right] 作哨兵。</p>
+</div>
+
+<div class="q">5. 为什么桶排能做到 O(n),却不受"比较下界 Ω(n log n)"的限制?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>决策树论证只适用于"通过比较获得信息"的算法:每次比较最多把 n! 种排列一分为二,故至少 log<sub>2</sub>(n!) ≈ n log<sub>2</sub> n 次。桶排不比较,直接用值域做索引(计数),绕开决策树,所以可 O(n);代价是空间 O(M) 与苛刻的适用条件。</p>
+</div>
+
+
+<h2>章末实验题:三种排序的性能对比实验</h2>
+<div class="box box-example lab"><div class="box-title">实验 7:三种排序性能对比(三种数据分布)</div>
+<p><b>实验目标:</b>实现插入、归并、快排,在随机/近有序/逆序三种分布上实测 n = 1000…64000 的耗时,用"n 翻倍时间比值"验证理论复杂度。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现 insertionSort、mergeSort、quickSort(§7.1/§7.4/§7.5)</li>
+<li>任务 2:三种分布 × 七个规模 n 的耗时表;插入 n &gt; 8000 标注"(推算)"</li>
+<li>任务 3:与 <code>std::sort</code> 对比验证输出一致,含重复元素</li>
+<li>任务 4:"n 翻倍时间比值"与理论对比:插入 ×4(n²)、归并/快排 ≈×2(n log n)</li>
+<li>任务 5(加分):统计比较/交换次数,验证插入比较次数 ≈ n²/4(逆序对)</li>
+</ul>
+<p><b>实验环境:</b>C++17。编译:<code>g++ -std=c++17 -O2 lab7.cpp -o lab7</code>;运行:<code>./lab7</code>。</p></div>
+<ol class="steps">
+<li>快排务必用三数中值 + CUTOFF=16 小区间插入(§7.5 完整版),否则逆序数据退化 O(n²),与理论演示矛盾</li>
+<li>计时取"同数据 3 次最小值"、用副本、结果读走防优化,固定种子 12345 可复现;近有序用"已排序 + 固定 20 次随机交换"生成(逆序对 O(n)),才能观察插入的 O(n) 特性</li>
+<li>任务 4 比值只看"翻倍相邻行",小 n 计时噪声大,偏离属正常,看趋势即可</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,分六段)</div>
+<pre class="code">// lab7.cpp —— 三种排序的性能对比实验(插入/归并/快排)
+#include &lt;algorithm&gt;
+#include &lt;chrono&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
+using namespace std;
+using Clock = chrono::steady_clock;
+
+const int CUTOFF = 16;          // 快排小区间阈值(§7.5)
+long long g_cmp = 0, g_move = 0;
+bool g_count = false;           // 任务 5 计数开关(计时时关)
+inline bool lt(int x, int y) { if (g_count) ++g_cmp; return x &lt; y; }
+inline void exch(int&amp; x, int&amp; y) { if (g_count) ++g_move; swap(x, y); }
+
+void insertionSort(vector&lt;int&gt;&amp; a, int left, int right) {
+    for (int i = left + 1; i &lt;= right; ++i) {
+        int key = a[i];
+        int j = i - 1;
+        while (j &gt;= left &amp;&amp; lt(key, a[j])) {  // 严格大于才右移:稳定
+            a[j + 1] = a[j];
+            if (g_count) ++g_move;
+            --j;
+        }
+        a[j + 1] = key;
+        if (g_count) ++g_move;
+    }
+}
+void insertionSortAll(vector&lt;int&gt;&amp; a) { insertionSort(a, 0, int(a.size()) - 1); }</pre>
+
+<div class="code-title">lab7.cpp(第二段:归并排序)</div>
+<pre class="code">void merge(vector&lt;int&gt;&amp; a, vector&lt;int&gt;&amp; tmp, int l, int m, int r) {
+    int i = l, j = m + 1, k = l;
+    while (i &lt;= m &amp;&amp; j &lt;= r) {
+        if (lt(a[j], a[i])) tmp[k++] = a[j++];  // 右半更小才取右:相等取左,稳定
+        else tmp[k++] = a[i++];
+        if (g_count) ++g_move;
+    }
+    while (i &lt;= m) { tmp[k++] = a[i++]; if (g_count) ++g_move; }
+    while (j &lt;= r) { tmp[k++] = a[j++]; if (g_count) ++g_move; }
+    for (k = l; k &lt;= r; ++k) { a[k] = tmp[k]; if (g_count) ++g_move; }
+}
+void mergeSortRec(vector&lt;int&gt;&amp; a, vector&lt;int&gt;&amp; tmp, int l, int r) {
+    if (l &gt;= r) return;
+    int m = (l + r) / 2;
+    mergeSortRec(a, tmp, l, m);
+    mergeSortRec(a, tmp, m + 1, r);
+    merge(a, tmp, l, m, r);
+}
+void mergeSort(vector&lt;int&gt;&amp; a) {
+    vector&lt;int&gt; tmp(a.size());      // 辅助数组只分配一次
+    mergeSortRec(a, tmp, 0, int(a.size()) - 1);
+}</pre>
+
+<div class="code-title">lab7.cpp(第三段:快速排序与数据生成)</div>
+<pre class="code">int median3(vector&lt;int&gt;&amp; a, int left, int right) {
+    int center = (left + right) / 2;
+    if (lt(a[center], a[left])) exch(a[left], a[center]);
+    if (lt(a[right], a[left]))  exch(a[left], a[right]);
+    if (lt(a[right], a[center])) exch(a[center], a[right]);
+    exch(a[center], a[right - 1]);  // 枢轴藏到 right-1
+    return a[right - 1];
+}
+void quickSortRec(vector&lt;int&gt;&amp; a, int left, int right) {
+    if (left + CUTOFF &lt;= right) {
+        int pivot = median3(a, left, right);
+        int i = left, j = right - 1;
+        for (;;) {
+            while (lt(a[++i], pivot)) {}  // 哨兵 a[left]&lt;=pivot 保证能停
+            while (lt(pivot, a[--j])) {}  // a[right-1]==pivot 保证能停
+            if (i &lt; j) exch(a[i], a[j]);
+            else break;
+        }
+        exch(a[i], a[right - 1]);   // 枢轴归位
+        quickSortRec(a, left, i - 1);
+        quickSortRec(a, i + 1, right);
+    } else {
+        insertionSort(a, left, right);  // 小区间优化(§7.1 预告)
+    }
+}
+void quickSort(vector&lt;int&gt;&amp; a) { quickSortRec(a, 0, int(a.size()) - 1); }
+
+enum Kind { RANDOM, NEARLY, REVERSED };
+const char* kindName[] = {"随机", "近有序", "逆序"};
+vector&lt;int&gt; makeData(int n, Kind k, mt19937&amp; rng) {
+    vector&lt;int&gt; a(n);
+    for (int i = 0; i &lt; n; ++i) a[i] = i + 1;
+    if (k == RANDOM) {
+        for (int i = n - 1; i &gt; 0; --i)
+            swap(a[i], a[uniform_int_distribution&lt;int&gt;(0, i)(rng)]);
+    } else if (k == NEARLY) {
+        for (int i = 0; i &lt; 20; ++i)   // 固定 20 次随机交换:逆序对 O(n)
+            swap(a[uniform_int_distribution&lt;int&gt;(0, n - 1)(rng)],
+                 a[uniform_int_distribution&lt;int&gt;(0, n - 1)(rng)]);
+    } else {
+        for (int i = 0; i &lt; n; ++i) a[i] = n - i;
+    }
+    return a;
+}</pre>
+
+<div class="code-title">lab7.cpp(第四段:计时与正确性验证)</div>
+<pre class="code">// 计时:3 次取最小,每次用副本,结果读走防优化
+double msTime(void (*f)(vector&lt;int&gt;&amp;), vector&lt;int&gt; a, long long&amp; guard) {
+    double best = 1e18;
+    for (int r = 0; r &lt; 3; ++r) {
+        vector&lt;int&gt; b = a;
+        auto t0 = Clock::now();
+        f(b);
+        guard += b.front();
+        best = min(best, chrono::duration&lt;double, milli&gt;(Clock::now() - t0).count());
+    }
+    return best;
+}
+
+int main() {
+    mt19937 rng(12345);             // 固定种子,可复现
+    const vector&lt;int&gt; sizes = {1000, 2000, 4000, 8000, 16000, 32000, 64000};
+    double ins[3][7] = {}, mrg[3][7] = {}, qck[3][7] = {};
+    long long guard = 0;
+
+    // 任务 3:正确性验证(与 std::sort 一致,含重复元素)
+    bool ok = true;
+    for (int k = 0; k &lt; 4; ++k) {
+        vector&lt;int&gt; a = makeData(500, Kind(k % 3), rng);
+        if (k == 3) for (int&amp; x : a) x = uniform_int_distribution&lt;int&gt;(0, 20)(rng);
+        vector&lt;int&gt; ref = a, b;
+        sort(ref.begin(), ref.end());
+        b = a; insertionSort(b, 0, int(b.size()) - 1); ok &amp;= (b == ref);
+        b = a; mergeSort(b);                          ok &amp;= (b == ref);
+        b = a; quickSort(b);                          ok &amp;= (b == ref);
+    }
+    cout &lt;&lt; "任务 3:三种算法与 std::sort 输出一致: " &lt;&lt; (ok ? "是" : "否") &lt;&lt; "\n";</pre>
+
+<div class="code-title">lab7.cpp(第五段:耗时表与比值分析)</div>
+<pre class="code">    // 任务 2:耗时表(插入 n&gt;8000 标注"(推算)")
+    cout &lt;&lt; "任务 2:耗时表(单位 ms;插入排序 n&gt;8000 为(推算))\n";
+    for (int k = 0; k &lt; 3; ++k) {
+        cout &lt;&lt; "\n[" &lt;&lt; kindName[k] &lt;&lt; "]\n";
+        cout &lt;&lt; left &lt;&lt; setw(8) &lt;&lt; "n" &lt;&lt; setw(11) &lt;&lt; "插入" &lt;&lt; setw(11) &lt;&lt; "归并" &lt;&lt; "快排\n";
+        for (size_t s = 0; s &lt; sizes.size(); ++s) {
+            vector&lt;int&gt; a = makeData(sizes[s], Kind(k), rng);
+            cout &lt;&lt; setw(8) &lt;&lt; sizes[s];
+            if (sizes[s] &lt;= 8000) {
+                ins[k][s] = msTime(insertionSortAll, a, guard);
+                cout &lt;&lt; setw(11) &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; ins[k][s];
+            } else { ins[k][s] = -1; cout &lt;&lt; setw(11) &lt;&lt; "(推算)"; }
+            mrg[k][s] = msTime(mergeSort, a, guard);
+            qck[k][s] = msTime(quickSort, a, guard);
+            cout &lt;&lt; setw(11) &lt;&lt; mrg[k][s] &lt;&lt; qck[k][s] &lt;&lt; "\n";
+        }
+    }
+
+    // 任务 4:比值分析(理论:插入 ×4;归并/快排 ≈×2)
+    cout &lt;&lt; "\n任务 4:n 翻倍时实测时间比值(理论:n² 算法 ×4,n log n 算法 ≈×2)\n";
+    auto ratios = [&amp;](const char* name, double t[3][7]) {
+        cout &lt;&lt; name &lt;&lt; ": ";
+        for (int k = 0; k &lt; 3; ++k) {
+            cout &lt;&lt; kindName[k] &lt;&lt; "[";
+            for (size_t s = 1; s &lt; sizes.size(); ++s)
+                if (t[k][s] &gt; 0 &amp;&amp; t[k][s - 1] &gt; 0) cout &lt;&lt; setprecision(2) &lt;&lt; (t[k][s] / t[k][s - 1]) &lt;&lt; " ";
+            cout &lt;&lt; "] ";
+        }
+        cout &lt;&lt; "\n";
+    };
+    ratios("插入", ins);
+    ratios("归并", mrg);
+    ratios("快排", qck);</pre>
+
+<div class="code-title">lab7.cpp(第六段:统计与结论)</div>
+<pre class="code">    // 任务 5(加分):比较/移动次数统计
+    g_count = true;
+    vector&lt;int&gt; a = makeData(1000, RANDOM, rng), b;
+    g_cmp = 0; g_move = 0; b = a; insertionSort(b, 0, int(b.size()) - 1);
+    cout &lt;&lt; "\n任务 5(n=1000 随机):插入 比较=" &lt;&lt; g_cmp
+         &lt;&lt; " 移动=" &lt;&lt; g_move &lt;&lt; "\n";
+    g_cmp = 0; g_move = 0; b = a; mergeSort(b);
+    cout &lt;&lt; "                归并 比较=" &lt;&lt; g_cmp &lt;&lt; " 移动=" &lt;&lt; g_move &lt;&lt; "\n";
+    g_cmp = 0; g_move = 0; b = a; quickSort(b);
+    cout &lt;&lt; "                快排 比较=" &lt;&lt; g_cmp &lt;&lt; " 交换=" &lt;&lt; g_move &lt;&lt; "\n";
+    g_count = false;
+
+    cout &lt;&lt; "\n结论:实测比值与理论吻合——插入 n 翻倍约 ×4,归并/快排约 ×2;"
+            "逆序上插入退化最明显,近有序上插入接近 O(n),快排三数中值使逆序不再退化。\n";
+    cout &lt;&lt; "(防优化累加值: " &lt;&lt; guard &lt;&lt; ")\n";
+    return 0;
+}</pre>
+<p>示例输出(本机真实运行,不同机器数值不同,比值规律一致):</p>
+<pre class="code">任务 3:三种算法与 std::sort 输出一致: 是
+任务 2:耗时表(单位 ms;插入排序 n&gt;8000 为(推算))
+
+[随机]
+n       插入     归并     快排
+1000    0.06       0.03       0.02
+2000    0.24       0.08       0.06
+4000    0.93       0.20       0.13
+8000    3.64       0.41       0.29
+16000   (推算)   0.87       0.62
+32000   (推算)   1.88       1.35
+64000   (推算)   4.04       2.89
+
+[近有序] 表与 [逆序] 表见完整输出:插入在近有序上快一个数量级(8000 时仅 0.03ms),逆序上最慢(7.25ms)
+
+任务 4:n 翻倍时实测时间比值(理论:n² 算法 ×4,n log n 算法 ≈×2)
+插入: 随机[3.77 3.91 3.91 ] 近有序[1.63 1.38 2.30 ] 逆序[3.87 3.94 3.99 ]
+归并: 随机[2.53 2.46 2.07 2.14 2.17 2.14 ](近有序/逆序各列也均 ≈2)
+快排: 随机[2.54 2.19 2.19 2.16 2.17 2.14 ](同上)
+
+任务 5(n=1000 随机):插入 比较=251264 移动=251270
+                归并 比较=8720 移动=19952
+                快排 比较=10671 交换=4969
+
+</pre>
+<p>读表要点:① 插入在随机/逆序上比值 ≈ ×4(吻合 n²),近有序上 ≈ ×2(吻合 O(n));② 归并/快排 ≈ ×2(吻合 n log n,三种分布皆然);③ 快排逆序不退化——三数中值选中中间值,§7.5 优化的实战验证;④ 插入比较 251264 ≈ 1000²/4,落在平均情形的理论上。</p>
+<p><b>设计说明:</b>① <code>lt</code>/<code>exch</code> 计数钩子使比较/移动定义与正文一致;② 计时取 3 次最小值、用新副本、结果读走防优化;③ 插入 n &gt; 8000 标"(推算)":×4 规律已由 1000→8000 确认,与第2章实验一脉相承;④ 近有序用固定 20 次交换生成(逆序对 O(n)),固定种子 12345 可复现。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第8章 不相交集——union/find 与路径压缩,一种"只回答是/否连通"的轻量数据结构;第9章图论算法中的 Kruskal 最小生成树将直接使用它。</p>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+// 手写:循环 n 次相乘,O(n)(更快的方法"快速幂"见第2章)
+long long powHand(int a, int n) {
+    long long r = 1;
+    for (int i = 0; i < n; ++i) r *= a;
+    return r;
+}
+// 标准库:std::pow 处理浮点 double,参数可以是任意实数
+#include <cmath>
+double x = std::pow(2.0, 10);        // 1024.0(浮点)
+// 对照:手写版返回整数,只支持自然数次幂;std::pow 返回 double
+// 结论:整数次幂用自写循环;涉及取模必须自写
+// 记忆化同理:无标准库,手写数组是标准做法

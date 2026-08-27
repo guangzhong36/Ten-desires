@@ -1,0 +1,57 @@
+// lab.cpp —— 迷宫生成与连通分量统计(第一段:并查集与朴素版)
+// 编译:g++ -std=c++17 -O2 -o lab lab.cpp   运行:./lab
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <random>
+#include <chrono>
+#include <string>
+#include <utility>
+#include <algorithm>
+using namespace std;
+using Clock = chrono::steady_clock;
+
+// ---------- 任务 1:并查集(按秩合并 + 路径压缩) ----------
+class UnionFind {
+    vector<int> parent_, rank_;
+public:
+    int count;                              // 当前连通分量个数
+    UnionFind(int n) : parent_(n), rank_(n, 0), count(n) {
+        iota(parent_.begin(), parent_.end(), 0);
+    }
+    int find(int x) {                       // 迭代版路径压缩:两趟
+        int root = x;
+        while (parent_[root] != root) root = parent_[root];
+        while (parent_[x] != x) {           // 第二趟:沿途结点挂到根
+            int nxt = parent_[x];
+            parent_[x] = root;
+            x = nxt;
+        }
+        return root;
+    }
+    bool unite(int a, int b) {
+        int ra = find(a), rb = find(b);
+        if (ra == rb) return false;
+        if (rank_[ra] < rank_[rb]) swap(ra, rb);
+        parent_[rb] = ra;                   // 浅树挂到深树
+        if (rank_[ra] == rank_[rb]) ++rank_[ra];
+        --count;                            // 成功合并,分量减 1
+        return true;
+    }
+};
+
+// ---------- 任务 4 对比用:朴素版(无任何优化) ----------
+struct NaiveUF {
+    vector<int> parent_;
+    NaiveUF(int n) : parent_(n) {
+        iota(parent_.begin(), parent_.end(), 0);
+    }
+    int find(int x) {
+        while (parent_[x] != x) x = parent_[x];
+        return x;
+    }
+    void unite(int a, int b) {
+        a = find(a); b = find(b);
+        if (a != b) parent_[a] = b;         // 固定挂到 b 下,易成长链
+    }
+};

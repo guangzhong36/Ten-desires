@@ -1,0 +1,11 @@
+def counting_sort(a, M):                      # 值域 [0, M) 的非负整数
+    cnt = [0] * M                             # cnt 兼作位置账本
+    out = [0] * len(a)
+    for x in a:                               # 1. 计数
+        cnt[x] += 1
+    for i in range(1, M):                     # 2. 前缀和
+        cnt[i] += cnt[i - 1]
+    for x in reversed(a):                     # 3. 倒序扫描
+        cnt[x] -= 1
+        out[cnt[x]] = x                       # 稳定:相等后到先取
+    return out

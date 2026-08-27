@@ -1,0 +1,22 @@
+# 每次 push 收 3 元(1 元自用 + 2 元存款),扩容拷贝从账户支付。
+class BankArray:
+    def __init__(self):
+        self._buf = [None] * 1
+        self._size = 0
+        self._cap = 1
+        self.balance = 0                # 账户余额
+        self.min_balance = float("inf") # 全程最低余额
+    def push_back(self, x):
+        self.balance += 3               # 收 3 元
+        self.balance -= 1               # 支付本次写入
+        if self._size == self._cap:     # 容量满:倍增
+            new_buf = [None] * (self._cap * 2)
+            for i in range(self._size):
+                new_buf[i] = self._buf[i]
+                self.balance -= 1       # 每拷 1 个付 1 元
+            self._buf = new_buf
+            self._cap *= 2
+        self._buf[self._size] = x
+        self._size += 1
+        if self.balance < self.min_balance:
+            self.min_balance = self.balance

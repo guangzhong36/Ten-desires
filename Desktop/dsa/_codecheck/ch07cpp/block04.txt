@@ -1,0 +1,24 @@
+// 合并 a[l..m] 与 a[m+1..r],写回 a[l..r]
+void merge(vector<int>& a, vector<int>& tmp, int l, int m, int r) {
+    int i = l, j = m + 1, k = l;
+    while (i <= m && j <= r) {
+        if (a[j] < a[i]) tmp[k++] = a[j++];   // 右半更小才取右
+        else tmp[k++] = a[i++];               // 相等取左 → 稳定
+    }
+    while (i <= m) tmp[k++] = a[i++];
+    while (j <= r) tmp[k++] = a[j++];
+    for (k = l; k <= r; ++k) a[k] = tmp[k];
+}
+
+void mergeSortRec(vector<int>& a, vector<int>& tmp, int l, int r) {
+    if (l >= r) return;
+    int m = (l + r) / 2;
+    mergeSortRec(a, tmp, l, m);
+    mergeSortRec(a, tmp, m + 1, r);
+    merge(a, tmp, l, m, r);
+}
+
+void mergeSort(vector<int>& a) {
+    vector<int> tmp(a.size());                // 唯一一份辅助数组,全程复用
+    mergeSortRec(a, tmp, 0, int(a.size()) - 1);
+}

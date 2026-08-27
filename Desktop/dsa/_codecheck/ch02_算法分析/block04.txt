@@ -1,0 +1,12 @@
+int maxSubSum2(const vector<int>& a) {
+    int maxSum = 0;
+    for (size_t i = 0; i < a.size(); ++i) {
+        int thisSum = 0;
+        for (size_t j = i; j < a.size(); ++j) {
+            thisSum += a[j];        // 增量更新,不再重算
+            if (thisSum > maxSum)
+                maxSum = thisSum;
+        }
+    }
+    return maxSum;
+}

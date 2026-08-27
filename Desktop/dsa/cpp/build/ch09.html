@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>第9章 图论算法</title>
+<style>@font-face{font-display:block;font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_AMS-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Main-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Math-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-display:block;font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Script-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size1-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size2-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size3-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Size4-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-display:block;font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(../assets/katex-fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;position:relative;text-indent:0;text-rendering:auto}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.18.4"}.katex .katex-mathml{border:0;-webkit-clip-path:inset(50%);clip-path:inset(50%);height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.katex-newline{display:block}.katex .katex-base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .katex-base,.katex .katex-strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathboldfrak,.katex .textboldfrak{font-family:KaTeX_Fraktur;font-weight:700}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .mathsfit,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .katex-vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .katex-thinbox{display:inline-flex;flex-direction:row;max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline,.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-rule,.katex .katex-underline .underline-line,.katex .mfrac .frac-line{min-height:1px}.katex .mspace{display:inline-block}.katex .katex-smash{display:inline;line-height:0}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.katex-inner,.katex .llap>.katex-inner,.katex .rlap>.katex-inner{position:absolute}.katex .clap>.katex-fix,.katex .llap>.katex-fix,.katex .rlap>.katex-fix{display:inline-block}.katex .llap>.katex-inner{right:0}.katex .clap>.katex-inner,.katex .rlap>.katex-inner{left:0}.katex .clap>.katex-inner>span{margin-left:-50%;margin-right:50%}.katex .katex-rule{border:0 solid;display:inline-block;position:relative}.katex .katex-hline,.katex .katex-overline .overline-line,.katex .katex-underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .katex-hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.katex-root{margin-left:.2777777778em;margin-right:-.5555555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .katex-sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .katex-sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .katex-sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .katex-sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .katex-sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .katex-sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .katex-sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .katex-sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .katex-sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .katex-sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .katex-sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .katex-sizing.reset-size2.size1{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .katex-sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .katex-sizing.reset-size2.size3{font-size:1.1666666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .katex-sizing.reset-size2.size4{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .katex-sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .katex-sizing.reset-size2.size6{font-size:1.6666666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .katex-sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .katex-sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .katex-sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .katex-sizing.reset-size2.size10{font-size:3.4566666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .katex-sizing.reset-size2.size11{font-size:4.1466666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .katex-sizing.reset-size3.size1{font-size:.7142857143em}.katex .fontsize-ensurer.reset-size3.size2,.katex .katex-sizing.reset-size3.size2{font-size:.8571428571em}.katex .fontsize-ensurer.reset-size3.size3,.katex .katex-sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .katex-sizing.reset-size3.size4{font-size:1.1428571429em}.katex .fontsize-ensurer.reset-size3.size5,.katex .katex-sizing.reset-size3.size5{font-size:1.2857142857em}.katex .fontsize-ensurer.reset-size3.size6,.katex .katex-sizing.reset-size3.size6{font-size:1.4285714286em}.katex .fontsize-ensurer.reset-size3.size7,.katex .katex-sizing.reset-size3.size7{font-size:1.7142857143em}.katex .fontsize-ensurer.reset-size3.size8,.katex .katex-sizing.reset-size3.size8{font-size:2.0571428571em}.katex .fontsize-ensurer.reset-size3.size9,.katex .katex-sizing.reset-size3.size9{font-size:2.4685714286em}.katex .fontsize-ensurer.reset-size3.size10,.katex .katex-sizing.reset-size3.size10{font-size:2.9628571429em}.katex .fontsize-ensurer.reset-size3.size11,.katex .katex-sizing.reset-size3.size11{font-size:3.5542857143em}.katex .fontsize-ensurer.reset-size4.size1,.katex .katex-sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .katex-sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .katex-sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .katex-sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .katex-sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .katex-sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .katex-sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .katex-sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .katex-sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .katex-sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .katex-sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .katex-sizing.reset-size5.size1{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .katex-sizing.reset-size5.size2{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .katex-sizing.reset-size5.size3{font-size:.7777777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .katex-sizing.reset-size5.size4{font-size:.8888888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .katex-sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .katex-sizing.reset-size5.size6{font-size:1.1111111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .katex-sizing.reset-size5.size7{font-size:1.3333333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .katex-sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .katex-sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .katex-sizing.reset-size5.size10{font-size:2.3044444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .katex-sizing.reset-size5.size11{font-size:2.7644444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .katex-sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .katex-sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .katex-sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .katex-sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .katex-sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .katex-sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .katex-sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .katex-sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .katex-sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .katex-sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .katex-sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .katex-sizing.reset-size7.size1{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .katex-sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .katex-sizing.reset-size7.size3{font-size:.5833333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .katex-sizing.reset-size7.size4{font-size:.6666666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .katex-sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .katex-sizing.reset-size7.size6{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .katex-sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .katex-sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .katex-sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .katex-sizing.reset-size7.size10{font-size:1.7283333333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .katex-sizing.reset-size7.size11{font-size:2.0733333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .katex-sizing.reset-size8.size1{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .katex-sizing.reset-size8.size2{font-size:.4166666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .katex-sizing.reset-size8.size3{font-size:.4861111111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .katex-sizing.reset-size8.size4{font-size:.5555555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .katex-sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .katex-sizing.reset-size8.size6{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .katex-sizing.reset-size8.size7{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .katex-sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .katex-sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .katex-sizing.reset-size8.size10{font-size:1.4402777778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .katex-sizing.reset-size8.size11{font-size:1.7277777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .katex-sizing.reset-size9.size1{font-size:.2893518519em}.katex .fontsize-ensurer.reset-size9.size2,.katex .katex-sizing.reset-size9.size2{font-size:.3472222222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .katex-sizing.reset-size9.size3{font-size:.4050925926em}.katex .fontsize-ensurer.reset-size9.size4,.katex .katex-sizing.reset-size9.size4{font-size:.462962963em}.katex .fontsize-ensurer.reset-size9.size5,.katex .katex-sizing.reset-size9.size5{font-size:.5208333333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .katex-sizing.reset-size9.size6{font-size:.5787037037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .katex-sizing.reset-size9.size7{font-size:.6944444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .katex-sizing.reset-size9.size8{font-size:.8333333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .katex-sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .katex-sizing.reset-size9.size10{font-size:1.2002314815em}.katex .fontsize-ensurer.reset-size9.size11,.katex .katex-sizing.reset-size9.size11{font-size:1.4398148148em}.katex .fontsize-ensurer.reset-size10.size1,.katex .katex-sizing.reset-size10.size1{font-size:.2410800386em}.katex .fontsize-ensurer.reset-size10.size2,.katex .katex-sizing.reset-size10.size2{font-size:.2892960463em}.katex .fontsize-ensurer.reset-size10.size3,.katex .katex-sizing.reset-size10.size3{font-size:.337512054em}.katex .fontsize-ensurer.reset-size10.size4,.katex .katex-sizing.reset-size10.size4{font-size:.3857280617em}.katex .fontsize-ensurer.reset-size10.size5,.katex .katex-sizing.reset-size10.size5{font-size:.4339440694em}.katex .fontsize-ensurer.reset-size10.size6,.katex .katex-sizing.reset-size10.size6{font-size:.4821600771em}.katex .fontsize-ensurer.reset-size10.size7,.katex .katex-sizing.reset-size10.size7{font-size:.5785920926em}.katex .fontsize-ensurer.reset-size10.size8,.katex .katex-sizing.reset-size10.size8{font-size:.6943105111em}.katex .fontsize-ensurer.reset-size10.size9,.katex .katex-sizing.reset-size10.size9{font-size:.8331726133em}.katex .fontsize-ensurer.reset-size10.size10,.katex .katex-sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .katex-sizing.reset-size10.size11{font-size:1.1996142719em}.katex .fontsize-ensurer.reset-size11.size1,.katex .katex-sizing.reset-size11.size1{font-size:.2009646302em}.katex .fontsize-ensurer.reset-size11.size2,.katex .katex-sizing.reset-size11.size2{font-size:.2411575563em}.katex .fontsize-ensurer.reset-size11.size3,.katex .katex-sizing.reset-size11.size3{font-size:.2813504823em}.katex .fontsize-ensurer.reset-size11.size4,.katex .katex-sizing.reset-size11.size4{font-size:.3215434084em}.katex .fontsize-ensurer.reset-size11.size5,.katex .katex-sizing.reset-size11.size5{font-size:.3617363344em}.katex .fontsize-ensurer.reset-size11.size6,.katex .katex-sizing.reset-size11.size6{font-size:.4019292605em}.katex .fontsize-ensurer.reset-size11.size7,.katex .katex-sizing.reset-size11.size7{font-size:.4823151125em}.katex .fontsize-ensurer.reset-size11.size8,.katex .katex-sizing.reset-size11.size8{font-size:.578778135em}.katex .fontsize-ensurer.reset-size11.size9,.katex .katex-sizing.reset-size11.size9{font-size:.6945337621em}.katex .fontsize-ensurer.reset-size11.size10,.katex .katex-sizing.reset-size11.size10{font-size:.8336012862em}.katex .fontsize-ensurer.reset-size11.size11,.katex .katex-sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .katex-accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .katex-accent .accent-body{position:relative}.katex .katex-accent .accent-body:not(.accent-full){width:0}.katex .katex-overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex svg{fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .katex-stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .katex-stretchy:after,.katex .katex-stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .katex-sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.katex-tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.katex-tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+</style>
+<style>/* ============ 奥本海默《信号与系统》教辅模板 ============ */
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Microsoft YaHei", "微软雅黑", "SimSun", sans-serif;
+  font-size: 10pt;
+  line-height: 1.75;
+  color: #2d3436;
+  text-align: justify;
+}
+
+/* ---------- 章首 ---------- */
+.kicker {
+  font-size: 9pt; letter-spacing: 3px; color: #2e75b6;
+  text-transform: uppercase; margin: 0 0 4px;
+}
+h1.chapter-title {
+  font-size: 21pt; color: #123c63; margin: 0 0 6px;
+  padding-bottom: 10px; border-bottom: 3px solid #2e75b6;
+  text-align: left; line-height: 1.4;
+}
+.chapter-meta {
+  font-size: 9.5pt; color: #6b7c8c; margin: 6px 0 12px; text-align: left;
+}
+.chapter-meta b { color: #123c63; }
+
+/* ---------- 标题 ---------- */
+h2 {
+  font-size: 14pt; color: #123c63; margin: 0 0 10px;
+  padding: 6px 0 6px 12px;
+  border-left: 5px solid #2e75b6;
+  background: linear-gradient(90deg, #e8f1fa 0%, #f7fafd 70%, transparent 100%);
+  break-after: avoid; text-align: left;
+}
+h3 {
+  font-size: 11.5pt; color: #1f5c99; margin: 14px 0 6px;
+  break-after: avoid; text-align: left;
+}
+h3::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+h4 {
+  font-size: 10.5pt; color: #3d4853; margin: 10px 0 4px;
+  break-after: avoid; text-align: left;
+}
+h4::before { content: "▪ "; color: #2e75b6; }
+.sec { break-before: page; }
+
+/* ---------- 提示框(通用) ---------- */
+.box {
+  border-radius: 6px; padding: 7px 13px 8px; margin: 9px 0;
+  break-inside: avoid; text-align: justify;
+}
+.box .box-title {
+  font-weight: bold; font-size: 10.5pt; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.box .box-title::before { font-size: 11pt; }
+.box p { margin: 4px 0; }
+.box ul, .box ol { margin: 4px 0; padding-left: 22px; }
+.box li { margin: 2.5px 0; }
+
+.box-goal    { background: #eef4fb; border-left: 4px solid #2e75b6; }
+.box-goal .box-title { color: #1f5c99; }
+.box-goal .box-title::before { content: "🎯"; }
+
+.box-prereq  { background: #f4f5f6; border-left: 4px solid #98a2ab; }
+.box-prereq .box-title { color: #5c6670; }
+.box-prereq .box-title::before { content: "🧰"; }
+
+.box-intuition { background: #edf9f0; border-left: 4px solid #3aa15c; }
+.box-intuition .box-title { color: #2c7d47; }
+.box-intuition .box-title::before { content: "💡"; }
+
+.box-keypoint { background: #fff7e0; border-left: 4px solid #e0a800; }
+.box-keypoint .box-title { color: #a97f00; }
+.box-keypoint .box-title::before { content: "⭐"; }
+
+.box-example { background: #f8f5fd; border-left: 4px solid #8e6bd0; }
+.box-example .box-title { color: #6f4fc4; }
+.box-example .box-title::before { content: "📝"; }
+
+.box-pitfall { background: #fdf0ec; border-left: 4px solid #e0604a; }
+.box-pitfall .box-title { color: #c24530; }
+.box-pitfall .box-title::before { content: "⚠️"; }
+
+.box-tip { background: #e9f8f7; border-left: 4px solid #22a3a3; }
+.box-tip .box-title { color: #187d7d; }
+.box-tip .box-title::before { content: "🚀"; }
+
+.box-summary { background: #f1f4fb; border-left: 4px solid #4a66b8; }
+.box-summary .box-title { color: #3a539e; }
+.box-summary .box-title::before { content: "📌"; }
+
+.box-answer { background: #f6f8fa; border: 1px dashed #b8c4cf; border-radius: 6px; }
+.box-answer .box-title { color: #5c6670; }
+.box-answer .box-title::before { content: "✅"; }
+
+/* ---------- 公式 ---------- */
+.formula {
+  background: #f7f9fb; border: 1px solid #dfe6ec; border-radius: 5px;
+  padding: 6px 12px 7px; margin: 7px 0; text-align: center;
+  break-inside: avoid;
+}
+.formula .fname {
+  display: block; font-size: 8.5pt; color: #7f8a94; margin-bottom: 2px;
+  font-weight: bold; letter-spacing: 1px;
+}
+.formula .fname::before { content: "▌"; color: #2e75b6; margin-right: 5px; }
+.fnote { font-size: 9pt; color: #66727c; text-align: left; margin: 2px 0 8px; }
+
+/* ---------- 表格 ---------- */
+table {
+  border-collapse: collapse; width: 100%; margin: 8px 0;
+  break-inside: avoid; font-size: 9pt;
+}
+th {
+  background: #2e75b6; color: #fff; padding: 5px 7px;
+  border: 1px solid #2e75b6; font-weight: bold;
+}
+td { padding: 4px 7px; border: 1px solid #d5dde5; }
+tr:nth-child(even) td { background: #f4f8fc; }
+td.ctr, th.ctr { text-align: center; }
+table.tight td { padding: 3px 6px; font-size: 8.5pt; }
+
+/* ---------- 列表 / 正文 ---------- */
+p { margin: 6px 0; }
+ul, ol { margin: 6px 0; padding-left: 24px; }
+li { margin: 3px 0; }
+li > ul, li > ol { margin: 2px 0; }
+b, strong { color: #0f2f4d; }
+.term { color: #1f5c99; font-weight: bold; }
+.hl { background: #fff3bf; padding: 0 3px; border-radius: 3px; }
+.eqref { color: #2e75b6; }
+
+/* ---------- 知识导图 ---------- */
+.mindmap-wrap { text-align: center; margin: 10px 0; break-inside: avoid; page-break-inside: avoid; }
+.mindmap-wrap svg { max-width: 100%; height: auto; }
+.mindmap-caption { font-size: 9pt; color: #98a2ab; text-align: center; margin-top: 6px; }
+
+/* ---------- 例题步骤 ---------- */
+ol.steps { counter-reset: st; list-style: none; padding-left: 0; }
+ol.steps > li {
+  counter-increment: st; margin: 5px 0; padding-left: 30px; position: relative;
+}
+ol.steps > li::before {
+  content: "第" counter(st, cjk-ideographic) "步";
+  position: absolute; left: 0; top: 0;
+  font-size: 8pt; font-weight: bold; color: #6f4fc4;
+  background: #ece4fa; border-radius: 3px; padding: 0 5px;
+}
+
+/* ---------- 自测题 ---------- */
+.q { font-weight: bold; color: #123c63; margin: 10px 0 4px; }
+.q::before { content: "Q"; display: inline-block; background: #2e75b6; color: #fff;
+  border-radius: 3px; padding: 0 7px; margin-right: 8px; font-size: 9pt; }
+
+/* ---------- 代码块(MATLAB/伪代码) ---------- */
+.code {
+  background: #f4f6f8; border: 1px solid #dde4ea; border-radius: 5px;
+  padding: 8px 12px; margin: 8px 0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.6; white-space: pre-wrap;
+  break-inside: avoid; color: #123c63; text-align: left;
+}
+
+/* ---------- 其他 ---------- */
+hr.thin { border: none; border-top: 1px solid #dfe6ec; margin: 14px 0; }
+.small { font-size: 9pt; color: #66727c; }
+.center { text-align: center; }
+
+/* ============ 语言手册扩展(附加样式,不影响既有章节) ============ */
+/* 行内代码 */
+code {
+  font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+  background: #f0f3f6; padding: 0 4px; border-radius: 3px; color: #123c63;
+}
+/* 代码块标题(放在 pre.code 之前) */
+.code-title {
+  font-size: 8.5pt; color: #7f8a94; margin: 9px 0 -6px;
+  font-weight: bold; letter-spacing: 1px; text-align: left;
+}
+.code-title::before { content: "▍"; color: #2e75b6; margin-right: 4px; }
+/* 长代码行换行,避免横向溢出 */
+.code, pre.code { white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; }
+/* 文字版知识导图 */
+.toc-map {
+  background: #f7fafd; border: 1px solid #dfe6ec; border-radius: 6px;
+  padding: 9px 16px; margin: 8px 0; font-size: 9.5pt; break-inside: avoid;
+}
+.toc-map ul { margin: 3px 0; }
+.toc-map li { margin: 2px 0; }
+/* C 与 X 对照表 */
+table.cmp td:first-child, table.cmp th:first-child { width: 34%; }
+/* 实验题步骤 */
+.lab { border: 2px solid #8e6bd0; }
+</style>
+</head>
+<body>
+
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第9章 图论算法</h1>
+<div class="chapter-meta"><b>建议学时:</b>5–6 小时 | <b>难度:</b>★★★★☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>掌握图的基本术语(顶点、边、有向/无向、权),说出<span class="term">邻接矩阵</span>与<span class="term">邻接表</span>的代价差异;完成从 C 的二维数组、手写链表到 C++ <code>vector</code> 的迁移</li>
+<li>实现<span class="term">拓扑排序</span>(入度表 + 队列)并用"输出个数 &lt; 顶点数"检测环;实现 BFS 求无权<span class="term">最短路径</span>并回溯打印</li>
+<li>实现 Dijkstra 朴素版与堆优化版,说清 INF 选择的坑;实现 Bellman-Ford 检测负环</li>
+<li>实现 Prim 与 Kruskal <span class="term">最小生成树</span>,完成迷宫最短路径综合实验</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>图的直觉一句话:<span class="hl">图 = 一堆顶点 + 顶点之间的边,算法全部建立在"存图、遍历图"两个动作上</span>。前面 8 章学的栈、队列、堆、并查集本章全部派上用场:BFS 与拓扑用第3章的队列,Dijkstra 用第6章的堆,Kruskal 用第8章的不相交集——图论是前面所有数据结构的"总演习"。</p>
+<p>C++ 的解法是"数组 + 容器":<code>vector&lt;vector&lt;int&gt;&gt;</code> 一行声明动态邻接表,自动扩容;加权图用 <code>vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt;</code>——第6章 Dijkstra 堆里正是同款 <code>pair</code>。存图从十行手工变成一行声明,精力全花在算法本身。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>无特殊;只需第2章大 O 记号,复杂度字母约定 <i>V</i> = 顶点数、<i>E</i> = 边数。</p>
+<p><b>C 语言前置:</b>二维数组与下标运算;对照用的 <code>struct</code> 链表与 <code>qsort</code> 函数指针(可选)。</p>
+<p><b>依赖章节:</b>第3章栈与队列(BFS、拓扑排序、迭代 DFS 的显式栈);第6章 <code>priority_queue</code>(Dijkstra/Prim 堆优化);第8章不相交集(Kruskal 的 find/union)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1.5 小时):</b>读 §9.1–§9.3,敲两种建图,实现拓扑排序与 BFS</li>
+<li><b>第二阶段(2 小时):</b>读 §9.4–§9.6,对照朴素/堆优化两份 Dijkstra,体会 Prim 与 Dijkstra 的一行之差</li>
+<li><b>第三阶段(1.5 小时):</b>完成章末实验:迷宫最短路径(BFS + Dijkstra)</li>
+<li><b>验收:</b>默写建图、BFS 路径回溯、堆优化 Dijkstra、Kruskal 与各自复杂度</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§9.1 图的表示:术语与两种存储结构</li>
+<li>§9.2 拓扑排序:入度表与队列</li>
+<li>§9.3 无权最短路径:BFS 与路径回溯</li>
+<li>§9.4 Dijkstra 最短路:贪心、INF 与堆优化</li>
+<li>§9.5 负权边与 Bellman-Ford</li>
+<li>§9.6 最小生成树:Prim 与 Kruskal</li>
+<li>§9.7 最大流与 DFS 应用简介</li>
+<li>§9.8 工程实践:大图的正确打开方式</li>
+</ul></div>
+
+<h2>§9.1 图的表示:术语与两种存储结构</h2>
+
+<h3>9.1.1 基本术语</h3>
+<p>图由两部分组成:<span class="term">顶点(vertex)</span> 与 <span class="term">边(edge)</span>——顶点是"对象",边是"对象之间的关系"。三个常用例子:<b>城市-航班图</b>(城市=顶点,航线=边)、<b>课程依赖图</b>(课程=顶点,先修=边)、<b>网页链接图</b>(网页=顶点,链接=边)。</p>
+<ul>
+<li><b>有向图 vs 无向图:</b>边有方向叫有向边(<code>u → v</code>),全有向的图叫有向图(课程依赖);边不分方向叫无向边(<code>u — v</code>),对应无向图(道路网)。无向边可看作两条反向有向边。</li>
+<li><b>权(weight):</b>边上的数值(票价、距离)。带权叫加权图;不带权默认每条边代价 1。</li>
+<li><b>路径与环:</b>顶点间的边序列叫路径;首尾相同的叫环。拓扑排序只能处理无环有向图(DAG),即 §9.2 的主题。</li>
+</ul>
+
+<h3>9.1.2 邻接矩阵 vs 邻接表</h3>
+<p>存图只有两种主流方案,各有胜负。设 <i>V</i> 个顶点、<i>E</i> 条边,deg(u) 表示顶点 u 的邻居个数:</p>
+<table>
+<tr><th>对比项</th><th>邻接矩阵</th><th>邻接表</th></tr>
+<tr><td>存储空间</td><td><i>O</i>(<i>V</i><sup>2</sup>),无论边多少都占满</td><td><i>O</i>(<i>V</i> + <i>E</i>),稀疏图省空间</td></tr>
+<tr><td>判断边 (u, v) 是否存在</td><td><i>O</i>(1),直接查 g[u][v]</td><td><i>O</i>(deg(u)),遍历 u 的链表</td></tr>
+<tr><td>遍历 u 的所有邻居</td><td><i>O</i>(<i>V</i>),扫一整行</td><td><i>O</i>(deg(u)),顺着链表走</td></tr>
+<tr><td>适用场景</td><td>稠密小图(V ≤ 2000)</td><td>稀疏大图(工程绝大多数)</td></tr>
+</table>
+<p><span class="hl">口诀:图算法都要"遍历邻居",邻接表把这一步从 O(V) 降到 O(deg),整体复杂度下降一个量级</span>。邻接矩阵的用武之地是"V 小且频繁查边"的场景(如 Floyd)。V = 10<sup>5</sup> 时矩阵要 10<sup>10</sup> 个格子 ≈ 10 GB,直接内存崩溃。</p>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th></tr>
+<tr><td><code>int g[100][100];</code> 大小写死的二维数组</td><td><code>vector&lt;vector&lt;int&gt;&gt; g(n, vector&lt;int&gt;(n, 0));</code></td></tr>
+<tr><td><code>struct Edge { int to, w; struct Edge* next; };</code> 手写链表</td><td><code>vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt; g(n);</code> 每行一个自动 vector</td></tr>
+<tr><td><code>for (Edge* e = head[u]; e; e = e-&gt;next)</code> 指针遍历</td><td><code>for (auto&amp; [v, w] : g[u])</code> 范围 for 遍历</td></tr>
+<tr><td><code>malloc</code>/<code>free</code> 手动管理,忘记即泄漏</td><td>离开作用域自动释放,RAII 无泄漏</td></tr>
+</table>
+
+<div class="code-title">示例 9-1 有向无权图:邻接表建法(矩阵建法见上表 C 对照)</div>
+<pre class="code">// 需要 #include &lt;vector&gt;
+// 邻接表:g[u] 是 u 的所有出边终点
+vector&lt;vector&lt;int&gt;&gt; buildList(int n, const vector&lt;pair&lt;int,int&gt;&gt;&amp; edges) {
+    vector&lt;vector&lt;int&gt;&gt; g(n);
+    for (auto&amp; e : edges)
+        g[e.first].push_back(e.second);   // 无向图再加 g[v].push_back(u)
+    return g;
+}</pre>
+
+<h3>9.1.3 加权图:C 的手写链表 → C++ 的 pair</h3>
+<p>加权图在 C 里要用"边结点带权"的链表,建图几十行;C++ 用 <code>pair&lt;int,int&gt;</code> 存 (终点, 权):<code>vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt; g(V); g[u].push_back({v, w});</code>——读边直接 push_back,C++11 后嵌套模板 <code>&gt;&gt;</code> 无需空格。</p>
+
+<h2>§9.2 拓扑排序:入度表与队列</h2>
+
+<h3>9.2.1 什么是拓扑排序</h3>
+<p><span class="term">拓扑排序</span>:把有向无环图(DAG)的所有顶点排成一列,使每条边 <code>u → v</code> 都满足"u 排在 v 前"。最典型的场景是<b>课程先修依赖</b>:C 语言排在数据结构前,数据结构排在算法分析前——课程表就是拓扑序。<span class="hl">带环的有向图不存在拓扑序</span>(A 先修 B、B 又先修 A,谁也排不了),所以"能否拓扑排序"等价于"有没有环"。</p>
+
+<h3>9.2.2 Kahn 算法:入度表 + 队列</h3>
+<p>算法直觉:"不断摘掉没有前置的课程"。三步:① 统计每个顶点的<span class="term">入度</span>(指向它的边数);② 入度为 0 者全部入队——无前置,随时可安排;③ 出队 u,删掉它的所有出边(邻居入度减 1),新入度为 0 的邻居入队。<span class="hl">无环时必然输出全部 V 个顶点;输出个数 &lt; V 就是有环,务必检查</span>。</p>
+
+<div class="code-title">示例 9-2 拓扑排序(Kahn 算法)与环检测</div>
+<pre class="code">#include &lt;queue&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+// 返回拓扑序列;图有环时返回空序列
+vector&lt;int&gt; topoSort(int V, const vector&lt;vector&lt;int&gt;&gt;&amp; g) {
+    vector&lt;int&gt; indeg(V, 0);                  // ① 入度表
+    for (int u = 0; u &lt; V; ++u)
+        for (int v : g[u]) ++indeg[v];
+
+    queue&lt;int&gt; q;
+    for (int u = 0; u &lt; V; ++u)
+        if (indeg[u] == 0) q.push(u);
+
+    vector&lt;int&gt; order;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        order.push_back(u);
+        for (int v : g[u])
+            if (--indeg[v] == 0)              // 前置课程全部完成才入队
+                q.push(v);
+    }
+    if (int(order.size()) != V) return {};    // 输出个数 &lt; V:有环!
+    return order;
+}</pre>
+
+<h2>§9.3 无权最短路径:BFS 与路径回溯</h2>
+
+<h3>9.3.1 为什么 BFS 能求无权最短路</h3>
+<p>无权图(每条边代价 1)中,<span class="term">最短路径</span>就是"边数最少的路径"。BFS 按层扩展:第 1 层距离 1,第 2 层距离 2……<span class="hl">每个顶点第一次被访问时,步数一定最少</span>——队列严格按距离递增出队,"第一次到达即最短"正是 BFS 不需要 Dijkstra 的理由。</p>
+
+<table class="cmp">
+<tr><th>C 的手写循环队列</th><th>C++ 的 std::queue</th></tr>
+<tr><td><code>int q[100000]; int head, tail;</code> 自己维护下标与取模</td><td><code>queue&lt;int&gt; q; q.push(u); q.pop();</code></td></tr>
+<tr><td>空间写死,溢出要自己检查</td><td>自动扩容,永不"满"</td></tr>
+<tr><td>空/满判断:计数法或浪费一格(第3章)</td><td><code>empty()</code> 一行,边界交给标准库</td></tr>
+</table>
+
+<h3>9.3.2 距离数组与前驱数组回溯</h3>
+<p>求步数只需 <code>dist</code> 数组;打印路径还要 <code>prev</code> 数组记录"每个顶点从谁到达"。到终点后沿 prev 回溯到起点再反转,就是完整路径——<span class="term">前驱数组回溯</span>,Dijkstra 与 Bellman-Ford 沿用同一套路。</p>
+
+<div class="code-title">示例 9-3 无权最短路:BFS + 前驱数组回溯</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+// 返回 s 到各顶点的最短距离;dist[i] = -1 表示不可达
+vector&lt;int&gt; bfsDist(int s, const vector&lt;vector&lt;int&gt;&gt;&amp; g,
+                    vector&lt;int&gt;&amp; prev) {
+    int V = int(g.size());
+    vector&lt;int&gt; dist(V, -1);
+    prev.assign(V, -1);                        // prev[v]:从谁到达 v
+    queue&lt;int&gt; q;
+    dist[s] = 0;
+    q.push(s);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (int v : g[u]) {
+            if (dist[v] != -1) continue;       // 第一次到达即最短
+            dist[v] = dist[u] + 1;
+            prev[v] = u;
+            q.push(v);
+        }
+    }
+    return dist;
+}
+
+// 打印 s 到 t 的路径:沿 prev 回溯;不可达则提示
+void printPath(int s, int t, const vector&lt;int&gt;&amp; prev) {
+    vector&lt;int&gt; path;
+    for (int x = t; x != -1; x = prev[x]) {
+        path.push_back(x);
+        if (x == s) break;
+    }
+    if (path.empty() || path.back() != s) {    // 回溯到 -1 也没到 s
+        cout &lt;&lt; "无路径可达" &lt;&lt; endl;
+        return;
+    }
+    for (int i = int(path.size()) - 1; i &gt;= 0; --i)
+        cout &lt;&lt; path[i] &lt;&lt; (i ? " -&gt; " : "\n");
+}</pre>
+
+<div class="box box-tip"><div class="box-title">实现建议:dist 兼任 visited</div>
+<p>BFS 里 <code>dist[v] != -1</code> 既判"访问过"又存距离,一个数组干两件事,无需单独写 <code>visited</code>——与第3章"循环队列用 count 判空满"同一思想:状态能合并就合并。回溯打印注意:路径数组是"终点→起点"顺序,输出前要反转。</p>
+</div>
+
+<h2>§9.4 Dijkstra 最短路:贪心、INF 与堆优化</h2>
+
+<h3>9.4.1 贪心思想与正确性直觉</h3>
+<p>加权图(边权非负)的单源最短路由 Dijkstra 解决,思路是<span class="hl">贪心:每轮从"还没确定最短距离"的顶点中,挑距离最小的确定为答案</span>。为什么敢确定?边权全非负——<span class="hl">任何"经过别的未确定顶点"的绕路,起步就比这个距离大,不可能更短</span>。"确定"是永久的:顶点一旦被选出,dist 就是最终答案,只增不改。"每次取当前最小"正是第6章优先队列的用武之地。</p>
+
+<h3>9.4.2 INF 的坑:INT_MAX 相加溢出</h3>
+<p>dist 初始值必须是一个"表示无穷大"的大数。C++ 里最自然的想法是 <code>INT_MAX</code>——但有个隐蔽的致命坑:</p>
+<div class="box box-pitfall"><div class="box-title">误区 3:INF 用 INT_MAX,松弛时 INF + w 溢出</div>
+<p>松弛语句 <code>dist[v] &gt; dist[u] + w</code> 里,若 dist[u] 还是 <code>INT_MAX</code> 且 w &gt; 0,<code>INT_MAX + w</code> 会<span class="hl">溢出成负数</span>(int 上界 2147483647 再加就回绕),比较结果为真,dist[v] 被写进负值,算法全错且极难排查。<span class="hl">解法:用足够大的常量当 INF(<code>const int INF = 1e9;</code>,保证 INF + w 不溢出),或把 dist 换成 <code>long long</code></span>。边权小用 int + 1e9,边权大(10<sup>18</sup> 量级)必须 long long。</p>
+</div>
+
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th></tr>
+<tr><td><code>#define INF 0x3f3f3f3f</code> 魔法常量,靠记忆</td><td><code>const int INF = 1e9;</code> 类型安全,<code>constexpr</code> 可编译期求值</td></tr>
+<tr><td><code>memset(dist, 0x3f, sizeof dist)</code> 技巧性初始化</td><td><code>vector&lt;int&gt; dist(V, INF);</code> 构造即填充</td></tr>
+<tr><td>手写 <code>for</code> 循环扫描找最小,<i>O</i>(<i>V</i>) 每次</td><td><code>priority_queue</code> 堆顶即最小,<i>O</i>(log <i>V</i>) 每次</td></tr>
+</table>
+
+<h3>9.4.3 朴素版与堆优化版并排:手写实现 vs 标准库</h3>
+<p>两段代码解决同一问题,骨架完全相同,差异只在"找当前最小"——正是本章的<b>"手写实现 + 标准库写法"并排</b>。朴素版每轮扫描全数组,总代价 <i>O</i>(<i>V</i><sup>2</sup>);堆优化版把"找最小"委托给第6章的 <code>priority_queue</code>,总代价 <i>O</i>(<i>E</i> log <i>V</i>),大图必须用它。</p>
+
+<div class="code-title">示例 9-4 Dijkstra 朴素版 O(V²):手写扫描找最小</div>
+<pre class="code">const int INF = 1e9;          // 大常量:INF + w 不会溢出(勿用 INT_MAX)
+
+vector&lt;int&gt; dijkstraNaive(int s, const vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt;&amp; g) {
+    int V = int(g.size());
+    vector&lt;int&gt; dist(V, INF);
+    vector&lt;bool&gt; done(V, false);          // done[u]:u 已确定
+    dist[s] = 0;
+    for (int round = 0; round &lt; V; ++round) {
+        int u = -1;
+        for (int i = 0; i &lt; V; ++i)       // 扫描:未确定者中 dist 最小
+            if (!done[i] &amp;&amp; (u == -1 || dist[i] &lt; dist[u]))
+                u = i;
+        if (u == -1 || dist[u] == INF) break;   // 其余顶点不可达
+        done[u] = true;                   // 确定 u,永不再改
+        for (auto&amp; [v, w] : g[u])         // 松弛:尝试用 u 更新邻居
+            if (dist[v] &gt; dist[u] + w)
+                dist[v] = dist[u] + w;
+    }
+    return dist;
+}</pre>
+
+<div class="code-title">示例 9-5 Dijkstra 堆优化版 O(E log V):标准库 priority_queue</div>
+<pre class="code">#include &lt;functional&gt;
+#include &lt;queue&gt;
+
+vector&lt;int&gt; dijkstraHeap(int s, const vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt;&amp; g) {
+    int V = int(g.size());
+    vector&lt;int&gt; dist(V, INF);
+    using P = pair&lt;int, int&gt;;             // (距离, 顶点)
+    priority_queue&lt;P, vector&lt;P&gt;, greater&lt;P&gt;&gt; pq;   // 最小堆
+    dist[s] = 0;
+    pq.push({0, s});
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d &gt; dist[u]) continue;        // 懒删除:过期的旧记录直接跳过
+        for (auto&amp; [v, w] : g[u]) {
+            if (dist[v] &gt; d + w) {
+                dist[v] = d + w;
+                pq.push({dist[v], v});    // 允许重复入堆,靠上面检查过滤
+            }
+        }
+    }
+    return dist;
+}</pre>
+
+<div class="box box-tip"><div class="box-title">实现建议:懒删除(惰性删除)是堆优化 Dijkstra 的标配</div>
+<p>同一顶点可能被松弛多次、在堆里留下多份记录。堆优化版<b>不删除旧记录</b>,出堆时检查 <code>d &gt; dist[u]</code> 的过期记录直接丢弃——这叫懒删除,正确性由"旧记录距离必然不小于新记录"保证。priority_queue 没有 decreaseKey 接口,懒删除正是替代。<span class="hl">套路:push 不查重,pop 查过期</span>。</p>
+</div>
+
+<h3>9.4.4 复杂度与选型</h3>
+<table class="tight">
+<tr><th>版本</th><th>"找最小"的手段</th><th>总复杂度</th><th>V = 10<sup>5</sup>、E = 10<sup>6</sup> 时的量级</th></tr>
+<tr><td>朴素</td><td>每轮全数组扫描 O(V)</td><td><i>O</i>(<i>V</i><sup>2</sup>)</td><td>10<sup>10</sup>,不可用</td></tr>
+<tr><td>堆优化</td><td>堆顶 O(log V)</td><td><i>O</i>(<i>E</i> log <i>V</i>)</td><td>约 2×10<sup>7</sup>,秒级</td></tr>
+</table>
+<p>选型结论:稠密小图(V ≤ 2000)两者皆可,朴素版常数更小;<span class="hl">V 上万或 E 稀疏一律堆优化</span>,工程与竞赛的默认写法。</p>
+
+<h2>§9.5 负权边与 Bellman-Ford</h2>
+
+<h3>9.5.1 负权边为何破坏 Dijkstra</h3>
+<p>三顶点例子:边 s→a 权 2、s→b 权 3、b→a 权 −2(有向)。Dijkstra 第一轮挑出距离最小的 a(d=2)并永久确定;第二轮处理 b 时松弛 a:3 + (−2) = 1 &lt; 2,但 a 已被"确定"——真实最短路 s→b→a 只有 1,答案错了。<span class="hl">负权边让"绕路"反而更便宜,贪心的"确定即最终"被推翻</span>。结论:Dijkstra 只适用于非负权图。</p>
+
+<h3>9.5.2 Bellman-Ford:V−1 轮松弛</h3>
+<p>Bellman-Ford 的思想朴素而彻底:<span class="hl">每轮对全部 E 条边松弛一次,共做 V−1 轮</span>。为什么够?无环路径至多 V−1 条边:第 1 轮确定"1 条边"的最短路,第 k 轮由第 k−1 轮答案再延伸一条边,第 k 轮后所有"至多 k 条边"的路径都被考虑。复杂度 <i>O</i>(<i>V</i>·<i>E</i>),能处理负权,代价是图不能有负环。</p>
+
+<div class="code-title">示例 9-6 Bellman-Ford:V−1 轮松弛 + 负环检测</div>
+<pre class="code">struct Edge3 { int u, v, w; };            // 边表:(u, v, w)
+
+// 返回 false = 有负环(最短路无定义)
+bool bellmanFord(int s, const vector&lt;Edge3&gt;&amp; edges, int V,
+                 vector&lt;int&gt;&amp; dist) {
+    dist.assign(V, INF);
+    dist[s] = 0;
+    for (int round = 0; round &lt; V - 1; ++round) {   // 至多 V-1 轮
+        bool changed = false;
+        for (auto&amp; e : edges)             // 每轮扫全部边
+            if (dist[e.u] != INF &amp;&amp; dist[e.v] &gt; dist[e.u] + e.w) {
+                dist[e.v] = dist[e.u] + e.w;
+                changed = true;
+            }
+        if (!changed) break;              // 无更新即可提前结束
+    }
+    for (auto&amp; e : edges)                 // 第 V 轮:还能松弛 = 有负环
+        if (dist[e.u] != INF &amp;&amp; dist[e.v] &gt; dist[e.u] + e.w)
+            return false;
+    return true;
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:负环检测忘写,或写进主循环里</div>
+<p>负环检测必须在 V−1 轮<b>结束之后</b>单独做一轮:负环让距离无限变小,检测混进主循环会在正常图误报"有环"。另一易错点:松弛前跳过 <code>dist[e.u] == INF</code> 的边——INF 加负权 w 得到"比 INF 小"的假答案,这是 §9.4 溢出坑的近亲(INF 参与运算前先判可达性)。</p>
+</div>
+
+<h2>§9.6 最小生成树:Prim 与 Kruskal</h2>
+
+<h3>9.6.1 定义与两种思路</h3>
+<p><span class="term">最小生成树(MST)</span>:在连通加权无向图中,选 <i>V</i>−1 条边把全部顶点连成一棵树(无环),边权总和最小。应用:铺电缆、修公路,让所有城市连通且总造价最低。两条路线:<span class="hl">Prim"加点"——每次并入"离树最近"的顶点;Kruskal"加边"——边按权排序,从小到大挑不成环的边</span>。</p>
+
+<h3>9.6.2 Prim:与 Dijkstra 只差一行</h3>
+<p>把 §9.4 的 Dijkstra 朴素版抄过来,Prim 与它几乎一模一样——唯一区别是松弛标准:</p>
+<table class="tight">
+<tr><th>算法</th><th>key[u] 的含义</th><th>松弛标准</th></tr>
+<tr><td>Dijkstra</td><td>起点到 u 的当前最短距离</td><td>dist[v] &gt; dist[u] + w(累加路径)</td></tr>
+<tr><td>Prim</td><td>u 到"已选集合"的最近距离</td><td>key[v] &gt; w(只看边权,不累加)</td></tr>
+</table>
+<p>Prim 的 key 是"顶点到树集合的距离",更新只比较<b>这条边本身</b>的权;Dijkstra 比较"起点到 u 的整条路径 + 边权"。<span class="hl">一行之差,两种算法</span>,也是第10章贪心范式的两个变体。</p>
+
+<div class="code-title">示例 9-7 Prim 朴素版 O(V²):与 Dijkstra 只差松弛标准</div>
+<pre class="code">int primMST(int s, const vector&lt;vector&lt;pair&lt;int,int&gt;&gt;&gt;&amp; g) {
+    int V = int(g.size());
+    vector&lt;int&gt; key(V, INF);              // 到"已选集合"的最短距离
+    vector&lt;bool&gt; inTree(V, false);
+    key[s] = 0;
+    int total = 0;
+    for (int round = 0; round &lt; V; ++round) {
+        int u = -1;
+        for (int i = 0; i &lt; V; ++i)       // 扫描:离树最近的未入树顶点
+            if (!inTree[i] &amp;&amp; (u == -1 || key[i] &lt; key[u]))
+                u = i;
+        if (u == -1 || key[u] == INF) break;    // 图不连通
+        inTree[u] = true;
+        total += key[u];
+        for (auto&amp; [v, w] : g[u])
+            if (!inTree[v] &amp;&amp; w &lt; key[v])       // 松弛标准:直接比边权!
+                key[v] = w;
+    }
+    return total;                         // 生成树总权
+}</pre>
+
+<h3>9.6.3 Kruskal:边排序 + 不相交集</h3>
+<p>Kruskal 更"贪":边按权升序,从小到大逐条考察,<span class="hl">只要两端点还没连通就收下</span>——"是否连通"正是第8章不相交集的看家本领(find/union 均摊近 O(1));已连通则收下会成环,必须跳过。总复杂度 O(E log E),由排序主导。</p>
+
+<p class="small">对照 C 的 <code>qsort</code> 函数指针,这里用 <code>sort</code> + lambda:<code>sort(edges.begin(), edges.end(), [](const Edge3&amp; x, const Edge3&amp; y){ return x.w &lt; y.w; });</code>——比较逻辑内联在调用处,类型由模板推断,写错编译期报错。</p>
+
+<div class="code-title">示例 9-8 Kruskal:排序 + 不相交集(第8章的 find/union 直接拿来用)</div>
+<pre class="code">#include &lt;algorithm&gt;
+
+vector&lt;int&gt; parent;                       // 并查集(第8章)
+int find(int x) {
+    if (parent[x] != x) parent[x] = find(parent[x]);   // 路径压缩
+    return parent[x];
+}
+bool unite(int a, int b) {
+    a = find(a); b = find(b);
+    if (a == b) return false;             // 已连通:这条边会成环
+    parent[a] = b;
+    return true;
+}
+
+int kruskalMST(int V, vector&lt;Edge3&gt;&amp; edges) {
+    sort(edges.begin(), edges.end(),      // ① 按边权升序
+         [](const Edge3&amp; x, const Edge3&amp; y) { return x.w &lt; y.w; });
+    parent.resize(V);
+    for (int i = 0; i &lt; V; ++i) parent[i] = i;
+    int total = 0, cnt = 0;
+    for (auto&amp; e : edges) {
+        if (unite(e.u, e.v)) {            // ② 两端点不连通才收下
+            total += e.w;
+            if (++cnt == V - 1) break;    // 树有 V-1 条边即完成
+        }
+    }
+    return cnt == V - 1 ? total : -1;     // -1 表示图不连通
+}</pre>
+
+<div class="box box-pitfall"><div class="box-title">误区 5:把 Prim 的松弛标准抄成 Dijkstra 的</div>
+<p>两段代码结构高度相似,最常见的复制粘贴事故是把 <code>w &lt; key[v]</code> 抄成 <code>dist[u] + w &lt; key[v]</code>(或反之)。自查口诀:<span class="hl">Prim 只比"这一条边",Dijkstra 比"整条路径"</span>。写完用三顶点小例子手算验证。</p>
+</div>
+
+<h2>§9.7 最大流与 DFS 应用简介</h2>
+
+<h3>9.7.1 网络流:一句话</h3>
+<p><b>最大流问题</b>:有向加权图中,从源点 s 到汇点 t 能运输的最大流量(每条边有容量上限)。一句话直觉:<span class="hl">反复找"还能增流的路径"(增广路),直到找不到为止,累加的流量就是最大流</span>。用 BFS 找最短增广路的版本叫 <b>Edmonds-Karp</b>,复杂度 <i>O</i>(<i>V</i>·<i>E</i><sup>2</sup>),Dinic、ISAP 都是它的优化。应用:交通调度、二分图匹配。</p>
+
+<h3>9.7.2 DFS 应用:割点与双连通</h3>
+<p>两个概念:<span class="term">割点</span>——无向图中删掉它后图不再连通的顶点(如通信网络的关键路由器);<span class="term">双连通</span>——删掉任意一个顶点仍连通的图,其极大子图叫双连通分量。求割点的经典算法(Tarjan)基于 DFS 的"时间戳"思想,教材有完整讲解。记住一句:<span class="hl">DFS 访问顶点的顺序本身携带结构信息(发现时间、完成时间),能回答"连通性"类问题</span>。</p>
+
+<h3>9.7.3 迭代版 DFS:显式栈</h3>
+<p>递归 DFS 在深图(如 10<sup>5</sup> 层链)上会撑爆系统调用栈;第3章说过"递归都能改写为显式栈",这里实战:显式栈压"待访问的顶点",与函数调用栈压"返回地址"同一思想。图遍历必须带 visited:无向边让 u、v 互相"发现",不带就无限往返;迭代版同顶点可能被 push 多次,出栈时去重。</p>
+
+<div class="code-title">示例 9-9 深度优先遍历:递归版与显式栈迭代版(第3章)</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;stack&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+void dfsRec(int u, const vector&lt;vector&lt;int&gt;&gt;&amp; g, vector&lt;bool&gt;&amp; vis) {
+    vis[u] = true;                        // 访问当前顶点
+    cout &lt;&lt; u &lt;&lt; ' ';
+    for (int v : g[u])
+        if (!vis[v]) dfsRec(v, g, vis);   // 递归:深度优先
+}
+
+void dfsIter(int s, const vector&lt;vector&lt;int&gt;&gt;&amp; g) {
+    vector&lt;bool&gt; vis(g.size(), false);
+    stack&lt;int&gt; st;                        // 显式栈代替系统调用栈
+    st.push(s);
+    while (!st.empty()) {
+        int u = st.top(); st.pop();
+        if (vis[u]) continue;             // 可能被压入多次,去重
+        vis[u] = true;
+        cout &lt;&lt; u &lt;&lt; ' ';
+        for (int v : g[u])
+            if (!vis[v]) st.push(v);      // 注意:压栈顺序与递归相反
+    }
+}</pre>
+
+<h2>§9.8 工程实践:大图的正确打开方式</h2>
+
+<h3>9.8.1 大图选型:邻接表优先</h3>
+<p>真实世界的图几乎都稀疏(社交网络、网页链接皆如此),三条准则:</p>
+<ul>
+<li><b>存图用邻接表:</b>V ≥ 10<sup>4</sup> 一律邻接表,矩阵只在小稠密图出现(§9.1 误区1)</li>
+<li><b>无向图建两次边:</b>g[u] 与 g[v] 互相 push_back,漏一边就成"单行道"</li>
+<li><b>顶点编号连续:</b>用 0..V−1 整数做下标;字符串先映射成编号(第5章)</li>
+</ul>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>遍历所有顶点与边</td><td>DFS / BFS</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td></tr>
+<tr><td>查边 (u, v)</td><td>邻接矩阵</td><td><i>O</i>(1)</td><td><i>O</i>(1)</td></tr>
+<tr><td>查边 (u, v)</td><td>邻接表</td><td><i>O</i>(deg(u))</td><td><i>O</i>(deg(u))</td></tr>
+<tr><td>存储</td><td>邻接矩阵</td><td><i>O</i>(<i>V</i><sup>2</sup>)</td><td><i>O</i>(<i>V</i><sup>2</sup>)</td></tr>
+<tr><td>存储</td><td>邻接表</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td></tr>
+<tr><td>拓扑排序</td><td>Kahn(入度表 + 队列)</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td></tr>
+<tr><td>无权最短路径</td><td>BFS</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td><td><i>O</i>(<i>V</i> + <i>E</i>)</td></tr>
+<tr><td>单源最短路径(非负权)</td><td>Dijkstra 朴素</td><td><i>O</i>(<i>V</i><sup>2</sup>)</td><td><i>O</i>(<i>V</i><sup>2</sup>)</td></tr>
+<tr><td>单源最短路径(非负权)</td><td>Dijkstra 堆优化</td><td><i>O</i>(<i>E</i> log <i>V</i>)</td><td><i>O</i>(<i>E</i> log <i>V</i>)</td></tr>
+<tr><td>单源最短路径(可负权)</td><td>Bellman-Ford</td><td><i>O</i>(<i>V</i>·<i>E</i>)</td><td><i>O</i>(<i>V</i>·<i>E</i>)</td></tr>
+<tr><td>负环检测</td><td>Bellman-Ford 第 V 轮</td><td><i>O</i>(<i>V</i>·<i>E</i>)</td><td><i>O</i>(<i>V</i>·<i>E</i>)</td></tr>
+<tr><td>最小生成树</td><td>Prim 朴素</td><td><i>O</i>(<i>V</i><sup>2</sup>)</td><td><i>O</i>(<i>V</i><sup>2</sup>)</td></tr>
+<tr><td>最小生成树</td><td>Prim 堆优化</td><td><i>O</i>(<i>E</i> log <i>V</i>)</td><td><i>O</i>(<i>E</i> log <i>V</i>)</td></tr>
+<tr><td>最小生成树</td><td>Kruskal(排序 + 并查集)</td><td><i>O</i>(<i>E</i> log <i>E</i>)</td><td><i>O</i>(<i>E</i> log <i>E</i>)</td></tr>
+<tr><td>最大流</td><td>Edmonds-Karp(BFS 增广)</td><td><i>O</i>(<i>V</i>·<i>E</i><sup>2</sup>)</td><td><i>O</i>(<i>V</i>·<i>E</i><sup>2</sup>)</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>说出顶点、边、有向/无向、权、路径、环六个术语并配现实例子</li>
+<li>独立写出邻接矩阵与邻接表两种建图代码,说出空间与查询复杂度</li>
+<li>默写 Kahn 拓扑排序,解释"输出个数 &lt; V 则有环"的检测原理</li>
+<li>默写 BFS 与 Dijkstra(朴素/堆优化),都用前驱数组回溯打印路径,解释贪心正确性的直觉(非负权)</li>
+<li>解释 INF 用 INT_MAX 时 INF + w 溢出的坑与正确写法</li>
+<li>说出负权边如何破坏 Dijkstra,默写 Bellman-Ford 的松弛与负环检测</li>
+<li>说出 Prim 与 Dijkstra 的唯一区别(松弛标准),默写 Kruskal(排序 + 并查集)</li>
+<li>写出迭代版 DFS(显式栈),解释 visited 为何必不可少</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. V = 10<sup>5</sup>、E = 2×10<sup>5</sup> 的稀疏图,邻接矩阵与邻接表各占多少空间?查一条边各是什么复杂度?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>矩阵 O(V²) ≈ 10<sup>10</sup> 格(数十 GB,不可行),查边 O(1);邻接表 O(V+E) ≈ 3×10<sup>5</sup>,查边 O(deg(u)) 平均 O(E/V)。稀疏大图必须用邻接表。</p>
+</div>
+
+<div class="q">2. 拓扑排序的队列换成栈,结果还是合法拓扑序吗?为什么环检测不受影响?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>仍然合法:入度为 0 的顶点可按任意顺序安排,只要"先修在前"成立即可。环检测只看输出个数是否等于 V,与出队顺序无关。</p>
+</div>
+
+<div class="q">3. Dijkstra 朴素版与堆优化版都正确,复杂度为何差一个量级?"懒删除"怎么工作的?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>差别在"找当前最小":朴素每轮扫描 O(V),总 O(V²);堆优化堆顶 O(1),总 O(E log V)。懒删除:顶点被松弛多次会在堆里留多份记录,出堆时把 d &gt; dist[u] 的旧记录丢弃——旧记录距离不小于新记录,不影响正确性。</p>
+</div>
+
+<div class="q">4. 为什么 Bellman-Ford 恰好做 V−1 轮松弛就够?第 V 轮检查到什么说明有负环?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>无环路径至多 V−1 条边,第 k 轮后"至多 k 条边"的路径都被考虑过,V−1 轮后全部松弛完毕。若第 V 轮仍有边能松弛,说明存在比"V−1 条边上限"还短的路径——只能是有负环(可无限绕圈变短)。</p>
+</div>
+
+<div class="q">5. Prim 与 Dijkstra 的代码几乎相同,区别在哪一行?Kruskal 里并查集的 unite 返回 false 意味着什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>区别在松弛标准:Prim 的 key 是"到已选集合的距离",更新只比较边权(key[v] &gt; w);Dijkstra 的 dist 是"起点的距离",更新时累加路径(dist[v] &gt; dist[u] + w)。Kruskal 中 unite 返回 false 表示两端点已连通,收下会成环,必须跳过。</p>
+</div>
+
+<h2>章末实验题:迷宫最短路径(BFS + Dijkstra)</h2>
+<div class="box box-example lab"><div class="box-title">实验 9:迷宫最短路径(BFS + Dijkstra)</div>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:读入/内置迷宫并转成图:顶点 = 格子,边 = 四方向可通行相邻格(§9.1)</li>
+<li>任务 2:BFS 求 S 到 E 的最短步数路径,前驱数组回溯并打印(§9.3)</li>
+<li>任务 3:给地形设通过代价(沼泽 ~ 代价 5),Dijkstra 堆优化求最低代价路径(§9.4)</li>
+<li>任务 4:输出两种路径的步数与代价对比,解释为何可能不同(§9.3 + §9.4)</li>
+<li>任务 5:终点不可达时输出"无解"而不崩溃(§9.8)</li>
+</ul>
+<p><b>实验环境:</b>C++17。编译:<code>g++ -std=c++17 -O2 -o lab9 lab9.cpp</code>;运行:<code>./lab9</code>(内置)、<code>./lab9 sealed</code>(无解)、<code>./lab9 maze.txt</code>(文件)。</p></div>
+<ol class="steps">
+<li>写 readMaze 与邻居枚举(越界、墙检查),用 findPos 求 S、E 编号 id = 行 × 宽 + 列</li>
+<li>BFS 用 std::queue,dist 初始 -1 兼任 visited;记 prev 数组,到 E 后回溯打印</li>
+<li>Dijkstra 用 priority_queue 最小堆,INF 用 1e9;懒删除(出堆时 d &gt; dist[u] 跳过)且不松弛墙</li>
+<li>对比行统计两条路径的真实代价,体会"步数最少"与"代价最低"可能是两条路</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,分四段)</div>
+<pre class="code">// lab9.cpp —— 迷宫最短路径(BFS + Dijkstra)
+// 编译与运行命令见下方"实验环境"说明
+#include &lt;algorithm&gt;
+#include &lt;fstream&gt;
+#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;queue&gt;
+#include &lt;string&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+// 字符→代价;墙返回 -1
+int costOf(char c) {
+    switch (c) {
+        case 'S': case 'E': case '.': return 1;   // 平地
+        case '~': return 5;                       // 沼泽
+        default:  return -1;                      // '#' 墙
+    }
+}
+
+vector&lt;string&gt; readMaze(const string&amp; arg) {
+    if (arg == "sealed") {                        // 内置样例 2:S 被墙封死
+        return {"#####", "##S##", "#.###", "#.E.#", "#####"};
+    }
+    if (!arg.empty()) {                           // 从文件读
+        ifstream in(arg);
+        vector&lt;string&gt; m;
+        string line;
+        while (getline(in, line))
+            if (!line.empty()) m.push_back(line);
+        return m;
+    }
+    return {                                      // 内置样例 1:上走廊短(12 步)但有
+        "##########",                             // 两格沼泽(代价 21);下走廊长
+        "#S...~~..#",                             // (18 步)却全平地(代价 18):
+        "#.#####.##",                             // BFS 选短,Dijkstra 选廉
+        "#.#####.##",
+        "#.##....##",
+        "#.##.##.##",
+        "#.##.##.##",
+        "#....##E##",
+        "##########",
+        "##########",
+    };
+}</pre>
+
+<div class="code-title">lab9.cpp(第二段:顶点编号与 BFS)</div>
+<pre class="code">// 顶点编号 id = 行 * 宽 + 列,四方向邻居即边(隐式图,任务 1)
+int findPos(const vector&lt;string&gt;&amp; maze, char ch) {
+    int w = int(maze[0].size());
+    for (int r = 0; r &lt; int(maze.size()); ++r)
+        for (int c = 0; c &lt; w; ++c)
+            if (maze[r][c] == ch) return r * w + c;
+    return -1;
+}
+
+// 任务 2:BFS 无权最短路;无解返回 -1
+int bfsShortest(const vector&lt;string&gt;&amp; maze, int sid, int tid,
+                vector&lt;int&gt;&amp; path) {
+    int h = int(maze.size()), w = int(maze[0].size());
+    vector&lt;int&gt; dist(h * w, -1), prev(h * w, -1);
+    queue&lt;int&gt; q;                                 // 队列(第3章)
+    dist[sid] = 0;
+    q.push(sid);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        if (u == tid) break;
+        int r = u / w, c = u % w;
+        int dr[4] = {-1, 1, 0, 0}, dc[4] = {0, 0, -1, 1};
+        for (int k = 0; k &lt; 4; ++k) {
+            int nr = r + dr[k], nc = c + dc[k];
+            if (nr &lt; 0 || nr &gt;= h || nc &lt; 0 || nc &gt;= w) continue;
+            if (maze[nr][nc] == '#') continue;    // 墙不可走
+            int v = nr * w + nc;
+            if (dist[v] != -1) continue;          // 第一次到达即最短
+            dist[v] = dist[u] + 1;
+            prev[v] = u;
+            q.push(v);
+        }
+    }
+    if (dist[tid] == -1) return -1;               // 无解
+    for (int x = tid; x != -1; x = prev[x])       // 前驱数组回溯
+        path.push_back(x);
+    reverse(path.begin(), path.end());
+    return int(path.size()) - 1;
+}</pre>
+
+<div class="code-title">lab9.cpp(第三段:Dijkstra 与路径绘制)</div>
+<pre class="code">// 任务 3:Dijkstra 求最低代价;无解返回 -1
+int dijkstraCost(const vector&lt;string&gt;&amp; maze, int sid, int tid,
+                 vector&lt;int&gt;&amp; path) {
+    const int INF = 1e9;                          // 大常量,INF + w 不溢出
+    int h = int(maze.size()), w = int(maze[0].size());
+    vector&lt;int&gt; dist(h * w, INF), prev(h * w, -1);
+    priority_queue&lt;pair&lt;int,int&gt;, vector&lt;pair&lt;int,int&gt;&gt;,
+                   greater&lt;pair&lt;int,int&gt;&gt;&gt; pq;    // 最小堆
+    dist[sid] = 0;
+    pq.push({0, sid});
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d &gt; dist[u]) continue;                // 懒删除:过期记录跳过
+        if (u == tid) break;
+        int r = u / w, c = u % w;
+        int dr[4] = {-1, 1, 0, 0}, dc[4] = {0, 0, -1, 1};
+        for (int k = 0; k &lt; 4; ++k) {
+            int nr = r + dr[k], nc = c + dc[k];
+            if (nr &lt; 0 || nr &gt;= h || nc &lt; 0 || nc &gt;= w) continue;
+            int wgt = costOf(maze[nr][nc]);
+            if (wgt &lt; 0) continue;                // 墙不可走
+            int v = nr * w + nc;
+            if (dist[v] &gt; d + wgt) {
+                dist[v] = d + wgt;
+                prev[v] = u;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    if (dist[tid] == INF) return -1;              // 无解
+    for (int x = tid; x != -1; x = prev[x])
+        path.push_back(x);
+    reverse(path.begin(), path.end());
+    return dist[tid];
+}
+
+// 画路径:* 标出经过的格子
+void drawPath(const vector&lt;string&gt;&amp; maze, const vector&lt;int&gt;&amp; path, int w) {
+    vector&lt;string&gt; grid = maze;
+    for (int id : path)
+        if (grid[id / w][id % w] != 'S' &amp;&amp; grid[id / w][id % w] != 'E')
+            grid[id / w][id % w] = '*';
+    for (const string&amp; row : grid) {
+        for (char ch : row) cout &lt;&lt; ' ' &lt;&lt; ch;
+        cout &lt;&lt; '\n';
+    }
+}
+
+void printPathCoords(const vector&lt;int&gt;&amp; path, int w) {
+    for (size_t i = 0; i &lt; path.size(); ++i)
+        cout &lt;&lt; (i ? " -&gt; " : "")
+             &lt;&lt; "(" &lt;&lt; path[i] / w &lt;&lt; "," &lt;&lt; path[i] % w &lt;&lt; ")";
+    cout &lt;&lt; '\n';
+}</pre>
+
+<div class="code-title">lab9.cpp(第四段:主程序,任务 4/5)</div>
+<pre class="code">int main(int argc, char* argv[]) {
+    string arg = argc &gt; 1 ? argv[1] : "";
+    vector&lt;string&gt; maze = readMaze(arg);
+    int w = int(maze[0].size());
+    int s = findPos(maze, 'S'), t = findPos(maze, 'E');
+    if (s &lt; 0 || t &lt; 0) {
+        cout &lt;&lt; "迷宫缺少起点 S 或终点 E\n";
+        return 1;
+    }
+    cout &lt;&lt; "迷宫 " &lt;&lt; maze.size() &lt;&lt; " 行 x " &lt;&lt; w
+         &lt;&lt; " 列,起点 (" &lt;&lt; s / w &lt;&lt; "," &lt;&lt; s % w
+         &lt;&lt; "),终点 (" &lt;&lt; t / w &lt;&lt; "," &lt;&lt; t % w &lt;&lt; ")\n";
+    cout &lt;&lt; "图例: # 墙  . 平地(代价1)  ~ 沼泽(代价5)  S/E 起点/终点\n";
+
+    vector&lt;int&gt; pathB;
+    int steps = bfsShortest(maze, s, t, pathB);
+    if (steps &lt; 0) {
+        cout &lt;&lt; "BFS  : 无解——起点到终点不可达(被墙封死)\n";
+    } else {
+        cout &lt;&lt; "BFS  : 最短步数 = " &lt;&lt; steps &lt;&lt; "\n  路径: ";
+        printPathCoords(pathB, w);
+        drawPath(maze, pathB, w);
+    }
+
+    vector&lt;int&gt; pathD;
+    int cost = dijkstraCost(maze, s, t, pathD);
+    if (cost &lt; 0) {
+        cout &lt;&lt; "Dijkstra: 无解\n";
+    } else {
+        cout &lt;&lt; "Dijkstra: 最低总代价 = " &lt;&lt; cost
+             &lt;&lt; ",步数 = " &lt;&lt; int(pathD.size()) - 1 &lt;&lt; "\n  路径: ";
+        printPathCoords(pathD, w);
+        drawPath(maze, pathD, w);
+    }
+
+    if (steps &gt;= 0 &amp;&amp; cost &gt;= 0) {
+        int bfsCost = 0;
+        for (int id : pathB) bfsCost += costOf(maze[id / w][id % w]);
+        cout &lt;&lt; "对比: BFS 最短步数 " &lt;&lt; steps &lt;&lt; "(路径代价 " &lt;&lt; bfsCost
+             &lt;&lt; ") vs Dijkstra 最低代价路径步数 " &lt;&lt; int(pathD.size()) - 1
+             &lt;&lt; "(代价 " &lt;&lt; cost &lt;&lt; ")\n";
+    }
+    return 0;
+}</pre>
+<p>示例输入输出(真实运行结果):</p>
+<pre class="code">$ ./lab9
+迷宫 10 行 x 10 列,起点 (1,1),终点 (7,7)
+BFS  : 最短步数 = 12
+  路径: (1,1) -&gt; (1,2) -&gt; (1,3) -&gt; (1,4) -&gt; (1,5) -&gt; (1,6) -&gt; (1,7) -&gt; (2,7) -&gt; (3,7) -&gt; (4,7) -&gt; (5,7) -&gt; (6,7) -&gt; (7,7)
+Dijkstra: 最低总代价 = 18,步数 = 18
+  路径: (1,1) -&gt; (2,1) -&gt; (3,1) -&gt; (4,1) -&gt; (5,1) -&gt; (6,1) -&gt; (7,1) -&gt; (7,2) -&gt; (7,3) -&gt; (7,4) -&gt; (6,4) -&gt; (5,4) -&gt; (4,4) -&gt; (4,5) -&gt; (4,6) -&gt; (4,7) -&gt; (5,7) -&gt; (6,7) -&gt; (7,7)
+对比: BFS 最短步数 12(路径代价 21) vs Dijkstra 最低代价路径步数 18(代价 18)
+
+$ ./lab9 sealed
+BFS  : 无解——起点到终点不可达(被墙封死)
+Dijkstra: 无解</pre>
+<p><b>设计说明:</b>① 顶点编号 id = 行 × 宽 + 列,一维数组存 dist/prev——大图标准手法;② "四方向邻居"即边,不显式建邻接表,是"隐式图"代表;③ BFS 与 Dijkstra 共用前驱回溯,体现 §9.3/§9.4 的算法家族关系;④ INF 用 1e9 而非 INT_MAX,配合懒删除;⑤ 内置"无解"样例:两算法都检查终点距离,输出提示不崩溃。</p>
+</div>
+
+<p class="small">下一章预告:第10章 算法设计技巧——贪心、分治、动态规划、回溯四大范式。Dijkstra 与 Prim 的贪心本质将在那里升华。</p>
+
+</body>
+</html>

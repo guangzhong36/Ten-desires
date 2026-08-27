@@ -1,0 +1,10 @@
+// 1 基堆:根在下标 1,左子 2i、右子 2i+1、父 i/2;下标 0 闲置
+template <typename T>
+class BinaryHeap {
+    vector<T> a;                    // 底层数组,a[0] 闲置
+public:
+    BinaryHeap() { a.push_back(T{}); }   // 占住 a[0],保证从下标 1 开始用
+    size_t size() const { return a.size() - 1; }
+    bool empty() const { return size() == 0; }
+    T findMin() const { return a[1]; }   // 根即最小元 O(1)
+};

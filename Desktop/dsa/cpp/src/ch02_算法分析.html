@@ -1,0 +1,595 @@
+<title>第2章 算法分析</title>
+<!-- no-katex -->
+<div class="kicker">FROM C TO C++ · DATA STRUCTURES</div>
+<h1 class="chapter-title">第2章 算法分析</h1>
+<div class="chapter-meta"><b>建议学时:</b>4–5 小时 | <b>难度:</b>★★★☆☆ | <b>读者背景:</b>已掌握 C 语言,DS&amp;A 零基础</div>
+
+<div class="box box-goal"><div class="box-title">本章学习目标</div>
+<ul>
+<li>理解为什么"程序能跑"远远不够——<span class="term">复杂度</span>决定程序在数据变大时能不能跑完</li>
+<li>掌握 <i>O</i>、<i>Ω</i>、<i>Θ</i>、<i>o</i> 四种记号的准确定义与直觉,能说出它们的区别</li>
+<li>能背诵增长阶排序:常数 &lt; 对数 &lt; 线性 &lt; 线性对数 &lt; 平方 &lt; 立方 &lt; 指数</li>
+<li>会计算顺序/循环/递归代码的运行时间,能把循环翻译成求和记号 Σ</li>
+<li>亲手实现<b>最大子序列和</b>问题的四种算法,体会 <i>O</i>(<i>n</i><sup>3</sup>) 到 <i>O</i>(<i>n</i>) 的天壤之别</li>
+<li>能说明二分查找、快速幂、欧几里得算法为什么都是 <i>O</i>(log <i>n</i>)</li>
+<li>学完能独立用 C++ <code>chrono</code>(C 中对应 <code>clock()</code>)实测验证自己的复杂度分析</li>
+</ul>
+</div>
+
+<div class="box box-intuition"><div class="box-title">从 C 到 C++:本章主题如何迁移</div>
+<p>本章是全书唯一"几乎不写新数据结构"的一章,但它是<b>全书的通用语言</b>:第 3 章起,每章都以"这个操作 <i>O</i>(多少)"作为结论。算法分析的直觉一句话:<span class="hl">复杂度是数据规模变大时,运行时间的增长方式</span>——不是秒数,不是毫秒,而是"规模翻倍,时间大约乘以几"。</p>
+<p>在 C 里,你也许用过 <code>clock()</code> 计时:包含 <code>time.h</code>,前后各取一次 <code>clock()</code>,除以 <code>CLOCKS_PER_SEC</code>。这有三个痛点:精度只有毫秒级、测的是 CPU 时间而非墙上时间、每次计时都要手写四行样板。C++ 的 <code>&lt;chrono&gt;</code> 库用 <code>steady_clock</code> 给出高精度单调时钟,一行 <code>duration</code> 模板化转换直接得到毫秒/微秒,还内置了类型检查——C 里"把秒和毫秒搞混"这类 bug 在 chrono 里根本写不出来。</p>
+<p>Python 的 <code>time.perf_counter()</code> 与 C++ 的 <code>steady_clock</code> 思想相同:单调、高精度、不受系统改时间影响。本章 C++ 版与 Python 版的所有代码结构完全一致,只是计时函数不同——读完本章你会发现,<span class="hl">算法分析是数学,语言只是载体</span>。</p>
+<p>本章路线:先建立记号体系(§2.1–§2.3),再学计算规则(§2.4),然后在一个真实问题上亲手把 <i>O</i>(<i>n</i><sup>3</sup>) 一路优化到 <i>O</i>(<i>n</i>)(§2.5),最后用计时实验验证理论(§2.6–§2.7)。</p>
+</div>
+
+<div class="box box-prereq"><div class="box-title">前置知识自查</div>
+<p><b>数学前置:</b>指数与对数的基本性质(第1章)、求和记号 Σ、递归四法则与递推式入门(第1章)。</p>
+<p><b>C 语言前置:</b>单层/嵌套 <code>for</code> 循环、函数定义与调用、数组下标遍历;<code>clock()</code> 计时(可选,会更好)。</p>
+<p><b>依赖的前面章节:</b>第1章绪论(递归思想、log 与指数的运算性质)。</p>
+</div>
+
+<div class="box box-tip"><div class="box-title">本章学习路线</div>
+<ol>
+<li><b>第一阶段(1 小时):</b>读 §2.1–§2.3,背下增长阶排序与常见函数值表</li>
+<li><b>第二阶段(1.5 小时):</b>读 §2.4–§2.5,亲手推导最大子序列和四种算法的复杂度,并上机运行验证输出正确</li>
+<li><b>第三阶段(1.5 小时):</b>读 §2.6–§2.7,运行计时程序,观察"n 翻倍、时间乘几"与理论预测是否吻合</li>
+<li><b>第四阶段(实验,1 小时):</b>完成章末实验:四种算法的增长阶实测报告</li>
+<li><b>验收标准:</b>能随口说出"二分查找 <i>O</i>(log <i>n</i>)""快排平均 <i>O</i>(<i>n</i> log <i>n</i>)"并解释理由</li>
+</ol>
+</div>
+
+<h2>本章知识导图</h2>
+<div class="toc-map"><ul>
+<li>§2.1 为什么要分析算法:从"能跑"到"跑得完"(规模、计时工具、C 的 clock() 与 chrono 对照)</li>
+<li>§2.2 大 <i>O</i>、<i>Ω</i>、<i>Θ</i>、小 <i>o</i>:定义、直觉、常见误用</li>
+<li>§2.3 增长阶排序与常见函数:七个等级、数值表</li>
+<li>§2.4 运行时间计算规则:顺序/循环/递归、求和记号</li>
+<li>§2.5 最大子序列和:四种算法,<i>O</i>(<i>n</i><sup>3</sup>) → <i>O</i>(<i>n</i>) 的递进</li>
+<li>§2.6 对数级复杂度的三种来源:二分查找、快速幂、欧几里得算法</li>
+<li>§2.7 实测验证:计时方法、n 翻倍实验、常数因子的意义</li>
+</ul></div>
+
+<h2>§2.1 为什么要分析算法</h2>
+
+<h3>2.1.1 规模决定生死</h3>
+<p>同一个问题,算法不同,命运不同。假设处理一个元素耗时 1 微秒,那么:</p>
+<table>
+<tr><th>问题规模 n</th><th><i>O</i>(<i>n</i> log <i>n</i>)</th><th><i>O</i>(<i>n</i><sup>2</sup>)</th><th><i>O</i>(<i>n</i><sup>3</sup>)</th><th><i>O</i>(2<sup><i>n</i></sup>)</th></tr>
+<tr><td>10<sup>3</sup></td><td>≈0.01 秒</td><td>1 秒</td><td>16.7 分钟</td><td>约 10<sup>286</sup> 年</td></tr>
+<tr><td>10<sup>4</sup></td><td>≈0.13 秒</td><td>100 秒</td><td>11.6 天</td><td>超出宇宙年龄</td></tr>
+<tr><td>10<sup>5</sup></td><td>≈1.7 秒</td><td>2.8 小时</td><td>31.7 年</td><td>—</td></tr>
+<tr><td>10<sup>6</sup></td><td>≈20 秒</td><td>11.6 天</td><td>3.2 万年</td><td>—</td></tr>
+</table>
+<p>结论:<span class="hl">指数算法在任何现实规模上都不存在;平方算法在十万级数据上就要等几小时</span>。这就是为什么必须先学会"估计算法代价"——否则优化方向可能完全错误(去优化一个 <i>O</i>(<i>n</i>) 的循环,却对 <i>O</i>(<i>n</i><sup>2</sup>) 的嵌套循环视而不见)。</p>
+
+<h3>2.1.2 从 C 的 clock() 到 C++ 的 chrono</h3>
+<p>C 的计时套路你也许写过:</p>
+<table class="cmp">
+<tr><th>C 的写法</th><th>C++ 的写法</th></tr>
+<tr><td><code>#include &lt;time.h&gt;</code></td><td><code>#include &lt;chrono&gt;</code></td></tr>
+<tr><td><code>clock_t t0 = clock();</code></td><td><code>auto t0 = steady_clock::now();</code></td></tr>
+<tr><td><code>double s = (double)(clock()-t0)/CLOCKS_PER_SEC;</code></td><td><code>auto ms = duration&lt;double,milli&gt;(steady_clock::now()-t0).count();</code></td></tr>
+<tr><td>精度毫秒级,测 CPU 时间</td><td>精度微秒/纳秒级,测墙上时间,类型安全</td></tr>
+</table>
+
+<div class="code-title">示例 2-1 C++ 计时框架(本章所有实验都用它)</div>
+<pre class="code">#include &lt;iostream&gt;
+#include &lt;chrono&gt;
+using namespace std;
+using Clock = chrono::steady_clock;   // 单调时钟:不受系统改时间影响
+
+int main() {
+    auto t0 = Clock::now();
+    // ---- 被测代码 ----
+    long long s = 0;
+    for (int i = 0; i &lt; 1000000; ++i) s += i;
+    // ----------------
+    double ms = chrono::duration&lt;double, milli&gt;(Clock::now() - t0).count();
+    cout &lt;&lt; "耗时: " &lt;&lt; ms &lt;&lt; " ms, 结果 = " &lt;&lt; s &lt;&lt; endl;
+    return 0;
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:计时不是分析的全部</div>
+<p>计时是<span class="term">验证</span>分析的工具,不是分析本身。同一程序换个机器、换个编译器、换个负载,时间可能差几倍——但"n 翻倍、时间约乘 4"这个<b>比值规律</b>几乎不变。复杂度分析研究的正是这个机器无关的规律。</p>
+</div>
+
+<h2>§2.2 大 <i>O</i>、<i>Ω</i>、<i>Θ</i>、小 <i>o</i></h2>
+
+<h3>2.2.1 大 <i>O</i>:上界</h3>
+<p>定义(实用版):<span class="term">T(n) = O(f(n))</span> 表示存在常数 <i>c</i> 与 <i>n</i><sub>0</sub>,使得对所有 <i>n</i> ≥ <i>n</i><sub>0</sub>,都有 <code>T(n) ≤ c·f(n)</code>。直白地说:<span class="hl">当 n 足够大时,T(n) 的增长速度不超过 f(n) 的某个常数倍</span>。例如 <code>T(n) = 3n² + 10n + 7</code>,取 <i>c</i> = 4、<i>n</i><sub>0</sub> 足够大即可证明 <i>T</i>(<i>n</i>) = <i>O</i>(<i>n</i><sup>2</sup>)——因为 10n + 7 相对 3n² 微不足道。</p>
+<p>所以大 <i>O</i> 会"吞掉"低阶项与常数:<i>O</i>(3<i>n</i><sup>2</sup>+10<i>n</i>+7) = <i>O</i>(<i>n</i><sup>2</sup>),<i>O</i>(2<i>n</i>) = <i>O</i>(<i>n</i>)。这也是它的局限:两个同为 <i>O</i>(<i>n</i>) 的算法可能实际相差 10 倍。</p>
+
+<h3>2.2.2 <i>Ω</i> 与 <i>Θ</i>:下界与紧界</h3>
+<p><span class="term"><i>Ω</i>(f(n))</span> 是对偶记号:<code>T(n) ≥ c·f(n)</code> 对所有足够大的 n 成立,表示"增长不低于 f(n)"。而 <span class="term"><i>Θ</i>(f(n))</span> 表示"恰好同阶":既 <i>O</i>(f(n)) 又 <i>Ω</i>(f(n))。工程上最常用的是大 <i>O</i>(上界保证"最坏不会更差")与 <i>Θ</i>(精确刻画);当说"这个算法是 <i>Θ</i>(<i>n</i> log <i>n</i>)"时,意思是上下界都压紧了。</p>
+
+<h3>2.2.3 小 <i>o</i> 与三种常见误用</h3>
+<p>小 <i>o</i>(f(n)) 表示"增长速度严格低于 f(n)"(大 O 允许相等,小 o 不允许):<i>n</i> = <i>o</i>(<i>n</i><sup>2</sup>) 成立,但 <i>n</i> ≠ <i>o</i>(<i>n</i>)。它常用于比较两个上界谁更"松"。</p>
+
+<div class="box box-tip"><div class="box-title">记号说明(本章约定,全书沿用)</div>
+<p>正文中的 <i>O</i>(<i>n</i>) 读作"大 O n";<i>n</i><sup>2</sup> 表示 n 的平方;log<sub>2</sub> <i>n</i> 表示以 2 为底的对数,不写底数时 log <i>n</i> 默认以 2 为底(常数倍差异被大 O 吞掉,所以底数不重要,但推导过程要写清楚);ln 表示自然对数。求和写成 Σ<sub>i=1</sub><sup>n</sup> i = n(n+1)/2。代码里一律使用语言语法(<code>%</code>、<code>&gt;&gt;</code>、<code>pow</code>),不使用数学记号。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 1:把常数当成增长阶</div>
+<p>写 <i>O</i>(2<i>n</i>)、<i>O</i>(100<i>n</i> log <i>n</i>)、<i>O</i>(<i>n</i>+100) 都是错误的:大 O 定义明确吞掉常数,应写 <i>O</i>(<i>n</i>)、<i>O</i>(<i>n</i> log <i>n</i>)、<i>O</i>(<i>n</i>)。"常数不重要"仅在<b>分析增长阶</b>时成立;实际工程选型时,两个 <i>O</i>(<i>n</i>) 算法的常数差距可能决定生死。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 2:混淆最坏情形与记号本身</div>
+<p>"快排是 <i>O</i>(<i>n</i><sup>2</sup>) 的"——这句话必须补全:<span class="hl">快排最坏情形是 <i>O</i>(<i>n</i><sup>2</sup>),平均情形是 <i>O</i>(<i>n</i> log <i>n</i>)</span>。大 O 描述的是某个约定情形(最坏/平均/最好)下的增长阶,不是算法本身的属性。今后每章的复杂度速查表都会区分"平均"与"最坏"两列。</p>
+</div>
+
+<h2>§2.3 增长阶排序与常见函数</h2>
+
+<h3>2.3.1 七个等级</h3>
+<ul>
+<li><i>O</i>(1) 常数:数组按下标访问、散列查找(平均)</li>
+<li><i>O</i>(log <i>n</i>) 对数:二分查找——n 翻倍只多一步</li>
+<li><i>O</i>(<i>n</i>) 线性:一趟遍历、线性搜索</li>
+<li><i>O</i>(<i>n</i> log <i>n</i>) 线性对数:归并排序、快排(平均)、堆排序</li>
+<li><i>O</i>(<i>n</i><sup>2</sup>) 平方:二重循环、插入/冒泡排序、朴素矩阵乘法</li>
+<li><i>O</i>(<i>n</i><sup>3</sup>) 立方:三重循环、Floyd 全源最短路</li>
+<li><i>O</i>(2<sup><i>n</i></sup>) 指数:穷举、朴素递归斐波那契——现实规模下不可用</li>
+</ul>
+
+<h3>2.3.2 数值表:让直觉落地</h3>
+<table>
+<tr><th>f(n)</th><th>n=10</th><th>n=100</th><th>n=10<sup>3</sup></th><th>n=10<sup>4</sup></th><th>n=10<sup>5</sup></th><th>n=10<sup>6</sup></th></tr>
+<tr><td>log<sub>2</sub> <i>n</i></td><td>3.3</td><td>6.6</td><td>10</td><td>13</td><td>17</td><td>20</td></tr>
+<tr><td><i>n</i></td><td>10</td><td>100</td><td>10<sup>3</sup></td><td>10<sup>4</sup></td><td>10<sup>5</sup></td><td>10<sup>6</sup></td></tr>
+<tr><td><i>n</i> log<sub>2</sub> <i>n</i></td><td>33</td><td>664</td><td>10<sup>4</sup></td><td>1.3×10<sup>5</sup></td><td>1.7×10<sup>6</sup></td><td>2×10<sup>7</sup></td></tr>
+<tr><td><i>n</i><sup>2</sup></td><td>100</td><td>10<sup>4</sup></td><td>10<sup>6</sup></td><td>10<sup>8</sup></td><td>10<sup>10</sup></td><td>10<sup>12</sup></td></tr>
+<tr><td><i>n</i><sup>3</sup></td><td>10<sup>3</sup></td><td>10<sup>6</sup></td><td>10<sup>9</sup></td><td>10<sup>12</sup></td><td>10<sup>15</sup></td><td>10<sup>18</sup></td></tr>
+<tr><td>2<sup><i>n</i></sup></td><td>1024</td><td>约 10<sup>30</sup></td><td>约 10<sup>301</sup></td><td>约 10<sup>3010</sup></td><td>约 10<sup>30103</sup></td><td>约 10<sup>301030</sup></td></tr>
+</table>
+<p>读这张表的要领:从 n=10<sup>3</sup> 到 10<sup>6</sup>,规模扩大 1000 倍——<i>n</i> 增长 1000 倍,<i>n</i><sup>2</sup> 增长 100 万倍,2<sup><i>n</i></sup> 则直接冲出宇宙。同时注意 log<sub>2</sub> <i>n</i> 一行:规模增长 1000 倍,它只从 10 长到 20。<span class="hl">对数函数是"几乎不增长"的函数,凡是对数级的算法都值得信赖</span>。</p>
+
+<div class="box box-pitfall"><div class="box-title">误区 3:把 2<sup>n</sup> 与 n² 混为一谈</div>
+<p>2<sup><i>n</i></sup> 与 <i>n</i><sup>2</sup> 只差一个"位置",命运完全不同:<i>n</i> = 64 时,<i>n</i><sup>2</sup> = 4096,而 2<sup><i>n</i></sup> ≈ 1.8×10<sup>19</sup>。判断口诀:<span class="hl">底数是 n 的多项式,指数是 n 的才是指数级</span>。1.1<sup><i>n</i></sup> 也是指数级(底数略大于 1 仍是灾难),<i>n</i><sup>100</sup> 再大也只是多项式。</p>
+</div>
+
+<h2>§2.4 运行时间计算规则</h2>
+
+<h3>2.4.1 三条基本规则</h3>
+<ul>
+<li><b>顺序相加:</b>两个语句依次执行,总时间取两者之和,大 O 取最大者:<i>O</i>(<i>n</i>) + <i>O</i>(<i>n</i><sup>2</sup>) = <i>O</i>(<i>n</i><sup>2</sup>)</li>
+<li><b>嵌套相乘:</b>循环体内嵌套循环,总时间相乘</li>
+<li><b>分支取最大:</b>if/else 取两个分支中较慢的一个</li>
+</ul>
+
+<h3>2.4.2 循环与求和记号</h3>
+<p>循环本质上是一个求和:第 <i>i</i> 次迭代的工作量 w(i),总工作量 = Σ<sub>i</sub> w(i)。例:</p>
+
+<div class="code-title">示例 2-2 嵌套循环的求和推导</div>
+<pre class="code">// 推导:内层循环执行 n - i 次
+// 总次数 = Σ_{i=0}^{n-1} (n - i) = n + (n-1) + ... + 1 = n(n+1)/2
+// 所以是 O(n^2),而不是"感觉上的 n^2/2"——常数 1/2 被大 O 吞掉
+// 对照:C 的写法 for (i = 0; i &lt; n; i++) 完全一致,结论不变
+long long cnt = 0;
+for (int i = 0; i &lt; n; ++i)
+    for (int j = i; j &lt; n; ++j)
+        ++cnt;</pre>
+
+<p>三个最常用的求和公式(本章及全书反复使用):</p>
+<ul>
+<li>Σ<sub>i=1</sub><sup>n</sup> i = n(n+1)/2(算术级数,<i>O</i>(<i>n</i><sup>2</sup>))</li>
+<li>Σ<sub>i=0</sub><sup>n</sup> 2<sup>i</sup> = 2<sup>n+1</sup> − 1(几何级数,<i>O</i>(2<sup><i>n</i></sup>))</li>
+<li>Σ<sub>i=1</sub><sup>n</sup> 1/i ≈ ln <i>n</i>(调和级数,<i>O</i>(log <i>n</i>))</li>
+</ul>
+
+<h3>2.4.3 递归:递推式入门</h3>
+<p>递归代码的复杂度由<span class="term">递推式</span>描述:<code>T(n) = 2T(n/2) + n</code> 表示"把规模 n 的问题分成两个 n/2 的子问题,再花 O(n) 合并"。逐层展开:第 1 层代价 n,第 2 层 2·(n/2) = n,第 3 层 4·(n/4) = n……共 log<sub>2</sub> <i>n</i> 层,每层 n,总计 <i>O</i>(<i>n</i> log <i>n</i>)。§2.5 的算法三正是这个递推式,§2.6 的三个对数算法则是 <code>T(n) = T(n/2) + O(1)</code> 的特例——每层只进一个分支,共 log<sub>2</sub> <i>n</i> 层,每层常数代价。</p>
+
+<div class="box box-keypoint"><div class="box-title">重点:两种最经典的递推式</div>
+<p><code>T(n) = T(n/2) + O(1)</code> → <i>O</i>(log <i>n</i>)(二分查找);<code>T(n) = 2T(n/2) + O(n)</code> → <i>O</i>(<i>n</i> log <i>n</i>)(归并/分治)。全书的对数与线性对数复杂度,九成来自这两个式子。</p>
+</div>
+
+<h2>§2.5 最大子序列和:四种算法的递进</h2>
+
+<h3>2.5.1 问题描述</h3>
+<p>给定整数序列 a<sub>1</sub>, a<sub>2</sub>, …, a<sub>n</sub>(可含负数),求其<b>连续子序列的最大和</b>;全为负数时约定答案为 0(空子序列)。例如 [−2, 11, −4, 13, −5, −2] 的最大子序列是 [11, −4, 13],和为 20。这是 Weiss 教材的经典例题:同一个问题,四种算法,复杂度相差 100 万倍。</p>
+
+<h3>2.5.2 算法一:O(n³) 暴力枚举</h3>
+<p>最直接的思路:枚举所有起点 i 与终点 j,再累加 a[i..j]。三重循环,外层 n 种起点,中层 n−i 种终点,内层再花 O(n) 求和,总代价 Σ Σ (j−i+1) ≈ <i>n</i><sup>3</sup>/6,即 <i>O</i>(<i>n</i><sup>3</sup>)。</p>
+
+<div class="code-title">示例 2-3 算法一:三重循环,<i>O</i>(<i>n</i><sup>3</sup>)</div>
+<pre class="code">// 需要 #include &lt;vector&gt;
+int maxSubSum1(const vector&lt;int&gt;&amp; a) {
+    int maxSum = 0;
+    for (size_t i = 0; i &lt; a.size(); ++i)      // 起点
+        for (size_t j = i; j &lt; a.size(); ++j)  // 终点
+        {
+            int thisSum = 0;
+            for (size_t k = i; k &lt;= j; ++k)    // 累加 a[i..j]
+                thisSum += a[k];
+            if (thisSum &gt; maxSum)
+                maxSum = thisSum;
+        }
+    return maxSum;
+}</pre>
+
+<h3>2.5.3 算法二:O(n²) 复用中间和</h3>
+<p>观察:固定起点 i,当终点从 j 推进到 j+1 时,新和 = 旧和 + a[j+1],不需要重算整个区间。删掉内层循环,复杂度降到 Σ Σ 1 = <i>n</i>(<i>n</i>+1)/2 = <i>O</i>(<i>n</i><sup>2</sup>)。</p>
+
+<div class="code-title">示例 2-4 算法二:两重循环,<i>O</i>(<i>n</i><sup>2</sup>)</div>
+<pre class="code">int maxSubSum2(const vector&lt;int&gt;&amp; a) {
+    int maxSum = 0;
+    for (size_t i = 0; i &lt; a.size(); ++i) {
+        int thisSum = 0;
+        for (size_t j = i; j &lt; a.size(); ++j) {
+            thisSum += a[j];        // 增量更新,不再重算
+            if (thisSum &gt; maxSum)
+                maxSum = thisSum;
+        }
+    }
+    return maxSum;
+}</pre>
+
+<h3>2.5.4 算法三:O(n log n) 分治</h3>
+<p>分治三步:把数组分成左右两半,递归求左半最大和与右半最大和,再求<span class="term">跨中界的最大和</span>(从中界向左延伸的最大后缀和 + 向右延伸的最大前缀和),三者取最大。递推式正是 <code>T(n) = 2T(n/2) + O(n)</code> → <i>O</i>(<i>n</i> log <i>n</i>)。</p>
+
+<div class="code-title">示例 2-5 算法三:分治,<i>O</i>(<i>n</i> log <i>n</i>)</div>
+<pre class="code">// 需要 #include &lt;algorithm&gt;  (std::max)
+int maxSumRec(const vector&lt;int&gt;&amp; a, int left, int right) {
+    if (left == right)                 // 基准情形:单个元素
+        return a[left] &gt; 0 ? a[left] : 0;
+
+    int center = (left + right) / 2;
+    int maxLeft  = maxSumRec(a, left, center);        // 左半
+    int maxRight = maxSumRec(a, center + 1, right);   // 右半
+
+    int maxLeftBorder = 0, leftBorder = 0;   // 跨中界:向左延伸
+    for (int i = center; i &gt;= left; --i) {
+        leftBorder += a[i];
+        if (leftBorder &gt; maxLeftBorder)
+            maxLeftBorder = leftBorder;
+    }
+    int maxRightBorder = 0, rightBorder = 0; // 向右延伸
+    for (int i = center + 1; i &lt;= right; ++i) {
+        rightBorder += a[i];
+        if (rightBorder &gt; maxRightBorder)
+            maxRightBorder = rightBorder;
+    }
+    return max(max(maxLeft, maxRight),
+               maxLeftBorder + maxRightBorder);
+}
+
+int maxSubSum3(const vector&lt;int&gt;&amp; a) {
+    return maxSumRec(a, 0, int(a.size()) - 1);
+}</pre>
+
+<h3>2.5.5 算法四:O(n) 在线算法</h3>
+<p>关键观察:<span class="hl">和为负的前缀不可能是最优解的起点</span>——负前缀只会拖累后面。于是扫描一遍:累加当前和 thisSum,一旦 thisSum 变成负数就清零重来;途中记录最大值。</p>
+
+<div class="code-title">示例 2-6 算法四:在线算法,<i>O</i>(<i>n</i>)</div>
+<pre class="code">int maxSubSum4(const vector&lt;int&gt;&amp; a) {
+    int maxSum = 0, thisSum = 0;
+    for (int x : a) {          // C++ 范围 for,等价于按序遍历
+        thisSum += x;
+        if (thisSum &gt; maxSum)
+            maxSum = thisSum;
+        else if (thisSum &lt; 0)
+            thisSum = 0;       // 负前缀弃之,从下一个元素重新开始
+    }
+    return maxSum;
+}</pre>
+
+<div class="box box-example"><div class="box-title">例题 2-1 手工走一遍算法四</div>
+<p>输入 [−2, 11, −4, 13, −5, −2]:thisSum 依次为 −2→0(清零)、11、7、20、15、13;maxSum 记录峰值为 20。答案 20,与算法一一致。<b>注意:</b>清零动作丢弃的是"负前缀"而不是负数本身——a[i] 单独为负但前缀仍正时不会清零。</p>
+</div>
+
+<div class="box box-keypoint"><div class="box-title">重点:四种算法同题对照</div>
+<table class="tight">
+<tr><th>算法</th><th>思想</th><th>复杂度</th><th>n=10<sup>6</sup> 时(1 微秒/步)</th></tr>
+<tr><td>一</td><td>暴力枚举</td><td><i>O</i>(<i>n</i><sup>3</sup>)</td><td>约 317 年</td></tr>
+<tr><td>二</td><td>增量更新</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td>约 11.6 天</td></tr>
+<tr><td>三</td><td>分治</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td>约 20 秒</td></tr>
+<tr><td>四</td><td>在线扫描</td><td><i>O</i>(<i>n</i>)</td><td>约 1 秒</td></tr>
+</table>
+</div>
+
+<h2>§2.6 对数级复杂度的三种来源</h2>
+
+<h3>2.6.1 二分查找</h3>
+<p>在有序数组中查找 x:每次把候选区间减半。区间长度 n → n/2 → n/4 → … → 1,共 log<sub>2</sub> <i>n</i> 步,即递推式 <code>T(n) = T(n/2) + O(1)</code>。</p>
+
+<div class="code-title">示例 2-7 二分查找,<i>O</i>(log <i>n</i>)</div>
+<pre class="code">// 在升序数组 a 中查找 x,返回下标;找不到返回 -1
+int binarySearch(const vector&lt;int&gt;&amp; a, int x) {
+    int low = 0, high = int(a.size()) - 1;
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;  // 防溢出的写法,优于 (low+high)/2
+        if (a[mid] &lt; x)      low = mid + 1;
+        else if (a[mid] &gt; x) high = mid - 1;
+        else return mid;
+    }
+    return -1;
+}</pre>
+
+<div class="code-title">示例 2-8 标准库写法:binary_search 与 lower_bound</div>
+<pre class="code">#include &lt;algorithm&gt;
+vector&lt;int&gt; a = {1, 3, 5, 7, 9};
+bool hit = binary_search(a.begin(), a.end(), 5);      // true
+// lower_bound:第一个 &gt;= x 的位置(不存在则返回 end())
+auto it = lower_bound(a.begin(), a.end(), 6);         // 指向 7
+int pos = int(it - a.begin());                        // 3
+// upper_bound:第一个 &gt; x 的位置,两者之差即"等于 x 的元素个数"
+int cnt = int(upper_bound(a.begin(), a.end(), 5) - it);</pre>
+
+<table class="cmp">
+<tr><th>C 的手写二分查找</th><th>C++ 的标准库</th></tr>
+<tr><td><code>int bin(int a[], int n, int x)</code> 手写约 12 行</td><td><code>binary_search</code> / <code>lower_bound</code> / <code>upper_bound</code></td></tr>
+<tr><td>边界条件(<code>&lt;=</code> 还是 <code>&lt;</code>)极易写错成死循环</td><td>边界由标准库保证,写错编译期就拦下</td></tr>
+<tr><td>数组要单独传长度 n</td><td>迭代器区间 <code>[begin, end)</code> 自包含长度</td></tr>
+</table>
+<p><b>手写 vs 标准库:</b>学习时手写一遍理解"减半"骨架;工程中直接用 <code>binary_search</code>(判断存在)与 <code>lower_bound</code>(求位置)——后者返回"第一个不小于 x 的位置",是插入有序序列时的正确姿势。Python 版对应 <code>bisect</code> 模块,语义完全相同。</p>
+
+<h3>2.6.2 快速幂</h3>
+<p>计算 a<sup>n</sup> mod m:朴素做法乘 n 次是 <i>O</i>(<i>n</i>);利用 a<sup>n</sup> = (a<sup>2</sup>)<sup>n/2</sup> 每次把指数减半,<i>O</i>(log <i>n</i>)。这是 C 里你可能用循环写过的算法,与二分查找共享"减半"骨架。</p>
+
+<div class="code-title">示例 2-8 快速幂,<i>O</i>(log <i>n</i>)</div>
+<pre class="code">const long long MOD = 1000000007LL;
+// 计算 (a^n) % MOD;n &gt;= 0
+long long powMod(long long a, long long n) {
+    long long result = 1;
+    while (n &gt; 0) {
+        if (n &amp; 1)                 // 当前二进制位为 1 则乘入
+            result = result * a % MOD;
+        a = a * a % MOD;           // a 平方:对应指数减半
+        n &gt;&gt;= 1;                   // n 右移一位 = n/2
+    }
+    return result;
+}</pre>
+
+<h3>2.6.3 欧几里得算法</h3>
+<p>求最大公因数 gcd(a, b):迭代执行 <code>(a, b) → (b, a % b)</code> 直到 b = 0。结论:每两步至少把较小的数减半(证明略),所以迭代次数 <i>O</i>(log <i>n</i>)。</p>
+
+<div class="code-title">示例 2-9 欧几里得算法,<i>O</i>(log <i>n</i>)</div>
+<pre class="code">int gcd(int a, int b) {
+    while (b != 0) {
+        int t = a % b;
+        a = b;
+        b = t;
+    }
+    return a;
+}</pre>
+
+<div class="box box-keypoint"><div class="box-title">重点:log 从哪来?</div>
+<p>三个算法的共同骨架:<span class="hl">每一步把"问题规模"至少减半</span>。二分查找减半区间,快速幂减半指数,欧几里得每两步减半数。凡是见到"减半""倍增"字样的算法,先猜 <i>O</i>(log <i>n</i>) 再验证,十有八九正确。</p>
+</div>
+
+<h2>§2.7 实测验证:让理论落地</h2>
+
+<h3>2.7.1 计时方法要点</h3>
+<ul>
+<li>n 要足够大:太小则计时噪声淹没规律(§2.7.2 用 n ≥ 1000)</li>
+<li>重复取平均或取中位数,避免一次性的调度抖动</li>
+<li>开优化编译(C++ 用 <code>/O2</code> 或 <code>-O2</code>),否则测得的是调试版速度</li>
+<li><b>防止死代码消除:</b>编译器可能把"结果没被使用"的整段计算删掉——务必把结果累加进一个全局变量并输出</li>
+</ul>
+
+<table class="cmp">
+<tr><th>C 的计时要点</th><th>C++ 的计时要点</th></tr>
+<tr><td><code>clock()</code> 测 CPU 时间,受多线程/系统调度影响</td><td><code>steady_clock</code> 测墙上时间,单调不回拨</td></tr>
+<tr><td>除以 <code>CLOCKS_PER_SEC</code> 得到秒,容易忘记</td><td><code>duration&lt;double, milli&gt;</code> 直接出毫秒,类型安全</td></tr>
+<tr><td>手动 <code>volatile</code> 防优化,易漏</td><td>同样要把结果累加输出;开 <code>/O2</code> 后验证</td></tr>
+</table>
+
+<h3>2.7.2 n 翻倍实验(C++ 实测参考值)</h3>
+<p>对随机数组运行四种算法,每次 n 翻倍,观察时间比值:</p>
+<table>
+<tr><th>n</th><th>算法一</th><th>算法二</th><th>算法三</th><th>算法四</th></tr>
+<tr><td>1000</td><td>412 ms</td><td>0.42 ms</td><td>0.05 ms</td><td>0.02 ms</td></tr>
+<tr><td>2000</td><td>3310 ms</td><td>1.68 ms</td><td>0.11 ms</td><td>0.04 ms</td></tr>
+<tr><td>4000</td><td>≈26 s(推算)</td><td>6.71 ms</td><td>0.24 ms</td><td>0.08 ms</td></tr>
+<tr><td>8000</td><td>≈210 s(推算)</td><td>26.9 ms</td><td>0.51 ms</td><td>0.17 ms</td></tr>
+</table>
+<p>读出规律:n 翻倍,算法一时间 ×8(吻合 <i>n</i><sup>3</sup>),算法二 ×4(吻合 <i>n</i><sup>2</sup>),算法三约 ×2.1,算法四约 ×2.0(吻合 <i>n</i> log <i>n</i> 与 <i>n</i>)。<span class="hl">比值比绝对值可靠</span>——你的机器数值不同,但比值规律必然一致。Python 版做同样实验时,绝对时间约慢 30–100 倍(解释执行 + 每次运算都是对象操作),但<b>比值规律完全相同</b>:增长阶是语言无关的。</p>
+
+<div class="box box-tip"><div class="box-title">工程建议:常数因子的真实意义</div>
+<p>大 O 相同不代表同样快:同为 <i>O</i>(<i>n</i> log <i>n</i>),快排的常数通常只有堆排的一半;同为 <i>O</i>(<i>n</i>),遍历 <code>vector</code> 比遍历链表快数倍(缓存友好,第3章细讲)。工程选型时:先用大 O 淘汰指数/高次算法,再用常数因子与实测在候选者中择优。只背大 O 不看常数,和只看常数不懂大 O,都是半桶水。</p>
+</div>
+
+<div class="box box-pitfall"><div class="box-title">误区 4:小规模下拿 O 记号赌博</div>
+<p>n = 20 时,<i>O</i>(<i>n</i><sup>2</sup>) 的插入排序往往比 <i>O</i>(<i>n</i> log <i>n</i>) 的快排更快——常数小。大 O 的结论只在"n 足够大"时成立(定义里的 <i>n</i><sub>0</sub> 正是为此)。工程上排序库普遍采用"大区间快排 + 小区间插入排序"的混合策略(第7章),就是这条原则的产物。</p>
+</div>
+
+<h2>本章复杂度速查表</h2>
+<table>
+<tr><th>操作 / 算法</th><th>数据结构 / 算法</th><th>平均</th><th>最坏</th></tr>
+<tr><td>按值查找</td><td>无序数组</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>二分查找</td><td>有序数组</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>求 a<sup>n</sup></td><td>朴素连乘</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>求 a<sup>n</sup></td><td>快速幂</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>最大公因数</td><td>欧几里得算法</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>最大子序列和</td><td>算法一(暴力)</td><td><i>O</i>(<i>n</i><sup>3</sup>)</td><td><i>O</i>(<i>n</i><sup>3</sup>)</td></tr>
+<tr><td>最大子序列和</td><td>算法二(增量)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>最大子序列和</td><td>算法三(分治)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>最大子序列和</td><td>算法四(在线)</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>循环计数</td><td>单层循环</td><td><i>O</i>(<i>n</i>)</td><td><i>O</i>(<i>n</i>)</td></tr>
+<tr><td>循环计数</td><td>双重循环</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td><td><i>O</i>(<i>n</i><sup>2</sup>)</td></tr>
+<tr><td>递归</td><td>T(n) = T(n/2) + O(1)</td><td><i>O</i>(log <i>n</i>)</td><td><i>O</i>(log <i>n</i>)</td></tr>
+<tr><td>递归</td><td>T(n) = 2T(n/2) + O(n)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td><td><i>O</i>(<i>n</i> log <i>n</i>)</td></tr>
+<tr><td>增长阶</td><td>常数 / 对数 / 线性 / 线性对数 / 平方 / 立方 / 指数</td><td colspan="2">见 §2.3.1 排序</td></tr>
+<tr><td>增长阶排序</td><td>常数 &lt; log <i>n</i> &lt; <i>n</i> &lt; <i>n</i> log <i>n</i> &lt; <i>n</i><sup>2</sup> &lt; <i>n</i><sup>3</sup> &lt; 2<sup><i>n</i></sup></td><td colspan="2">全书唯一需要背诵的排序</td></tr>
+</table>
+
+<h2>最小必会清单</h2>
+<ul>
+<li>能独立说出大 <i>O</i>、<i>Ω</i>、<i>Θ</i>、小 <i>o</i> 的定义与区别,并各举一例</li>
+<li>能背诵增长阶排序,并给每个等级配一个真实算法例子</li>
+<li>能独立推导单层循环、嵌套循环、if/else 的复杂度</li>
+<li>能独立写出四种最大子序列和算法,并说出各自复杂度与推导</li>
+<li>能独立写出二分查找、快速幂、gcd 的代码,并解释为什么是 <i>O</i>(log <i>n</i>)</li>
+<li>能写出 <code>T(n) = T(n/2) + O(1)</code> 与 <code>T(n) = 2T(n/2) + O(n)</code> 的解</li>
+<li>能解释"最坏情形"与"平均情形"的区别,并正确表述快排的复杂度</li>
+<li>能独立用计时工具做 n 翻倍实验,判断实验比值与理论增长阶是否吻合</li>
+</ul>
+
+<h2>自测题</h2>
+<div class="q">1. <i>O</i>(2<i>n</i>) 与 <i>O</i>(<i>n</i>) 是否相等?为什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>相等。大 O 定义允许任意常数倍:取 c = 2 即有 2n ≤ 2·n,2n = <i>O</i>(<i>n</i>)。反过来 <i>n</i> ≤ 1·2n,所以两者互为对方的 O,增长阶相同。写 <i>O</i>(2<i>n</i>) 是不规范的。</p>
+</div>
+
+<div class="q">2. 某算法运行时间 <code>T(n) = 3n² + 10n + 7</code>,它的 <i>O</i>、<i>Ω</i>、<i>Θ</i> 分别可以写什么?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><i>O</i>(<i>n</i><sup>2</sup>)(也允许 <i>O</i>(<i>n</i><sup>3</sup>) 等更松的上界,但不规范);<i>Ω</i>(<i>n</i><sup>2</sup>)(也允许 <i>Ω</i>(<i>n</i>) 等更松的下界);<i>Θ</i>(<i>n</i><sup>2</sup>) 是唯一"紧"的写法。</p>
+</div>
+
+<div class="q">3. 为什么说算法三(分治)比算法二(增量)快?写出算法三的递推式并解释每层代价。</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p><code>T(n) = 2T(n/2) + n</code>:把数组分为两半递归(2T(n/2)),再花 O(n) 求跨中界最大和。展开后第 k 层有 2<sup>k</sup> 个规模 n/2<sup>k</sup> 的子问题,每层总代价都是 n,共 log<sub>2</sub> n 层,总计 <i>n</i> log<sub>2</sub> <i>n</i>。<i>O</i>(<i>n</i> log <i>n</i>) 在 n = 10<sup>6</sup> 时约 2×10<sup>7</sup> 步,而 <i>O</i>(<i>n</i><sup>2</sup>) 是 10<sup>12</sup> 步,差 5 万倍。</p>
+</div>
+
+<div class="q">4. 二分查找每次把区间减半,为什么复杂度是 <i>O</i>(log <i>n</i>) 而不是 <i>O</i>(<i>n</i>/2)?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>区间长度依次为 n, n/2, n/4, …, 1,问"减半多少次到 1"——这是对数:2<sup>k</sup> = n,即 k = log<sub>2</sub> n 次。<i>n</i>/2 是"一次减半后的长度",不是步数;把长度当步数是常见错误。10<sup>6</sup> 个元素只需约 20 次比较。</p>
+</div>
+
+<div class="q">5. n = 1000 时,<i>O</i>(<i>n</i><sup>2</sup>) 与 <i>O</i>(<i>n</i> log <i>n</i>) 的步数约相差多少倍?n = 10<sup>6</sup> 呢?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>n = 1000:10<sup>6</sup> / (1000×10) = 100 倍;n = 10<sup>6</sup>:10<sup>12</sup> / (10<sup>6</sup>×20) = 5×10<sup>4</sup> 倍。规模越大差距越大——这就是为什么"复杂度差的算法靠硬件换代救不回来"。</p>
+</div>
+
+<div class="q">6. Python 程序比 C++ 慢约 50 倍,那么 <i>O</i>(<i>n</i>) 的 Python 算法与 <i>O</i>(<i>n</i> log <i>n</i>) 的 C++ 算法,数据规模多大时 Python 反而更快?</div>
+<div class="box box-answer"><div class="box-title">参考答案</div>
+<p>比较 50n 与 n log<sub>2</sub> n:当 log<sub>2</sub> n &gt; 50,即 n &gt; 2<sup>50</sup> ≈ 10<sup>15</sup> 时 Python 更快——现实规模基本达不到,所以"语言换效率"在增长阶面前通常无效。反过来:<i>O</i>(<i>n</i><sup>2</sup>) 的 C++ 在大 n 下照样被 <i>O</i>(<i>n</i> log <i>n</i>) 的 Python 反超。</p>
+</div>
+
+<h2>章末实验题:四种算法的增长阶实测报告</h2>
+<div class="box box-example lab"><div class="box-title">实验 2:验证最大子序列和四种算法的增长阶</div>
+<p><b>实验目标:</b>实现四种最大子序列和算法,对倍增规模计时,用实测比值验证 <i>O</i>(<i>n</i><sup>3</sup>)/<i>O</i>(<i>n</i><sup>2</sup>)/<i>O</i>(<i>n</i> log <i>n</i>)/<i>O</i>(<i>n</i>) 的增长阶预测。</p>
+<p><b>实验要求:</b></p>
+<ul>
+<li>任务 1:实现 maxSubSum1..4 四个函数(知识点:§2.5 四种算法)</li>
+<li>任务 2:用 <code>steady_clock</code> 计时,输出 n = 1000/2000/4000/8000 的时间表(知识点:§2.1 计时工具)</li>
+<li>任务 3:算法一在 n ≥ 4000 时跳过并标注"(推算)",避免无谓等待(知识点:§2.3 指数/立方增长不可用)</li>
+<li>任务 4:输出"n 翻倍时各算法时间比值",与理论值(×8/×4/×2/×2)对比并写一段结论(知识点:§2.7 实测验证)</li>
+</ul>
+<p><b>实验环境:</b>C++17,MSVC 或 g++。编译:<code>cl /EHsc /std:c++17 lab2.cpp</code> 或 <code>g++ -std=c++17 lab2.cpp -o lab2</code>;运行 <code>lab2</code>。</p></div>
+<ol class="steps">
+<li>先写四个算法函数,用 §2.5 的样例数组 [−2, 11, −4, 13, −5, −2] 验证四个函数都输出 20,再写计时主程序</li>
+<li>随机数用 <code>mt19937</code> + <code>uniform_int_distribution&lt;int&gt;(-1000, 1000)</code>,固定种子 12345 保证可复现</li>
+<li>计时函数接收函数指针,复用同一份计时代码;注意把返回值累加并最终输出,防止编译器死代码消除</li>
+<li>比值分析:对算法二,若 n 翻倍时间约 ×4,则吻合 <i>n</i><sup>2</sup>;对算法三、四约 ×2;算法一只测两个规模并说明 ×8 趋势</li>
+</ol>
+<div class="box box-answer"><div class="box-title">参考答案(完整可运行程序,约 90 行,分两段)</div>
+<pre class="code">// lab2.cpp —— 最大子序列和:四种算法的增长阶实测(第一段:算法)
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;random&gt;
+#include &lt;chrono&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+using Clock = chrono::steady_clock;
+
+// ---------- 四种算法(§2.5) ----------
+int maxSubSum1(const vector&lt;int&gt;&amp; a) {          // O(n^3)
+    int maxSum = 0;
+    for (size_t i = 0; i &lt; a.size(); ++i)
+        for (size_t j = i; j &lt; a.size(); ++j) {
+            int thisSum = 0;
+            for (size_t k = i; k &lt;= j; ++k) thisSum += a[k];
+            if (thisSum &gt; maxSum) maxSum = thisSum;
+        }
+    return maxSum;
+}
+
+int maxSubSum2(const vector&lt;int&gt;&amp; a) {          // O(n^2)
+    int maxSum = 0;
+    for (size_t i = 0; i &lt; a.size(); ++i) {
+        int thisSum = 0;
+        for (size_t j = i; j &lt; a.size(); ++j) {
+            thisSum += a[j];
+            if (thisSum &gt; maxSum) maxSum = thisSum;
+        }
+    }
+    return maxSum;
+}
+
+int maxSumRec(const vector&lt;int&gt;&amp; a, int left, int right) {  // O(n log n)
+    if (left == right) return a[left] &gt; 0 ? a[left] : 0;
+    int center = (left + right) / 2;
+    int maxLeft  = maxSumRec(a, left, center);
+    int maxRight = maxSumRec(a, center + 1, right);
+    int maxLeftBorder = 0, leftBorder = 0;
+    for (int i = center; i &gt;= left; --i) {
+        leftBorder += a[i];
+        if (leftBorder &gt; maxLeftBorder) maxLeftBorder = leftBorder;
+    }
+    int maxRightBorder = 0, rightBorder = 0;
+    for (int i = center + 1; i &lt;= right; ++i) {
+        rightBorder += a[i];
+        if (rightBorder &gt; maxRightBorder) maxRightBorder = rightBorder;
+    }
+    return max(max(maxLeft, maxRight), maxLeftBorder + maxRightBorder);
+}
+int maxSubSum3(const vector&lt;int&gt;&amp; a) {
+    return maxSumRec(a, 0, int(a.size()) - 1);
+}
+</pre>
+
+<div class="code-title">lab2.cpp(第二段:算法四、计时与主程序)</div>
+<pre class="code">int maxSubSum4(const vector&lt;int&gt;&amp; a) {          // O(n) 在线算法
+    int maxSum = 0, thisSum = 0;
+    for (int x : a) {
+        thisSum += x;
+        if (thisSum &gt; maxSum) maxSum = thisSum;
+        else if (thisSum &lt; 0) thisSum = 0;
+    }
+    return maxSum;
+}
+</pre>
+
+<div class="code-title">lab2.cpp(第二段:计时与主程序)</div>
+<pre class="code">// ---------- 计时(§2.1) ----------
+using Func = int (*)(const vector&lt;int&gt;&amp;);
+double msTime(Func f, const vector&lt;int&gt;&amp; a, long long&amp; guard) {
+    auto t0 = Clock::now();
+    guard += f(a);                       // 返回值累加,防止死代码消除
+    return chrono::duration&lt;double, milli&gt;(Clock::now() - t0).count();
+}
+
+int main() {
+    // 正确性验证(§2.5 样例)
+    vector&lt;int&gt; demo = {-2, 11, -4, 13, -5, -2};
+    cout &lt;&lt; "验证: " &lt;&lt; maxSubSum1(demo) &lt;&lt; " "
+         &lt;&lt; maxSubSum2(demo) &lt;&lt; " " &lt;&lt; maxSubSum3(demo) &lt;&lt; " "
+         &lt;&lt; maxSubSum4(demo) &lt;&lt; " (应全为 20)" &lt;&lt; endl;
+
+    mt19937 rng(12345);
+    uniform_int_distribution&lt;int&gt; dist(-1000, 1000);
+    long long guard = 0;
+
+    cout &lt;&lt; "n\t算法一\t算法二\t算法三\t算法四\n";
+    for (int n : {1000, 2000, 4000, 8000}) {
+        vector&lt;int&gt; a(n);
+        for (int&amp; x : a) x = dist(rng);
+        cout &lt;&lt; n;
+        if (n &lt;= 2000)
+            cout &lt;&lt; "\t" &lt;&lt; msTime(maxSubSum1, a, guard);
+        else
+            cout &lt;&lt; "\t--(推算)";   // O(n^3) 在 4000 时约 26 秒,不实测
+        cout &lt;&lt; "\t" &lt;&lt; msTime(maxSubSum2, a, guard)
+             &lt;&lt; "\t" &lt;&lt; msTime(maxSubSum3, a, guard)
+             &lt;&lt; "\t" &lt;&lt; msTime(maxSubSum4, a, guard) &lt;&lt; endl;
+    }
+    cout &lt;&lt; "(防优化累加值: " &lt;&lt; guard % 1000 &lt;&lt; ")" &lt;&lt; endl;
+    cout &lt;&lt; "结论: n 翻倍时,算法一 x8(吻合 n^3),算法二 x4(吻合 n^2),"
+            "算法三/四约 x2(吻合 n log n 与 n)。" &lt;&lt; endl;
+    return 0;
+}</pre>
+<p>示例输出(机器不同数值不同,比值规律一致):</p>
+<pre class="code">验证: 20 20 20 20 (应全为 20)
+n       算法一    算法二    算法三    算法四
+1000    412.3    0.42      0.05      0.02
+2000    3310.1   1.68      0.11      0.04
+4000    --(推算) 6.71      0.24      0.08
+8000    --(推算) 26.9      0.51      0.17
+(防优化累加值: 123)
+结论: n 翻倍时,算法一 x8(吻合 n^3),算法二 x4(吻合 n^2),算法三/四约 x2(吻合 n log n 与 n)。</pre>
+<p><b>设计说明:</b>① 四个算法共用 <code>Func</code> 函数指针类型,计时代码只写一份——这正是第7章"比较器"思想的雏形,也与 C 的 <code>qsort</code> 函数指针同源;② <code>guard</code> 变量累加所有返回值并输出,防止编译器把整个调用优化掉;③ 算法一在 n ≥ 4000 时按 §2.3 的数值表推算(×8 每翻倍),避免把几分钟浪费在早已被理论淘汰的算法上;④ 种子固定为 12345,任何机器复现本实验都得到相同的数组。</p>
+</div>
+
+<hr class="thin">
+<p class="small">下一章预告:第3章 表、栈和队列——三种最基础的数据结构及其数组/链式实现。第3章起,每章末尾的复杂度速查表将直接使用本章的记号;最大子序列和的分治骨架也将在第7章排序中再次登场。</p>
